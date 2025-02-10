@@ -1,5 +1,4 @@
-
-using MovieManagement.Server.Repositories;
+using MovieManagement.Server.Repositories.NhanVien;
 
 namespace MovieManagement.Server
 {

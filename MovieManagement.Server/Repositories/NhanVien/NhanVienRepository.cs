@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace MovieManagement.Server.Repositories
+namespace MovieManagement.Server.Repositories.NhanVien
 {
     public class NhanVienRepository : INhanVienRepository
     {
