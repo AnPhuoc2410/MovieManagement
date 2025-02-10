@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieManagement.Server", "MovieManagement.Server\MovieManagement.Server.csproj", "{52C1BAE0-C681-4E44-878F-734A1D2B7F42}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "moviemanagement.client", "moviemanagement.client\moviemanagement.client.esproj", "{A9554460-E83B-4473-8EE4-B432DD5B4D97}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{52C1BAE0-C681-4E44-878F-734A1D2B7F42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52C1BAE0-C681-4E44-878F-734A1D2B7F42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52C1BAE0-C681-4E44-878F-734A1D2B7F42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52C1BAE0-C681-4E44-878F-734A1D2B7F42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9554460-E83B-4473-8EE4-B432DD5B4D97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9554460-E83B-4473-8EE4-B432DD5B4D97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9554460-E83B-4473-8EE4-B432DD5B4D97}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A9554460-E83B-4473-8EE4-B432DD5B4D97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9554460-E83B-4473-8EE4-B432DD5B4D97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9554460-E83B-4473-8EE4-B432DD5B4D97}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
