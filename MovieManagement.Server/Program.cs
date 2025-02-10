@@ -1,4 +1,6 @@
 
+using MovieManagement.Server.Repositories;
+
 namespace MovieManagement.Server
 {
     public class Program
@@ -12,6 +14,15 @@ namespace MovieManagement.Server
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddScoped<INhanVienRepository, NhanVienRepository>();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowReactApp",
+                    policy => policy.WithOrigins("http://localhost:5173")
+                                   .AllowAnyMethod()
+                                   .AllowAnyHeader());
+            });
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
@@ -32,6 +43,8 @@ namespace MovieManagement.Server
 
 
             app.MapControllers();
+            app.UseCors("AllowReactApp");
+
 
             app.MapFallbackToFile("/index.html");
 
