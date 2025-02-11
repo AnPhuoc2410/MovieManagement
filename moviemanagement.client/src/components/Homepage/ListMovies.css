@@ -1,0 +1,42 @@
+.movie-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1A1C2A;
+    padding: 15px;
+    border-radius: 10px;
+    min-height: 400px; 
+}
+
+.movie-image {
+    width: 100%;
+    height: 250px; 
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.movie-title {
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.book-button {
+    margin-top: 5px;
+    width: 80%;
+}
+
+.swiper {
+    padding-bottom: 40px !important;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+    color: white !important;
+}
+
+.swiper-pagination-bullet {
+    background-color: white !important;
+    margin-bottom: 10px;
+}
