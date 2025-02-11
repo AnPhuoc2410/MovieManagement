@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Models.Entities;
 
 namespace MovieManagement.Server.Controllers
 {

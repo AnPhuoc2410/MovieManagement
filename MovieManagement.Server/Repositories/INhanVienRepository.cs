@@ -1,6 +1,6 @@
-﻿using MovieManagement.Server.Models;
+﻿using MovieManagement.Server.Models.Entities;
 
-namespace MovieManagement.Server.Repositories.NhanVien
+namespace MovieManagement.Server.Repositories
 {
     public interface INhanVienRepository
     {

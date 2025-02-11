@@ -1,4 +1,4 @@
-﻿namespace MovieManagement.Server.DTOs
+﻿namespace MovieManagement.Server.Models.DTOs
 {
     public class NhanVienDto
     {

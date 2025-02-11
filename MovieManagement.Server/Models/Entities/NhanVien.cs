@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace MovieManagement.Server.Models
+namespace MovieManagement.Server.Models.Entities
 {
     public class NhanVien
     {

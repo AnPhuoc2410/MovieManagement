@@ -1,4 +1,4 @@
-using MovieManagement.Server.Repositories.NhanVien;
+using MovieManagement.Server.Repositories;
 
 namespace MovieManagement.Server
 {
@@ -18,7 +18,7 @@ namespace MovieManagement.Server
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowReactApp",
-                    policy => policy.WithOrigins("http://localhost:5173")
+                    policy => policy.WithOrigins("https://localhost:7119")  // Adjust for deployment
                                    .AllowAnyMethod()
                                    .AllowAnyHeader());
             });

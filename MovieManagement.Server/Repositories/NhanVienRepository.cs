@@ -1,8 +1,8 @@
-﻿using MovieManagement.Server.Models;
+﻿using MovieManagement.Server.Models.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace MovieManagement.Server.Repositories.NhanVien
+namespace MovieManagement.Server.Repositories
 {
     public class NhanVienRepository : INhanVienRepository
     {

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Post_Management.API.Exceptions
+namespace MovieManagement.Server.Exceptions
 {
     // all the Error or Bad request will using there Exception below
     public class ApiException : Exception

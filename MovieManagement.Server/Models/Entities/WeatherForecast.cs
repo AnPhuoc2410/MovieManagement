@@ -1,4 +1,4 @@
-namespace MovieManagement.Server
+namespace MovieManagement.Server.Models.Entities
 {
     public class WeatherForecast
     {
