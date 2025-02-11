@@ -1,15 +1,17 @@
-import { Box, Typography } from "@mui/material";
-import "./App.css";
-import LoadingSpinner from "./components/LoadingSpinner";
+import { BrowserRouter, Route, Routes } from "react-router";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Home from "./pages/Home";
 
 const App = () => {
   return (
-    <Box>
-      <Typography variant="h1" align="center">
-        Movie Management
-      </Typography>
-      {/* <LoadingSpinner /> */}
-    </Box>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 
