@@ -4,10 +4,12 @@ import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VietnamFlag from '../../assets/vietnam-icon.svg';
+import { useNavigate } from "react-router";
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: "#0B0D1A", padding: 1 }}>
+    <AppBar position="fixed" sx={{ backgroundColor: "rgb(47, 39, 39)", padding: 1 }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         {/* Logo - Fixed Cursor Issue */}
         <Box
@@ -54,10 +56,10 @@ const Header: React.FC = () => {
           <Button variant="contained" sx={{ backgroundColor: "#8A2BE2" }} startIcon={<ShoppingCartIcon />}>
             ĐẶT BẮP NƯỚC
           </Button>
-          <IconButton color="inherit">
+          <IconButton color="inherit" onClick={() => navigate("/login")}>
             <AccountCircleIcon />
-          </IconButton>
           <Typography>Đăng nhập</Typography>
+          </IconButton>
           <IconButton color="inherit">
             <img src={VietnamFlag} alt="Vietnam Flag" width="25" height="25" />
           </IconButton>

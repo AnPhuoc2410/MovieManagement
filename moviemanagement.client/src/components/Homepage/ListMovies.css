@@ -7,6 +7,10 @@
     padding: 15px;
     border-radius: 10px;
     min-height: 400px; 
+    user-select: none; 
+    -webkit-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none;
 }
 
 .movie-image {
@@ -34,6 +38,10 @@
 .swiper-button-prev,
 .swiper-button-next {
     color: white !important;
+    user-select: none; 
+    -webkit-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none;
 }
 
 .swiper-pagination-bullet {

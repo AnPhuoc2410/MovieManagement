@@ -7,9 +7,9 @@ import { useParams } from 'react-router';
 const PromotionDetail: React.FC = () => {
   const id = useParams();
   return (
-    <>
+    <Box sx={{ backgroundColor: "#0B0D1A", color: "white" }}>
       <Header />
-      <Container maxWidth="md" sx={{ mt: 15, mb: 4 }}>
+      <Container maxWidth="md" sx={{ mt:10 , mb: 7, py: 6 }}>
         <Card sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}>
           {/* Left Side - Image */}
           <CardMedia
@@ -17,12 +17,12 @@ const PromotionDetail: React.FC = () => {
             image="https://iguov8nhvyobj.vcdn.cloud/media/wysiwyg/2024/092024/T4VV_350x495.jpg"
             alt="Promotion Banner"
             sx={{
-              width: { xs: "100%", md: "40%" }, 
+              width: { xs: "100%", md: "40%" },
               height: "auto",
               objectFit: "cover"
             }}
           />
-          
+
           {/* Right Side - Text Content */}
           <CardContent sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: 3 }}>
             <Typography variant="h5" color="primary" gutterBottom>
@@ -45,7 +45,7 @@ const PromotionDetail: React.FC = () => {
         </Card>
       </Container>
       <Footer />
-    </>
+    </Box>
   );
 };
 
