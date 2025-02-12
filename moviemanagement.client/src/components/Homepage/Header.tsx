@@ -4,14 +4,33 @@ import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VietnamFlag from '../../assets/vietnam-icon.svg';
+import { useNavigate } from "react-router";
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: "#0B0D1A", padding: 1 }}>
+    <AppBar position="fixed" sx={{ backgroundColor: "rgb(47, 39, 39)", padding: 1 }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        {/* Logo */}
-        <Box component="img" src="https://png.pngtree.com/png-clipart/20230103/original/pngtree-vietnam-flag-transparent-watercolor-painted-brush-png-image_8863886.png" alt="Cinestar Logo" sx={{ height: 40 }} />
-        
+        {/* Logo - Fixed Cursor Issue */}
+        <Box
+          component="a"
+          href="/"
+          sx={{
+            display: "inline-flex",
+            alignItems: "center",
+            textDecoration: "none",
+            cursor: "pointer", // Ensure pointer cursor
+            userSelect: "none" // Prevent text selection
+          }}
+        >
+          <Box
+            component="img"
+            src="https://png.pngtree.com/png-clipart/20230103/original/pngtree-vietnam-flag-transparent-watercolor-painted-brush-png-image_8863886.png"
+            alt="Eiga Logo"
+            sx={{ height: 40 }}
+          />
+        </Box>
+
         {/* Search Bar */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexGrow: 1, justifyContent: "center" }}>
           <TextField
@@ -37,12 +56,12 @@ const Header: React.FC = () => {
           <Button variant="contained" sx={{ backgroundColor: "#8A2BE2" }} startIcon={<ShoppingCartIcon />}>
             ĐẶT BẮP NƯỚC
           </Button>
-          <IconButton color="inherit">
+          <IconButton color="inherit" onClick={() => navigate("/login")}>
             <AccountCircleIcon />
-          </IconButton>
           <Typography>Đăng nhập</Typography>
+          </IconButton>
           <IconButton color="inherit">
-          <img src={VietnamFlag} alt="Vietnam Flag" width="25" height="25" />
+            <img src={VietnamFlag} alt="Vietnam Flag" width="25" height="25" />
           </IconButton>
           <Typography>VN ▼</Typography>
         </Box>

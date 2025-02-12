@@ -5,6 +5,7 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useNavigate } from "react-router";
 
 const promotions = [
     {
@@ -17,13 +18,15 @@ const promotions = [
         image: "https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2FMageINIC%2Fbannerslider%2Fkm-m-3.webp&w=1920&q=75",
     },
     {
-        image : "https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2FMageINIC%2Fbannerslider%2Fmonday_1_.webp&w=1920&q=75"
+        image: "https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2FMageINIC%2Fbannerslider%2Fmonday_1_.webp&w=1920&q=75"
     }
 ];
 
 const Promotions: React.FC = () => {
+    const navigate = useNavigate();
+
     return (
-        <Container sx={{ mt: 4, textAlign: "center", padding:5 }}>
+        <Container sx={{ mt: 4, textAlign: "center", padding: 5 }}>
             <Typography variant="h4" fontWeight="bold" color="white" sx={{ mb: 2 }}>
                 KHUYẾN MÃI
             </Typography>
@@ -45,7 +48,7 @@ const Promotions: React.FC = () => {
                     </SwiperSlide>
                 ))}
             </Swiper>
-            <Button variant="contained" color="warning" sx={{ mt: 2 }}>
+            <Button onClick={() => {navigate("/promotions");}} variant="contained" color="warning" sx={{ mt: 2 }}>
                 TẤT CẢ ƯU ĐÃI
             </Button>
         </Container>
