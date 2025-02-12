@@ -24,6 +24,7 @@ const Membership: React.FC = () => {
           display: "flex",
           justifyContent: "center",
           gap: 4,
+          padding: 4,
           flexWrap: "wrap",
         }}
       >

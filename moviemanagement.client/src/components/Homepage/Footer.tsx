@@ -5,10 +5,9 @@ const Footer: React.FC = () => {
   return (
     <Box
       sx={{
-        background: "linear-gradient(to right, #4A148C, #512DA8)",
+        background: "linear-gradient(to right, #4A148C,rgb(235, 195, 50))",
         color: "white",
         padding: "40px 20px",
-        mt: 4,
       }}
     >
       <Grid container spacing={4} justifyContent="center">
