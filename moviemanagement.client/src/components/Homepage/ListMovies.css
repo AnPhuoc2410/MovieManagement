@@ -20,7 +20,7 @@
     border-radius: 10px;
 }
 
-.movie-title {
+.a > .movie-title {
     margin-top: 10px;
     font-weight: bold;
     text-align: center;
@@ -68,4 +68,6 @@
     text-align: center;
     user-select: none; 
 }
+
+
 
