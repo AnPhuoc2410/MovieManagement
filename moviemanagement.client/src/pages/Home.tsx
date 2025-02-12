@@ -15,6 +15,7 @@ const slides = [
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215wx365h_4_.jpg",
   "https://images.squarespace-cdn.com/content/v1/51b3dc8ee4b051b96ceb10de/a528ec50-cc70-46f0-a2e3-31b279594daa/spider-man-across-the-spider-verse-banner-features-an-epic-number-of-spider-people.jpg?format=1500w",
+  "https://www.shmoti.com/ImageFiles/Image_555x271/20250211_Banner_CaptainAmericaSE20250211.jpg",
 ];
 
 const Homepage: React.FC = () => {
@@ -23,7 +24,7 @@ const Homepage: React.FC = () => {
       {/* Header */}
       <Header />
       {/* Swiper Slider */}
-      <Box sx={{ backgroundColor: "#0B0D1A", color: "white", padding: 2 }}>
+      <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pt: 10 }}>
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
           spaceBetween={50}
@@ -32,14 +33,14 @@ const Homepage: React.FC = () => {
           pagination={{ clickable: true }}
           autoplay={{ delay: 3000 }}
           loop={true}
-          style={{ width: "100%", maxHeight: "400px" }}
+          style={{ width: "100%", height: "auto" }}
         >
           {slides.map((slide, index) => (
             <SwiperSlide key={index}>
               <img
                 src={slide}
                 alt={`Slide ${index + 1}`}
-                style={{ width: "100%", borderRadius: "10px" }}
+                style={{ width: "100%", maxHeight: "400px", objectFit: "initial", borderRadius: "10px" }}
               />
             </SwiperSlide>
           ))}

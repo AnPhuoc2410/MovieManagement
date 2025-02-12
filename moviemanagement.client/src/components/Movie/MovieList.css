@@ -1,0 +1,18 @@
+
+.movie-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+
+.movie-link:hover .movie-image {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+.movie-link:hover .movie-title {
+  color: #e67e22;
+}
+
+/* ... existing styles ... */

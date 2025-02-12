@@ -19,8 +19,8 @@ const Header: React.FC = () => {
             display: "inline-flex",
             alignItems: "center",
             textDecoration: "none",
-            cursor: "pointer", // Ensure pointer cursor
-            userSelect: "none" // Prevent text selection
+            cursor: "pointer",
+            userSelect: "none"
           }}
         >
           <Box
@@ -50,15 +50,74 @@ const Header: React.FC = () => {
 
         {/* Right Icons */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Button variant="contained" sx={{ backgroundColor: "#FFD700", color: "black" }}>
-            ĐẶT VÉ NGAY
+          <Button
+            onClick={() => navigate("/")}
+            variant="contained"
+            sx={{
+              position: "relative",
+              overflow: "hidden",
+              bgcolor: "yellow",
+              color: "black",
+              transition: "color 0.5s ease-in-out",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                inset: 0, 
+                background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                transform: "translateX(-100%)", 
+                transition: "transform 0.5s ease-in-out",
+                zIndex: 0
+              },
+              "&:hover": {
+                color: "white" 
+              },
+              "&:hover::before": {
+                transform: "translateX(0)", 
+              },
+              "& span": {
+                position: "relative",
+                zIndex: 1 
+              }
+            }}
+          >
+
+            <span> ĐẶT VÉ</span>
           </Button>
-          <Button variant="contained" sx={{ backgroundColor: "#8A2BE2" }} startIcon={<ShoppingCartIcon />}>
-            ĐẶT BẮP NƯỚC
+          <Button
+            onClick={() => navigate("/")}
+            variant="contained"
+            sx={{
+              position: "relative",
+              overflow: "hidden",
+              bgcolor: "#834bff",
+              color: "white",
+              transition: "color 0.5s ease-in-out",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                inset: 0, 
+                background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                transform: "translateX(-100%)", 
+                transition: "transform 0.5s ease-in-out",
+                zIndex: 0
+              },
+              "&:hover": {
+                color: "black" 
+              },
+              "&:hover::before": {
+                transform: "translateX(0)", 
+              },
+              "& span": {
+                position: "relative",
+                zIndex: 1 
+              }
+            }}
+            startIcon={<ShoppingCartIcon />}>
+            <span>ĐẶT BẮP NƯỚC</span>
           </Button>
           <IconButton color="inherit" onClick={() => navigate("/login")}>
             <AccountCircleIcon />
-          <Typography>Đăng nhập</Typography>
+            <Typography>Đăng nhập</Typography>
           </IconButton>
           <IconButton color="inherit">
             <img src={VietnamFlag} alt="Vietnam Flag" width="25" height="25" />
