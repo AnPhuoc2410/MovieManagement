@@ -7,7 +7,7 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Header from "../components/Homepage/Header";
 import ListMovies from "../components/Homepage/ListMovies";
-import Promotions from "../components/Homepage/Promotions";
+import Promotions from "../components/Homepage/Event";
 import Membership from "../components/Homepage/Membership";
 import Footer from "../components/Homepage/Footer";
 
