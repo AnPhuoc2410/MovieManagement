@@ -1,7 +1,7 @@
 import React from 'react';
-import { Container, Card, CardContent, Typography, CardMedia, Box, Button } from '@mui/material';
-import Header from '../components/Homepage/Header';
-import Footer from '../components/Homepage/Footer';
+import { Container, CardContent, Typography, CardMedia, Box, Button } from '@mui/material';
+import Header from '../../components/Homepage/Header';
+import Footer from '../../components/Homepage/Footer';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router';
 
@@ -80,7 +80,7 @@ const navigate = useNavigate();
                                         </Typography>
                                     <Button variant='contained'
                                     sx={{ bgcolor: "yellow", color: "black", mt: 2 }}
-                                    onClick={() => {navigate("/")}}>Đặt Vé Ngay</Button>
+                                    onClick={() => {navigate(`/promotions/${promotion.id}`)}}>Đặt Vé Ngay</Button>
                                     </CardContent>
                                 </Box>
                                 
