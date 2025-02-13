@@ -1,16 +1,33 @@
 import React from "react";
-import { AppBar, Toolbar, Button, TextField, IconButton, Box, Typography } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  TextField,
+  IconButton,
+  Box,
+  Typography,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import VietnamFlag from '../../assets/vietnam-icon.svg';
+import VietnamFlag from "../../assets/vietnam-icon.svg";
 import { useNavigate } from "react-router";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: "rgb(47, 39, 39)", padding: 1 }}>
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <AppBar
+      position="fixed"
+      sx={{ backgroundColor: "rgb(47, 39, 39)", padding: 1 }}
+    >
+      <Toolbar
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         {/* Logo - Fixed Cursor Issue */}
         <Box
           component="a"
@@ -20,7 +37,7 @@ const Header: React.FC = () => {
             alignItems: "center",
             textDecoration: "none",
             cursor: "pointer",
-            userSelect: "none"
+            userSelect: "none",
           }}
         >
           <Box
@@ -32,7 +49,15 @@ const Header: React.FC = () => {
         </Box>
 
         {/* Search Bar */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexGrow: 1, justifyContent: "center" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            flexGrow: 1,
+            justifyContent: "center",
+          }}
+        >
           <TextField
             variant="outlined"
             size="small"
@@ -62,25 +87,25 @@ const Header: React.FC = () => {
               "&::before": {
                 content: '""',
                 position: "absolute",
-                inset: 0, 
-                background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
-                transform: "translateX(-100%)", 
+                inset: 0,
+                background:
+                  "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                transform: "translateX(-100%)",
                 transition: "transform 0.5s ease-in-out",
-                zIndex: 0
+                zIndex: 0,
               },
               "&:hover": {
-                color: "white" 
+                color: "white",
               },
               "&:hover::before": {
-                transform: "translateX(0)", 
+                transform: "translateX(0)",
               },
               "& span": {
                 position: "relative",
-                zIndex: 1 
-              }
+                zIndex: 1,
+              },
             }}
           >
-
             <span> ĐẶT VÉ</span>
           </Button>
           <Button
@@ -95,27 +120,29 @@ const Header: React.FC = () => {
               "&::before": {
                 content: '""',
                 position: "absolute",
-                inset: 0, 
-                background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
-                transform: "translateX(-100%)", 
+                inset: 0,
+                background:
+                  "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                transform: "translateX(-100%)",
                 transition: "transform 0.5s ease-in-out",
-                zIndex: 0
+                zIndex: 0,
               },
               "&:hover": {
-                color: "black" 
+                color: "black",
               },
               "&:hover::before": {
-                transform: "translateX(0)", 
+                transform: "translateX(0)",
               },
               "& span": {
                 position: "relative",
-                zIndex: 1 
-              }
+                zIndex: 1,
+              },
             }}
-            startIcon={<ShoppingCartIcon />}>
+            startIcon={<ShoppingCartIcon />}
+          >
             <span>ĐẶT BẮP NƯỚC</span>
           </Button>
-          <IconButton color="inherit" onClick={() => navigate("/login")}>
+          <IconButton color="inherit" onClick={() => navigate("/auth")}>
             <AccountCircleIcon />
             <Typography>Đăng nhập</Typography>
           </IconButton>

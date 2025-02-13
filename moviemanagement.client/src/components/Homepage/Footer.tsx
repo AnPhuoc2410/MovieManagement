@@ -21,70 +21,73 @@ const Footer: React.FC = () => {
           <Typography variant="body2" sx={{ mt: 1 }}>
             BE HAPPY, BE A STAR
           </Typography>
-            <Button
-              onClick={() => navigate("/")}
-              variant="contained"
-              sx={{
-                position: "relative",
-                overflow: "hidden",
-                bgcolor: "yellow",
-                color: "black",
-                transition: "color 0.5s ease-in-out",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  inset: 0,
-                  background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
-                  transform: "translateX(-100%)",
-                  transition: "transform 0.5s ease-in-out",
-                  zIndex: 0
-                },
-                "&:hover": {
-                  color: "white"
-                },
-                "&:hover::before": {
-                  transform: "translateX(0)",
-                },
-                "& span": {
-                  position: "relative",
-                  zIndex: 1
-                }
-              }}
-            >
-              <span> ĐẶT VÉ</span>
-            </Button>
-            <Button
-              onClick={() => navigate("/")}
-              variant="contained"
-              sx={{
-                ml: 2,
-                position: "relative",
-                overflow: "hidden",
-                bgcolor: "#834bff",
+          <Button
+            onClick={() => navigate("/")}
+            variant="contained"
+            sx={{
+              position: "relative",
+              overflow: "hidden",
+              bgcolor: "yellow",
+              color: "black",
+              transition: "color 0.5s ease-in-out",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                transform: "translateX(-100%)",
+                transition: "transform 0.5s ease-in-out",
+                zIndex: 0,
+              },
+              "&:hover": {
                 color: "white",
-                transition: "color 0.5s ease-in-out",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  inset: 0,
-                  background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
-                  transform: "translateX(-100%)",
-                  transition: "transform 0.5s ease-in-out",
-                  zIndex: 0
-                },
-                "&:hover": {
-                  color: "black"
-                },
-                "&:hover::before": {
-                  transform: "translateX(0)",
-                },
-                "& span": {
-                  position: "relative",
-                  zIndex: 1
-                }
-              }}>
-              <span>ĐẶT BẮP NƯỚC</span>
-            </Button>
+              },
+              "&:hover::before": {
+                transform: "translateX(0)",
+              },
+              "& span": {
+                position: "relative",
+                zIndex: 1,
+              },
+            }}
+          >
+            <span> ĐẶT VÉ</span>
+          </Button>
+          <Button
+            onClick={() => navigate("/")}
+            variant="contained"
+            sx={{
+              ml: 2,
+              position: "relative",
+              overflow: "hidden",
+              bgcolor: "#834bff",
+              color: "white",
+              transition: "color 0.5s ease-in-out",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                transform: "translateX(-100%)",
+                transition: "transform 0.5s ease-in-out",
+                zIndex: 0,
+              },
+              "&:hover": {
+                color: "black",
+              },
+              "&:hover::before": {
+                transform: "translateX(0)",
+              },
+              "& span": {
+                position: "relative",
+                zIndex: 1,
+              },
+            }}
+          >
+            <span>ĐẶT BẮP NƯỚC</span>
+          </Button>
           <Box sx={{ mt: 2 }}>
             <Link href="#" color="inherit" sx={{ mx: 1 }}>
               Facebook
