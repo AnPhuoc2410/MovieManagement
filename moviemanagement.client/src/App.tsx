@@ -5,6 +5,9 @@ import Home from "./pages/Home";
 import Promotion from "./pages/promotion/Promotion";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
 import Ticket from "./pages/ticket/Ticket";
+import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
+import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
+import MovieDetail from './components/Movie/MovieDetail';
 
 const App = () => {
   return (
@@ -16,6 +19,11 @@ const App = () => {
           <Route path="/promotions" element={<Promotion />} />
           <Route path="/promotions/:id" element={<PromotionDetail />} />
           <Route path="/ticket/:id" element={<Ticket />} />
+          <Route path="/movies" >
+            <Route path="now-showing" element={<NowShowingMoviesPage />} />
+            <Route path="up-coming" element={<UpComingMoviesPage />} />
+          </Route>
+          <Route path="/movie/:id" element={<MovieDetail />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
