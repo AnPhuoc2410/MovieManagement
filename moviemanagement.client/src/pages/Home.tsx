@@ -1,4 +1,11 @@
-import { Box, Button, Container, MenuItem, Select, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  MenuItem,
+  Select,
+  Typography,
+} from "@mui/material";
 import React from "react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -20,7 +27,9 @@ const slides = [
 
 const Homepage: React.FC = () => {
   return (
-    <Box sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}>
+    <Box
+      sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
+    >
       {/* Header */}
       <Header />
       {/* Swiper Slider */}
@@ -40,7 +49,12 @@ const Homepage: React.FC = () => {
               <img
                 src={slide}
                 alt={`Slide ${index + 1}`}
-                style={{ width: "100%", maxHeight: "400px", objectFit: "initial", borderRadius: "10px" }}
+                style={{
+                  width: "100%",
+                  maxHeight: "400px",
+                  objectFit: "initial",
+                  borderRadius: "10px",
+                }}
               />
             </SwiperSlide>
           ))}
@@ -49,22 +63,55 @@ const Homepage: React.FC = () => {
 
       {/* Main Content */}
       <Container sx={{ mt: 4 }}>
-        <Box sx={{ textAlign: "center", backgroundColor: "#1A1C2A", padding: 2, borderRadius: 2 }}>
-          <Typography variant="h5" fontWeight="bold">ĐẶT VÉ NHANH</Typography>
-          <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}>
-            <Select variant="outlined" displayEmpty size="small" sx={{ backgroundColor: "white" }}>
+        <Box
+          sx={{
+            textAlign: "center",
+            backgroundColor: "#1A1C2A",
+            padding: 2,
+            borderRadius: 2,
+          }}
+        >
+          <Typography variant="h5" fontWeight="bold">
+            ĐẶT VÉ NHANH
+          </Typography>
+          <Box
+            sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}
+          >
+            <Select
+              variant="outlined"
+              displayEmpty
+              size="small"
+              sx={{ backgroundColor: "white" }}
+            >
               <MenuItem disabled>1. Chọn Rạp</MenuItem>
             </Select>
-            <Select variant="outlined" displayEmpty size="small" sx={{ backgroundColor: "white" }}>
+            <Select
+              variant="outlined"
+              displayEmpty
+              size="small"
+              sx={{ backgroundColor: "white" }}
+            >
               <MenuItem disabled>2. Chọn Phim</MenuItem>
             </Select>
-            <Select variant="outlined" displayEmpty size="small" sx={{ backgroundColor: "white" }}>
+            <Select
+              variant="outlined"
+              displayEmpty
+              size="small"
+              sx={{ backgroundColor: "white" }}
+            >
               <MenuItem disabled>3. Chọn Ngày</MenuItem>
             </Select>
-            <Select variant="outlined" displayEmpty size="small" sx={{ backgroundColor: "white" }}>
+            <Select
+              variant="outlined"
+              displayEmpty
+              size="small"
+              sx={{ backgroundColor: "white" }}
+            >
               <MenuItem disabled>4. Chọn Suất</MenuItem>
             </Select>
-            <Button variant="contained" color="secondary">ĐẶT NGAY</Button>
+            <Button variant="contained" color="secondary">
+              ĐẶT NGAY
+            </Button>
           </Box>
         </Box>
         <ListMovies />
@@ -76,7 +123,6 @@ const Homepage: React.FC = () => {
 
       {/* Footer */}
       <Footer />
-
     </Box>
   );
 };
