@@ -1,20 +1,18 @@
-import React, { Component } from 'react'
-import ShowTime from '../../components/ticket/ShowTime'
-import ListCinema from  '../../components/ticket/ListCinema'
-import Header from '../../components/home/Header'
-import Footer from '../../components/home/Footer'
-import MovieDetail from '../../components/movie/MovieDetail'
+import Footer from "../../components/home/Footer";
+import Header from "../../components/home/Header";
+import MovieDetail from "../../components/Movie/MovieDetail";
+import ListCinema from "../../components/Ticket/ListCinema";
+import ShowTime from "../../components/Ticket/ShowTime";
+const Ticket = () => {
+  return (
+    <>
+      <Header />
+      <MovieDetail />
+      <ShowTime />
+      <ListCinema />
+      <Footer />
+    </>
+  );
+};
 
-export default class Ticket extends Component {
-  render() {
-    return (
-        <>
-        <Header />
-        <MovieDetail />
-        <ShowTime />
-        <ListCinema />
-        <Footer />
-        </>
-    )
-  }
-}
+export default Ticket;

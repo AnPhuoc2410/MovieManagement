@@ -1,20 +1,18 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Chip,
-  Button,
-  Modal,
-} from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import TranslateIcon from "@mui/icons-material/Translate";
-import { useParams } from "react-router-dom";
-import MovieList from "./MovieList";
+import {
+  Box,
+  Button,
+  Chip,
+  Container,
+  Grid,
+  Modal,
+  Typography,
+} from "@mui/material";
+import React, { useState } from "react";
 
-const MovieDetail = () => {
+const MovieDetail: React.FC = () => {
   const [openTrailer, setOpenTrailer] = useState(false);
 
   // const { id } = useParams();
@@ -205,7 +203,6 @@ const MovieDetail = () => {
           alignItems: "center",
           justifyContent: "center",
           bgcolor: "rgba(61, 14, 97, 0.95)",
-          
         }}
       >
         <Box

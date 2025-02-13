@@ -1,15 +1,14 @@
 import { BrowserRouter, Route, Routes } from "react-router";
+import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "./contexts/AuthContext";
 import AuthContainer from "./pages/auth/AuthContainer";
 import Home from "./pages/Home";
+import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
+import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
 import Promotion from "./pages/promotion/Promotion";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
 import Ticket from "./pages/ticket/Ticket";
-import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
-import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
 import UserDetail from "./pages/user/UserDetail";
-import MovieDetail from "./components/movie/MovieDetail";
-import { ToastContainer } from "react-toastify";
 
 const App = () => {
   return (
