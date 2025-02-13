@@ -12,7 +12,6 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import TranslateIcon from "@mui/icons-material/Translate";
 import { useParams } from "react-router-dom";
-import Header from "../Homepage/Header";
 import MovieList from "./MovieList";
 
 const MovieDetail = () => {
@@ -44,7 +43,6 @@ const MovieDetail = () => {
     <Box
       sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
     >
-      <Header />
       <Container maxWidth="lg" sx={{ mt: 13, color: "white" }}>
         <Grid container spacing={4} sx={{ alignItems: "stretch" }}>
           {/* Movie Poster */}
