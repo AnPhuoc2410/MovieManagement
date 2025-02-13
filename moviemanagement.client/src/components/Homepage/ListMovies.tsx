@@ -96,7 +96,7 @@ const upcomingMovies = [
   },
 ];
 
-const MovieSlider = ({ movies, title }: { movies: any[]; title: string }) => {
+const MovieSlider = ({ movies, title, navigateTo }: { movies: any[]; title: string; navigateTo: string }) => {
   const navigate = useNavigate();
   return (
     <Container sx={{ mt: 4, textAlign: "center" }}>
@@ -124,11 +124,7 @@ const MovieSlider = ({ movies, title }: { movies: any[]; title: string }) => {
               <Typography variant="h6" className="movie-title">
                 {movie.title}
               </Typography>
-              <Button
-                variant="contained"
-                color="warning"
-                className="book-button"
-              >
+              <Button variant="contained" color="warning" className="book-button" onClick={() => navigate(`/ticket/${index}`)}>
                 ĐẶT VÉ
               </Button>
             </Box>
@@ -136,7 +132,7 @@ const MovieSlider = ({ movies, title }: { movies: any[]; title: string }) => {
         ))}
       </Swiper>
       <Button
-        onClick={() => navigate("/")}
+        onClick={() => navigate(navigateTo)}
         variant="contained"
         sx={{
           mt: 2,
@@ -177,10 +173,10 @@ const ListMovies: React.FC = () => {
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", color: "white" }}>
       {/* Now Showing Section */}
-      <MovieSlider movies={nowShowingMovies} title="PHIM ĐANG CHIẾU" />
+      <MovieSlider movies={nowShowingMovies} title="PHIM ĐANG CHIẾU" navigateTo="/movies/now-showing" />
 
       {/* Upcoming Movies Section */}
-      <MovieSlider movies={upcomingMovies} title="PHIM SẮP CHIẾU" />
+      <MovieSlider movies={upcomingMovies} title="PHIM SẮP CHIẾU" navigateTo="/movies/up-coming"/>
     </Box>
   );
 };

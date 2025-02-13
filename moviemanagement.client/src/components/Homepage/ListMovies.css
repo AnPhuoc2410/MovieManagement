@@ -20,10 +20,10 @@
   border-radius: 10px;
 }
 
-.movie-title {
-  margin-top: 10px;
-  font-weight: bold;
-  text-align: center;
+.a > .movie-title {
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center;
 }
 
 .book-button {
