@@ -7,6 +7,9 @@ import PromotionDetail from "./pages/promotion/PromotionDetail";
 import Ticket from "./pages/ticket/Ticket";
 import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
 import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
+import UserDetail from "./pages/user/UserDetail";
+import MovieDetail from "./components/movie/MovieDetail";
+import { ToastContainer } from "react-toastify";
 
 const App = () => {
   return (
@@ -18,12 +21,16 @@ const App = () => {
           <Route path="/promotions" element={<Promotion />} />
           <Route path="/promotions/:id" element={<PromotionDetail />} />
           <Route path="/ticket/:id" element={<Ticket />} />
-          <Route path="/movies" >
+          <Route path="/users">
+            <Route path="profile/:userId" element={<UserDetail />} />
+          </Route>
+          <Route path="/movies">
             <Route path="now-showing" element={<NowShowingMoviesPage />} />
             <Route path="up-coming" element={<UpComingMoviesPage />} />
           </Route>
         </Routes>
       </AuthProvider>
+      <ToastContainer />
     </BrowserRouter>
   );
 };
