@@ -49,7 +49,7 @@ const Promotions: React.FC = () => {
                 ))}
             </Swiper>
             <Button
-                            onClick={() => navigate("/")}
+                            onClick={() => {navigate("/promotions");}}
                             variant="contained"
                             sx={{
                                 mt: 2,
