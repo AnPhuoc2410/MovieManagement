@@ -1,13 +1,13 @@
 import React from "react";
 import MovieList from "../../components/Movie/MovieList";
 import { Box } from "@mui/material";
-import Header from "../../components/Homepage/Header";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import Footer from "../../components/Homepage/Footer";
+import Header from "../../components/home/Header";
+import Footer from "../../components/home/Footer";
 
 const slides = [
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",

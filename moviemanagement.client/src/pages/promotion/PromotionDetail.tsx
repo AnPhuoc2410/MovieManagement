@@ -9,8 +9,8 @@ import {
   Button,
   Grid,
 } from "@mui/material";
-import Header from "../../components/Homepage/Header";
-import Footer from "../../components/Homepage/Footer";
+import Header from "../../components/home/Header";
+import Footer from "../../components/home/Footer";
 import { useParams } from "react-router";
 
 const PromotionDetail: React.FC = () => {

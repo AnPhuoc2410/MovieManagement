@@ -12,11 +12,12 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import Header from "../components/Homepage/Header";
-import ListMovies from "../components/Homepage/ListMovies";
-import Promotions from "../components/Homepage/Event";
-import Membership from "../components/Homepage/Membership";
-import Footer from "../components/Homepage/Footer";
+import Header from "../components/home/Header";
+import Footer from "../components/home/Footer";
+import ListMovies from "../components/home/ListMovies";
+import Promotions from "../components/home/Event";
+import Membership from "../components/home/Membership";
+
 
 const slides = [
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",
