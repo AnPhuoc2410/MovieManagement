@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieManagement.Server.Models.Entities
 {
-    [Table("NHANVIEN")]
-    public class NhanVien
+    [Table("THANHVIEN")]
+    public class ThanhVien
     {
         [Key]
         [Column(TypeName = "varchar(10)")]
-        public string MaNhanVien { get; set; }  // PK
+        public string MaNhanVien { get; set; }
 
         [Column(TypeName = "varchar(20)")]
         public string TenTaiKhoan { get; set; }
@@ -41,11 +41,9 @@ namespace MovieManagement.Server.Models.Entities
         [Column(TypeName = "nvarchar(50)")]
         public string DiaChi { get; set; }
 
-        public int TrangThai { get; set; } // 0: Khóa, 1: Mở
+        [Column(TypeName = "numeric(10,2)")]
+        public decimal DiemTichLuy { get; set; }
 
-        public int CapDo { get; set; }
-
-        // Quan hệ 1-N với HoaDonBanVe
-        public ICollection<HoaDonBanVe> HoaDonBanVes { get; set; }
+        public int TrangThai { get; set; } // 0: Khóa tài khoản, 1: Đã xác nhận.
     }
 }

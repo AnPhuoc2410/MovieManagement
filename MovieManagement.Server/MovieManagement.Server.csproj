@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
     <Folder Include="Responses\" />
     <Folder Include="Services\" />
   </ItemGroup>
