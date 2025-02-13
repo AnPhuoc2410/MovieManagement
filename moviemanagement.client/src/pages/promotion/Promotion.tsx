@@ -7,8 +7,8 @@ import {
   Box,
   Button,
 } from "@mui/material";
-import Header from "../../components/Homepage/Header";
-import Footer from "../../components/Homepage/Footer";
+import Header from "../../components/home/Header";
+import Footer from "../../components/home/Footer";
 import Grid from "@mui/material/Grid";
 import { useNavigate } from "react-router";
 
