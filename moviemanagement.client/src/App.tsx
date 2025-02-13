@@ -28,7 +28,6 @@ const App = () => {
             <Route path="now-showing" element={<NowShowingMoviesPage />} />
             <Route path="up-coming" element={<UpComingMoviesPage />} />
           </Route>
-          <Route path="/movie/:id" element={<MovieDetail />} />
         </Routes>
       </AuthProvider>
       <ToastContainer />
