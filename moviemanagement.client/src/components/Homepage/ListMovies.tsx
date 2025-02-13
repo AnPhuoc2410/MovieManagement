@@ -124,11 +124,7 @@ const MovieSlider = ({ movies, title }: { movies: any[]; title: string }) => {
               <Typography variant="h6" className="movie-title">
                 {movie.title}
               </Typography>
-              <Button
-                variant="contained"
-                color="warning"
-                className="book-button"
-              >
+              <Button variant="contained" color="warning" className="book-button" onClick={() => navigate(`/ticket/${index}`)}>
                 ĐẶT VÉ
               </Button>
             </Box>
