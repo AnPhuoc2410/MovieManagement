@@ -4,25 +4,20 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import * as yup from "yup";
-import { login, register } from "../../apis/auth.apis";
-import { routeUserToEachPage } from "../../components/auth/RoleBasedRoute";
+import { register } from "../../apis/auth.apis";
 import CheckboxField from "../../components/forms/CheckboxField";
+import FancyFormField from "../../components/shared/FancyFormField";
 import { ROUTING_PATH } from "../../constants/endPoints";
-import {
-  GENERAL_TOAST_MESSAGE,
-  OTP_TOAST_MESSAGE,
-} from "../../constants/message";
-import { emailRegex } from "../../constants/regex";
+import { GENERAL_TOAST_MESSAGE } from "../../constants/message";
 import { useAuth } from "../../contexts/AuthContext";
+import { SampleMemberProfiles } from "../../data/user.data";
 import { LoginDTO, UserRegisterDTO } from "../../types/users.type";
+import { extractErrorMessage } from "../../utils/errors.utils";
 import {
   loginValidationSchema,
   registerValidationSchema,
 } from "../../utils/validation.utils";
 import styles from "./styles.module.css";
-import { sendOtpForgotPassword } from "../../apis/otp.apis";
-import FancyFormField from "../../components/shared/FancyFormField";
 
 const LoginForm = () => {
   const { authLogin } = useAuth();
@@ -42,56 +37,29 @@ const LoginForm = () => {
     },
   });
 
-  const handleForgotPassword = async () => {
-    const email = getValues("email");
-    if (
-      !email ||
-      !emailRegex.test(email) ||
-      !(await yup.string().email().isValid(email))
-    ) {
-      toast.error(
-        GENERAL_TOAST_MESSAGE.PLEASE_ENTER_VALID_EMAIL_TO_FORGOT_PASSWORD,
-      );
-      return;
-    }
-
-    try {
-      const response = await sendOtpForgotPassword(email);
-      if (response.status === 200) {
-        navigate(ROUTING_PATH.OTP_VERIFICATION, {
-          state: {
-            email,
-            from: "login",
-            statusCode: 200,
-          },
-        });
-      } else {
-        toast.error(OTP_TOAST_MESSAGE.FAILED_TO_SEND_OTP);
-      }
-    } catch (error) {
-      toast.error(GENERAL_TOAST_MESSAGE.UNEXPECTED_ERROR);
-    }
-  };
-
   const onSubmit = async (data: LoginDTO) => {
-    try {
-      const response = await login(data);
+    const user = { ...data };
+    for (let i = 0; i < SampleMemberProfiles.length; i++) {
+      if (
+        user.email === SampleMemberProfiles[i].Email &&
+        user.password === SampleMemberProfiles[i].MatKhau
+      ) {
+        const foundUser = SampleMemberProfiles[i];
 
-      if (response) {
-        authLogin({
-          token: response.token,
-          roles: response.roles,
-          id: response.id,
-          username: response.username,
-          refresh_token: response.refresh_token,
-        });
-        toast.success(GENERAL_TOAST_MESSAGE.LOGIN_SUCCESSFULLY);
-        setTimeout(() => {
-          navigate(routeUserToEachPage(response.roles[0]));
-        }, 2000);
+        try {
+          toast.success("Login successfully!");
+          setTimeout(() => {
+            navigate(`/users/profile/${foundUser.MaThanhVien}`);
+          }, 2000);
+        } catch (error) {
+          const errorMessage = extractErrorMessage(
+            error,
+            "An error occurred during login",
+          );
+          toast.error(errorMessage);
+        }
+        return;
       }
-    } catch (error) {
-      toast.error(GENERAL_TOAST_MESSAGE.WRONG_EMAIL_OR_PASSWORD);
     }
   };
 
@@ -115,7 +83,9 @@ const LoginForm = () => {
       <div className="flex justify-between items-center w-full">
         <button
           type="button"
-          onClick={handleForgotPassword}
+          onClick={() => {
+            alert("This feature is not available yet");
+          }}
           className="text-sm text-blue-500 hover:text-blue-700 transition-colors duration-200"
         >
           Forgot password?

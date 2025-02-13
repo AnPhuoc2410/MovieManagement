@@ -1,23 +1,20 @@
 import { Role } from "./roles.type";
 
 export type UserBase = {
-  id: number;
-  first_name: string;
-  last_name: string;
-  phone_number: string | null;
-  email: string;
-  address: string;
-  password: string | null;
-  is_active: number;
-  is_subscription: number;
-  status_name: UserStatus;
-  date_of_birth: string;
-  avatar_url: string;
-  google_account_id: number;
-  role_name: "MEMBER" | "STAFF" | "MANAGER";
-  account_balance: number;
-  created_at: string;
-  updated_at: string;
+  MaThanhVien: string;
+  TaiKhoan: string;
+  MatKhau: string;
+  NgayThamGia: Date;
+  AnhDaiDien: string;
+  HoTen: string;
+  NgaySinh: string;
+  GioiTinh: number;
+  CMND: string;
+  Email: string;
+  SoDienThoai: string;
+  DiaChi: string;
+  DiemTichLuy: number;
+  TrangThai: number;
 };
 
 export type LoginDTO = {
