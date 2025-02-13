@@ -17,9 +17,11 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
+        working-directory: moviemanagement.client  # Change directory
         run: npm install
 
       - name: Build the project
+        working-directory: moviemanagement.client  # Change directory
         run: npm run build
 
       - name: Deploy to Production Repo
@@ -46,8 +48,8 @@ jobs:
           # Remove existing dist folder in production repo (if it exists)
           rm -rf production-repo/dist
 
-          # Copy new dist folder
-          cp -r dist production-repo/
+          # Copy new dist folder from moviemanagement.client to production repo
+          cp -r moviemanagement.client/dist production-repo/
 
           # Commit and push changes
           cd production-repo
