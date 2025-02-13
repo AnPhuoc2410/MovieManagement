@@ -48,9 +48,40 @@ const Promotions: React.FC = () => {
                     </SwiperSlide>
                 ))}
             </Swiper>
-            <Button onClick={() => {navigate("/promotions");}} variant="contained" color="warning" sx={{ mt: 2 }}>
-                TẤT CẢ ƯU ĐÃI
-            </Button>
+            <Button
+                            onClick={() => {navigate("/promotions");}}
+                            variant="contained"
+                            sx={{
+                                mt: 2,
+                                position: "relative",
+                                overflow: "hidden",
+                                bgcolor: "transparent",
+                                border: "2px solid yellow",
+                                color: "yellow",
+                                transition: "color 0.5s ease-in-out",
+                                "&::before": {
+                                    content: '""',
+                                    position: "absolute",
+                                    inset: 0, 
+                                    background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                                    transform: "translateX(-100%)", 
+                                    transition: "transform 0.5s ease-in-out",
+                                    zIndex: 0
+                                },
+                                "&:hover": {
+                                    color: "white" 
+                                },
+                                "&:hover::before": {
+                                    transform: "translateX(0)", 
+                                },
+                                "& span": {
+                                    position: "relative",
+                                    zIndex: 1 
+                                }
+                            }}
+                        >
+                            <span>TẤT CẢ ƯU ĐÃI</span>
+                        </Button>
         </Container>
     );
 };

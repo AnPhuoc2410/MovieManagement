@@ -6,6 +6,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "./ListMovies.css";
+import "../../index.scss";
+import { useNavigate } from "react-router";
 
 const nowShowingMovies = [
     {
@@ -52,8 +54,8 @@ const upcomingMovies = [
         image: "https://th.bing.com/th/id/OIP.uK0O7q8JA30sKMuwOrAsdQHaLN?rs=1&pid=ImgDetMain",
     },
     {
-        title: "Pokemon Collection 22 (T16)",
-        image: "https://i.ebayimg.com/images/g/la0AAOSwGKJf8y5s/s-l1600.jpg",
+        title: "Captain America: Brave New World (T18)",
+        image: "https://d2oi1rqwb0pj00.cloudfront.net/challenge/nio_1739276625112_100.webp",
     },
     {
         title: "Pokemon Heros The Movie (T16)",
@@ -81,39 +83,77 @@ const upcomingMovies = [
     },
 ];
 
-const MovieSlider = ({ movies, title }: { movies: any[]; title: string }) => (
-    <Container sx={{ mt: 4, textAlign: "center" }}>
-        <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
-            {title}
-        </Typography>
-        <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            spaceBetween={20}
-            slidesPerView={4}
-            navigation
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 3000 }}
-            loop
-            style={{ width: "100%", paddingBottom: "20px" }}
-        >
-            {movies.map((movie, index) => (
-                <SwiperSlide key={index}>
-                    <Box className="movie-card">
-                        <img src={movie.image} alt={movie.title} className="movie-image" />
-                        <Typography variant="h6" className="movie-title">{movie.title}</Typography>
-                        <Button variant="contained" color="warning" className="book-button">
-                            ĐẶT VÉ
-                        </Button>
-                    </Box>
-                </SwiperSlide>
-            ))}
-        </Swiper>
-    </Container>
-);
+const MovieSlider = ({ movies, title }: { movies: any[]; title: string }) => {
+    const navigate = useNavigate();
+    return (
+        <Container sx={{ mt: 4, textAlign: "center" }}>
+            <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
+                {title}
+            </Typography>
+            <Swiper
+                modules={[Navigation, Pagination, Autoplay]}
+                spaceBetween={20}
+                slidesPerView={4}
+                navigation
+                pagination={{ clickable: true }}
+                autoplay={{ delay: 3000 }}
+                loop
+                style={{ width: "100%", paddingBottom: "20px" }}
+            >
+                {movies.map((movie, index) => (
+                    <SwiperSlide key={index}>
+                        <Box className="movie-card">
+                            <img src={movie.image} alt={movie.title} className="movie-image" />
+                            <Typography variant="h6" className="movie-title">{movie.title}</Typography>
+                            <Button variant="contained" color="warning" className="book-button">
+                                ĐẶT VÉ
+                            </Button>
+                        </Box>
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+            <Button
+                onClick={() => navigate("/")}
+                variant="contained"
+                sx={{
+                    mt: 2,
+                    position: "relative",
+                    overflow: "hidden",
+                    bgcolor: "transparent",
+                    border: "2px solid yellow",
+                    color: "yellow",
+                    transition: "color 0.5s ease-in-out",
+                    "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        inset: 0, 
+                        background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                        transform: "translateX(-100%)", 
+                        transition: "transform 0.5s ease-in-out",
+                        zIndex: 0
+                    },
+                    "&:hover": {
+                        color: "white" 
+                    },
+                    "&:hover::before": {
+                        transform: "translateX(0)", 
+                    },
+                    "& span": {
+                        position: "relative",
+                        zIndex: 1 
+                    }
+                }}
+            >
+                <span>XEM THÊM</span>
+            </Button>
+
+        </Container>
+    );
+};
 
 const ListMovies: React.FC = () => {
     return (
-        <Box sx={{ backgroundColor: "#0B0D1A", color: "white"}}>
+        <Box sx={{ backgroundColor: "#0B0D1A", color: "white" }}>
             {/* Now Showing Section */}
             <MovieSlider movies={nowShowingMovies} title="PHIM ĐANG CHIẾU" />
 
