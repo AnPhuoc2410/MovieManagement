@@ -3,16 +3,16 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace MovieManagement.Server.Models.Entities
 {
-    [Table("XUATCHIEU")]
-    public class XuatChieuPhim
+    [Table("SHOWTIME")]
+    public class Showtime
     {
         [Key, Column(Order = 0)]
-        public int MaPhim { get; set; }
+        public int MovieId { get; set; }
 
         [Key, Column(Order = 1)]
-        public TimeSpan XuatChieu { get; set; }
+        public TimeSpan StartTime { get; set; }
 
-        [ForeignKey("MaPhim")]
-        public virtual Phim Phim { get; set; }
+        [ForeignKey("MovieId")]
+        public virtual Movie Movie { get; set; }
     }
 }

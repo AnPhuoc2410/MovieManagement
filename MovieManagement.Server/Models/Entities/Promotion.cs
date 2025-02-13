@@ -4,23 +4,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieManagement.Server.Models.Entities
 {
-    [Table("KHUYENMAI")]
-    public class KhuyenMai
+    [Table("PROMOTION")]
+    public class Promotion
     {
         [Key]
         [Column(TypeName = "varchar(10)")]
-        public string MaKhuyenMai { get; set; }
+        public string PromotionId { get; set; }
 
         [Column(TypeName = "nvarchar(50)")]
-        public string HinhAnh { get; set; }
+        public string Image { get; set; }
 
-        public DateTime TuNgay { get; set; }
+        public DateTime FromDate { get; set; }
 
-        public DateTime DenNgay { get; set; }
+        public DateTime ToDate { get; set; }
 
-        public decimal GiamGiaVe { get; set; }
+        public decimal Discount { get; set; }
 
         [Column(TypeName = "nvarchar(500)")]
-        public string NoiDung { get; set; }
+        public string Content { get; set; }
     }
 }

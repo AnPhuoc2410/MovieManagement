@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieManagement.Server.Models.Entities
 {
-    [Table("THELOAI")]
-    public class TheLoai
+    [Table("CATEGORY")]
+    public class Category
     {
         [Key]
-        public int MaTheLoai { get; set; }
+        public int CategoryId { get; set; }
 
         [Column(TypeName = "nvarchar(20)")]
-        public string TenTheLoai { get; set; }
+        public string Name { get; set; }
     }
 }

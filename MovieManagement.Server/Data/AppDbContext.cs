@@ -8,26 +8,26 @@ namespace MovieManagement.Server.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<NhanVien> NhanViens { get; set; }
-        public DbSet<ThanhVien> ThanhViens { get; set; }
-        public DbSet<KhuyenMai> KhuyenMais { get; set; }
-        public DbSet<HoaDonBanVe> HoaDonBanVes { get; set; }
-        public DbSet<ChiTietBanVe> ChiTietBanVes { get; set; }
-        public DbSet<Ghe> Ghes { get; set; }
-        public DbSet<PhongChieu> PhongChieus { get; set; }
-        //public DbSet<XuatChieu> XuatChieus { get; set; }
-        public DbSet<Phim> Phims { get; set; }
-        public DbSet<TheLoai> TheLoais { get; set; }
-        public DbSet<ChiTietTheLoai> ChiTietTheLoais { get; set; }
-        //public DbSet<GiaVe> GiaVes { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Member> Members { get; set; }
+        public DbSet<Promotion> Promotions { get; set; }
+        public DbSet<Bill> Bills { get; set; }
+        public DbSet<TicketDetail> TicketDetails { get; set; }
+        public DbSet<Seat> Seats { get; set; }
+        public DbSet<Room> Rooms { get; set; }
+        //public DbSet<Showtime> Showtimes { get; set; }
+        public DbSet<Movie> Movies { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<CategoryDetail> CategoryDetails { get; set; }
+        public DbSet<TicketType> TicketTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ChiTietBanVe>()
-                .HasKey(ct => new { ct.MaHoaDon, ct.MaGhe });
+            modelBuilder.Entity<TicketDetail>()
+                .HasKey(ct => new { ct.BillId, ct.SeatId });
 
-            modelBuilder.Entity<ChiTietTheLoai>()
-                .HasKey(ct => new { ct.MaPhim, ct.MaTheLoai });
+            modelBuilder.Entity<CategoryDetail>()
+                .HasKey(ct => new { ct.MovieId, ct.CategoryId });
 
             base.OnModelCreating(modelBuilder);
             // Configure relationships if needed
