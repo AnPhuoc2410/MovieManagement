@@ -15,11 +15,11 @@ namespace MovieManagement.Server.Data
         public DbSet<ChiTietBanVe> ChiTietBanVes { get; set; }
         public DbSet<Ghe> Ghes { get; set; }
         public DbSet<PhongChieu> PhongChieus { get; set; }
-        public DbSet<XuatChieu> XuatChieus { get; set; }
+        //public DbSet<XuatChieu> XuatChieus { get; set; }
         public DbSet<Phim> Phims { get; set; }
         public DbSet<TheLoai> TheLoais { get; set; }
         public DbSet<ChiTietTheLoai> ChiTietTheLoais { get; set; }
-        public DbSet<GiaVe> GiaVes { get; set; }
+        //public DbSet<GiaVe> GiaVes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
