@@ -19,7 +19,7 @@ const ListCinema: React.FC = () => {
                 {/* Title and Location Selection (Same Row) */}
                 <Grid container alignItems="center" justifyContent="space-between" mb={3}>
                     <Grid item>
-                        <Typography variant="h4" fontWeight="bold">
+                        <Typography variant="h4" fontWeight="bold" fontFamily={"JetBrains Mono"}>
                             🎬 DANH SÁCH RẠP
                         </Typography>
                     </Grid>
@@ -107,10 +107,10 @@ const CinemaCard: React.FC<{
     return (
         <Card sx={{ backgroundColor: "rgb(165, 50, 231)", color: "white", borderRadius: "12px", p: 2, mb: 2 }}>
             <CardContent>
-                <Typography variant="h6" fontWeight="bold" color="yellow">
+                <Typography variant="h6" fontWeight="bold" color="yellow" mb={1} fontFamily={"JetBrains Mono"}>
                     {name}
                 </Typography>
-                <Typography variant="body2" mb={2}>
+                <Typography variant="body2" mb={2} fontFamily={"JetBrains Mono"}>
                     {address}
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>

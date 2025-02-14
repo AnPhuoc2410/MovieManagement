@@ -22,7 +22,8 @@ const ShowTime: React.FC = () => {
                 <Typography 
                     variant="h4" 
                     fontWeight="bold" 
-                    textAlign="center" 
+                    textAlign="center"
+                    fontFamily={"JetBrains Mono"}
                     mb={2}
                     mt={2} 
                     sx={{ letterSpacing: "1px", textTransform: "uppercase" }}
@@ -63,7 +64,7 @@ const ShowTime: React.FC = () => {
                             }}
                         >
                             <Box textAlign="center">
-                                <Typography variant="h6" fontWeight="bold">
+                                <Typography variant="h6" fontWeight="bold" mb={1} fontFamily={"JetBrains Mono"}>
                                     {day.formatted}
                                 </Typography>
                                 <Typography variant="body2">{day.label}</Typography>
