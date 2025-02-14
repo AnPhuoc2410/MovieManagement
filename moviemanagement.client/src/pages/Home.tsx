@@ -23,7 +23,10 @@ const slides = [
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215wx365h_4_.jpg",
   "https://images.squarespace-cdn.com/content/v1/51b3dc8ee4b051b96ceb10de/a528ec50-cc70-46f0-a2e3-31b279594daa/spider-man-across-the-spider-verse-banner-features-an-epic-number-of-spider-people.jpg?format=1500w",
-  "https://www.shmoti.com/ImageFiles/Image_555x271/20250211_Banner_CaptainAmericaSE20250211.jpg",
+  "https://www.bhdstar.vn/wp-content/uploads/2024/12/Captain-America.jpg",
+  "https://www.bhdstar.vn/wp-content/uploads/2025/02/referenceSchemeHeadOfficeallowPlaceHoldertrueheight1069ldapp.jpg",
+  
+
 ];
 
 const Homepage: React.FC = () => {

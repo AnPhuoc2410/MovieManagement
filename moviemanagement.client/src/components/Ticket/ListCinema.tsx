@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { 
-    Container, Card, CardContent, Typography, Button, 
-    Box, Grid, MenuItem, FormControl, Select 
+import {
+    Container, Card, CardContent, Typography, Button,
+    Box, Grid, MenuItem, FormControl, Select
 } from "@mui/material";
 
 const ListCinema: React.FC = () => {
@@ -19,7 +19,7 @@ const ListCinema: React.FC = () => {
                 {/* Title and Location Selection (Same Row) */}
                 <Grid container alignItems="center" justifyContent="space-between" mb={3}>
                     <Grid item>
-                        <Typography variant="h3" fontWeight="bold">
+                        <Typography variant="h4" fontWeight="bold">
                             🎬 DANH SÁCH RẠP
                         </Typography>
                     </Grid>
@@ -30,36 +30,41 @@ const ListCinema: React.FC = () => {
                                 onChange={handleCityChange}
                                 displayEmpty
                                 variant="outlined"
-                            sx={{
-                                borderColor: "yellow",
-                                color: "black",
-                                fontWeight: "bold",
-                                fontSize: "16px",
-                                borderRadius: "12px",
-                                px: 3,
-                                 backgroundColor: "yellow",
-                            }}
+                                sx={{
+                                    border: "2px solid yellow",
+                                    color: "yellow",
+                                    alignItems: "center",
+                                    fontWeight: "bold",
+                                    fontSize: "15px",
+                                    borderRadius: "10px",
+                                    px: 3,
+                                    backgroundColor: "transparent",
+                                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                        borderColor: "yellow",
+                                    },
+                                }}
+                                
                             >
-                                <MenuItem value="hcm">📍 Hồ Chí Minh</MenuItem>
-                                <MenuItem value="hn">📍 Hà Nội</MenuItem>
-                                <MenuItem value="dn">📍 Đà Nẵng</MenuItem>
+                                <MenuItem value="hcm"> Hồ Chí Minh</MenuItem>
+                                <MenuItem value="hn"> Hà Nội</MenuItem>
+                                <MenuItem value="dn"> Đà Nẵng</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>
                 </Grid>
 
                 {/* Cinema List (Filtered by City) */}
-                <Box sx={{ borderRadius: "12px"}}>
+                <Box sx={{ borderRadius: "12px" }}>
                     {selectedCity === "hcm" && (
                         <>
-                            <CinemaCard 
+                            <CinemaCard
                                 name="Eiga Quốc Thanh"
                                 address="271 Nguyễn Trãi, Phường Nguyễn Cư Trinh, Quận 1, TP. Hồ Chí Minh"
                                 times={["16:00", "17:10", "19:15", "21:20", "22:10", "23:30"]}
                                 selectedTime={selectedTime}
                                 setSelectedTime={setSelectedTime}
                             />
-                            <CinemaCard 
+                            <CinemaCard
                                 name="Eiga Hai Bà Trưng (TP.HCM)"
                                 address="135 Hai Bà Trưng, Quận 3, TP. Hồ Chí Minh"
                                 times={["15:30", "18:00", "20:45"]}
@@ -69,7 +74,7 @@ const ListCinema: React.FC = () => {
                         </>
                     )}
                     {selectedCity === "hn" && (
-                        <CinemaCard 
+                        <CinemaCard
                             name="Eiga Hà Nội"
                             address="42 Phố Huế, Quận Hoàn Kiếm, Hà Nội"
                             times={["14:00", "16:30", "19:00"]}
@@ -78,7 +83,7 @@ const ListCinema: React.FC = () => {
                         />
                     )}
                     {selectedCity === "dn" && (
-                        <CinemaCard 
+                        <CinemaCard
                             name="Eiga Đà Nẵng"
                             address="92 Nguyễn Văn Linh, Hải Châu, Đà Nẵng"
                             times={["13:00", "15:45", "18:30"]}
@@ -92,16 +97,15 @@ const ListCinema: React.FC = () => {
     );
 };
 
-// Cinema Card Component for reusability
-const CinemaCard: React.FC<{ 
-    name: string, 
-    address: string, 
-    times: string[], 
-    selectedTime: string | null, 
-    setSelectedTime: React.Dispatch<React.SetStateAction<string | null>> 
+const CinemaCard: React.FC<{
+    name: string,
+    address: string,
+    times: string[],
+    selectedTime: string | null,
+    setSelectedTime: React.Dispatch<React.SetStateAction<string | null>>
 }> = ({ name, address, times, selectedTime, setSelectedTime }) => {
     return (
-        <Card sx={{ backgroundColor: "#7B3FA7", color: "white", borderRadius: "12px", p: 2, mb: 2 }}>
+        <Card sx={{ backgroundColor: "rgb(165, 50, 231)", color: "white", borderRadius: "12px", p: 2, mb: 2 }}>
             <CardContent>
                 <Typography variant="h6" fontWeight="bold" color="yellow">
                     {name}

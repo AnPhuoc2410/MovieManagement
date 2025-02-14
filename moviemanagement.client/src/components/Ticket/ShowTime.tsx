@@ -16,7 +16,7 @@ const ShowTime: React.FC = () => {
     });
 
     return (
-        <Box sx={{ backgroundColor: "#4D3795", color: "white", pt:10, pb: 5 }}>
+        <Box sx={{ backgroundColor: "#0B0D1A", color: "white",pt:5, pb: 5 }}>
             <Container maxWidth="md">
                 {/* Title */}
                 <Typography 
