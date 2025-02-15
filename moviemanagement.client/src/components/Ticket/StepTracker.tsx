@@ -30,11 +30,11 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
       } 
       // 2) Else, if user is scrolling up, show tracker
       else if (currentScrollPos < lastScrollPos) {
-        setIsVisible(true);
+        setIsVisible(false);
       } 
       // 3) If user is scrolling down, hide tracker
       else {
-        setIsVisible(false);
+        setIsVisible(true);
       }
 
       setLastScrollPos(currentScrollPos);
@@ -52,7 +52,7 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
         left: 0,
         width: "100%",
         zIndex: 999,
-        backgroundColor: "rgb(47, 39, 39)", // Match your header or desired color
+        backgroundColor: "rgb(47, 39, 39)",
         transition: "transform 0.3s ease-in-out",
         transform: isVisible ? "translateY(0)" : "translateY(-100%)",
       }}
@@ -63,13 +63,13 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
             <Step key={index}>
               <StepLabel
                 StepIconComponent={() => (
-                  <Box sx={{ color: index < currentStep ? "lightgreen" : "gray" }}>
+                  <Box sx={{ color: index < currentStep ? "blue" : "gray" }}>
                     {step.icon}
                   </Box>
                 )}
                 sx={{
                   "& .MuiStepLabel-label": {
-                    color: index < currentStep ? "white" : "gray",
+                    color: index < currentStep ? "whitesmoke" : "gray",
                   },
                 }}
               >
