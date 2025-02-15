@@ -1,21 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'JetBrains Mono', Inter, system-ui, Helvetica, Arial, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-input {
-  border: 1px solid black;
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #0B0D1A; /* match your container's background */
 }
 
-button {
-  background-color: blue;
-  color: white;
-  border-radius: 10px;
+::-webkit-scrollbar {
+  width: 8px; 
+  height: 8px; 
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #834bff; 
+  border-radius: 10px; 
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
 }

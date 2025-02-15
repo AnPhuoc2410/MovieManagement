@@ -1,0 +1,54 @@
+name: CD for Movie-Management
+on:
+  push:
+    branches: ["master", "deployment"]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js 18.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "npm"
+          cache-dependency-path: moviemanagement.client/package-lock.json  # Add this line
+      
+      - name: Install dependencies
+        working-directory: moviemanagement.client
+        run: npm install
+      
+      - name: Build the project
+        working-directory: moviemanagement.client
+        run: npm run build
+      
+      - name: Deploy to Production Repo
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          git config --global user.name "lcaohoanq"
+          git config --global user.email "hoangclw@gmail.com"
+          
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_ed25519
+          
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          
+          git clone git@github.com:lcaohoanq/mvm.git production-repo
+          rm -rf production-repo/dist
+          cp -r moviemanagement.client/dist production-repo/
+          
+          cd production-repo
+          git pull
+          git add .
+          if git diff --staged --quiet; then
+            git commit --allow-empty -m "Trigger CD"
+          else
+            git commit -m "Deploy new build from ${{ github.ref_name }} branch"
+          fi
+          git push origin main

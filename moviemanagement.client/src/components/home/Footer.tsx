@@ -1,7 +1,9 @@
 import { Box, Typography, Button, Grid, Link } from "@mui/material";
 import React from "react";
+import { useNavigate } from "react-router";
 
 const Footer: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <Box
       sx={{
@@ -19,14 +21,73 @@ const Footer: React.FC = () => {
           <Typography variant="body2" sx={{ mt: 1 }}>
             BE HAPPY, BE A STAR
           </Typography>
-          <Box sx={{ mt: 2 }}>
-            <Button variant="contained" sx={{ bgcolor: "yellow", color: "black", mr: 2 }}>
-              ĐẶT VÉ
-            </Button>
-            <Button variant="outlined" sx={{ color: "yellow", borderColor: "yellow" }}>
-              ĐẶT BẮP NƯỚC
-            </Button>
-          </Box>
+          <Button
+            onClick={() => navigate("/")}
+            variant="contained"
+            sx={{
+              position: "relative",
+              overflow: "hidden",
+              bgcolor: "yellow",
+              color: "black",
+              transition: "color 0.5s ease-in-out",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                transform: "translateX(-100%)",
+                transition: "transform 0.5s ease-in-out",
+                zIndex: 0,
+              },
+              "&:hover": {
+                color: "white",
+              },
+              "&:hover::before": {
+                transform: "translateX(0)",
+              },
+              "& span": {
+                position: "relative",
+                zIndex: 1,
+              },
+            }}
+          >
+            <span> ĐẶT VÉ</span>
+          </Button>
+          <Button
+            onClick={() => navigate("/")}
+            variant="contained"
+            sx={{
+              ml: 2,
+              position: "relative",
+              overflow: "hidden",
+              bgcolor: "#834bff",
+              color: "white",
+              transition: "color 0.5s ease-in-out",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                transform: "translateX(-100%)",
+                transition: "transform 0.5s ease-in-out",
+                zIndex: 0,
+              },
+              "&:hover": {
+                color: "black",
+              },
+              "&:hover::before": {
+                transform: "translateX(0)",
+              },
+              "& span": {
+                position: "relative",
+                zIndex: 1,
+              },
+            }}
+          >
+            <span>ĐẶT BẮP NƯỚC</span>
+          </Button>
           <Box sx={{ mt: 2 }}>
             <Link href="#" color="inherit" sx={{ mx: 1 }}>
               Facebook
@@ -96,17 +157,17 @@ const Footer: React.FC = () => {
           </Typography>
           <Typography variant="body2">
             <Link href="#" color="inherit">
-            Rạp Quốc Thanh
+              Rạp Quốc Thanh
             </Link>
           </Typography>
           <Typography variant="body2">
             <Link href="#" color="inherit">
-            Rạp Hai Bà Trưng
+              Rạp Hai Bà Trưng
             </Link>
           </Typography>
           <Typography variant="body2">
             <Link href="#" color="inherit">
-            Rạp Bình Dương
+              Rạp Bình Dương
             </Link>
           </Typography>
           <Typography variant="body2">
