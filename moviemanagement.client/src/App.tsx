@@ -12,28 +12,46 @@ import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
 import Confirmation from "./pages/ticket/Confirmation";
 import UserDetail from "./pages/user/UserDetail";
+import { createTheme, ThemeProvider } from "@mui/material";
+
+const theme = createTheme({
+  components: {
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          textDecoration: "none",
+          "&:hover": {
+            textDecoration: "none", // also remove underline on hover
+          },
+        },
+      },
+    },
+  },
+});
 
 const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<AuthContainer />} />
-          <Route path="/promotions" element={<Promotion />} />
-          <Route path="/promotions/:id" element={<PromotionDetail />} />
-          <Route path="/ticket/:id" element={<Ticket />} />
-          <Route path="/movie-seat" element={<MovieSeat />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/confirmation" element={<Confirmation />} />
-          <Route path="/users">
-            <Route path="profile/:userId" element={<UserDetail />} />
-          </Route>
-          <Route path="/movies">
-            <Route path="now-showing" element={<NowShowingMoviesPage />} />
-            <Route path="up-coming" element={<UpComingMoviesPage />} />
-          </Route>
-        </Routes>
+        <ThemeProvider theme={theme}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/auth" element={<AuthContainer />} />
+            <Route path="/promotions" element={<Promotion />} />
+            <Route path="/promotions/:id" element={<PromotionDetail />} />
+            <Route path="/ticket/:id" element={<Ticket />} />
+            <Route path="/movie-seat" element={<MovieSeat />} />
+            <Route path="/payment" element={<Payment />} />
+            <Route path="/confirmation" element={<Confirmation />} />
+            <Route path="/users">
+              <Route path="profile/:userId" element={<UserDetail />} />
+            </Route>
+            <Route path="/movies">
+              <Route path="now-showing" element={<NowShowingMoviesPage />} />
+              <Route path="up-coming" element={<UpComingMoviesPage />} />
+            </Route>
+          </Routes>
+        </ThemeProvider>
       </AuthProvider>
       <ToastContainer />
     </BrowserRouter>
