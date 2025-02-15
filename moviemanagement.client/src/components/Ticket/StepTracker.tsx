@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Box, Stepper, Step, StepLabel } from "@mui/material";
 import MovieIcon from "@mui/icons-material/Movie";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
@@ -17,48 +17,49 @@ interface StepTrackerProps {
 }
 
 const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollPos, setLastScrollPos] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollPos = window.pageYOffset;
-
-      // 1) If user hasn't scrolled beyond 100px from top, always show
-      if (currentScrollPos < 100) {
-        setIsVisible(true);
-      } 
-      // 2) Else, if user is scrolling up, show tracker
-      else if (currentScrollPos < lastScrollPos) {
-        setIsVisible(false);
-      } 
-      // 3) If user is scrolling down, hide tracker
-      else {
-        setIsVisible(true);
-      }
-
-      setLastScrollPos(currentScrollPos);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollPos]);
-
   return (
     <Box
       sx={{
         position: "fixed",
-        top: 75,
+        top: 0,
         left: 0,
         width: "100%",
         zIndex: 999,
         backgroundColor: "rgb(47, 39, 39)",
-        transition: "transform 0.3s ease-in-out",
-        transform: isVisible ? "translateY(0)" : "translateY(-100%)",
+        boxShadow: "0px 2px 4px rgba(0,0,0,0.2)",
       }}
     >
-      <Box sx={{ p: 2, color: "white" }}>
-        <Stepper activeStep={currentStep - 1} alternativeLabel>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          p: 2,
+          color: "white",
+        }}
+      >
+        {/* Logo Section */}
+        <Box
+          component="a"
+          href="/"
+          sx={{
+            display: "inline-flex",
+            alignItems: "center",
+            textDecoration: "none",
+            cursor: "pointer",
+            userSelect: "none",
+            mr: 2,
+          }}
+        >
+          <Box
+            component="img"
+            src="https://png.pngtree.com/png-clipart/20230103/original/pngtree-vietnam-flag-transparent-watercolor-painted-brush-png-image_8863886.png"
+            alt="Eiga Logo"
+            sx={{ height: 40 }}
+          />
+        </Box>
+
+        {/* Stepper Section */}
+        <Stepper activeStep={currentStep - 1} alternativeLabel sx={{ flex: 1 }}>
           {steps.map((step, index) => (
             <Step key={index}>
               <StepLabel

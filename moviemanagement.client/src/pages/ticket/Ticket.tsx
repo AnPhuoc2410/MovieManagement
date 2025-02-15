@@ -14,18 +14,13 @@ const Ticket: React.FC = () => {
     new Date().toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })
   );
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [currentStep, setCurrentStep] = useState(1);
 
   return (
     <>
-      <Header />
-      
       <Box sx={{ position: "sticky", top: 0, zIndex: 999 }}>
-        <StepTracker currentStep={currentStep} />
+        <StepTracker currentStep={1} />
       </Box>
       <MovieDetail />
-      {currentStep === 1 && (
-        <>
           <ShowTime selectedDate={selectedDate} onDateChange={setSelectedDate} />
           <ListCinema 
             selectedTime={selectedTime} 
@@ -34,8 +29,6 @@ const Ticket: React.FC = () => {
               navigate("/movie-seat", { state: { selectedTime: time, selectedDate } });
             }} 
           />
-        </>
-      )}
       <Footer />
     </>
   );

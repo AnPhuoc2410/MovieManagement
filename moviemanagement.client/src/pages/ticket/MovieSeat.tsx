@@ -1,8 +1,7 @@
+import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import React, { useState } from "react";
-import { Box, Container, Grid, Typography, Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import Seat from "../../components/Ticket/Seat";
-import Header from "../../components/home/Header";
 import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
 
@@ -24,7 +23,6 @@ const MovieSeat: React.FC = () => {
 
   return (
     <>
-      <Header />
       <Box sx={{ position: "sticky", top: 0, zIndex: 999 }}>
         <StepTracker currentStep={2} />
       </Box>

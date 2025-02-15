@@ -39,7 +39,7 @@ const MovieDetail: React.FC = () => {
 
   return (
     <Box
-      sx={{ backgroundColor: "#0B0D1A", minHeight: "50vh", color: "white", py: 10 }}
+      sx={{ backgroundColor: "#0B0D1A", minHeight: "50vh", color: "white" }}
     >
       <Container maxWidth="lg" sx={{ mt: 13, color: "white" }}>
         <Grid container spacing={4} sx={{ alignItems: "stretch" }}>

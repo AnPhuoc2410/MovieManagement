@@ -9,7 +9,6 @@ import {
   Paper
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-import Header from "../../components/home/Header";
 import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
 
@@ -17,14 +16,12 @@ const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // First, extract selectedTime and selectedDate from location.state
   const { selectedTime, selectedDate } = location.state || { 
     selectedTime: "Not selected", 
     selectedDate: "Not selected" 
   };
 
-  // Then, extract other values with defaults.
-  // For showDate and showTime, we use the selected values from above.
+
   const {
     movieTitle = "Phim Mặc Định",
     screen = "Màn hình 1",
@@ -52,15 +49,13 @@ const Payment: React.FC = () => {
 
   return (
     <>
-      <Header />
-      {/* Sticky Step Tracker showing step 3 */}
       <Box sx={{ position: "sticky", top: 0, zIndex: 999 }}>
         <StepTracker currentStep={3} />
       </Box>
       <Container
         maxWidth={false}
         sx={{
-          py: 30,
+          py: 15,
           px: { xs: 0, sm: 3 },
           backgroundColor: "#0B0D1A",
           color: "white",
