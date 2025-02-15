@@ -63,14 +63,25 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
           {steps.map((step, index) => (
             <Step key={index}>
               <StepLabel
+                // If you have a custom StepIconComponent, you can also style it here
                 StepIconComponent={() => (
-                  <Box sx={{ color: index < currentStep ? "blue" : "gray" }}>
+                  <Box sx={{ color: index < currentStep ? "#834bff" : "gray" }}>
                     {step.icon}
                   </Box>
                 )}
                 sx={{
+                  // Force the label text color for all states
                   "& .MuiStepLabel-label": {
-                    color: index < currentStep ? "white" : "gray",
+                    color: "gray",            // default color
+                  },
+                  "& .MuiStepLabel-label.Mui-active": {
+                    color: "white !important", // active step color
+                  },
+                  "& .MuiStepLabel-label.Mui-completed": {
+                    color: "white !important", // completed step color
+                  },
+                  "& .MuiStepLabel-label.Mui-disabled": {
+                    color: "gray !important",  // disabled step color
                   },
                 }}
               >
