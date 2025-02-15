@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Stepper, Step, StepLabel, Paper } from "@mui/material";
+import { Box, Stepper, Step, StepLabel } from "@mui/material";
 import MovieIcon from "@mui/icons-material/Movie";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import PaymentIcon from "@mui/icons-material/Payment";
@@ -12,35 +12,52 @@ const steps = [
   { label: "Confirmation", icon: <CheckCircleIcon /> },
 ];
 
-const StepTracker: React.FC<{ currentStep: number }> = ({ currentStep }) => {
-  const [isVisible, setIsFixed] = useState(false);
+interface StepTrackerProps {
+  currentStep: number;
+}
+
+const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollPos, setLastScrollPos] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsFixed(window.scrollY > 100);
+      const currentScrollPos = window.pageYOffset;
+
+      // 1) If user hasn't scrolled beyond 100px from top, always show
+      if (currentScrollPos < 100) {
+        setIsVisible(true);
+      } 
+      // 2) Else, if user is scrolling up, show tracker
+      else if (currentScrollPos < lastScrollPos) {
+        setIsVisible(true);
+      } 
+      // 3) If user is scrolling down, hide tracker
+      else {
+        setIsVisible(false);
+      }
+
+      setLastScrollPos(currentScrollPos);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollPos]);
 
   return (
-    
     <Box
       sx={{
-        position: isVisible ? "fixed" : "absolute",
-        top: isVisible ? 64 : "auto", // Adjust for AppBar height
+        position: "fixed",
+        top: 75,
         left: 0,
-        padding: 1,
         width: "100%",
-        backgroundColor: "transparent", // Matches Header
-        color: "white",
-        boxShadow: isVisible ? "0px 4px 10px rgba(0,0,0,0.3)" : "none",
         zIndex: 999,
+        backgroundColor: "rgb(47, 39, 39)", // Match your header or desired color
         transition: "transform 0.3s ease-in-out",
+        transform: isVisible ? "translateY(0)" : "translateY(-100%)",
       }}
     >
-      <Paper sx={{ padding: 2, backgroundColor: "rgb(244, 214, 94)", color: "white" }}>
+      <Box sx={{ p: 2, color: "white" }}>
         <Stepper activeStep={currentStep - 1} alternativeLabel>
           {steps.map((step, index) => (
             <Step key={index}>
@@ -61,7 +78,7 @@ const StepTracker: React.FC<{ currentStep: number }> = ({ currentStep }) => {
             </Step>
           ))}
         </Stepper>
-      </Paper>
+      </Box>
     </Box>
   );
 };
