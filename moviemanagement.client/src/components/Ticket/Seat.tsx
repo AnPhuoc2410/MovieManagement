@@ -26,22 +26,19 @@ const Seat: React.FC<SeatProps> = ({ selectedSeats, setSelectedSeats }) => {
 
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", color: "white" }}>
-      {/* Screen area */}
-      <Box
-        sx={{
-          width: "90%",
-          height: "50px",
-          backgroundColor: "rgba(240, 205, 205, 0.23)",
-          margin: "0 auto",
-          borderRadius: "8px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          mb: 4,
-        }}
-      >
-        <Typography variant="h6" sx={{ color: "white" }}>
-          SCREEN
+      {/* Upward Arc Screen */}
+      <Box sx={{ textAlign: "center", mb: 4 }}>
+        <Box
+          sx={{
+            margin: "0 auto",
+            width: "80%",              // Adjust as needed
+            height: "70px",            // Adjust as needed
+            borderTop: "2px solid #fff",
+            borderRadius: "50% 50% 0 0",  // Creates the upward arc
+          }}
+        />
+        <Typography variant="h6" sx={{ mt: -2, color: "white",mb: 5 }}>
+          Màn hình
         </Typography>
       </Box>
 
@@ -88,7 +85,7 @@ const Seat: React.FC<SeatProps> = ({ selectedSeats, setSelectedSeats }) => {
                     sx={{
                       minWidth: "50px",
                       minHeight: "50px",
-                      backgroundColor: backgroundColor,
+                      backgroundColor,
                       color: "white",
                       whiteSpace: "normal",
                       p: 0.5,
@@ -100,7 +97,7 @@ const Seat: React.FC<SeatProps> = ({ selectedSeats, setSelectedSeats }) => {
                           : "rgba(255,255,255,0.2)",
                       },
                       "&.Mui-disabled": {
-                        backgroundColor: backgroundColor,
+                        backgroundColor,
                         color: "white",
                       },
                     }}
