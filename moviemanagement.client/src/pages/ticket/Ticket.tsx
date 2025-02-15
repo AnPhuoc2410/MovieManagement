@@ -4,28 +4,31 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/home/Header";
 import StepTracker from "../../components/Ticket/StepTracker";
 import MovieDetail from "../../components/Movie/MovieDetail";
-import ListCinema from "../../components/Ticket/ListCinema";
 import ShowTime from "../../components/Ticket/ShowTime";
+import ListCinema from "../../components/Ticket/ListCinema";
 import Footer from "../../components/home/Footer";
 
-const Ticket = () => {
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+const Ticket: React.FC = () => {
   const navigate = useNavigate();
-
-  const handleTimeSelect = (time: string) => {
-    setSelectedTime(time);
-    navigate("/movie-chair", { state: { selectedTime: time } });
-  };
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })
+  );
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   return (
     <>
-      <Header />
       <Box sx={{ position: "sticky", top: 0, zIndex: 999 }}>
         <StepTracker currentStep={1} />
       </Box>
       <MovieDetail />
-      <ShowTime />
-      <ListCinema selectedTime={selectedTime} onTimeSelect={handleTimeSelect} />
+          <ShowTime selectedDate={selectedDate} onDateChange={setSelectedDate} />
+          <ListCinema 
+            selectedTime={selectedTime} 
+            onTimeSelect={(time: string) => {
+              setSelectedTime(time);
+              navigate("/movie-seat", { state: { selectedTime: time, selectedDate } });
+            }} 
+          />
       <Footer />
     </>
   );

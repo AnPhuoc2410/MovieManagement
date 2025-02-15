@@ -10,6 +10,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #0B0D1A; /* match your container's background */
+}
+
 ::-webkit-scrollbar {
   width: 8px; 
   height: 8px; 

@@ -8,7 +8,9 @@ import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
 import Promotion from "./pages/promotion/Promotion";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
 import Ticket from "./pages/ticket/Ticket";
-import MovieChair from "./pages/ticket/MovieSeat";
+import MovieSeat from "./pages/ticket/MovieSeat";
+import Payment from "./pages/ticket/Payment";
+import Confirmation from "./pages/ticket/Confirmation";
 import UserDetail from "./pages/user/UserDetail";
 
 const App = () => {
@@ -21,7 +23,9 @@ const App = () => {
           <Route path="/promotions" element={<Promotion />} />
           <Route path="/promotions/:id" element={<PromotionDetail />} />
           <Route path="/ticket/:id" element={<Ticket />} />
-          <Route path="/movie-chair" element={<MovieChair />} />
+          <Route path="/movie-seat" element={<MovieSeat />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/confirmation" element={<Confirmation />} />
           <Route path="/users">
             <Route path="profile/:userId" element={<UserDetail />} />
           </Route>
