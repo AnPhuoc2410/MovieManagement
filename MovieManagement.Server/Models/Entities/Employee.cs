@@ -46,6 +46,6 @@ namespace MovieManagement.Server.Models.Entities
         public int Level { get; set; }
 
         // Quan hệ 1-N với HoaDonBanVe
-        public ICollection<Bill> Bills { get; set; }
+        public virtual ICollection<Bill> Bills { get; set; } = new List<Bill>();
     }
 }
