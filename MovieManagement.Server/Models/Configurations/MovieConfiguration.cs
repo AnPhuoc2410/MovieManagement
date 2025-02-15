@@ -10,7 +10,7 @@ namespace MovieManagement.Server.Models.Configurations
 
             builder.ToTable("MOVIE");
             builder.HasKey(x => x.MovieId);
-            builder.Property(x => x.MovieId).HasColumnType("varchar(11)");
+            builder.Property(x => x.MovieId).HasColumnType("Nvarchar(11)");
             builder.Property(x => x.Name).HasColumnType("Nvarchar(50)");
             builder.Property(x => x.Name).IsRequired();
             builder.Property(x => x.Name).HasMaxLength(50);

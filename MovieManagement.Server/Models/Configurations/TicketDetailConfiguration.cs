@@ -13,7 +13,12 @@ namespace MovieManagement.Server.Models.Configurations
             builder.Property(x => x.BillId).HasColumnType("varchar(10)");
             //builder.Property(x => x.SeatId).IsRequired();
             //builder.Property(x => x.Price).IsRequired();
-            builder.HasOne(x => x.Bill).WithMany(x => x.TicketDetails).HasForeignKey(x => x.BillId);
+            builder.HasOne(x => x.Bill)
+                .WithMany(x => x.TicketDetails)
+                .HasForeignKey(x => x.BillId);
+            builder.HasOne(x => x.Seat)
+                .WithMany(x => x.TicketDetail)
+                .HasForeignKey(x => x.SeatId);
         }
     }
 }

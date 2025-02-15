@@ -12,8 +12,8 @@ using MovieManagement.Server.Data;
 namespace MovieManagement.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250214092109_asdasd")]
-    partial class asdasd
+    [Migration("20250215174721_a")]
+    partial class a
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,7 +46,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("MovieId")
                         .IsRequired()
-                        .HasColumnType("varchar(11)");
+                        .HasColumnType("Nvarchar(11)");
 
                     b.Property<decimal>("Point")
                         .HasColumnType("numeric(10,2)");
@@ -67,6 +67,10 @@ namespace MovieManagement.Server.Migrations
 
                     b.HasIndex("EmployeeId");
 
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("MovieId");
+
                     b.ToTable("BILL", (string)null);
                 });
 
@@ -80,17 +84,19 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(20)
+                        .IsUnicode(true)
+                        .HasColumnType("Nvarchar(20)");
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("CATEGORY");
+                    b.ToTable("CATEGORY", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.CategoryDetail", b =>
                 {
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
+                    b.Property<string>("MovieId")
+                        .HasColumnType("Nvarchar(11)");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
@@ -99,43 +105,43 @@ namespace MovieManagement.Server.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("CATEGORYDETAIL");
+                    b.ToTable("CATEGORYDETAIL", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Employee", b =>
                 {
                     b.Property<string>("EmployeeId")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("Varchar(10)");
 
                     b.Property<string>("AccountName")
                         .IsRequired()
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("Nvarchar(20)");
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<string>("Avatar")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("Nvarchar(30)");
 
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
                     b.Property<string>("IDCard")
                         .IsRequired()
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("Nvarchar(15)");
 
                     b.Property<DateTime>("JoinDate")
                         .HasColumnType("datetime2");
@@ -145,149 +151,150 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(11)");
+                        .HasColumnType("Nvarchar(11)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("EmployeeId");
 
-                    b.ToTable("EMPLOYEE");
+                    b.ToTable("EMPLOYEE", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Member", b =>
                 {
                     b.Property<string>("MemberId")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("Varchar(10)");
 
                     b.Property<string>("AccountName")
                         .IsRequired()
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("Nvarchar(20)");
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<string>("Avatar")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("Nvarchar(30)");
 
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
                     b.Property<string>("IDCard")
                         .IsRequired()
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("Nvarchar(15)");
 
                     b.Property<DateTime>("JoinDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(11)");
+                        .HasColumnType("Nvarchar(11)");
 
                     b.Property<decimal>("Point")
-                        .HasColumnType("numeric(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("MemberId");
 
-                    b.ToTable("MEMBER");
+                    b.ToTable("MEMBER", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Movie", b =>
                 {
-                    b.Property<int>("MovieId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MovieId"));
+                    b.Property<string>("MovieId")
+                        .HasColumnType("Nvarchar(11)");
 
                     b.Property<string>("Actors")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("Nvarchar(500)");
 
                     b.Property<string>("Director")
                         .IsRequired()
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("Nvarchar(30)");
 
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
                     b.Property<string>("EmployeeId")
                         .IsRequired()
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("Nvarchar(10)");
 
                     b.Property<DateTime>("FromDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Image")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(50)
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<DateTime>("PostDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Rating")
                         .IsRequired()
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("Nvarchar(30)");
 
                     b.Property<string>("RoomId")
                         .IsRequired()
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("Nvarchar(10)");
 
                     b.Property<DateTime>("ToDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Trailer")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<int>("Version")
                         .HasColumnType("int");
 
                     b.HasKey("MovieId");
 
-                    b.ToTable("MOVIE");
+                    b.ToTable("MOVIE", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Promotion", b =>
                 {
                     b.Property<string>("PromotionId")
+                        .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("Nvarchar(500)");
 
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
@@ -297,30 +304,29 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Image")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<DateTime>("ToDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("PromotionId");
 
-                    b.ToTable("PROMOTION");
+                    b.ToTable("PROMOTION", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Room", b =>
                 {
-                    b.Property<int>("RoomId")
+                    b.Property<string>("RoomId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoomId"));
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("Column")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<int>("Row")
                         .HasColumnType("int");
@@ -330,26 +336,27 @@ namespace MovieManagement.Server.Migrations
 
                     b.HasKey("RoomId");
 
-                    b.ToTable("ROOM");
+                    b.ToTable("ROOM", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Seat", b =>
                 {
-                    b.Property<int>("SeatId")
+                    b.Property<string>("SeatId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SeatId"));
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<string>("Level")
                         .IsRequired()
+                        .HasMaxLength(1)
                         .HasColumnType("varchar(1)");
 
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
-                    b.Property<int>("RoomId")
-                        .HasColumnType("int");
+                    b.Property<string>("RoomId")
+                        .IsRequired()
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -358,13 +365,13 @@ namespace MovieManagement.Server.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("SEAT");
+                    b.ToTable("SEAT", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Showtime", b =>
                 {
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int")
+                    b.Property<string>("MovieId")
+                        .HasColumnType("Nvarchar(11)")
                         .HasColumnOrder(0);
 
                     b.Property<TimeSpan>("StartTime")
@@ -381,13 +388,15 @@ namespace MovieManagement.Server.Migrations
                     b.Property<string>("BillId")
                         .HasColumnType("varchar(10)");
 
-                    b.Property<int>("SeatId")
-                        .HasColumnType("int");
+                    b.Property<string>("SeatId")
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
                     b.HasKey("BillId", "SeatId");
+
+                    b.HasIndex("SeatId");
 
                     b.ToTable("TICKETDETAIL", (string)null);
                 });
@@ -410,35 +419,54 @@ namespace MovieManagement.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(10,2)");
+                        .HasPrecision(18)
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<int>("Version")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("TICKETTYPE");
+                    b.ToTable("TICKETTYPE", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Bill", b =>
                 {
-                    b.HasOne("MovieManagement.Server.Models.Entities.Employee", null)
+                    b.HasOne("MovieManagement.Server.Models.Entities.Employee", "Employee")
                         .WithMany("Bills")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("MovieManagement.Server.Models.Entities.Member", "Member")
+                        .WithMany("Bills")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MovieManagement.Server.Models.Entities.Movie", "Movie")
+                        .WithMany("Bills")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.CategoryDetail", b =>
                 {
                     b.HasOne("MovieManagement.Server.Models.Entities.Category", "Category")
-                        .WithMany()
+                        .WithMany("CategoryDetails")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MovieManagement.Server.Models.Entities.Movie", "Movie")
-                        .WithMany()
+                        .WithMany("CategoryDetails")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -451,7 +479,7 @@ namespace MovieManagement.Server.Migrations
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Seat", b =>
                 {
                     b.HasOne("MovieManagement.Server.Models.Entities.Room", "Room")
-                        .WithMany()
+                        .WithMany("Seats")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -462,7 +490,7 @@ namespace MovieManagement.Server.Migrations
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Showtime", b =>
                 {
                     b.HasOne("MovieManagement.Server.Models.Entities.Movie", "Movie")
-                        .WithMany()
+                        .WithMany("Showtimes")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -478,7 +506,15 @@ namespace MovieManagement.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MovieManagement.Server.Models.Entities.Seat", "Seat")
+                        .WithMany("TicketDetail")
+                        .HasForeignKey("SeatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Bill");
+
+                    b.Navigation("Seat");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Bill", b =>
@@ -486,9 +522,38 @@ namespace MovieManagement.Server.Migrations
                     b.Navigation("TicketDetails");
                 });
 
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.Category", b =>
+                {
+                    b.Navigation("CategoryDetails");
+                });
+
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Employee", b =>
                 {
                     b.Navigation("Bills");
+                });
+
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.Member", b =>
+                {
+                    b.Navigation("Bills");
+                });
+
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.Movie", b =>
+                {
+                    b.Navigation("Bills");
+
+                    b.Navigation("CategoryDetails");
+
+                    b.Navigation("Showtimes");
+                });
+
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.Room", b =>
+                {
+                    b.Navigation("Seats");
+                });
+
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.Seat", b =>
+                {
+                    b.Navigation("TicketDetail");
                 });
 #pragma warning restore 612, 618
         }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieManagement.Server.Data;
 
@@ -11,9 +12,11 @@ using MovieManagement.Server.Data;
 namespace MovieManagement.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250215175854_aa")]
+    partial class aa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,9 +51,8 @@ namespace MovieManagement.Server.Migrations
                     b.Property<decimal>("Point")
                         .HasColumnType("numeric(10,2)");
 
-                    b.Property<string>("PromotionId")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)");
+                    b.Property<int>("PromotionId")
+                        .HasColumnType("int");
 
                     b.Property<TimeSpan>("Showtime")
                         .HasColumnType("time");
@@ -68,8 +70,6 @@ namespace MovieManagement.Server.Migrations
                     b.HasIndex("MemberId");
 
                     b.HasIndex("MovieId");
-
-                    b.HasIndex("PromotionId");
 
                     b.ToTable("BILL", (string)null);
                 });
@@ -450,19 +450,11 @@ namespace MovieManagement.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MovieManagement.Server.Models.Entities.Promotion", "Promotion")
-                        .WithMany("Bills")
-                        .HasForeignKey("PromotionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Employee");
 
                     b.Navigation("Member");
 
                     b.Navigation("Movie");
-
-                    b.Navigation("Promotion");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.CategoryDetail", b =>
@@ -482,6 +474,17 @@ namespace MovieManagement.Server.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.Promotion", b =>
+                {
+                    b.HasOne("MovieManagement.Server.Models.Entities.Bill", "Bill")
+                        .WithMany("Promotions")
+                        .HasForeignKey("PromotionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bill");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Seat", b =>
@@ -527,6 +530,8 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Bill", b =>
                 {
+                    b.Navigation("Promotions");
+
                     b.Navigation("TicketDetails");
                 });
 
@@ -552,11 +557,6 @@ namespace MovieManagement.Server.Migrations
                     b.Navigation("CategoryDetails");
 
                     b.Navigation("Showtimes");
-                });
-
-            modelBuilder.Entity("MovieManagement.Server.Models.Entities.Promotion", b =>
-                {
-                    b.Navigation("Bills");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Room", b =>

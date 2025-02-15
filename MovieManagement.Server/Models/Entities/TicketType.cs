@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieManagement.Server.Models.Entities
 {
-    [Table("TICKETTYPE")]
     public class TicketType
     {
-        [Key]
         public int Id { get; set; } // Primary Key
 
         public int DayOfWeek { get; set; } // 0: Thứ 2 4 5; 1: Thứ 3...
@@ -17,7 +15,6 @@ namespace MovieManagement.Server.Models.Entities
 
         public int Version { get; set; } // 0: 2D...
 
-        [Column(TypeName = "decimal(10,2)")] // Adjust precision for currency
         public decimal Price { get; set; } // Giá vé
     }
 }

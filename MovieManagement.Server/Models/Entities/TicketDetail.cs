@@ -15,5 +15,7 @@ namespace MovieManagement.Server.Models.Entities
         // Navigation properties
 
         public virtual Bill Bill { get; set; }
+
+        public virtual Seat Seat { get; set; }
     }
 }

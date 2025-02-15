@@ -10,7 +10,6 @@ namespace MovieManagement.Server.Data
         public AppDbContext() { }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-        public AppDbContext() { }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Member> Members { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
@@ -48,14 +47,24 @@ namespace MovieManagement.Server.Data
             //modelBuilder.Entity<CategoryDetail>()
             //    .HasKey(ct => new { ct.MovieId, ct.CategoryId });
 
-            modelBuilder.Entity<Showtime>()
-                .HasKey(ct => new { ct.MovieId, ct.StartTime });
+            //modelBuilder.Entity<Showtime>()
+            //    .HasKey(ct => new { ct.MovieId, ct.StartTime });
 
             modelBuilder.ApplyConfiguration(new BillConfiguration());
             modelBuilder.ApplyConfiguration(new TicketDetailConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryDetailConfiguration());
             modelBuilder.ApplyConfiguration(new MovieConfiguration());
+            modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
+            modelBuilder.ApplyConfiguration(new MemberConfiguration());
+            modelBuilder.ApplyConfiguration(new PromotionConfiguration());
+            modelBuilder.ApplyConfiguration(new RoomConfiguration());
+            modelBuilder.ApplyConfiguration(new SeatConfiguration());
+            modelBuilder.ApplyConfiguration(new ShowtimeConfiguration());
+            modelBuilder.ApplyConfiguration(new TicketTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new CategoryDetailConfiguration());
+            modelBuilder.ApplyConfiguration(new TicketDetailConfiguration());
 
 
             base.OnModelCreating(modelBuilder);

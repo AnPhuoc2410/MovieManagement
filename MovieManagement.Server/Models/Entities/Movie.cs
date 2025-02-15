@@ -6,7 +6,7 @@ namespace MovieManagement.Server.Models.Entities
 {
     public class Movie
     {
-        public int MovieId { get; set; }
+        public string MovieId { get; set; }
 
         public string Name { get; set; }
 
@@ -37,5 +37,9 @@ namespace MovieManagement.Server.Models.Entities
         public string RoomId { get; set; }
 
         public IEnumerable<CategoryDetail> CategoryDetails { get; set; } = new List<CategoryDetail>();
+
+        public IEnumerable<Showtime> Showtimes { get; set; } = new List<Showtime>();
+
+        public IEnumerable<Bill> Bills { get; set; } = new List<Bill>();
     }
 }

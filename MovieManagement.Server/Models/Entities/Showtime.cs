@@ -7,7 +7,7 @@ namespace MovieManagement.Server.Models.Entities
     public class Showtime
     {
         [Column(Order = 0)]
-        public int MovieId { get; set; }
+        public string MovieId { get; set; }
 
         [Column(Order = 1)]
         public TimeSpan StartTime { get; set; }
