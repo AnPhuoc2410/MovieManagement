@@ -70,7 +70,7 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
                 )}
                 sx={{
                   "& .MuiStepLabel-label": {
-                    color: index < currentStep ? "whitesmoke" : "gray",
+                    color: index < currentStep ? "white" : "gray",
                   },
                 }}
               >

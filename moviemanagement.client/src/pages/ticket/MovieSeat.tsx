@@ -4,111 +4,85 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Seat from "../../components/Ticket/Seat";
 import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
-import EventSeatIcon from "@mui/icons-material/EventSeat";
 
 const MovieSeat: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { selectedTime, selectedDate } = location.state || {
-    selectedTime: "Not selected",
-    selectedDate: "Not selected",
+  const { selectedTime, selectedDate, tickets } = location.state || { 
+    selectedTime: "Not selected", 
+    selectedDate: "Not selected", 
+    tickets: [] 
   };
 
+  // State to store selected seats
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 
+  // Calculate the total number of seats that should be selected based on ticket quantities
+  const maxSeats = (tickets || []).reduce(
+    (acc: number, ticket: any) => acc + (ticket.quantity || 0),
+    0
+  );
+
   const handleNext = () => {
-    if (selectedSeats.length === 0) {
-      alert("Please select at least one seat before proceeding.");
+    if (selectedSeats.length !== maxSeats) {
+      alert(`Vui lòng chọn đúng ${maxSeats} ghế.`);
       return;
     }
-    navigate("/payment", {
-      state: { selectedDate, selectedTime, seats: selectedSeats },
-    });
+    navigate("/payment", { state: { selectedDate, selectedTime, tickets, seats: selectedSeats } });
   };
 
   return (
     <>
-      {/* Step Tracker */}
       <Box sx={{ position: "sticky", top: 0, zIndex: 999 }}>
         <StepTracker currentStep={2} />
       </Box>
-
       <Box
         sx={{
           backgroundColor: "#0B0D1A",
           color: "white",
           py: 10,
-          mt: 2,
+          mt: 5,
+          textAlign: "center",
         }}
       >
         <Container>
-          <Typography variant="h4" fontWeight="bold" gutterBottom align="center" fontFamily={"JetBrains Mono"} sx={{ textTransform: "uppercase" }}>
-            Chọn Ghế
-          </Typography>
           <Grid
             container
-            spacing={4}
-            justifyContent="center"
+            spacing={2}
             alignItems="center"
+            justifyContent="center"
+            border={1}
           >
-            {/* Legend Column */}
-            <Grid
-              item
-              xs={12}
-              md={3}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 2,
-                  alignItems: "left",
-                }}
+            <Grid item xs={12}>
+              <Typography
+                variant="h4"
+                fontWeight="bold"
+                gutterBottom
+                align="center"
+                fontFamily={"JetBrains Mono"}
+                sx={{ textTransform: "uppercase", mb: 4 }}
               >
-                {/* Booked */}
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <EventSeatIcon sx={{ color: "red" }} />
-                  <Typography variant="body2">Đã Đặt</Typography>
-                </Box>
-
-                {/* Available */}
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <EventSeatIcon sx={{ color: "white" }} />
-                  <Typography variant="body2">Ghế Trống</Typography>
-                </Box>
-
-                {/* Selected */}
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <EventSeatIcon sx={{ color: "green" }} />
-                  <Typography variant="body2">Đang Chọn</Typography>
-                </Box>
-
-                {/* VIP */}
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <EventSeatIcon sx={{ color: "blue" }} />
-                  <Typography variant="body2">Ghế VIP</Typography>
-                </Box>
-              </Box>
+                Chọn Ghế
+              </Typography>
             </Grid>
-
-            {/* Seat Column */}
             <Grid item xs={12} md={8}>
-              <Seat selectedSeats={selectedSeats} setSelectedSeats={setSelectedSeats} />
+              {/* Seat component handles seat selection */}
+              <Seat
+                selectedSeats={selectedSeats}
+                setSelectedSeats={setSelectedSeats}
+              />
+              <Typography variant="body2" sx={{ mt: 2 }}>
+                {`Bạn cần chọn đúng ${maxSeats} ghế.`}
+              </Typography>
             </Grid>
           </Grid>
-
-          <Box sx={{ mt: 4, textAlign: "center" }}>
+          <Box sx={{ mt: 4 }}>
             <Button variant="contained" color="primary" onClick={handleNext}>
               Next
             </Button>
           </Box>
         </Container>
       </Box>
-
       <Footer />
     </>
   );

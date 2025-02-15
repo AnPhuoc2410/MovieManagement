@@ -16,24 +16,30 @@ const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Extract selectedTime and selectedDate from location.state
-  const { selectedTime, selectedDate } = location.state || {
+  // Get basic booking info from location.state
+  const { selectedTime, selectedDate, tickets, seats } = location.state || {
     selectedTime: "Not selected",
-    selectedDate: "Not selected"
+    selectedDate: "Not selected",
+    tickets: [],
+    seats: [] as string[],
   };
 
-  // Extract additional booking details (with defaults)
+  // Calculate total ticket price from the tickets array
+  const totalPrice = (tickets || []).reduce(
+    (sum: number, t: any) => sum + t.price * (t.quantity || 0),
+    0
+  );
+
+  // Additional info with defaults
   const {
     movieTitle = "Phim Mặc Định",
     screen = "Màn hình 1",
     showDate = selectedDate,
     showTime = selectedTime,
-    seats = [] as string[],
-    price = 100000 // Price per seat in VND
+    price = totalPrice
   } = location.state || {};
 
-  // Calculate total price
-  const total = seats.length * price;
+  const total = totalPrice;
 
   // Customer form fields and error states
   const [fullName, setFullName] = useState("");
@@ -47,7 +53,6 @@ const Payment: React.FC = () => {
   const [phoneError, setPhoneError] = useState(false);
 
   const handleConfirm = () => {
-    // Basic validation: ensure all fields are filled.
     let hasError = false;
     if (!fullName.trim()) {
       setFullNameError(true);
@@ -87,8 +92,8 @@ const Payment: React.FC = () => {
         fullName,
         email,
         idNumber,
-        phone
-      }
+        phone,
+      },
     });
   };
 
@@ -107,15 +112,22 @@ const Payment: React.FC = () => {
           px: { xs: 0, sm: 3 },
           backgroundColor: "#0B0D1A",
           color: "white",
-          minHeight: "50vh"
+          minHeight: "50vh",
         }}
       >
-        <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          align="center"
+          gutterBottom
+          fontFamily={"JetBrains Mono"}
+          sx={{ textTransform: "uppercase" }}
+        >
           Thanh Toán Vé
         </Typography>
 
         <Grid container spacing={4} sx={{ px: { xs: 2, sm: 5 } }}>
-          {/* Left Column: Movie Image & Details */}
+          {/* Left Column: Movie Poster */}
           <Grid item xs={12} md={4}>
             <Paper sx={{ p: 2, backgroundColor: "#1c1c1c", color: "white" }}>
               <Box
@@ -130,42 +142,63 @@ const Payment: React.FC = () => {
                   mb: 2,
                 }}
               />
-              <Typography variant="h6" gutterBottom>
-                <strong>Tên phim:</strong> {movieTitle}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                <strong>Màn hình:</strong> {screen}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                <strong>Ngày chiếu:</strong> {showDate}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                <strong>Giờ chiếu:</strong> {showTime}
-              </Typography>
             </Paper>
           </Grid>
 
-          {/* Right Column: Booking Details & Customer Form */}
+          {/* Right Column: Movie/Ticket Info & Customer Form */}
           <Grid item xs={12} md={8}>
-            {/* Booking Details */}
+            {/* Combined Movie & Ticket Info */}
             <Paper sx={{ p: 3, backgroundColor: "#1c1c1c", color: "white", mb: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Thông Tin Vé
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography variant="body1">
-                    <strong>Ghế:</strong> {seats.join(", ")}
+              <Grid container spacing={3}>
+                {/* Thông Tin Phim */}
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="h6" gutterBottom>
+                    Thông Tin Phim
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    <strong>Tên phim:</strong> {movieTitle}
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    <strong>Màn hình:</strong> {screen}
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    <strong>Ngày chiếu:</strong> {showDate}
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    <strong>Giờ chiếu:</strong> {showTime}
                   </Typography>
                 </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="body1">
-                    <strong>Giá:</strong> {price.toLocaleString()} VND
+
+                {/* Thông Tin Vé */}
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="h6" gutterBottom>
+                    Thông Tin Vé
                   </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Tổng cộng:</strong> {total.toLocaleString()} VND
+                  <Typography variant="body1" gutterBottom>
+                    <strong>Ghế:</strong> {seats.join(", ") || "Chưa chọn ghế"}
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    <strong>Giá:</strong>{" "}
+                    {price.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    gutterBottom
+                    sx={{
+                      color: "#fbc02d",
+                      fontWeight: "bold",
+                      fontSize: "1.1rem",
+                      mt: 1,
+                    }}
+                  >
+                    <strong>Tổng cộng:</strong>{" "}
+                    {total.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
                   </Typography>
                 </Grid>
               </Grid>
