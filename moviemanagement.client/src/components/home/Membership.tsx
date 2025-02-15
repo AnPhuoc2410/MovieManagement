@@ -5,7 +5,8 @@ const Membership: React.FC = () => {
   return (
     <Box
       sx={{
-        backgroundImage: "url('https://i.pinimg.com/736x/49/f9/6e/49f96e0d81fcaf0224b434a51d6ff7de.jpg')",
+        backgroundImage:
+          "url('https://i.pinimg.com/736x/49/f9/6e/49f96e0d81fcaf0224b434a51d6ff7de.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         color: "white",
