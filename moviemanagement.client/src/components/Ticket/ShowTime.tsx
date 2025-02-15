@@ -58,7 +58,7 @@ const ShowTime: React.FC<ShowTimeProps> = ({ selectedDate, onDateChange }) => {
                   border: "2px solid yellow !important",
                   color: "yellow",
                   backgroundColor:
-                    selectedDate === day.formatted ? "yellow" : "transparent",
+                  selectedDate === day.formatted ? "yellow" : "transparent",
                   "&.Mui-selected": {
                     backgroundColor: "yellow",
                     color: "#4D3795",

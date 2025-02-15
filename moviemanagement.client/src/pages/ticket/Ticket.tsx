@@ -7,19 +7,28 @@ import ShowTime from "../../components/Ticket/ShowTime";
 import ListCinema from "../../components/Ticket/ListCinema";
 import TicketPrice, { TicketType } from "../../components/Ticket/TicketPrice";
 import Footer from "../../components/home/Footer";
+import { format } from "date-fns";
 
 const Ticket: React.FC = () => {
   const navigate = useNavigate();
 
-  // Selected date (Vietnamese format: dd/mm)
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })
-  );
+  const [selectedDate, setSelectedDate] = useState(() => {
+    return format(new Date(), "dd/MM");
+  });
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
-  // Called when the user selects tickets in TicketPrice
   const handleTicketSelection = (tickets: TicketType[]) => {
-    // Navigate to movie-seat page with date, time, and chosen tickets
+    // Validate that a showtime is selected
+    if (!selectedTime) {
+      alert("Vui lòng chọn suất chiếu!");
+      return;
+    }
+    // Validate that at least one ticket is selected
+    const totalTickets = tickets.reduce((sum, t) => sum + (t.quantity || 0), 0);
+    if (totalTickets === 0) {
+      alert("Vui lòng chọn ít nhất 1 vé!");
+      return;
+    }
     navigate("/movie-seat", {
       state: {
         selectedDate,
@@ -41,7 +50,7 @@ const Ticket: React.FC = () => {
         <MovieDetail />
 
         {/* ShowTime component for picking date */}
-        <ShowTime selectedDate={selectedDate} onDateChange={setSelectedDate} />
+        <ShowTime selectedDate={selectedDate} onDateChange={(newDate) => setSelectedDate(newDate)} />
 
         {/* ListCinema for picking a showtime */}
         <ListCinema
