@@ -7,7 +7,7 @@ namespace MovieManagement.Server.Models.Entities
     public class Showtime
     {
 
-        public string MovieId { get; set; }
+        public Guid MovieId { get; set; }
 
         public TimeSpan StartTime { get; set; }
 

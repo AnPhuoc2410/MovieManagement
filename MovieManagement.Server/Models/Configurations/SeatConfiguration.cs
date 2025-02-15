@@ -9,8 +9,7 @@ namespace MovieManagement.Server.Models.Configurations
         {
             builder.ToTable("SEAT");
             builder.HasKey(x => x.SeatId);
-            builder.Property(x => x.SeatId).UseIdentityColumn(1, 1);
-            builder.Property(x => x.SeatId).HasMaxLength(6);
+            builder.Property(x => x.SeatId).HasDefaultValueSql("NEWID()");
             builder.Property(x => x.Level).HasColumnType("varchar(1)");
             builder.Property(x => x.Level).IsRequired();
             builder.Property(x => x.Level).HasMaxLength(1);

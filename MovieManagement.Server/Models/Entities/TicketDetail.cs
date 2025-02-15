@@ -6,9 +6,9 @@ namespace MovieManagement.Server.Models.Entities
     public class TicketDetail
     {
 
-        public string BillId { get; set; }
+        public Guid BillId { get; set; }
 
-        public int SeatId { get; set; }
+        public Guid SeatId { get; set; }
 
         public int Price { get; set; }
 

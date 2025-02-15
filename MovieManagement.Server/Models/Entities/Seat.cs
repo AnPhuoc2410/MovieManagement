@@ -5,7 +5,7 @@ namespace MovieManagement.Server.Models.Entities
 {
     public class Seat
     {
-        public int SeatId { get; set; }
+        public Guid SeatId { get; set; }
 
         public string Level { get; set; }
 
@@ -13,7 +13,7 @@ namespace MovieManagement.Server.Models.Entities
 
         public int Type { get; set; }
 
-        public int RoomId { get; set; }
+        public Guid RoomId { get; set; }
 
         public Room Room { get; set; }
 

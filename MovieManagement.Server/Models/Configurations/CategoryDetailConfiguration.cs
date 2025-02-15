@@ -10,7 +10,6 @@ namespace MovieManagement.Server.Models.Configurations
         {
             builder.ToTable("CATEGORYDETAIL");
             builder.HasKey(x => new { x.MovieId, x.CategoryId });
-            builder.Property(x => x.MovieId).HasColumnType("Nvarchar(11)");
             builder.HasOne(x => x.Movie)
                 .WithMany(x => x.CategoryDetails)
                 .HasForeignKey(x => x.MovieId);

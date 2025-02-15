@@ -6,9 +6,9 @@ namespace MovieManagement.Server.Models.Entities
     //[Table("CATEGORYDETAIL")]
     public class CategoryDetail
     {
-        public string MovieId { get; set; }
+        public Guid MovieId { get; set; }
 
-        public int CategoryId { get; set; }
+        public Guid CategoryId { get; set; }
 
         //[ForeignKey(nameof(MovieId))]
         public Movie Movie { get; set; }

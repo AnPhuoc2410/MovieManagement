@@ -36,8 +36,7 @@ namespace MovieManagement.Server.Controllers
                     Level = Employee.Level,
                     Password = Employee.Password,
                     PhoneNumber = Employee.PhoneNumber,
-                    Status = Employee.Status,
-                    EmployeeId = Employee.EmployeeId
+                    Status = Employee.Status
                 });
                 return Ok("Created successfully!");
             }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MovieManagement.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class a : Migration
+    public partial class asdasd12 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,8 +15,7 @@ namespace MovieManagement.Server.Migrations
                 name: "CATEGORY",
                 columns: table => new
                 {
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     Name = table.Column<string>(type: "Nvarchar(20)", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
@@ -28,7 +27,7 @@ namespace MovieManagement.Server.Migrations
                 name: "EMPLOYEE",
                 columns: table => new
                 {
-                    EmployeeId = table.Column<string>(type: "Varchar(10)", nullable: false, defaultValueSql: "NEWID()"),
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     AccountName = table.Column<string>(type: "Nvarchar(20)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Avatar = table.Column<string>(type: "Nvarchar(50)", nullable: false),
@@ -52,7 +51,7 @@ namespace MovieManagement.Server.Migrations
                 name: "MEMBER",
                 columns: table => new
                 {
-                    MemberId = table.Column<string>(type: "Varchar(10)", nullable: false, defaultValueSql: "NEWID()"),
+                    MemberId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     AccountName = table.Column<string>(type: "Nvarchar(20)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Avatar = table.Column<string>(type: "Nvarchar(50)", nullable: false),
@@ -76,7 +75,7 @@ namespace MovieManagement.Server.Migrations
                 name: "MOVIE",
                 columns: table => new
                 {
-                    MovieId = table.Column<string>(type: "Nvarchar(11)", nullable: false, defaultValueSql: "NEWID()"),
+                    MovieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     Name = table.Column<string>(type: "Nvarchar(50)", maxLength: 50, nullable: false),
                     Image = table.Column<string>(type: "Nvarchar(50)", maxLength: 50, nullable: false),
                     PostDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -89,8 +88,8 @@ namespace MovieManagement.Server.Migrations
                     Version = table.Column<int>(type: "int", nullable: false),
                     Trailer = table.Column<string>(type: "Nvarchar(50)", nullable: false),
                     Content = table.Column<string>(type: "Nvarchar(500)", nullable: false),
-                    EmployeeId = table.Column<string>(type: "Nvarchar(10)", nullable: false),
-                    RoomId = table.Column<string>(type: "Nvarchar(10)", nullable: false)
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -101,7 +100,7 @@ namespace MovieManagement.Server.Migrations
                 name: "PROMOTION",
                 columns: table => new
                 {
-                    PromotionId = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false, defaultValueSql: "NEWID()"),
+                    PromotionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     Image = table.Column<string>(type: "Nvarchar(50)", nullable: false),
                     FromDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ToDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -117,8 +116,7 @@ namespace MovieManagement.Server.Migrations
                 name: "ROOM",
                 columns: table => new
                 {
-                    RoomId = table.Column<int>(type: "int", maxLength: 2, nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoomId = table.Column<Guid>(type: "uniqueidentifier", maxLength: 2, nullable: false, defaultValueSql: "NEWID()"),
                     Name = table.Column<string>(type: "Nvarchar(50)", nullable: false),
                     Row = table.Column<int>(type: "int", nullable: false),
                     Column = table.Column<int>(type: "int", nullable: false),
@@ -133,8 +131,7 @@ namespace MovieManagement.Server.Migrations
                 name: "TICKETTYPE",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     DayOfWeek = table.Column<int>(type: "int", nullable: false),
                     Hours = table.Column<int>(type: "int", nullable: false),
                     Consumer = table.Column<int>(type: "int", nullable: false),
@@ -150,8 +147,8 @@ namespace MovieManagement.Server.Migrations
                 name: "CATEGORYDETAIL",
                 columns: table => new
                 {
-                    MovieId = table.Column<string>(type: "Nvarchar(11)", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                    MovieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -174,7 +171,7 @@ namespace MovieManagement.Server.Migrations
                 name: "SHOWTIME",
                 columns: table => new
                 {
-                    MovieId = table.Column<string>(type: "Nvarchar(11)", nullable: false),
+                    MovieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StartTime = table.Column<TimeSpan>(type: "time", nullable: false)
                 },
                 constraints: table =>
@@ -192,16 +189,16 @@ namespace MovieManagement.Server.Migrations
                 name: "BILL",
                 columns: table => new
                 {
-                    BillId = table.Column<string>(type: "varchar(10)", nullable: false, defaultValueSql: "NEWID()"),
+                    BillId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Point = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
                     TotalTicket = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
-                    MovieId = table.Column<string>(type: "Nvarchar(11)", nullable: false),
+                    MovieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Showtime = table.Column<TimeSpan>(type: "time", nullable: false),
-                    MemberId = table.Column<string>(type: "varchar(10)", nullable: false),
-                    EmployeeId = table.Column<string>(type: "varchar(10)", nullable: false),
-                    PromotionId = table.Column<string>(type: "varchar(10)", nullable: false),
+                    MemberId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PromotionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -237,12 +234,11 @@ namespace MovieManagement.Server.Migrations
                 name: "SEAT",
                 columns: table => new
                 {
-                    SeatId = table.Column<int>(type: "int", maxLength: 6, nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SeatId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     Level = table.Column<string>(type: "varchar(1)", maxLength: 1, nullable: false),
                     Number = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
-                    RoomId = table.Column<int>(type: "int", nullable: false)
+                    RoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -259,8 +255,8 @@ namespace MovieManagement.Server.Migrations
                 name: "TICKETDETAIL",
                 columns: table => new
                 {
-                    BillId = table.Column<string>(type: "varchar(10)", nullable: false),
-                    SeatId = table.Column<int>(type: "int", nullable: false),
+                    BillId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SeatId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Price = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

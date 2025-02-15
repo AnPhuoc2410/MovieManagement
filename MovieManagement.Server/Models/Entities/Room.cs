@@ -5,7 +5,7 @@ namespace MovieManagement.Server.Models.Entities
 {
     public class Room
     {
-        public int RoomId { get; set; }
+        public Guid RoomId { get; set; }
 
         public string Name { get; set; }
 

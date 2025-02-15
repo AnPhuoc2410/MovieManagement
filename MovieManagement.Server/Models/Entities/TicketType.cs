@@ -5,7 +5,7 @@ namespace MovieManagement.Server.Models.Entities
 {
     public class TicketType
     {
-        public int Id { get; set; } // Primary Key
+        public Guid Id { get; set; } // Primary Key
 
         public int DayOfWeek { get; set; } // 0: Thứ 2 4 5; 1: Thứ 3...
 

@@ -10,7 +10,6 @@ namespace MovieManagement.Server.Models.Configurations
         {
             builder.ToTable("TICKETDETAIL");
             builder.HasKey(x => new { x.BillId, x.SeatId });
-            builder.Property(x => x.BillId).HasColumnType("varchar(10)");
             //builder.Property(x => x.SeatId).IsRequired();
             //builder.Property(x => x.Price).IsRequired();
             builder.HasOne(x => x.Bill)

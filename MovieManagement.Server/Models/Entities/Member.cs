@@ -6,7 +6,7 @@ namespace MovieManagement.Server.Models.Entities
 {
     public class Member
     {
-        public string MemberId { get; set; }
+        public Guid MemberId { get; set; }
 
         public string AccountName { get; set; }
 

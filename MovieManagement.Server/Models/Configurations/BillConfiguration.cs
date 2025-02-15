@@ -10,17 +10,12 @@ namespace MovieManagement.Server.Models.Configurations
 
             builder.ToTable("BILL");
             builder.HasKey(x => x.BillId);
-            builder.Property(x => x.BillId).HasColumnType("varchar(10)");
             builder.Property(x => x.BillId).HasDefaultValueSql("NEWID()");
             builder.Property(x => x.CreatedDate).IsRequired();
             builder.Property(x => x.Point).HasColumnType("numeric(10,2)");
             builder.Property(x => x.TotalTicket).IsRequired();
             builder.Property(x => x.Amount).HasColumnType("numeric(10,2)");
-            builder.Property(x => x.MovieId).HasColumnType("Nvarchar(11)");
             builder.Property(x => x.Showtime).IsRequired();
-            builder.Property(x => x.MemberId).HasColumnType("varchar(10)");
-            builder.Property(x => x.EmployeeId).HasColumnType("varchar(10)");
-            builder.Property(x => x.PromotionId).IsRequired();
             builder.Property(x => x.Status).IsRequired();
             builder.HasMany(x => x.TicketDetails)
                 .WithOne(x => x.Bill)

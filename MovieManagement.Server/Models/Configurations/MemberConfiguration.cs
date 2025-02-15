@@ -11,7 +11,6 @@ namespace MovieManagement.Server.Models.Configurations
             builder.ToTable("MEMBER");
             builder.HasKey(x => x.MemberId);
             builder.Property(x => x.MemberId).HasDefaultValueSql("NEWID()");
-            builder.Property(x => x.MemberId).HasColumnType("Varchar(10)");
             builder.Property(x => x.AccountName).HasColumnType("Varchar(20)");
             builder.Property(x => x.AccountName).HasColumnType("Nvarchar(20)");
             builder.Property(x => x.Avatar).HasColumnType("Nvarchar(50)");

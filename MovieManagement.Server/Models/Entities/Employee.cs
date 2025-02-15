@@ -7,7 +7,7 @@ namespace MovieManagement.Server.Models.Entities
     public class Employee
     {
 
-        public string EmployeeId { get; set; }  // PK
+        public Guid EmployeeId { get; set; }  // PK
 
         public string AccountName { get; set; }
 

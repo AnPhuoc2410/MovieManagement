@@ -8,7 +8,7 @@ namespace MovieManagement.Server.Models.Entities
     public class Promotion
     {
 
-        public string PromotionId { get; set; }
+        public Guid PromotionId { get; set; }
 
         public string Image { get; set; }
 

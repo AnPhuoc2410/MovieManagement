@@ -12,8 +12,8 @@ using MovieManagement.Server.Data;
 namespace MovieManagement.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250215193809_a")]
-    partial class a
+    [Migration("20250215210245_asdasd12")]
+    partial class asdasd12
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,9 +27,9 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Bill", b =>
                 {
-                    b.Property<string>("BillId")
+                    b.Property<Guid>("BillId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("varchar(10)")
+                        .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
                     b.Property<decimal>("Amount")
@@ -38,24 +38,20 @@ namespace MovieManagement.Server.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EmployeeId")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("MemberId")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)");
+                    b.Property<Guid>("MemberId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("MovieId")
-                        .IsRequired()
-                        .HasColumnType("Nvarchar(11)");
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Point")
                         .HasColumnType("numeric(10,2)");
 
-                    b.Property<string>("PromotionId")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)");
+                    b.Property<Guid>("PromotionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<TimeSpan>("Showtime")
                         .HasColumnType("time");
@@ -81,11 +77,10 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Category", b =>
                 {
-                    b.Property<int>("CategoryId")
+                    b.Property<Guid>("CategoryId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -100,11 +95,11 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.CategoryDetail", b =>
                 {
-                    b.Property<string>("MovieId")
-                        .HasColumnType("Nvarchar(11)");
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("MovieId", "CategoryId");
 
@@ -115,9 +110,9 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Employee", b =>
                 {
-                    b.Property<string>("EmployeeId")
+                    b.Property<Guid>("EmployeeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("Varchar(10)")
+                        .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("AccountName")
@@ -174,9 +169,9 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Member", b =>
                 {
-                    b.Property<string>("MemberId")
+                    b.Property<Guid>("MemberId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("Varchar(10)")
+                        .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("AccountName")
@@ -233,9 +228,9 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Movie", b =>
                 {
-                    b.Property<string>("MovieId")
+                    b.Property<Guid>("MovieId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("Nvarchar(11)")
+                        .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Actors")
@@ -253,9 +248,8 @@ namespace MovieManagement.Server.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
-                    b.Property<string>("EmployeeId")
-                        .IsRequired()
-                        .HasColumnType("Nvarchar(10)");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("FromDate")
                         .HasColumnType("datetime2");
@@ -278,9 +272,8 @@ namespace MovieManagement.Server.Migrations
                         .IsRequired()
                         .HasColumnType("Nvarchar(30)");
 
-                    b.Property<string>("RoomId")
-                        .IsRequired()
-                        .HasColumnType("Nvarchar(10)");
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ToDate")
                         .HasColumnType("datetime2");
@@ -299,10 +292,9 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Promotion", b =>
                 {
-                    b.Property<string>("PromotionId")
+                    b.Property<Guid>("PromotionId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)")
+                        .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Content")
@@ -329,12 +321,11 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Room", b =>
                 {
-                    b.Property<int>("RoomId")
+                    b.Property<Guid>("RoomId")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(2)
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoomId"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<int>("Column")
                         .HasColumnType("int");
@@ -356,12 +347,10 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Seat", b =>
                 {
-                    b.Property<int>("SeatId")
+                    b.Property<Guid>("SeatId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(6)
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SeatId"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Level")
                         .IsRequired()
@@ -371,8 +360,8 @@ namespace MovieManagement.Server.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
-                    b.Property<int>("RoomId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -386,8 +375,8 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Showtime", b =>
                 {
-                    b.Property<string>("MovieId")
-                        .HasColumnType("Nvarchar(11)")
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnOrder(0);
 
                     b.Property<TimeSpan>("StartTime")
@@ -401,11 +390,11 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.TicketDetail", b =>
                 {
-                    b.Property<string>("BillId")
-                        .HasColumnType("varchar(10)");
+                    b.Property<Guid>("BillId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("SeatId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("SeatId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Price")
                         .HasColumnType("int");
@@ -419,11 +408,10 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.TicketType", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<int>("Consumer")
                         .HasColumnType("int");
