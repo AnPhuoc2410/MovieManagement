@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 
@@ -6,29 +6,17 @@ import EventSeatIcon from "@mui/icons-material/EventSeat";
 const rows = ["A", "B", "C", "D", "E", "F"];
 const cols = [1, 2, 3, 4, 5, 6, 7];
 
-const Seat: React.FC = () => {
-  // Track selected seats (you can expand this for more functionality)
-  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
-  const [boughtSeats, setBoughtSeats] = useState<string[]>([
-    "A1",
-    "B2",
-    "C2",
-    "D2",
-    "A7",
-    "A6",
-    "C5",
-    "C6",
-    "C7",
-  ]); // Example bought seats
-  const [vipSeats, setVipSeats] = useState<string[]>([
-    "C3",
-    "C4",
-    "D3",
-    "D4",
-  ]); // Example VIP seats
+interface SeatProps {
+  selectedSeats: string[];
+  setSelectedSeats: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+const Seat: React.FC<SeatProps> = ({ selectedSeats, setSelectedSeats }) => {
+  // Example static arrays for bought and VIP seats
+  const boughtSeats = ["A1", "B2", "C2", "D2", "A7", "A6", "C5", "C6", "C7"];
+  const vipSeats = ["C3", "C4", "D3", "D4"];
 
   const handleSeatClick = (seat: string) => {
-    // Toggle the seat's selection status
     if (selectedSeats.includes(seat)) {
       setSelectedSeats(selectedSeats.filter((s) => s !== seat));
     } else {
@@ -37,8 +25,8 @@ const Seat: React.FC = () => {
   };
 
   return (
-    <Box sx={{backgroundColor: "#0B0D1A", color: "white" }}>
-      {/* TV/Screen area */}
+    <Box sx={{ backgroundColor: "#0B0D1A", color: "white" }}>
+      {/* Screen area */}
       <Box
         sx={{
           width: "90%",
@@ -57,9 +45,8 @@ const Seat: React.FC = () => {
         </Typography>
       </Box>
 
-      {/* Wrap the seating grid in a centered container with maxWidth */}
+      {/* Centered seating grid */}
       <Box sx={{ maxWidth: 600, mx: "auto" }}>
-        {/* Seating grid */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {rows.map((row) => (
             <Box

@@ -1,6 +1,6 @@
-import React from "react";
-import { Box, Container, Grid, Typography } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { Box, Container, Grid, Typography, Button } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
 import Seat from "../../components/Ticket/Seat";
 import Header from "../../components/home/Header";
 import StepTracker from "../../components/Ticket/StepTracker";
@@ -8,7 +8,19 @@ import Footer from "../../components/home/Footer";
 
 const MovieSeat: React.FC = () => {
   const location = useLocation();
-  const { selectedTime } = location.state || { selectedTime: "Not selected" };
+  const navigate = useNavigate();
+  const { selectedTime, selectedDate } = location.state || { selectedTime: "Not selected", selectedDate: "Not selected" };
+
+  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+
+  const handleNext = () => {
+    if (selectedSeats.length === 0) {
+      alert("Please select at least one seat before proceeding.");
+      return;
+    }
+    // Navigate to Payment page with selectedTime and selectedSeats
+    navigate("/payment", { state: { selectedDate, selectedTime, seats: selectedSeats } });
+  };
 
   return (
     <>
@@ -16,7 +28,6 @@ const MovieSeat: React.FC = () => {
       <Box sx={{ position: "sticky", top: 0, zIndex: 999 }}>
         <StepTracker currentStep={2} />
       </Box>
-
       <Box
         sx={{
           backgroundColor: "#0B0D1A",
@@ -30,34 +41,19 @@ const MovieSeat: React.FC = () => {
           <Typography variant="h4" fontWeight="bold" gutterBottom>
             Movie Seat Selection
           </Typography>
-          <Typography variant="body1" sx={{ fontSize: "0.9rem", color: "gray" }}>
+          <Typography variant="body1" sx={{ mb: 4 }}>
             Selected Time: {selectedTime}
           </Typography>
-
-          {/* Use Grid to create side columns */}
-          <Grid container spacing={2} alignItems="center" justifyContent="center" sx={{ mt: 4 }}>
-            {/* Left sidebar: add decorative content or leave empty */}
-            <Grid item xs={false} md={2}>
-              {/* You might add an image, ad, or leave this blank */}
-              <Box
-                sx={{
-                  backgroundColor: "white",
-                  height: "100%",
-                  borderRadius: "8px",
-
-                }}></Box>
-            </Grid>
-
-            {/* Center: main Seat component */}
+          <Grid container spacing={2} alignItems="center" justifyContent="center">
             <Grid item xs={12} md={8}>
-              <Seat />
-            </Grid>
-
-            {/* Right sidebar: add decorative content or leave empty */}
-            <Grid item xs={false} md={2}>
-              {/* Additional content or imagery */}
+              <Seat selectedSeats={selectedSeats} setSelectedSeats={setSelectedSeats} />
             </Grid>
           </Grid>
+          <Box sx={{ mt: 4 }}>
+            <Button variant="contained" color="primary" onClick={handleNext}>
+              Next
+            </Button>
+          </Box>
         </Container>
       </Box>
       <Footer />
