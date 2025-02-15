@@ -10,6 +10,7 @@ import PromotionDetail from "./pages/promotion/PromotionDetail";
 import Ticket from "./pages/ticket/Ticket";
 import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
+import Confirmation from "./pages/ticket/Confirmation";
 import UserDetail from "./pages/user/UserDetail";
 
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
           <Route path="/ticket/:id" element={<Ticket />} />
           <Route path="/movie-seat" element={<MovieSeat />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/confirmation" element={<Confirmation />} />
           <Route path="/users">
             <Route path="profile/:userId" element={<UserDetail />} />
           </Route>
