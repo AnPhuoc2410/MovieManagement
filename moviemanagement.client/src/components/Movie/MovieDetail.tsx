@@ -39,7 +39,7 @@ const MovieDetail: React.FC = () => {
 
   return (
     <Box
-      sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
+      sx={{ backgroundColor: "#0B0D1A", minHeight: "50vh", color: "white", py: 10 }}
     >
       <Container maxWidth="lg" sx={{ mt: 13, color: "white" }}>
         <Grid container spacing={4} sx={{ alignItems: "stretch" }}>
@@ -66,7 +66,7 @@ const MovieDetail: React.FC = () => {
             md={8}
             sx={{ display: "flex", flexDirection: "column" }}
           >
-            <Typography variant="h4" fontWeight="bold" mb={2}>
+            <Typography variant="h4" fontWeight="bold" mb={2} fontFamily={"JetBrains Mono"}>
               {movie.title}
             </Typography>
 
@@ -99,24 +99,24 @@ const MovieDetail: React.FC = () => {
               />
             </Box>
 
-            <Typography variant="h6" fontWeight="bold" mb={2}>
+            <Typography variant="h6" fontWeight="bold" mb={2} fontFamily={"JetBrains Mono"}>
               MÔ TẢ
             </Typography>
 
             <Box sx={{ mb: 3, textAlign: "justify", flexGrow: 1 }}>
-              <Typography mb={1} variant="body1">
+              <Typography mb={1} variant="body1" fontFamily={"JetBrains Mono"}>
                 <strong>Đạo diễn:</strong> {movie.director}
               </Typography>
-              <Typography mb={1} variant="body1">
+              <Typography mb={1} variant="body1" fontFamily={"JetBrains Mono"}>
                 <strong>Diễn viên:</strong> {movie.cast}
               </Typography>
-              <Typography mb={1} variant="body1">
+              <Typography mb={1} variant="body1" fontFamily={"JetBrains Mono"}>
                 <strong>Khởi chiếu:</strong> {movie.releaseDate}
               </Typography>
-              <Typography variant="h6" fontWeight="bold" mb={2} mt={4}>
+              <Typography variant="h6" fontWeight="bold" mb={2} mt={4} fontFamily={"JetBrains Mono"}>
                 NỘI DUNG PHIM
               </Typography>
-              <Typography paragraph variant="body1">
+              <Typography paragraph variant="body1" sx={{ textAlign: "justify" }} fontFamily={"JetBrains Mono"}>
                 {movie.description}
               </Typography>
             </Box>

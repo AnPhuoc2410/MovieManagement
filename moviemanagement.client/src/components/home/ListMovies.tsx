@@ -44,10 +44,15 @@ const nowShowingMovies = [
     image: "https://i.ebayimg.com/images/g/la0AAOSwGKJf8y5s/s-l1600.jpg",
   },
   {
-    title: "Pokemon Heros The Movie (T16)",
+    title: "Captain America: Brave New World (T18)",
     image:
-      "https://th.bing.com/th/id/R.3689c865e31936ceee7588a094638911?rik=fXjX%2ferUrFzFRA&pid=ImgRaw&r=0",
+      "https://www.bhdstar.vn/wp-content/uploads/2025/02/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-2.jpg",
   },
+  {
+    title: "Minecraft: The Movie (T16)",
+    image:
+      "https://www.bhdstar.vn/wp-content/uploads/2025/02/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-22.jpg",
+  }
 ];
 
 const upcomingMovies = [
