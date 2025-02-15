@@ -12,8 +12,8 @@ using MovieManagement.Server.Data;
 namespace MovieManagement.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250215181632_aaa")]
-    partial class aaa
+    [Migration("20250215193809_a")]
+    partial class a
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,7 +28,9 @@ namespace MovieManagement.Server.Migrations
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Bill", b =>
                 {
                     b.Property<string>("BillId")
-                        .HasColumnType("varchar(10)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(10)")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric(10,2)");
@@ -114,7 +116,9 @@ namespace MovieManagement.Server.Migrations
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Employee", b =>
                 {
                     b.Property<string>("EmployeeId")
-                        .HasColumnType("Varchar(10)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("Varchar(10)")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("AccountName")
                         .IsRequired()
@@ -171,7 +175,9 @@ namespace MovieManagement.Server.Migrations
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Member", b =>
                 {
                     b.Property<string>("MemberId")
-                        .HasColumnType("Varchar(10)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("Varchar(10)")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("AccountName")
                         .IsRequired()
@@ -228,7 +234,9 @@ namespace MovieManagement.Server.Migrations
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Movie", b =>
                 {
                     b.Property<string>("MovieId")
-                        .HasColumnType("Nvarchar(11)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("Nvarchar(11)")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Actors")
                         .IsRequired()
@@ -292,8 +300,10 @@ namespace MovieManagement.Server.Migrations
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Promotion", b =>
                 {
                     b.Property<string>("PromotionId")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(10)")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -319,10 +329,12 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Room", b =>
                 {
-                    b.Property<string>("RoomId")
+                    b.Property<int>("RoomId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
+                        .HasMaxLength(2)
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoomId"));
 
                     b.Property<int>("Column")
                         .HasColumnType("int");
@@ -344,10 +356,12 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Seat", b =>
                 {
-                    b.Property<string>("SeatId")
+                    b.Property<int>("SeatId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
+                        .HasMaxLength(6)
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SeatId"));
 
                     b.Property<string>("Level")
                         .IsRequired()
@@ -357,9 +371,8 @@ namespace MovieManagement.Server.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
-                    b.Property<string>("RoomId")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)");
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -391,8 +404,8 @@ namespace MovieManagement.Server.Migrations
                     b.Property<string>("BillId")
                         .HasColumnType("varchar(10)");
 
-                    b.Property<string>("SeatId")
-                        .HasColumnType("varchar(10)");
+                    b.Property<int>("SeatId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Price")
                         .HasColumnType("int");

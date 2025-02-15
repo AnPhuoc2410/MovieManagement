@@ -8,8 +8,10 @@ namespace MovieManagement.Server.Models.Configurations
     {
         public void Configure(EntityTypeBuilder<Employee> builder)
         {
+
             builder.ToTable("EMPLOYEE");
             builder.HasKey(x => x.EmployeeId);
+            builder.Property(x => x.EmployeeId).HasDefaultValueSql("NEWID()");
             builder.Property(x => x.EmployeeId).HasColumnType("Varchar(10)");
             builder.Property(x => x.AccountName).HasColumnType("Varchar(20)");
             builder.Property(x => x.AccountName).HasColumnType("Nvarchar(20)");

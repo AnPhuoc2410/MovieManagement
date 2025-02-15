@@ -10,6 +10,7 @@ namespace MovieManagement.Server.Models.Configurations
         {
             builder.ToTable("CATEGORY");
             builder.HasKey(x => x.CategoryId);
+            builder.Property(x => x.CategoryId).UseIdentityColumn(1, 1);
             builder.Property(x => x.Name).HasColumnType("Nvarchar(20)");
             builder.Property(x => x.Name).IsRequired();
             builder.Property(x => x.Name).HasMaxLength(20);

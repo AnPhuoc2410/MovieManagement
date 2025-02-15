@@ -28,7 +28,7 @@ namespace MovieManagement.Server.Migrations
                 name: "EMPLOYEE",
                 columns: table => new
                 {
-                    EmployeeId = table.Column<string>(type: "Varchar(10)", nullable: false),
+                    EmployeeId = table.Column<string>(type: "Varchar(10)", nullable: false, defaultValueSql: "NEWID()"),
                     AccountName = table.Column<string>(type: "Nvarchar(20)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Avatar = table.Column<string>(type: "Nvarchar(50)", nullable: false),
@@ -52,7 +52,7 @@ namespace MovieManagement.Server.Migrations
                 name: "MEMBER",
                 columns: table => new
                 {
-                    MemberId = table.Column<string>(type: "Varchar(10)", nullable: false),
+                    MemberId = table.Column<string>(type: "Varchar(10)", nullable: false, defaultValueSql: "NEWID()"),
                     AccountName = table.Column<string>(type: "Nvarchar(20)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Avatar = table.Column<string>(type: "Nvarchar(50)", nullable: false),
@@ -76,7 +76,7 @@ namespace MovieManagement.Server.Migrations
                 name: "MOVIE",
                 columns: table => new
                 {
-                    MovieId = table.Column<string>(type: "Nvarchar(11)", nullable: false),
+                    MovieId = table.Column<string>(type: "Nvarchar(11)", nullable: false, defaultValueSql: "NEWID()"),
                     Name = table.Column<string>(type: "Nvarchar(50)", maxLength: 50, nullable: false),
                     Image = table.Column<string>(type: "Nvarchar(50)", maxLength: 50, nullable: false),
                     PostDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -101,7 +101,7 @@ namespace MovieManagement.Server.Migrations
                 name: "PROMOTION",
                 columns: table => new
                 {
-                    PromotionId = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
+                    PromotionId = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false, defaultValueSql: "NEWID()"),
                     Image = table.Column<string>(type: "Nvarchar(50)", nullable: false),
                     FromDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ToDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -117,7 +117,8 @@ namespace MovieManagement.Server.Migrations
                 name: "ROOM",
                 columns: table => new
                 {
-                    RoomId = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
+                    RoomId = table.Column<int>(type: "int", maxLength: 2, nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "Nvarchar(50)", nullable: false),
                     Row = table.Column<int>(type: "int", nullable: false),
                     Column = table.Column<int>(type: "int", nullable: false),
@@ -143,45 +144,6 @@ namespace MovieManagement.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TICKETTYPE", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "BILL",
-                columns: table => new
-                {
-                    BillId = table.Column<string>(type: "varchar(10)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Point = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
-                    TotalTicket = table.Column<int>(type: "int", nullable: false),
-                    Amount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
-                    MovieId = table.Column<string>(type: "Nvarchar(11)", nullable: false),
-                    Showtime = table.Column<TimeSpan>(type: "time", nullable: false),
-                    MemberId = table.Column<string>(type: "varchar(10)", nullable: false),
-                    EmployeeId = table.Column<string>(type: "varchar(10)", nullable: false),
-                    PromotionId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BILL", x => x.BillId);
-                    table.ForeignKey(
-                        name: "FK_BILL_EMPLOYEE_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "EMPLOYEE",
-                        principalColumn: "EmployeeId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BILL_MEMBER_MemberId",
-                        column: x => x.MemberId,
-                        principalTable: "MEMBER",
-                        principalColumn: "MemberId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BILL_MOVIE_MovieId",
-                        column: x => x.MovieId,
-                        principalTable: "MOVIE",
-                        principalColumn: "MovieId",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -227,14 +189,60 @@ namespace MovieManagement.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BILL",
+                columns: table => new
+                {
+                    BillId = table.Column<string>(type: "varchar(10)", nullable: false, defaultValueSql: "NEWID()"),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Point = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    TotalTicket = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    MovieId = table.Column<string>(type: "Nvarchar(11)", nullable: false),
+                    Showtime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    MemberId = table.Column<string>(type: "varchar(10)", nullable: false),
+                    EmployeeId = table.Column<string>(type: "varchar(10)", nullable: false),
+                    PromotionId = table.Column<string>(type: "varchar(10)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BILL", x => x.BillId);
+                    table.ForeignKey(
+                        name: "FK_BILL_EMPLOYEE_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "EMPLOYEE",
+                        principalColumn: "EmployeeId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BILL_MEMBER_MemberId",
+                        column: x => x.MemberId,
+                        principalTable: "MEMBER",
+                        principalColumn: "MemberId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BILL_MOVIE_MovieId",
+                        column: x => x.MovieId,
+                        principalTable: "MOVIE",
+                        principalColumn: "MovieId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BILL_PROMOTION_PromotionId",
+                        column: x => x.PromotionId,
+                        principalTable: "PROMOTION",
+                        principalColumn: "PromotionId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SEAT",
                 columns: table => new
                 {
-                    SeatId = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
+                    SeatId = table.Column<int>(type: "int", maxLength: 6, nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Level = table.Column<string>(type: "varchar(1)", maxLength: 1, nullable: false),
                     Number = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
-                    RoomId = table.Column<string>(type: "varchar(10)", nullable: false)
+                    RoomId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -252,7 +260,7 @@ namespace MovieManagement.Server.Migrations
                 columns: table => new
                 {
                     BillId = table.Column<string>(type: "varchar(10)", nullable: false),
-                    SeatId = table.Column<string>(type: "varchar(10)", nullable: false),
+                    SeatId = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -288,6 +296,11 @@ namespace MovieManagement.Server.Migrations
                 column: "MovieId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BILL_PromotionId",
+                table: "BILL",
+                column: "PromotionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CATEGORYDETAIL_CategoryId",
                 table: "CATEGORYDETAIL",
                 column: "CategoryId");
@@ -308,9 +321,6 @@ namespace MovieManagement.Server.Migrations
         {
             migrationBuilder.DropTable(
                 name: "CATEGORYDETAIL");
-
-            migrationBuilder.DropTable(
-                name: "PROMOTION");
 
             migrationBuilder.DropTable(
                 name: "SHOWTIME");
@@ -338,6 +348,9 @@ namespace MovieManagement.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "MOVIE");
+
+            migrationBuilder.DropTable(
+                name: "PROMOTION");
 
             migrationBuilder.DropTable(
                 name: "ROOM");

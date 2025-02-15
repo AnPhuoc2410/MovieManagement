@@ -40,7 +40,7 @@ namespace MovieManagement.Server
             builder.Services.AddScoped<ITicketTypeRepository, TicketTypeRepository>();
 
             // Đăng ký UnitOfWork
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<UnitOfWork>();
 
             builder.Services.AddCors(options =>
             {

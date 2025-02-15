@@ -10,9 +10,8 @@ namespace MovieManagement.Server.Models.Configurations
         {
             builder.ToTable("ROOM");
             builder.HasKey(x => x.RoomId);
-            builder.Property(x => x.RoomId).HasColumnType("varchar(10)");
-            builder.Property(x => x.RoomId).IsRequired();
-            builder.Property(x => x.RoomId).HasMaxLength(10);
+            builder.Property(x => x.RoomId).UseIdentityColumn(1, 1);
+            builder.Property(x => x.RoomId).HasMaxLength(2);
             builder.Property(x => x.Name).HasColumnType("Nvarchar(50)");
         }
     }
