@@ -118,7 +118,7 @@ interface CinemaCardProps {
 
 const CinemaCard: React.FC<CinemaCardProps> = ({ name, address, times, selectedTime, onTimeSelect }) => {
   return (
-    <Card sx={{ backgroundColor: "rgb(165, 50, 231)", color: "white", borderRadius: "12px", p: 2, mb: 2 }}>
+    <Card sx={{ backgroundColor: "#834bff", color: "white", borderRadius: "12px", p: 2, mb: 2 }}>
       <CardContent>
         <Typography variant="h6" fontWeight="bold" color="yellow" mb={1} fontFamily={"JetBrains Mono"}>
           {name}
