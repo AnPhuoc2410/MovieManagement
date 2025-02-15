@@ -43,6 +43,15 @@ namespace MovieManagement.Server.Repositories
             return true;
         }
 
+        public bool Delete(Guid id)
+        {
+            var entity = GetById(id);
+            if (entity == null) return false;
+            _context.Remove(entity);
+            _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var entity = await GetByIdAsync(id);
@@ -53,6 +62,15 @@ namespace MovieManagement.Server.Repositories
         }
 
         public async Task<bool> DeleteAsync(string id)
+        {
+            var entity = await GetByIdAsync(id);
+            if (entity == null) return false;
+            _context.Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(Guid id)
         {
             var entity = await GetByIdAsync(id);
             if (entity == null) return false;
@@ -81,12 +99,22 @@ namespace MovieManagement.Server.Repositories
             return _context.Set<T>().Find(id);
         }
 
+        public T GetById(Guid id)
+        {
+            return _context.Set<T>().Find(id);
+        }
+
         public async Task<T> GetByIdAsync(int id)
         {
             return await _context.Set<T>().FindAsync(id);
         }
 
         public async Task<T> GetByIdAsync(string id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
+
+        public async Task<T> GetByIdAsync(Guid id)
         {
             return await _context.Set<T>().FindAsync(id);
         }
