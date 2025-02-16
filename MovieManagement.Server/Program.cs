@@ -49,7 +49,7 @@ namespace MovieManagement.Server
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowReactApp",
-                    policy => policy.WithOrigins("https://localhost:7119")  // Adjust for deployment
+                    policy => policy.WithOrigins("https://localhost:7119", "https://localhost:3000")
                                    .AllowAnyMethod()
                                    .AllowAnyHeader());
             });
