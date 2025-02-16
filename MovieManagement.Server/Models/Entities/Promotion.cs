@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieManagement.Server.Models.Entities
 {
-
     public class Promotion
     {
 

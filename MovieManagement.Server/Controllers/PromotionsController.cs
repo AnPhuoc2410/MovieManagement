@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MovieManagement.Server.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Services.PromotionService;
 
 namespace MovieManagement.Server.Controllers
 {
@@ -15,34 +9,33 @@ namespace MovieManagement.Server.Controllers
     [ApiController]
     public class PromotionsController : ControllerBase
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IPromotionService _promotionService;
 
-        public PromotionsController(UnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
-
-        // GET: api/Promotions
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Promotion>>> GetPromotions()
+        public PromotionsController(IPromotionService promotionService)
         {
-            return await _unitOfWork.PromotionRepository.GetAllAsync();
+            _promotionService = promotionService;
         }
 
-        // GET: api/Promotions/5
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<Promotion>> GetPromotion(Guid id)
-        //{
-        //    var promotion = await _context.Promotions.FindAsync(id);
+        [HttpGet]
+        [Route("GetAllPromotions")]
+        public async Task<ActionResult> GetAllPromotions()
+        {
+            var promotions = await _promotionService.GetAllPromotions();
+            return Ok(promotions);
+        }
 
-        //    if (promotion == null)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpPost]
+        [Route("CreatePromotion")]
+        public async Task<ActionResult<Promotion>> CreatePromotion(PromotionDto promotionDto)
+        {
+            var createdPromotion = await _promotionService.CreatePromotion(promotionDto);
+            return CreatedAtAction(nameof(GetPromotion), new { id = createdPromotion.PromotionId }, createdPromotion);
+        }
 
-        //    return promotion;
-        //}
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<ActionResult<Promotion>> GetPromotion(Guid id)
         {
-            var promotion = _unitOfWork.PromotionRepository.GetById(id);
+            var promotion = await _promotionService.GetPromotion(id);
             if (promotion == null)
             {
                 return NotFound();
@@ -50,79 +43,32 @@ namespace MovieManagement.Server.Controllers
             return promotion;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Promotion>> PostPromotion(PromotionDto promotion)
+
+        [HttpPut("UpdatePromotion/{id:guid}")]
+        public async Task<IActionResult> UpdatePromotion(Guid id, PromotionDto promotionDto)
         {
-            // Map PromotionDto to Promotion entity
-            Promotion newPromotion = new()
+            try
             {
-                PromotionName = promotion.PromotionName,
-                Image = promotion.Image,
-                FromDate = promotion.FromDate,
-                ToDate = promotion.ToDate,
-                Discount = promotion.Discount,
-                Content = promotion.Content
-            };
-
-            // Create the promotion entity
-            await _unitOfWork.PromotionRepository.CreateAsync(newPromotion);
-            // If needed, ensure that changes are saved, e.g., await _unitOfWork.SaveChangesAsync();
-
-            // Return the created promotion with a location header pointing to the new resource
-            return CreatedAtAction(nameof(GetPromotion), new { id = newPromotion.PromotionId }, newPromotion);
+                var updatedPromotion = await _promotionService.UpdatePromotion(id, promotionDto);
+                return Ok(updatedPromotion);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
 
-        // PUT: api/Promotions/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutPromotion(Guid id, Promotion promotion)
-        //{
-        //    if (id != promotion.PromotionId)
-        //    {
-        //        return BadRequest();
-        //    }
+        [HttpDelete("DeletePromotion/{id:guid}")]
+        public async Task<IActionResult> DeletePromotion(Guid id)
+        {
+            var result = await _promotionService.DeletePromotion(id);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
 
-        //    _context.Entry(promotion).State = EntityState.Modified;
-
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!PromotionExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return NoContent();
-        //}
-
-        // DELETE: api/Promotions/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeletePromotion(Guid id)
-        //{
-        //    var promotion = await _context.Promotions.FindAsync(id);
-        //    if (promotion == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.Promotions.Remove(promotion);
-        //    await _context.SaveChangesAsync();
-
-        //    return NoContent();
-        //}
-
-        //private bool PromotionExists(Guid id)
-        //{
-        //    return _context.Promotions.Any(e => e.PromotionId == id);
-        //}
     }
 }

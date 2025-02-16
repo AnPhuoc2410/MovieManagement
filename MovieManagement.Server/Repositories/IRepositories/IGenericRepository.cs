@@ -38,6 +38,7 @@
         T Update(T entity);
         bool Delete(int id);
         bool Delete(string id);
+        bool Delete(Guid id);
 
         /// <summary>
         /// Dùng List cho việc phân trang vì dữ liệu sau khi lấy sẽ load lên RAM
@@ -57,6 +58,7 @@
         Task<T> UpdateAsync(T entity);
         Task<bool> DeleteAsync(int id);
         Task<bool> DeleteAsync(string id);
+        Task<bool> DeleteAsync(Guid id);
         Task<List<T>> GetPageAsync(int page, int pageSize);
     }
 }
