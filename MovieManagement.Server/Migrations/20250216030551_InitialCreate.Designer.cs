@@ -12,8 +12,8 @@ using MovieManagement.Server.Data;
 namespace MovieManagement.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250215210245_asdasd12")]
-    partial class asdasd12
+    [Migration("20250216030551_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

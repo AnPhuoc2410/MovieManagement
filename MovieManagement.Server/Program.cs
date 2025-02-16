@@ -2,6 +2,7 @@
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Repositories;
 using MovieManagement.Server.Repositories.IRepositories;
+using MovieManagement.Server.Services.PromotionService;
 
 namespace MovieManagement.Server
 {
@@ -39,13 +40,16 @@ namespace MovieManagement.Server
             builder.Services.AddScoped<ITicketDetailRepository, TicketDetailRepository>();
             builder.Services.AddScoped<ITicketTypeRepository, TicketTypeRepository>();
 
+            // Đăng ký Services
+            builder.Services.AddScoped<IPromotionService,PromotionService>();
+
             // Đăng ký UnitOfWork
             builder.Services.AddScoped<UnitOfWork>();
 
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowReactApp",
-                    policy => policy.WithOrigins("https://localhost:7119")  // Adjust for deployment
+                    policy => policy.WithOrigins("https://localhost:7119", "https://localhost:3000")
                                    .AllowAnyMethod()
                                    .AllowAnyHeader());
             });

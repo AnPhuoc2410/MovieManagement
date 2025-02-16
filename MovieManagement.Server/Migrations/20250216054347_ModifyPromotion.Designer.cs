@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieManagement.Server.Data;
 
@@ -11,9 +12,11 @@ using MovieManagement.Server.Data;
 namespace MovieManagement.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250216054347_ModifyPromotion")]
+    partial class ModifyPromotion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -296,7 +299,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("ntext");
+                        .HasColumnType("Nvarchar(500)");
 
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
@@ -306,7 +309,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Image")
                         .IsRequired()
-                        .HasColumnType("Nvarchar(max)");
+                        .HasColumnType("Nvarchar(50)");
 
                     b.Property<string>("PromotionName")
                         .IsRequired()
