@@ -23,6 +23,7 @@
         //Synchronous Interfaces
         T GetById(int id);
         T GetById(string id);
+        T GetById(Guid id);
 
         /// <summary>
         /// Dùng List ở đây vì để lấy dữ liệu đưa vào trong RAM
@@ -50,6 +51,7 @@
         //Asynchronous Interfaces
         Task<T> GetByIdAsync(int id);
         Task<T> GetByIdAsync(string id);
+        Task<T> GetByIdAsync(Guid id);
         Task<List<T>> GetAllAsync();
         Task<T> CreateAsync(T entity);
         Task<T> UpdateAsync(T entity);

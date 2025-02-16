@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 
 namespace MovieManagement.Server.Controllers
@@ -38,6 +39,39 @@ namespace MovieManagement.Server.Controllers
 
         //    return promotion;
         //}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Promotion>> GetPromotion(Guid id)
+        {
+            var promotion = _unitOfWork.PromotionRepository.GetById(id);
+            if (promotion == null)
+            {
+                return NotFound();
+            }
+            return promotion;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Promotion>> PostPromotion(PromotionDto promotion)
+        {
+            // Map PromotionDto to Promotion entity
+            Promotion newPromotion = new()
+            {
+                PromotionName = promotion.PromotionName,
+                Image = promotion.Image,
+                FromDate = promotion.FromDate,
+                ToDate = promotion.ToDate,
+                Discount = promotion.Discount,
+                Content = promotion.Content
+            };
+
+            // Create the promotion entity
+            await _unitOfWork.PromotionRepository.CreateAsync(newPromotion);
+            // If needed, ensure that changes are saved, e.g., await _unitOfWork.SaveChangesAsync();
+
+            // Return the created promotion with a location header pointing to the new resource
+            return CreatedAtAction(nameof(GetPromotion), new { id = newPromotion.PromotionId }, newPromotion);
+        }
+
 
         // PUT: api/Promotions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -69,15 +103,6 @@ namespace MovieManagement.Server.Controllers
 
         //    return NoContent();
         //}
-
-        // POST: api/Promotions
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Promotion>> PostPromotion(Promotion promotion)
-        {
-            await _unitOfWork.PromotionRepository.CreateAsync(promotion);
-            return CreatedAtAction("GetPromotion", new { id = promotion.PromotionId }, promotion);
-        }
 
         // DELETE: api/Promotions/5
         //[HttpDelete("{id}")]
