@@ -26,7 +26,6 @@ namespace MovieManagement.Server
 );
 
             // Đăng Ký GenericRepository, Repository và Service
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddAllDependencies("Repository", "Service");
 
             // Đăng ký UnitOfWork
