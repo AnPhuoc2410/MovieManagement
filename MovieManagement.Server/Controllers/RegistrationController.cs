@@ -18,7 +18,7 @@ namespace MovieManagement.Server.Controllers
         
         [HttpPost]
         [Route("Registration")]
-        public async Task<IActionResult> Create(NhanVienDto Employee)
+        public async Task<IActionResult> Create(EmployeeDto Employee)
         {
             try
             {
