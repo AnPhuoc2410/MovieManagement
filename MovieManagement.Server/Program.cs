@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Repositories;
 using MovieManagement.Server.Repositories.IRepositories;
+using MovieManagement.Server.Services.MemberService;
 
 namespace MovieManagement.Server
 {
@@ -39,8 +41,11 @@ namespace MovieManagement.Server
             builder.Services.AddScoped<ITicketDetailRepository, TicketDetailRepository>();
             builder.Services.AddScoped<ITicketTypeRepository, TicketTypeRepository>();
 
+            //Đăng ký Service
+            builder.Services.AddScoped<IMemberService, MemberService>();
+
             // Đăng ký UnitOfWork
-            builder.Services.AddScoped<UnitOfWork>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddCors(options =>
             {

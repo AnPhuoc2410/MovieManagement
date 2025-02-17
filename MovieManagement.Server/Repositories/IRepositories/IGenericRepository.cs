@@ -21,8 +21,7 @@
         /// </summary>
 
         //Synchronous Interfaces
-        T GetById(int id);
-        T GetById(string id);
+        T GetById(Guid id);
 
         /// <summary>
         /// Dùng List ở đây vì để lấy dữ liệu đưa vào trong RAM
@@ -35,8 +34,7 @@
         List<T> GetAll();
         T Create(T entity);
         T Update(T entity);
-        bool Delete(int id);
-        bool Delete(string id);
+        bool Delete(Guid id);
 
         /// <summary>
         /// Dùng List cho việc phân trang vì dữ liệu sau khi lấy sẽ load lên RAM
@@ -48,13 +46,11 @@
         List<T> GetPage(int page, int pageSize);
 
         //Asynchronous Interfaces
-        Task<T> GetByIdAsync(int id);
-        Task<T> GetByIdAsync(string id);
+        Task<T> GetByIdAsync(Guid id);
         Task<List<T>> GetAllAsync();
         Task<T> CreateAsync(T entity);
         Task<T> UpdateAsync(T entity);
-        Task<bool> DeleteAsync(int id);
-        Task<bool> DeleteAsync(string id);
+        Task<bool> DeleteAsync(Guid id);
         Task<List<T>> GetPageAsync(int page, int pageSize);
     }
 }
