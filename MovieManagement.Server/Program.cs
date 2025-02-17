@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Extensions;
 using MovieManagement.Server.Repositories;
 using MovieManagement.Server.Repositories.IRepositories;
 using MovieManagement.Server.Services.MemberService;
@@ -24,25 +25,9 @@ namespace MovieManagement.Server
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-            // Đăng Ký GenericRepository
+            // Đăng Ký GenericRepository, Repository và Service
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-            // Đăng ký Repository
-            builder.Services.AddScoped<IBillRepository, BillRepository>();
-            builder.Services.AddScoped<ICategoryDetailRepository, CategoryDetailRepository>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-            builder.Services.AddScoped<IMemberRepository, MemberRepository>();
-            builder.Services.AddScoped<IMovieRepository, MovieRepository>();
-            builder.Services.AddScoped<IPromotionRepository, PromotionRepository>();
-            builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-            builder.Services.AddScoped<ISeatRepository, SeatRepository>();
-            builder.Services.AddScoped<IShowtimeRepository, ShowtimeRepository>();
-            builder.Services.AddScoped<ITicketDetailRepository, TicketDetailRepository>();
-            builder.Services.AddScoped<ITicketTypeRepository, TicketTypeRepository>();
-
-            //Đăng ký Service
-            builder.Services.AddScoped<IMemberService, MemberService>();
+            builder.Services.AddAllDependencies("Repository", "Service");
 
             // Đăng ký UnitOfWork
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
