@@ -21,7 +21,7 @@ namespace MovieManagement.Server.Controllers
             _employeeService = employeeService;
         }
 
-        
+
         [HttpPost]
         [Route("Registration")]
         public async Task<IActionResult> Create(EmployeeDto Employee)
@@ -68,24 +68,19 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
-        [HttpDelete]
-        [Route("Delete")]
-        public async Task<IActionResult> Delete(string Employee)
-        {
-            try
-            {
-                var list = _unitOfWork.EmployeeRepository.Delete(Employee);
-                return Ok(list);
-            }
-            catch (Exception err)
-            {
-                return BadRequest(err.Message);
-            }
-        }
-
-
-
-
-
+        //[HttpDelete]
+        //[Route("Delete")]
+        //public async Task<IActionResult> Delete(string Employee)
+        //{
+        //    try
+        //    {
+        //        var list = _unitOfWork.EmployeeRepository.Delete(Employee);
+        //        return Ok(list);
+        //    }
+        //    catch (Exception err)
+        //    {
+        //        return BadRequest(err.Message);
+        //    }
+        //}
     }
 }
