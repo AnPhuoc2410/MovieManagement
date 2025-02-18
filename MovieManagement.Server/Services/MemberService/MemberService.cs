@@ -15,6 +15,14 @@ namespace MovieManagement.Server.Services.MemberService
         {
             _unitOfWork = unitOfWork;
         }
+        public async Task<IEnumerable<Member>> GetAllMembers()
+        {
+            return await _unitOfWork.MemberRepository.GetAllAsync();
+        }
+        public async Task<Member> GetMemberById(Guid memberId)
+        {
+            return await _unitOfWork.MemberRepository.GetByIdAsync(memberId);
+        }
         public async Task<Member> CreateMember(MemberDto memberDto)
         {
             var newMember = new Member
@@ -35,25 +43,9 @@ namespace MovieManagement.Server.Services.MemberService
             };
             return await _unitOfWork.MemberRepository.CreateAsync(newMember);
         }
-
-        public async Task<bool> DeleteMember(Guid id)
+        public async Task<Member> UpdateMember(Guid memberId, MemberDto memberDto)
         {
-            return await _unitOfWork.MemberRepository.DeleteAsync(id);
-        }
-
-        public async Task<IEnumerable<Member>> GetAllMembers()
-        {
-            return await _unitOfWork.MemberRepository.GetAllAsync();
-        }
-
-        public async Task<Member> GetMemberById(Guid id)
-        {
-            return await _unitOfWork.MemberRepository.GetByIdAsync(id);
-        }
-
-        public async Task<Member> UpdateMember(Guid id, MemberDto memberDto)
-        {
-            var existingMember = await _unitOfWork.MemberRepository.GetByIdAsync(id);
+            var existingMember = await _unitOfWork.MemberRepository.GetByIdAsync(memberId);
             if (existingMember == null) return null;
 
             existingMember.AccountName = memberDto.AccountName;
@@ -72,5 +64,10 @@ namespace MovieManagement.Server.Services.MemberService
 
             return await _unitOfWork.MemberRepository.UpdateAsync(existingMember);
         }
+        public async Task<bool> DeleteMember(Guid memberId)
+        {
+            return await _unitOfWork.MemberRepository.DeleteAsync(memberId);
+        }
+
     }
 }

@@ -16,7 +16,7 @@ namespace MovieManagement.Server.Controllers
             _memberService = memberService;
         }
         [HttpGet]
-        [Route("All")]
+        [Route("all")]
         public async Task<ActionResult> GetAllMembers()
         {
             var members = await _memberService.GetAllMembers();
@@ -24,13 +24,13 @@ namespace MovieManagement.Server.Controllers
         }
         [HttpGet]
         [Route("{id:guid}")]
-        public async Task<ActionResult<Member>> GetMember(Guid id)
+        public async Task<ActionResult<Member>> GetMemberById(Guid id)
         {
             var member = await _memberService.GetMemberById(id);
             return Ok(member);
         }
         [HttpPost]
-        [Route("Register")]
+        [Route("register")]
         public async Task<ActionResult<Member>> RegisterMember([FromBody] MemberDto memberDto)
         {
             var newMember = await _memberService.CreateMember(memberDto);
