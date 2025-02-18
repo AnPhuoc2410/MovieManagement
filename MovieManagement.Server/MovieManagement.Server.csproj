@@ -41,8 +41,4 @@
     </ProjectReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\EmployeeService\" />
-  </ItemGroup>
-
 </Project>

@@ -7,6 +7,7 @@ namespace MovieManagement.Server.Extensions
     {
         public AutoMapperProfiles()
         {
+
             CreateMap<Employee, EmployeeDto>();
             CreateMap<EmployeeDto, Employee>();
 
