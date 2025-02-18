@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Services.EmployeeService;
 
 namespace MovieManagement.Server.Controllers
 {
@@ -12,13 +13,18 @@ namespace MovieManagement.Server.Controllers
     {
 
         private readonly UnitOfWork _unitOfWork;
+        private readonly EmployeeService _employeeService;
 
-        public RegistrationController(UnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
+        public RegistrationController(UnitOfWork unitOfWork, EmployeeService employeeService)
+        {
+            _unitOfWork = unitOfWork;
+            _employeeService = employeeService;
+        }
 
 
         [HttpPost]
         [Route("Registration")]
-        public async Task<IActionResult> Create(NhanVienDto Employee)
+        public async Task<IActionResult> Create(EmployeeDto Employee)
         {
             try
             {
@@ -52,8 +58,9 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var list = _unitOfWork.EmployeeRepository.GetAll();
-                return Ok(list);
+                var test = _employeeService.GetAllEmployees;
+
+                return Ok(test);
             }
             catch (Exception err)
             {
