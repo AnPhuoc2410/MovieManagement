@@ -13,6 +13,7 @@ import Payment from "./pages/ticket/Payment";
 import Confirmation from "./pages/ticket/Confirmation";
 import UserDetail from "./pages/user/UserDetail";
 import { createTheme, ThemeProvider } from "@mui/material";
+import Dashboard from "./pages/admin/Dashboard";
 
 const theme = createTheme({
   components: {
@@ -50,6 +51,9 @@ const App = () => {
               <Route path="now-showing" element={<NowShowingMoviesPage />} />
               <Route path="up-coming" element={<UpComingMoviesPage />} />
             </Route>
+
+            <Route path="/admin" element={<Dashboard />} />
+
           </Routes>
         </ThemeProvider>
       </AuthProvider>
