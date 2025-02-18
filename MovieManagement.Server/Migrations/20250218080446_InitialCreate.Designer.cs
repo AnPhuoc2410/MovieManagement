@@ -12,7 +12,7 @@ using MovieManagement.Server.Data;
 namespace MovieManagement.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250216030551_InitialCreate")]
+    [Migration("20250218080446_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -299,7 +299,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("Nvarchar(500)");
+                        .HasColumnType("ntext");
 
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
@@ -309,7 +309,11 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Image")
                         .IsRequired()
-                        .HasColumnType("Nvarchar(50)");
+                        .HasColumnType("Nvarchar(max)");
+
+                    b.Property<string>("PromotionName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ToDate")
                         .HasColumnType("datetime2");

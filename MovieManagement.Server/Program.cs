@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
-using MovieManagement.Server.Services;
+using MovieManagement.Server.Services.EmployeeService;
+using MovieManagement.Server.Services.PromotionService;
 
 namespace MovieManagement.Server
 {
@@ -23,14 +23,11 @@ namespace MovieManagement.Server
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-            // Đăng Ký GenericRepository, Repository và Service
-            builder.Services.AddAllDependencies("Repository", "Service");
-
-            // Đăng ký Services
-            builder.Services.AddScoped<IPromotionService,PromotionService>();
-
             // Đăng ký UnitOfWork
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Đăng Ký GenericRepository, Repository và Service
+            builder.Services.AddAllDependencies("Repository", "Service", "UnitOfWork");
 
             builder.Services.AddCors(options =>
             {

@@ -10,7 +10,7 @@ namespace MovieManagement.Server.Services.EmployeeService
 
         private readonly IUnitOfWork _unitOfWork;
 
-        public EmployeeService(UnitOfWork unitOfWork)
+        public EmployeeService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
