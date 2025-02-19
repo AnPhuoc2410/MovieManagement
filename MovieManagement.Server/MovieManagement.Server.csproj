@@ -10,6 +10,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Responses\**" />
+    <Compile Remove="Services\**" />
+    <Content Remove="Responses\**" />
+    <Content Remove="Services\**" />
+    <EmbeddedResource Remove="Responses\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <None Remove="Responses\**" />
+    <None Remove="Services\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
       <Version>8.*-*</Version>
@@ -27,11 +38,6 @@
     <ProjectReference Include="..\moviemanagement.client\moviemanagement.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Responses\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
