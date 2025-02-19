@@ -15,8 +15,12 @@ namespace MovieManagement.Server.Services.MemberService
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<Member>> GetAllMembers()
+        public async Task<IEnumerable<MemberDto>> GetAllMembers()
         {
+            var output = (await _unitOfWork.MemberRepository.GetAllAsync()).Select(x => new MemberDto
+            {
+
+            }).ToList();
             return await _unitOfWork.MemberRepository.GetAllAsync();
         }
         public async Task<Member> GetMemberById(Guid memberId)
