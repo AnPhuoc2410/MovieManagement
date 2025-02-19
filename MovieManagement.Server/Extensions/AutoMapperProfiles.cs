@@ -7,8 +7,12 @@ namespace MovieManagement.Server.Extensions
     {
         public AutoMapperProfiles()
         {
-            CreateMap<NhanVien, NhanVienDto>();
-            CreateMap<NhanVienDto, NhanVien>();
+
+            CreateMap<Employee, EmployeeDto>();
+            CreateMap<EmployeeDto, Employee>();
+
+            CreateMap<Promotion, PromotionDto>();
+            CreateMap<PromotionDto, Promotion>();
 
         }
     }

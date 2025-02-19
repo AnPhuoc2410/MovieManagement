@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   CardContent,
@@ -6,44 +6,42 @@ import {
   CardMedia,
   Box,
   Button,
+  Grid,
 } from "@mui/material";
 import Header from "../../components/home/Header";
 import Footer from "../../components/home/Footer";
-import Grid from "@mui/material/Grid";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 interface Promotion {
-  id: number;
-  title: string;
-  description: string;
-  imageUrl: string;
+  promotionId: string;
+  promotionName: string;
+  image: string;
+  fromDate: string;
+  toDate: string;
+  discount: number;
+  content: string;
 }
 
-const promotions: Promotion[] = [
-  {
-    id: 1,
-    title: "STUDENT - 45K CHO HỌC SINH SINH VIÊN",
-    description:
-      "Đồng giá 45K/2D cho HSSV/GV/U22 cả tuần tại mọi cụm rạp Cinestar.",
-    imageUrl:
-      "https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2FMageINIC%2Fbannerslider%2Fkm-m-1.webp&w=1920&q=75",
-  },
-  {
-    id: 2,
-    title: "MONDAY - ƯU ĐÃI NGÀY THỨ HAI",
-    description: "Giá vé ưu đãi vào mỗi thứ Hai hàng tuần tại Cinestar.",
-    imageUrl:
-      "https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2FMageINIC%2Fbannerslider%2Fkm-m-2.webp&w=1920&q=75",
-  },
-];
-
-const Promotion: React.FC = () => {
+const PromotionsPage: React.FC = () => {
   const navigate = useNavigate();
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
+
+  useEffect(() => {
+    fetch("https://localhost:7119/api/Promotions/GetAllPromotions")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch promotions");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setPromotions(data);
+      })
+      .catch((error) => console.error("Error fetching promotions:", error));
+  }, []);
 
   return (
-    <Box
-      sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
-    >
+    <Box sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}>
       <Header />
       <Container>
         <Typography
@@ -57,7 +55,7 @@ const Promotion: React.FC = () => {
             <Grid
               container
               item
-              key={promotion.id}
+              key={promotion.promotionId}
               spacing={2}
               alignItems="center"
               flexDirection={index % 2 === 0 ? "row" : "row-reverse"}
@@ -66,8 +64,8 @@ const Promotion: React.FC = () => {
               <Grid item xs={12} md={6} sx={{ display: "flex" }}>
                 <CardMedia
                   component="img"
-                  image={promotion.imageUrl}
-                  alt={promotion.title}
+                  image={promotion.image}
+                  alt={promotion.promotionName}
                   sx={{
                     width: "100%",
                     height: "100%",
@@ -93,16 +91,16 @@ const Promotion: React.FC = () => {
                 >
                   <CardContent>
                     <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                      {promotion.title}
+                      {promotion.promotionName}
                     </Typography>
-                    <Typography variant="body2">
-                      {promotion.description}
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      {promotion.content}
                     </Typography>
                     <Button
                       variant="contained"
                       sx={{ bgcolor: "yellow", color: "black", mt: 2 }}
                       onClick={() => {
-                        navigate(`/promotions/${promotion.id}`);
+                        navigate(`/promotions/${promotion.promotionId}`);
                       }}
                     >
                       Đặt Vé Ngay
@@ -119,4 +117,4 @@ const Promotion: React.FC = () => {
   );
 };
 
-export default Promotion;
+export default PromotionsPage;

@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
-using MovieManagement.Server.Repositories;
+using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Services.EmployeeService;
+using MovieManagement.Server.Services.PromotionService;
 
 namespace MovieManagement.Server
 {
@@ -15,15 +17,22 @@ namespace MovieManagement.Server
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddScoped<INhanVienRepository, NhanVienRepository>();
+
+            // Đăng ký DbContext
             builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+            // Đăng ký UnitOfWork
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Đăng Ký GenericRepository, Repository và Service
+            builder.Services.AddAllDependencies("Repository", "Service", "UnitOfWork");
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowReactApp",
-                    policy => policy.WithOrigins("https://localhost:7119")  // Adjust for deployment
+                    policy => policy.WithOrigins("https://localhost:7119", "https://localhost:3000")
                                    .AllowAnyMethod()
                                    .AllowAnyHeader());
             });
