@@ -14,12 +14,14 @@ import {
   UsaFlag,
   BrazilFlag,
   GlobeFlag,
+  VietnamFlag,
 } from '../../data/CustomIcons';
 
 const data = [
   { label: 'India', value: 50000 },
   { label: 'USA', value: 35000 },
   { label: 'Brazil', value: 10000 },
+  { label: 'Vietnam', value: 50000 },
   { label: 'Other', value: 5000 },
 ];
 
@@ -28,19 +30,25 @@ const countries = [
     name: 'India',
     value: 50,
     flag: <IndiaFlag />,
-    color: 'hsl(220, 25%, 65%)',
+    color: 'hsl(34, 77.90%, 52.20%)',
   },
   {
     name: 'USA',
-    value: 35,
+    value: 10,
     flag: <UsaFlag />,
-    color: 'hsl(220, 25%, 45%)',
+    color: 'hsl(220, 89.50%, 58.80%)',
   },
   {
     name: 'Brazil',
-    value: 10,
+    value: 5,
     flag: <BrazilFlag />,
-    color: 'hsl(220, 25%, 30%)',
+    color: 'hsl(128, 43.20%, 44.90%)',
+  },
+  {
+    name: 'Vietnam',
+    value: 30,
+    flag: <VietnamFlag />,
+    color: 'hsl(16, 72.80%, 52.40%)',
   },
   {
     name: 'Other',
@@ -115,10 +123,11 @@ function PieCenterLabel({ primaryText, secondaryText }: PieCenterLabelProps) {
 }
 
 const colors = [
-  'hsl(220, 20%, 65%)',
-  'hsl(220, 20%, 42%)',
-  'hsl(220, 20%, 35%)',
-  'hsl(220, 20%, 25%)',
+  'hsl(34, 77.90%, 52.20%)',
+  'hsl(220, 89.50%, 58.80%)',
+  'hsl(128, 43.20%, 44.90%)',
+  'hsl(16, 72.80%, 52.40%)',
+  'hsl(220, 25%, 20%)'
 ];
 
 export default function ChartUserByCountry() {

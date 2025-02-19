@@ -52,6 +52,28 @@ export function SitemarkIcon() {
   );
 }
 
+export function VietnamFlag() {
+  return (
+    <SvgIcon>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect width="24" height="24" rx="12" fill="#DA251D" />
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M12 7L13.9021 10.7639H18L14.5489 13.4721L15.8042 17L12 14.5L8.19575 17L9.45114 13.4721L6 10.7639H10.0979L12 7Z"
+          fill="#FFFF00"
+        />
+      </svg>
+    </SvgIcon>
+  );
+}
+
 export function IndiaFlag() {
   return (
     <SvgIcon>
