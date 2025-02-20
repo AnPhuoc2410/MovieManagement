@@ -49,7 +49,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPut("UpdatePromotion/{id:guid}")]
-        public async Task<IActionResult> UpdatePromotion(Guid id, PromotionDto promotionDto)
+        public async Task<IActionResult> UpdatePromotion(Guid id, Promotion promotionDto)
         {
             try
             {

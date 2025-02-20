@@ -11,26 +11,19 @@ namespace MovieManagement.Server.Services.RoomService
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<Room>> GetAllRooms()
+        public async Task<IEnumerable<Room>> GetAllRoomsAsync()
         {
             return await _unitOfWork.RoomRepository.GetAllAsync();
         }
-        public async Task<Room> GetRoomById(Guid roomId)
+        public async Task<Room> GetRoomByIdAsync(Guid roomId)
         {
             return await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
         }
-        public async Task<Room> CreateRoom(RoomDto roomDto)
+        public async Task<Room> CreateRoomAsync(Room room)
         {
-            var newRoom = new Room
-            {
-                Name = roomDto.Name,
-                Column = roomDto.Column,
-                Row = roomDto.Row,
-                Total = roomDto.Total,
-            };
-            return await _unitOfWork.RoomRepository.CreateAsync(newRoom);
+            return await _unitOfWork.RoomRepository.CreateAsync(room);
         }
-        public async Task<Room> UpdateRoom(Guid roomId, RoomDto roomDto)
+        public async Task<Room> UpdateRoomAsync(Guid roomId, RoomDto roomDto)
         {
             var updateRoom = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
             updateRoom.Name = roomDto.Name;
@@ -40,7 +33,7 @@ namespace MovieManagement.Server.Services.RoomService
             return await _unitOfWork.RoomRepository.UpdateAsync(updateRoom);
 
         }
-        public Task<bool> DeleteRoom(Guid roomId)
+        public Task<bool> DeleteRoomAsync(Guid roomId)
         {
             return _unitOfWork.RoomRepository.DeleteAsync(roomId);
         }
