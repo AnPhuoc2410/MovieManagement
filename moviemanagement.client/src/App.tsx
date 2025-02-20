@@ -15,6 +15,7 @@ import UserDetail from "./pages/user/UserDetail";
 import { createTheme, ThemeProvider } from "@mui/material";
 import Dashboard from "./pages/admin/Dashboard";
 import PromotionManagement from "./pages/admin/Promotions";
+import Movies from "./pages/admin/Movies";
 
 const theme = createTheme({
   components: {
@@ -56,6 +57,8 @@ const App = () => {
             <Route path="/admin">
               <Route path="thong-ke" element={<Dashboard />} />
               <Route path="khuyen-mai" element={<PromotionManagement />} />
+              <Route path="phim" element={<Movies />} />
+
             </Route>
 
           </Routes>
