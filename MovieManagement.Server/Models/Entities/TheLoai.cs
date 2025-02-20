@@ -9,7 +9,6 @@ namespace MovieManagement.Server.Models.Entities
         [Key]
         public int MaTheLoai { get; set; }
 
-        [Column(TypeName = "nvarchar(20)")]
         public string TenTheLoai { get; set; }
     }
 }

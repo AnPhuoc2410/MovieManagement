@@ -6,10 +6,9 @@ namespace MovieManagement.Server.Models.Entities
     [Table("XUATCHIEU")]
     public class XuatChieuPhim
     {
-        [Key, Column(Order = 0)]
+        [Key]
         public int MaPhim { get; set; }
 
-        [Key, Column(Order = 1)]
         public TimeSpan XuatChieu { get; set; }
 
         [ForeignKey("MaPhim")]

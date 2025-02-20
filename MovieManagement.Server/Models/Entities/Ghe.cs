@@ -9,7 +9,6 @@ namespace MovieManagement.Server.Models.Entities
         [Key]
         public int MaGhe { get; set; }
 
-        [Column(TypeName = "varchar(1)")]
         public string Hang { get; set; }
 
         public int SoGhe { get; set; }

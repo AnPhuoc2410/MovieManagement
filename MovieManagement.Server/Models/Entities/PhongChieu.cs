@@ -9,7 +9,6 @@ namespace MovieManagement.Server.Models.Entities
         [Key]
         public int MaPhong { get; set; }
 
-        [Column(TypeName = "nvarchar(20)")]
         public string TenPhong { get; set; }
 
         public int HangGhe { get; set; }

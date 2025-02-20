@@ -17,7 +17,6 @@ namespace MovieManagement.Server.Models.Entities
 
         public int PhienBan { get; set; } // 0: 2D...
 
-        [Column(TypeName = "decimal(10,2)")] // Adjust precision for currency
         public decimal GiaVe { get; set; } // Giá vé
     }
 }
