@@ -43,12 +43,12 @@ export default function SideMenuMobile({ open, toggleDrawer }: SideMenuMobilePro
           >
             <Avatar
               sizes="small"
-              alt="Riley Carter"
-              src="/static/images/avatar/7.jpg"
+              alt="Avatar Img" 
+              src="https://avatars.githubusercontent.com/u/153256952?v=4&size=64"
               sx={{ width: 24, height: 24 }}
             />
             <Typography component="p" variant="h6">
-              Riley Carter
+              Admin
             </Typography>
           </Stack>
           <MenuButton showBadge>
