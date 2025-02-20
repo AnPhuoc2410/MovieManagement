@@ -29,6 +29,9 @@ namespace MovieManagement.Server
             // Đăng Ký GenericRepository, Repository và Service
             builder.Services.AddAllDependencies("Repository", "Service", "UnitOfWork");
 
+            // Đăng ký AutoMapper
+            builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowReactApp",
