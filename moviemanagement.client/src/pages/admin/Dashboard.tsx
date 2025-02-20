@@ -36,15 +36,11 @@ export default function Dashboard({ disableCustomTheme = false }: { disableCusto
     <AppTheme disableCustomTheme={disableCustomTheme} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: 'flex', height: '100vh' }}>
-        {/* Sidebar */}
         <SideMenu />
         
-        {/* Main Content */}
         <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-          {/* Top Navbar */}
           <AppNavbar />
           
-          {/* Page Content */}
           <Box
             component="main"
             sx={(theme) => ({

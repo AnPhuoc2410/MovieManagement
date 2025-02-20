@@ -54,8 +54,8 @@ const App = () => {
             </Route>
 
             <Route path="/admin">
-              <Route path="" element={<Dashboard />} />
-              <Route path="promotions" element={<PromotionManagement />} />
+              <Route path="thong-ke" element={<Dashboard />} />
+              <Route path="khuyen-mai" element={<PromotionManagement />} />
             </Route>
 
           </Routes>
