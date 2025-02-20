@@ -19,16 +19,9 @@ namespace MovieManagement.Server.Services.RoomService
         {
             return await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
         }
-        public async Task<Room> CreateRoomAsync(RoomDto roomDto)
+        public async Task<Room> CreateRoomAsync(Room room)
         {
-            var newRoom = new Room
-            {
-                Name = roomDto.Name,
-                Column = roomDto.Column,
-                Row = roomDto.Row,
-                Total = roomDto.Total,
-            };
-            return await _unitOfWork.RoomRepository.CreateAsync(newRoom);
+            return await _unitOfWork.RoomRepository.CreateAsync(room);
         }
         public async Task<Room> UpdateRoomAsync(Guid roomId, RoomDto roomDto)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services.SeatService;
@@ -10,15 +11,17 @@ namespace MovieManagement.Server.Controllers
     public class SeatController : Controller
     {
         private readonly ISeatService _seatService;
-        public SeatController(ISeatService seatService)
+        private readonly IMapper _mapper;
+        public SeatController(ISeatService seatService, IMapper mapper)
         {
             _seatService = seatService;
+            _mapper = mapper;
         }
         [HttpGet]
         [Route("all")]
         public async Task<ActionResult> GetAllSeatsAsync()
         {
-            var seats = await _seatService.GetAllSeatsAsync();
+            var seats = _mapper.Map<SeatDto>(await _seatService.GetAllSeatsAsync());
             return Ok(seats);
         }
         [HttpGet]

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services.BillService;
@@ -10,33 +11,34 @@ namespace MovieManagement.Server.Controllers
     public class BillController : Controller
     {
         private readonly IBillService _billService;
-        public BillController(IBillService billService)
+        private readonly IMapper _mapper;
+        public BillController(IBillService billService, IMapper mapper)
         {
             _billService = billService;
+            _mapper = mapper;
         }
         [HttpGet]
         [Route("all")]
         public async Task<ActionResult> GetAllBills()
         {
-            var bills = await _billService.GetAllBillsAsync();
+            var bills = _mapper.Map<List<BillDto>>(await _billService.GetAllBillsAsync());
             return Ok(bills);
         }
         [HttpGet]
         [Route("{billId:guid}")]
-        public async Task<ActionResult<Bill>> GetBillById(Guid billId)
+        public async Task<ActionResult<BillDto>> GetBillById(Guid billId)
         {
-            var bill = await _billService.GetBillAsync(billId);
-            return Ok(bill);
+            return _mapper.Map<BillDto>(await _billService.GetBillAsync(billId));
         }
         [HttpPost]
-        public async Task<ActionResult<Bill>> CreateBill(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, BillDto billDto)
+        public async Task<ActionResult<BillDto>> CreateBill(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, BillDto billDto)
         {
-            return await _billService.CreateBillAsync(movieId, memberId, employeeId, promotionId, billDto);
+            return _mapper.Map<BillDto>(await _billService.CreateBillAsync(movieId, memberId, employeeId, promotionId, _mapper.Map<Bill>(billDto)));
         }
         [HttpPut]
-        public async Task<ActionResult<Bill>> UpdateBill(Guid billId, BillDto billDto)
+        public async Task<ActionResult<BillDto>> UpdateBill(Guid billId, BillDto billDto)
         {
-            return await _billService.UpdateBillAsync(billId, billDto);
+            return _mapper.Map<BillDto>(await _billService.UpdateBillAsync(billId, _mapper.Map<Bill>(billDto)));
         }
         [HttpDelete]
         public async Task<bool> DeleteBill(Guid billId)

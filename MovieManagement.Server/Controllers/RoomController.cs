@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services.RoomService;
@@ -10,33 +11,36 @@ namespace MovieManagement.Server.Controllers
     public class RoomController : Controller
     {
         private readonly IRoomService _roomService;
-        public RoomController(IRoomService roomService)
+        private readonly IMapper _mapper;
+
+        public RoomController(IRoomService roomService, IMapper mapper)
         {
             _roomService = roomService;
+            _mapper = mapper;
         }
         [HttpGet]
         [Route("all")]
         public async Task<ActionResult> GetAll()
         {
-            var rooms = await _roomService.GetAllRoomsAsync();
+            var rooms = _mapper.Map<List<RoomDto>>(await _roomService.GetAllRoomsAsync());
             return Ok(rooms);
         }
         [HttpGet]
         [Route("{roomId:guid}")]
-        public async Task<ActionResult<Room>> GetRoomById(Guid roomId)
+        public async Task<ActionResult<RoomDto>> GetRoomById(Guid roomId)
         {
-            return await _roomService.GetRoomByIdAsync(roomId);
+            return _mapper.Map<RoomDto>(await _roomService.GetRoomByIdAsync(roomId));
         }
         [HttpPost]
         public async Task<ActionResult<Room>> CreateRoom([FromBody] RoomDto roomDto)
         {
-            return await _roomService.CreateRoomAsync(roomDto);
+            return await _roomService.CreateRoomAsync(_mapper.Map<Room>(roomDto));
         }
         [HttpPut]
         [Route("{roomId:guid}")]
         public async Task<ActionResult<Room>> UpdateRoom(Guid roomId, [FromBody] RoomDto roomDto)
         {
-            return await _roomService.UpdateRoomAsync(roomId, roomDto);
+            return _mapper.Map<Room>(await _roomService.UpdateRoomAsync(roomId, roomDto));
         }
         [HttpDelete]
         public async Task<bool> DeleteRoom(Guid roomId)

@@ -19,37 +19,37 @@ namespace MovieManagement.Server.Services.BillService
         {
             return await _unitOfWork.BillRepository.GetByIdAsync(billId);
         }
-        public async Task<Bill> CreateBillAsync(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, BillDto billDto)
+        public async Task<Bill> CreateBillAsync(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, Bill bill)
         {
             var newBill = new Bill
             {
-                CreatedDate = billDto.CreatedDate,
-                Point = billDto.Point,
-                TotalTicket = billDto.TotalTicket,
-                Amount = billDto.Amount,
+                CreatedDate = bill.CreatedDate,
+                Point = bill.Point,
+                TotalTicket = bill.TotalTicket,
+                Amount = bill.Amount,
                 MovieId = movieId,
-                Showtime = billDto.Showtime,
+                Showtime = bill.Showtime,
                 MemberId = memberId,
                 EmployeeId = employeeId,
                 PromotionId = promotionId,
-                Status = billDto.Status,
+                Status = bill.Status,
             };
             return await _unitOfWork.BillRepository.CreateAsync(newBill);
         }
-        public async Task<Bill> UpdateBillAsync(Guid billId, BillDto billDto)
+        public async Task<Bill> UpdateBillAsync(Guid billId, Bill bill)
         {
             var updateBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
 
-            updateBill.CreatedDate = billDto.CreatedDate;
-            updateBill.Point = billDto.Point;
-            updateBill.TotalTicket = billDto.TotalTicket;
-            updateBill.Amount = billDto.Amount;
-            updateBill.MovieId = billDto.MovieId;
-            updateBill.Showtime = billDto.Showtime;
-            updateBill.MemberId = billDto.MemberId;
-            updateBill.EmployeeId = billDto.EmployeeId;
-            updateBill.PromotionId = billDto.PromotionId;
-            updateBill.Status = billDto.Status;
+            updateBill.CreatedDate = bill.CreatedDate;
+            updateBill.Point = bill.Point;
+            updateBill.TotalTicket = bill.TotalTicket;
+            updateBill.Amount = bill.Amount;
+            updateBill.MovieId = bill.MovieId;
+            updateBill.Showtime = bill.Showtime;
+            updateBill.MemberId = bill.MemberId;
+            updateBill.EmployeeId = bill.EmployeeId;
+            updateBill.PromotionId = bill.PromotionId;
+            updateBill.Status = bill.Status;
 
             return await _unitOfWork.BillRepository.UpdateAsync(updateBill);
         }
