@@ -19,32 +19,29 @@ namespace MovieManagement.Server.Controllers
         [Route("all")]
         public async Task<ActionResult> GetAllMembers()
         {
-            var members = await _memberService.GetAllMembers();
+            var members = await _memberService.GetAllMembersAsync();
             return Ok(members);
         }
         [HttpGet]
         [Route("{id:guid}")]
         public async Task<ActionResult<Member>> GetMemberById(Guid id)
         {
-            var member = await _memberService.GetMemberById(id);
-            return Ok(member);
+            return await _memberService.GetMemberByIdAsync(id);
         }
         [HttpPost]
-        [Route("register")]
         public async Task<ActionResult<Member>> RegisterMember([FromBody] MemberDto memberDto)
         {
-            var newMember = await _memberService.CreateMember(memberDto);
-            return Ok(newMember);
+            return await _memberService.CreateMemberAsync(memberDto);
         }
         [HttpPut]
         public async Task<ActionResult<Member>> UpdateMemberById(Guid id, [FromBody] MemberDto memberDto)
         {
-            return await _memberService.UpdateMember(id, memberDto);
+            return await _memberService.UpdateMemberAsync(id, memberDto);
         }
         [HttpDelete]
         public async Task<bool> DeleteMemberById(Guid id)
         {
-            return await _memberService.DeleteMember(id);
+            return await _memberService.DeleteMemberAsync(id);
         }
     }
 }

@@ -5,10 +5,10 @@ namespace MovieManagement.Server.Services.MemberService
 {
     public interface IMemberService
     {
-        Task<IEnumerable<Member>> GetAllMembers();
-        Task<Member> GetMemberById(Guid memberId);
-        Task<Member> CreateMember(MemberDto memberDto);
-        Task<Member> UpdateMember(Guid memberId, MemberDto memberDto);
-        Task<bool> DeleteMember(Guid memberId);
+        Task<IEnumerable<Member>> GetAllMembersAsync();
+        Task<Member> GetMemberByIdAsync(Guid memberId);
+        Task<Member> CreateMemberAsync(MemberDto memberDto);
+        Task<Member> UpdateMemberAsync(Guid memberId, MemberDto memberDto);
+        Task<bool> DeleteMemberAsync(Guid memberId);
     }
 }

@@ -1,14 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace MovieManagement.Server.Models.Entities
+﻿namespace MovieManagement.Server.Models.DTOs
 {
-
-    public class Bill
+    public class BillDto
     {
-        public Guid BillId { get; set; }
-
         public DateTime CreatedDate { get; set; }
 
         public decimal Point { get; set; }
@@ -28,15 +21,5 @@ namespace MovieManagement.Server.Models.Entities
         public Guid PromotionId { get; set; }
 
         public int Status { get; set; } // 0: Hủy đặt vé; 1: Chờ nhận vé; 2: Đã nhận vé
-
-        public IEnumerable<TicketDetail> TicketDetails { get; set; } = new List<TicketDetail>();
-
-        public Employee Employee { get; set; }
-
-        public Member Member { get; set; }
-
-        public Movie Movie { get; set; }
-
-        public Promotion Promotion { get; set; }
     }
 }
