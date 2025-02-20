@@ -47,7 +47,20 @@ namespace MovieManagement.Server
                                    .AllowAnyHeader());
             });
             builder.Services.AddSwaggerGen();
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"),
+                    npgsqlOptionsAction: sqlOptions =>
+                    {
+                        sqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 5,
+                            maxRetryDelay: TimeSpan.FromSeconds(30),
+                            errorCodesToAdd: null);
 
+                        // Add this line to ensure UTC timestamps
+                        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+                    });
+            });
             var app = builder.Build();
 
             app.UseDefaultFiles();
