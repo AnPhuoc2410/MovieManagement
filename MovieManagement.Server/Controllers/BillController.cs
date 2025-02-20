@@ -31,7 +31,7 @@ namespace MovieManagement.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<Bill>> CreateBill(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, BillDto billDto)
         {
-            return await _billService.CreateBill(movieId, memberId, employeeId, promotionId, billDto);
+            return await _billService.CreateBillAsync(movieId, memberId, employeeId, promotionId, billDto);
         }
         [HttpPut]
         public async Task<ActionResult<Bill>> UpdateBill(Guid billId, BillDto billDto)

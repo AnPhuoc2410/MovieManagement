@@ -7,7 +7,7 @@ namespace MovieManagement.Server.Services.BillService
     {
         public Task<IEnumerable<Bill>> GetAllBillsAsync();
         public Task<Bill> GetBillAsync(Guid billId);
-        public Task<Bill> CreateBill(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, BillDto billDto);
+        public Task<Bill> CreateBillAsync(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, BillDto billDto);
         public Task<Bill> UpdateBillAsync(Guid billId, BillDto billDto);
         public Task<bool> DeleteBillAsync(Guid billId);
     }

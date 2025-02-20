@@ -8,7 +8,7 @@ namespace MovieManagement.Server.Services.PromotionService
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public PromotionService(UnitOfWork unitOfWork)
+        public PromotionService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
