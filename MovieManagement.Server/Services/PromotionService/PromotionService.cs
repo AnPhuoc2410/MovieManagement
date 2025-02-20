@@ -6,14 +6,14 @@ namespace MovieManagement.Server.Services.PromotionService
 {
     public class PromotionService : IPromotionService
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public PromotionService(UnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Promotion> CreatePromotion(PromotionDto promotion)
+        public async Task<Promotion> CreatePromotion(Promotion promotion)
         {
             var newPromotion = new Promotion
             {
@@ -47,7 +47,7 @@ namespace MovieManagement.Server.Services.PromotionService
             return promotions;
         }
 
-        public async Task<Promotion> UpdatePromotion(Guid id, PromotionDto promotion)
+        public async Task<Promotion> UpdatePromotion(Guid id, Promotion promotion)
         {
             // Retrieve the existing promotion
             var existingPromotion = await _unitOfWork.PromotionRepository.GetByIdAsync(id);

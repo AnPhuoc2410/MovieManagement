@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MovieManagement.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class asdass : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -101,11 +101,12 @@ namespace MovieManagement.Server.Migrations
                 columns: table => new
                 {
                     PromotionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    Image = table.Column<string>(type: "Nvarchar(50)", nullable: false),
+                    PromotionName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Image = table.Column<string>(type: "Nvarchar(max)", nullable: false),
                     FromDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ToDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Content = table.Column<string>(type: "Nvarchar(500)", nullable: false)
+                    Content = table.Column<string>(type: "ntext", nullable: false)
                 },
                 constraints: table =>
                 {

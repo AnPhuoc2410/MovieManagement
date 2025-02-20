@@ -1,6 +1,6 @@
 ﻿namespace MovieManagement.Server.Models.DTOs
 {
-    public class NhanVienDto
+    public class EmployeeDto
     {
 
         //public Guid EmployeeId { get; set; }

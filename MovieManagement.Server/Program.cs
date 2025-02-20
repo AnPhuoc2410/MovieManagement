@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
-using MovieManagement.Server.Repositories;
-using MovieManagement.Server.Repositories.IRepositories;
+using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Services.EmployeeService;
 using MovieManagement.Server.Services.PromotionService;
 
 namespace MovieManagement.Server
@@ -23,28 +23,14 @@ namespace MovieManagement.Server
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-            // Đăng Ký GenericRepository
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-            // Đăng ký Repository
-            builder.Services.AddScoped<IBillRepository, BillRepository>();
-            builder.Services.AddScoped<ICategoryDetailRepository, CategoryDetailRepository>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-            builder.Services.AddScoped<IMemberRepository, MemberRepository>();
-            builder.Services.AddScoped<IMovieRepository, MovieRepository>();
-            builder.Services.AddScoped<IPromotionRepository, PromotionRepository>();
-            builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-            builder.Services.AddScoped<ISeatRepository, SeatRepository>();
-            builder.Services.AddScoped<IShowtimeRepository, ShowtimeRepository>();
-            builder.Services.AddScoped<ITicketDetailRepository, TicketDetailRepository>();
-            builder.Services.AddScoped<ITicketTypeRepository, TicketTypeRepository>();
-
-            // Đăng ký Services
-            builder.Services.AddScoped<IPromotionService,PromotionService>();
-
             // Đăng ký UnitOfWork
-            builder.Services.AddScoped<UnitOfWork>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Đăng Ký GenericRepository, Repository và Service
+            builder.Services.AddAllDependencies("Repository", "Service", "UnitOfWork");
+
+            // Đăng ký AutoMapper
+            builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
             builder.Services.AddCors(options =>
             {
