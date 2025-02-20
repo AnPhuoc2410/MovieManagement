@@ -3,6 +3,7 @@
     public class PromotionDto
     {
         public string PromotionName { get; set; }
+
         public string Image { get; set; }
 
         public DateTime FromDate { get; set; }
