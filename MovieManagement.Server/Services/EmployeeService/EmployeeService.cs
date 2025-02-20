@@ -63,24 +63,8 @@ namespace MovieManagement.Server.Services.EmployeeService
             return updatedEmployee;
         }
 
-        public async Task<ResponseDto> GetAllv2()
-        {
+        
 
-            var employees = await _unitOfWork.EmployeeRepository.GetAllAsync();
-            ResponseDto response = new ResponseDto();
-            if (employees == null)
-            {
-                response.IsSucceeded = false;
-                response.StatusMessage = "Failed";
-                response.Message = "No employee found!";
-                response.StatusCode = StatusCodes.Status404NotFound;
-                return response;
-            }
-            response.Message = "Success";
-            response.Data = employees;
 
-            return response;
-
-        }
     }
 }

@@ -25,6 +25,7 @@
         public string? Address { get; set; }
 
         public decimal? Point { get; set; }
+
         public int Status { get; set; } // 0: Khóa tài khoản, 1: Đã xác nhận.
     }
 }
