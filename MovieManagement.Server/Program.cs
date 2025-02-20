@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Extensions;
 using MovieManagement.Server.Repositories;
 
 namespace MovieManagement.Server
@@ -16,9 +17,27 @@ namespace MovieManagement.Server
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddScoped<INhanVienRepository, NhanVienRepository>();
+
+            // su dung SQL Server option
+            //            builder.Services.AddDbContext<AppDbContext>(options =>
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+            //);
+
+            // su dung Postgres option
             builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+            {
+                options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"),
+                    npgsqlOptionsAction: sqlOptions =>
+                    {
+                        sqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 5,
+                            maxRetryDelay: TimeSpan.FromSeconds(30),
+                            errorCodesToAdd: null);
+
+                        // Add this line to ensure UTC timestamps
+                        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+                    });
+            });
 
             builder.Services.AddCors(options =>
             {
@@ -47,9 +66,17 @@ namespace MovieManagement.Server
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
+            // Check khi nao Migration se duoc apply
+            if (builder.Configuration.GetValue<bool>("ApplyMigrations", false))
+            {
+                app.ApplyMigrations();
+            }
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                // Only apply migrations if explicitly enabled in configuration
+
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
@@ -58,10 +85,8 @@ namespace MovieManagement.Server
 
             app.UseAuthorization();
 
-
             app.MapControllers();
             app.UseCors("AllowReactApp");
-
 
             app.MapFallbackToFile("/index.html");
 

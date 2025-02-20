@@ -8,20 +8,16 @@ namespace MovieManagement.Server.Models.Entities
     public class HoaDonBanVe
     {
         [Key]
-        [Column(TypeName = "varchar(10)")]
         public string MaHoaDon { get; set; }
 
         public DateTime NgayLap { get; set; }
 
-        [Column(TypeName = "numeric(10,2)")]
         public decimal DiemDoiVe { get; set; }
 
         public int SoLuongDoiVe { get; set; }
 
-        [Column(TypeName = "numeric(10,2)")]
         public decimal TongTien { get; set; }
 
-        [Column(TypeName = "varchar(11)")]
         public string MaPhim { get; set; }
 
         public TimeSpan XuatChieu { get; set; } // Using TimeSpan for time representation

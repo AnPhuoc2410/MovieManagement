@@ -5,7 +5,6 @@ namespace MovieManagement.Server.Models.Entities
     [Table("CHITIETBANVE")]
     public class ChiTietBanVe
     {
-        [Column(TypeName = "varchar(10)")]
         public string MaHoaDon { get; set; }
 
         public int MaGhe { get; set; }

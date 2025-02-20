@@ -8,10 +8,8 @@ namespace MovieManagement.Server.Models.Entities
     public class KhuyenMai
     {
         [Key]
-        [Column(TypeName = "varchar(10)")]
         public string MaKhuyenMai { get; set; }
 
-        [Column(TypeName = "nvarchar(50)")]
         public string HinhAnh { get; set; }
 
         public DateTime TuNgay { get; set; }
@@ -20,7 +18,6 @@ namespace MovieManagement.Server.Models.Entities
 
         public decimal GiamGiaVe { get; set; }
 
-        [Column(TypeName = "nvarchar(500)")]
         public string NoiDung { get; set; }
     }
 }
