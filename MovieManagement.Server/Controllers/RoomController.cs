@@ -32,15 +32,15 @@ namespace MovieManagement.Server.Controllers
             return _mapper.Map<RoomDto>(await _roomService.GetRoomByIdAsync(roomId));
         }
         [HttpPost]
-        public async Task<ActionResult<Room>> CreateRoom([FromBody] RoomDto roomDto)
+        public async Task<ActionResult<RoomDto>> CreateRoom([FromBody] RoomDto roomDto)
         {
-            return await _roomService.CreateRoomAsync(_mapper.Map<Room>(roomDto));
+            return _mapper.Map<RoomDto>(await _roomService.CreateRoomAsync(_mapper.Map<Room>(roomDto)));
         }
         [HttpPut]
         [Route("{roomId:guid}")]
-        public async Task<ActionResult<Room>> UpdateRoom(Guid roomId, [FromBody] RoomDto roomDto)
+        public async Task<ActionResult<RoomDto>> UpdateRoom(Guid roomId, [FromBody] RoomDto roomDto)
         {
-            return _mapper.Map<Room>(await _roomService.UpdateRoomAsync(roomId, roomDto));
+            return _mapper.Map<RoomDto>(await _roomService.UpdateRoomAsync(roomId, roomDto));
         }
         [HttpDelete]
         public async Task<bool> DeleteRoom(Guid roomId)

@@ -29,7 +29,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpPost]
         [Route("CreatePromotion")]
-        public async Task<ActionResult<Promotion>> CreatePromotion(PromotionDto promotionDto)
+        public async Task<ActionResult<Promotion>> CreatePromotion([FromBody] PromotionDto promotionDto)
         {
             Promotion promotion = _mapper.Map<Promotion>(promotionDto);
             var createdPromotion = await _promotionService.CreatePromotion(promotion);
@@ -49,11 +49,11 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPut("UpdatePromotion/{id:guid}")]
-        public async Task<IActionResult> UpdatePromotion(Guid id, Promotion promotionDto)
+        public async Task<IActionResult> UpdatePromotion(Guid id, [FromBody] Promotion promotionDto)
         {
             try
             {
-                var updatedPromotion = await _promotionService.UpdatePromotion(id, promotionDto);
+                var updatedPromotion = _mapper.Map<Promotion>(await _promotionService.UpdatePromotion(id, promotionDto));
                 return Ok(updatedPromotion);
             }
             catch (Exception ex)

@@ -1,32 +1,24 @@
 ﻿using MovieManagement.Server.Data;
-using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Drawing;
-using System.Net;
-using System.Reflection;
-using AutoMapper;
 
 namespace MovieManagement.Server.Services.MemberService
 {
     public class MemberService : IMemberService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        public MemberService(IUnitOfWork unitOfWork, IMapper mapper)
+        public MemberService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
-        public async Task<IEnumerable<MemberDto>> GetAllMembersAsync()
+        public async Task<IEnumerable<Member>> GetAllMembersAsync()
         {
-            return _mapper.Map<List<MemberDto>>(await _unitOfWork.MemberRepository.GetAllAsync());
+            return await _unitOfWork.MemberRepository.GetAllAsync();
         }
-        public async Task<MemberDto> GetMemberByIdAsync(Guid memberId)
+        public async Task<Member> GetMemberByIdAsync(Guid memberId)
         {
-            return _mapper.Map<MemberDto>(await _unitOfWork.MemberRepository.GetByIdAsync(memberId));
+            return await _unitOfWork.MemberRepository.GetByIdAsync(memberId);
         }
-        public async Task<MemberDto> CreateMemberAsync(Member member)
+        public async Task<Member> CreateMemberAsync(Member member)
         {
             var newMember = new Member
             {
@@ -44,9 +36,9 @@ namespace MovieManagement.Server.Services.MemberService
                 Point = (decimal)0,
                 Status = 1
             };
-            return _mapper.Map<MemberDto>(await _unitOfWork.MemberRepository.CreateAsync(newMember));
+            return await _unitOfWork.MemberRepository.CreateAsync(newMember);
         }
-        public async Task<MemberDto> UpdateMemberAsync(Guid memberId, Member member)
+        public async Task<Member> UpdateMemberAsync(Guid memberId, Member member)
         {
             var updateMember = await _unitOfWork.MemberRepository.GetByIdAsync(memberId);
             if (updateMember == null) return null;
@@ -65,7 +57,7 @@ namespace MovieManagement.Server.Services.MemberService
             updateMember.Point = 0;
             updateMember.Status = 1;
 
-            return _mapper.Map<MemberDto>(await _unitOfWork.MemberRepository.UpdateAsync(updateMember));
+            return await _unitOfWork.MemberRepository.UpdateAsync(updateMember);
         }
         public async Task<bool> DeleteMemberAsync(Guid memberId)
         {

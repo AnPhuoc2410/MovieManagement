@@ -26,19 +26,19 @@ namespace MovieManagement.Server.Controllers
         }
         [HttpGet]
         [Route("{seatId:guid}")]
-        public async Task<Seat> GetSeatByIdAsync(Guid seatId)
+        public async Task<SeatDto> GetSeatByIdAsync(Guid seatId)
         {
-            return await _seatService.GetSeatByIdAsync(seatId);
+            return _mapper.Map<SeatDto>(await _seatService.GetSeatByIdAsync(seatId));
         }
         [HttpPost]
-        public async Task<Seat> CreateSeatAsync(SeatDto seatDto)
+        public async Task<SeatDto> CreateSeatAsync(SeatDto seatDto)
         {
-            return await _seatService.CreateSeatAsync(seatDto);
+            return _mapper.Map<SeatDto>(await _seatService.CreateSeatAsync(seatDto));
         }
         [HttpPut]
-        public async Task<Seat> UpdateSeatAsync(Guid seatId, SeatDto seatDto)
+        public async Task<SeatDto> UpdateSeatAsync(Guid seatId, SeatDto seatDto)
         {
-            return await _seatService.UpdateSeatAsync(seatId, seatDto);
+            return _mapper.Map<SeatDto>(await _seatService.UpdateSeatAsync(seatId, seatDto));
         }
         [HttpDelete]
         public async Task<bool> DeleteSeatAsync(Guid seatId)
