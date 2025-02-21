@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+import { string } from 'yup';
 
 const slugMapping: { [key: string]: string } = {
   'khuyen-mai': 'Khuyến mãi',
@@ -21,14 +22,16 @@ const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
   },
 }));
 
-function getBreadcrumbs(pathname: string): string[] {
-
+function getBreadcrumbs(pathname: string): [string[], string[]] {
   if(pathname === '/admin/thong-ke'){
-    return ['Trang chủ'];
+    return [['Trang chủ'], ['/admin/thong-ke']];
   }
 
   const parts = pathname.split('/').filter(Boolean);
   const breadcrumbs = ['Trang chủ'];
+  const paths = ['/admin/thong-ke'];
+
+  paths.push(pathname);
 
   if (parts.length > 0) {
     const lastPart = parts[parts.length - 1];
@@ -38,13 +41,14 @@ function getBreadcrumbs(pathname: string): string[] {
       breadcrumbs.push(lastPart.charAt(0).toUpperCase() + lastPart.slice(1));
     }
   }
-
-  return breadcrumbs;
-}
+  console.log(breadcrumbs);
+  console.log(paths);
+  return [ breadcrumbs, paths ];
+  }
 
 export default function NavbarBreadcrumbs() {
   const location = useLocation();
-  const breadcrumbs = getBreadcrumbs(location.pathname);
+  const [breadcrumbs, paths] = getBreadcrumbs(location.pathname);
 
   return (
     <StyledBreadcrumbs
@@ -52,11 +56,15 @@ export default function NavbarBreadcrumbs() {
       separator={<NavigateNextRoundedIcon fontSize="small" />}
     >
       {breadcrumbs.map((label, index) => (
+        
         <Typography
           key={index}
           variant="body1"
           sx={index === breadcrumbs.length - 1 ? { color: 'text.primary', fontWeight: 600 } : {}}
+          component="a"
+          href={paths[index]}
         >
+          
           {label}
         </Typography>
       ))}
