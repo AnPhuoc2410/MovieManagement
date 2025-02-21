@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services.RoomService;
@@ -10,15 +11,18 @@ namespace MovieManagement.Server.Controllers
     public class RoomController : Controller
     {
         private readonly IRoomService _roomService;
-        public RoomController(IRoomService roomService)
+        private readonly IMapper _mapper;
+
+        public RoomController(IRoomService roomService, IMapper mapper)
         {
             _roomService = roomService;
+            _mapper = mapper;
         }
         [HttpGet]
         [Route("all")]
         public async Task<ActionResult> GetAll()
         {
-            var rooms = await _roomService.GetAllRooms();
+            var rooms = (await _roomService.GetAllRooms());
             return Ok(rooms);
         }
         [HttpGet]

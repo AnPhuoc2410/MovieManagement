@@ -15,7 +15,7 @@ namespace MovieManagement.Server.Services.MemberService
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<MemberDto>> GetAllMembers()
+        public async Task<IEnumerable<Member>> GetAllMembers()
         {
             var output = (await _unitOfWork.MemberRepository.GetAllAsync()).Select(x => new MemberDto
             {
@@ -27,7 +27,7 @@ namespace MovieManagement.Server.Services.MemberService
         {
             return await _unitOfWork.MemberRepository.GetByIdAsync(memberId);
         }
-        public async Task<Member> CreateMember(MemberDto memberDto)
+        public async Task<Member> CreateMember(Member memberDto)
         {
             var newMember = new Member
             {
@@ -47,7 +47,7 @@ namespace MovieManagement.Server.Services.MemberService
             };
             return await _unitOfWork.MemberRepository.CreateAsync(newMember);
         }
-        public async Task<Member> UpdateMember(Guid memberId, MemberDto memberDto)
+        public async Task<Member> UpdateMember(Guid memberId, Member memberDto)
         {
             var existingMember = await _unitOfWork.MemberRepository.GetByIdAsync(memberId);
             if (existingMember == null) return null;
