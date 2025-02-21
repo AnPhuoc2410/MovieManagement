@@ -1,8 +1,5 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
-using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services.MemberService;
 
 namespace MovieManagement.Server.Controllers
@@ -22,33 +19,32 @@ namespace MovieManagement.Server.Controllers
         [Route("all")]
         public async Task<ActionResult> GetAllMembers()
         {
-            var members = _mapper.Map<List<MemberDto>>(await _memberService.GetAllMembers());
+            var members = await _memberService.GetAllMembersAsync();
             return Ok(members);
         }
         [HttpGet]
         [Route("{id:guid}")]
         public async Task<ActionResult<MemberDto>> GetMemberById(Guid id)
         {
-            var member = _mapper.Map<MemberDto>(await _memberService.GetMemberById(id));
-            return Ok(member);
+            var member = await _memberService.GetMemberByIdAsync(id);
+            return member;
         }
         [HttpPost]
-        [Route("register")]
-        public async Task<ActionResult<MemberDto>> RegisterMember([FromBody] MemberDto memberDto)
+        public async Task<ActionResult<MemberDto>> CreateMember([FromBody] MemberDto memberDto)
         {
-            var newMember = _mapper.Map<MemberDto>(await _memberService.CreateMember(_mapper.Map<Member>(memberDto)));
-            return Ok(newMember);
+            var @new = await _memberService.CreateMemberAsync(memberDto);
+            return @new;
         }
         [HttpPut]
         public async Task<ActionResult<MemberDto>> UpdateMemberById(Guid id, [FromBody] MemberDto memberDto)
-
         {
-            return _mapper.Map<MemberDto>(await _memberService.UpdateMember(id, _mapper.Map<Member>(memberDto)));
+            var updated = await _memberService.UpdateMemberAsync(id, memberDto);
+            return updated;
         }
         [HttpDelete]
         public async Task<bool> DeleteMemberById(Guid id)
         {
-            return await _memberService.DeleteMember(id);
+            return await _memberService.DeleteMemberAsync(id);
         }
     }
 }

@@ -3,7 +3,7 @@
     public class EmployeeDto
     {
 
-        //public Guid EmployeeId { get; set; }
+        public Guid? EmployeeId { get; set; }
 
         public string AccountName { get; set; }
 
