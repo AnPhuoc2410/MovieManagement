@@ -1,33 +1,30 @@
-﻿using MovieManagement.Server.Data;
+﻿using AutoMapper;
+using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Drawing;
-using System.Net;
-using System.Reflection;
 
 namespace MovieManagement.Server.Services.MemberService
 {
     public class MemberService : IMemberService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public MemberService(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public MemberService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
-        public async Task<IEnumerable<Member>> GetAllMembers()
+        public async Task<IEnumerable<MemberDto>> GetAllMembersAsync()
         {
-            var output = (await _unitOfWork.MemberRepository.GetAllAsync()).Select(x => new MemberDto
-            {
-
-            }).ToList();
-            return await _unitOfWork.MemberRepository.GetAllAsync();
+            var members = await _unitOfWork.MemberRepository.GetAllAsync();
+            return _mapper.Map<List<MemberDto>>(members);
         }
-        public async Task<Member> GetMemberById(Guid memberId)
+        public async Task<MemberDto> GetMemberByIdAsync(Guid memberId)
         {
-            return await _unitOfWork.MemberRepository.GetByIdAsync(memberId);
+            var member = await _unitOfWork.MemberRepository.GetByIdAsync(memberId);
+            return _mapper.Map<MemberDto>(member);
         }
-        public async Task<Member> CreateMember(Member memberDto)
+        public async Task<MemberDto> CreateMemberAsync(MemberDto memberDto)
         {
             var newMember = new Member
             {
@@ -42,33 +39,35 @@ namespace MovieManagement.Server.Services.MemberService
                 BirthDate = (DateTime)memberDto.BirthDate,
                 IDCard = memberDto.IDCard,
                 JoinDate = memberDto.JoinDate,
-                Point = (decimal)0,
+                Point = 0,
                 Status = 1
             };
-            return await _unitOfWork.MemberRepository.CreateAsync(newMember);
+            var member = await _unitOfWork.MemberRepository.CreateAsync(newMember);
+            return _mapper.Map<MemberDto>(member);
         }
-        public async Task<Member> UpdateMember(Guid memberId, Member memberDto)
+        public async Task<MemberDto> UpdateMemberAsync(Guid memberId, MemberDto memberDto)
         {
-            var existingMember = await _unitOfWork.MemberRepository.GetByIdAsync(memberId);
-            if (existingMember == null) return null;
+            var updateMember = await _unitOfWork.MemberRepository.GetByIdAsync(memberId);
+            if (updateMember == null) return null;
 
-            existingMember.AccountName = memberDto.AccountName;
-            existingMember.Avatar = memberDto.Avatar;
-            existingMember.Address = memberDto.Address;
-            existingMember.FullName = memberDto.FullName;
-            existingMember.Email = memberDto.Email;
-            existingMember.Password = memberDto.Password;
-            existingMember.PhoneNumber = memberDto.PhoneNumber;
-            existingMember.Gender = memberDto.Gender;
-            existingMember.BirthDate = (DateTime)memberDto.BirthDate;
-            existingMember.IDCard = memberDto.IDCard;
-            existingMember.JoinDate = memberDto.JoinDate;
-            existingMember.Point = 0;
-            existingMember.Status = 1;
+            updateMember.AccountName = memberDto.AccountName;
+            updateMember.Avatar = memberDto.Avatar;
+            updateMember.Address = memberDto.Address;
+            updateMember.FullName = memberDto.FullName;
+            updateMember.Email = memberDto.Email;
+            updateMember.Password = memberDto.Password;
+            updateMember.PhoneNumber = memberDto.PhoneNumber;
+            updateMember.Gender = memberDto.Gender;
+            updateMember.BirthDate = (DateTime)memberDto.BirthDate;
+            updateMember.IDCard = memberDto.IDCard;
+            updateMember.JoinDate = memberDto.JoinDate;
+            updateMember.Point = 0;
+            updateMember.Status = 1;
 
-            return await _unitOfWork.MemberRepository.UpdateAsync(existingMember);
+            var member = await _unitOfWork.MemberRepository.UpdateAsync(updateMember);
+            return _mapper.Map<MemberDto>(member);
         }
-        public async Task<bool> DeleteMember(Guid memberId)
+        public async Task<bool> DeleteMemberAsync(Guid memberId)
         {
             return await _unitOfWork.MemberRepository.DeleteAsync(memberId);
         }

@@ -5,10 +5,10 @@ namespace MovieManagement.Server.Services.PromotionService
 {
     public interface IPromotionService
     {
-        Task<Promotion> CreatePromotion(Promotion promotion);
-        Task<Promotion> GetPromotion(Guid id);
-        Task<IEnumerable<Promotion>> GetAllPromotions();
-        Task<Promotion> UpdatePromotion(Guid id, Promotion promotion);
+        Task<PromotionDto> CreatePromotion(PromotionDto promotionDto);
+        Task<PromotionDto> GetPromotion(Guid id);
+        Task<IEnumerable<PromotionDto>> GetAllPromotions();
+        Task<PromotionDto> UpdatePromotion(Guid id, PromotionDto promotionDto);
         Task<bool> DeletePromotion(Guid id);
     }
 }

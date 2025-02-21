@@ -11,28 +11,26 @@ namespace MovieManagement.Server.Controllers
     public class PromotionsController : ControllerBase
     {
         private readonly IPromotionService _promotionService;
-        private readonly IMapper _mapper;
 
-        public PromotionsController(IPromotionService promotionService, IMapper mapper)
+        public PromotionsController(IPromotionService promotionService)
         {
             _promotionService = promotionService;
-            _mapper = mapper;
         }
 
         [HttpGet]
         [Route("GetAllPromotions")]
         public async Task<ActionResult> GetAllPromotions()
         {
-            var promotions = _mapper.Map<List<PromotionDto>>(await _promotionService.GetAllPromotions());
+            var promotions = await _promotionService.GetAllPromotions();
             return Ok(promotions);
         }
 
         [HttpPost]
         [Route("CreatePromotion")]
-        public async Task<ActionResult<Promotion>> CreatePromotion(PromotionDto promotionDto)
+        public async Task<ActionResult<PromotionDto>> CreatePromotion([FromBody] PromotionDto promotionDto)
         {
-            var createdPromotion = await _promotionService.CreatePromotion(_mapper.Map<Promotion>(promotionDto));
-            return CreatedAtAction(nameof(GetPromotion), new { id = createdPromotion.PromotionId }, createdPromotion);
+            var @new = await _promotionService.CreatePromotion(promotionDto);
+            return @new;
         }
 
         [HttpGet("{id:guid}")]
@@ -43,12 +41,12 @@ namespace MovieManagement.Server.Controllers
             {
                 return NotFound();
             }
-            return _mapper.Map<PromotionDto>(promotion);
+            return promotion;
         }
 
 
         [HttpPut("UpdatePromotion/{id:guid}")]
-        public async Task<IActionResult> UpdatePromotion(Guid id, PromotionDto promotionDto)
+        public async Task<IActionResult> UpdatePromotion(Guid id, [FromBody] PromotionDto promotionDto)
         {
             try
             {

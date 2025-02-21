@@ -11,9 +11,8 @@ namespace MovieManagement.Server.Controllers
     public class RoomController : Controller
     {
         private readonly IRoomService _roomService;
-        private readonly IMapper _mapper;
 
-        public RoomController(IRoomService roomService, IMapper mapper)
+        public RoomController(IRoomService roomService)
         {
             _roomService = roomService;
             _mapper = mapper;
@@ -22,34 +21,30 @@ namespace MovieManagement.Server.Controllers
         [Route("all")]
         public async Task<ActionResult> GetAll()
         {
-            var rooms = (await _roomService.GetAllRooms());
+            var rooms = await _roomService.GetAllRoomsAsync();
             return Ok(rooms);
         }
         [HttpGet]
         [Route("{roomId:guid}")]
-        public async Task<ActionResult<Room>> GetRoomById(Guid roomId)
+        public async Task<ActionResult<RoomDto>> GetRoomById(Guid roomId)
         {
-            var room = await _roomService.GetRoomById(roomId);
-            return Ok(room);
+            return await _roomService.GetRoomByIdAsync(roomId);
         }
         [HttpPost]
-        public async Task<ActionResult<Room>> CreateRoom([FromBody] RoomDto roomDto)
+        public async Task<ActionResult<RoomDto>> CreateRoom([FromBody] RoomDto roomDto)
         {
-            var newRoom = await _roomService.CreateRoom(roomDto);
-            return Ok(newRoom);
+            return await _roomService.CreateRoomAsync(roomDto);
         }
         [HttpPut]
         [Route("{roomId:guid}")]
-        public async Task<ActionResult<Room>> UpdateRoom(Guid roomId, [FromBody] RoomDto roomDto)
+        public async Task<ActionResult<RoomDto>> UpdateRoom(Guid roomId, [FromBody] RoomDto roomDto)
         {
-            var updateRoom = await _roomService.UpdateRoom(roomId, roomDto);
-            return updateRoom;
+            return await _roomService.UpdateRoomAsync(roomId, roomDto);
         }
         [HttpDelete]
         public async Task<bool> DeleteRoom(Guid roomId)
         {
-            bool isDeleted = await _roomService.DeleteRoom(roomId);
-            return isDeleted;
+            return await _roomService.DeleteRoomAsync(roomId);
         }
     }
 }

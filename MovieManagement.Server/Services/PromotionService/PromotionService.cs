@@ -1,4 +1,5 @@
-﻿using MovieManagement.Server.Data;
+﻿using AutoMapper;
+using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 
@@ -7,30 +8,32 @@ namespace MovieManagement.Server.Services.PromotionService
     public class PromotionService : IPromotionService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public PromotionService(IUnitOfWork unitOfWork)
+        public PromotionService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<Promotion> CreatePromotion(Promotion promotion)
+        public async Task<PromotionDto> CreatePromotion(PromotionDto promotionDto)
         {
             var newPromotion = new Promotion
             {
-                PromotionName = promotion.PromotionName,
-                Image = promotion.Image,
-                FromDate = promotion.FromDate,
-                ToDate = promotion.ToDate,
-                Discount = promotion.Discount,
-                Content = promotion.Content
+                PromotionName = promotionDto.PromotionName,
+                Image = promotionDto.Image,
+                FromDate = promotionDto.FromDate,
+                ToDate = promotionDto.ToDate,
+                Discount = promotionDto.Discount,
+                Content = promotionDto.Content
             };
 
             // Create the promotion and return the created entity
             var createdPromotion = await _unitOfWork.PromotionRepository.CreateAsync(newPromotion);
-            return createdPromotion;
+            return _mapper.Map<PromotionDto>(createdPromotion);
         }
 
-        public async Task<Promotion> GetPromotion(Guid id)
+        public async Task<PromotionDto> GetPromotion(Guid id)
         {
             var promotion = await _unitOfWork.PromotionRepository.GetByIdAsync(id);
             if (promotion == null)
@@ -38,16 +41,16 @@ namespace MovieManagement.Server.Services.PromotionService
                 // You might choose to throw a custom exception or return null
                 throw new Exception("Promotion not found.");
             }
-            return promotion;
+            return _mapper.Map<PromotionDto>(promotion);
         }
 
-        public async Task<IEnumerable<Promotion>> GetAllPromotions()
+        public async Task<IEnumerable<PromotionDto>> GetAllPromotions()
         {
             var promotions = await _unitOfWork.PromotionRepository.GetAllAsync();
-            return promotions;
+            return _mapper.Map<List<PromotionDto>>(promotions);
         }
 
-        public async Task<Promotion> UpdatePromotion(Guid id, Promotion promotion)
+        public async Task<PromotionDto> UpdatePromotion(Guid id, PromotionDto promotionDto)
         {
             // Retrieve the existing promotion
             var existingPromotion = await _unitOfWork.PromotionRepository.GetByIdAsync(id);
@@ -57,16 +60,16 @@ namespace MovieManagement.Server.Services.PromotionService
             }
 
             // Update the fields
-            existingPromotion.PromotionName = promotion.PromotionName;
-            existingPromotion.Image = promotion.Image;
-            existingPromotion.FromDate = promotion.FromDate;
-            existingPromotion.ToDate = promotion.ToDate;
-            existingPromotion.Discount = promotion.Discount;
-            existingPromotion.Content = promotion.Content;
+            existingPromotion.PromotionName = promotionDto.PromotionName;
+            existingPromotion.Image = promotionDto.Image;
+            existingPromotion.FromDate = promotionDto.FromDate;
+            existingPromotion.ToDate = promotionDto.ToDate;
+            existingPromotion.Discount = promotionDto.Discount;
+            existingPromotion.Content = promotionDto.Content;
 
             // Update the promotion in the repository and return the updated entity
             var updatedPromotion = await _unitOfWork.PromotionRepository.UpdateAsync(existingPromotion);
-            return updatedPromotion;
+            return _mapper.Map<PromotionDto>(updatedPromotion);
         }
 
         public async Task<bool> DeletePromotion(Guid id)

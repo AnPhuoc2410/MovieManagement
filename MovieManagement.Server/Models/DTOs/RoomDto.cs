@@ -2,6 +2,8 @@
 {
     public class RoomDto
     {
+        public Guid? RoomId { get; set; }
+
         public string Name { get; set; }
 
         public int Row { get; set; }

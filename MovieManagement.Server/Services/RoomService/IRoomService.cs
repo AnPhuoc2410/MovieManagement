@@ -5,10 +5,11 @@ namespace MovieManagement.Server.Services.RoomService
 {
     public interface IRoomService
     {
-        Task<IEnumerable<Room>> GetAllRooms();
-        Task<Room> GetRoomById(Guid roomId);
-        Task<Room> CreateRoom(RoomDto roomDto);
-        Task<Room> UpdateRoom(Guid roomId, RoomDto roomDto);
-        Task<bool> DeleteRoom(Guid roomId);
+        Task<IEnumerable<RoomDto>> GetAllRoomsAsync();
+        Task<RoomDto> GetRoomByIdAsync(Guid roomId);
+        //renaming please
+        Task<RoomDto> CreateRoomAsync(RoomDto roomDto);
+        Task<RoomDto> UpdateRoomAsync(Guid roomId, RoomDto roomDto);
+        Task<bool> DeleteRoomAsync(Guid roomId);
     }
 }
