@@ -19,7 +19,6 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             var newTicketDetail = new TicketDetail()
             {
                 BillId = ticketDetail.BillId,
-                Price = ticketDetail.Price,
                 SeatId = ticketDetail.SeatId,
             };
 
@@ -53,7 +52,6 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             existingTicketDetail.BillId = ticketDetail.BillId;
             existingTicketDetail.SeatId = ticketDetail.SeatId;
             existingTicketDetail.SeatId = ticketDetail.SeatId;
-            existingTicketDetail.Price = ticketDetail.Price;
 
             var updateTicketDetail = await _unitOfWork.TicketDetailRepository.UpdateAsync(existingTicketDetail);
             return updateTicketDetail;

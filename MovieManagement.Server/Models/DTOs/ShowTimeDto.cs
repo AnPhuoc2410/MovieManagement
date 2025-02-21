@@ -2,12 +2,12 @@
 
 namespace MovieManagement.Server.Models.DTOs
 {
-    public class ShowTimeDto
+    public class ShowtimeDto
     {
         public Guid MovieId { get; set; }
 
-        public TimeSpan StartTime { get; set; }
+        public Guid RoomId { get; set; }
 
-        public Movie Movie { get; set; }
+        public TimeSpan StartTime { get; set; }
     }
 }

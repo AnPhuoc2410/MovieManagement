@@ -28,16 +28,16 @@ namespace MovieManagement.Server.Controllers
 
         [HttpPost]
         [Route("CreateShowTime")]
-        public async Task<ActionResult<Showtime>> CreateShowTime
-        (ShowTimeDto showTimeDto)
+        public async Task<ActionResult<ShowtimeDto>> CreateShowTime
+        (ShowtimeDto showTimeDto)
         {
-            return Ok (await _showTimeService.CreateShowTime(_mapper.Map<Showtime>(showTimeDto)));
+            return Ok (_mapper.Map<ShowtimeDto>(await _showTimeService.CreateShowTime(_mapper.Map<Showtime>(showTimeDto))));
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<ShowTimeDto>> GetShowTime(Guid id)
+        public async Task<ActionResult<ShowtimeDto>> GetShowTime(Guid id)
         {
-            var showTime = _mapper.Map<ShowTimeDto>(await
+            var showTime = _mapper.Map<ShowtimeDto>(await
                 _showTimeService.GetShowtime(id));
             if (showTime == null)
             {
@@ -47,11 +47,11 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPut("UpdateShowTime/{id:guid}")]
-        public async Task<IActionResult> UpdateShowTime(Guid id, ShowTimeDto showTimeDto)
+        public async Task<IActionResult> UpdateShowTime(Guid id, ShowtimeDto showTimeDto)
         {
             try
             {
-                var updateShowTime= _mapper.Map<ShowTimeDto>(await
+                var updateShowTime= _mapper.Map<ShowtimeDto>(await
 _showTimeService.UpdateShowTime(id, _mapper.Map<Showtime>(showTimeDto)));
                 if (updateShowTime == null)
                 {
