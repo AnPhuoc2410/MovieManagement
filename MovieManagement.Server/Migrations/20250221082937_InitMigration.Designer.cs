@@ -53,7 +53,7 @@ namespace MovieManagement.Server.Migrations
                     b.Property<Guid>("PromotionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<TimeSpan>("Showtime")
+                    b.Property<TimeSpan>("ShowTime")
                         .HasColumnType("time");
 
                     b.Property<int>("Status")
@@ -374,7 +374,7 @@ namespace MovieManagement.Server.Migrations
                     b.ToTable("SEAT", (string)null);
                 });
 
-            modelBuilder.Entity("MovieManagement.Server.Models.Entities.Showtime", b =>
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.ShowTime", b =>
                 {
                     b.Property<Guid>("MovieId")
                         .HasColumnType("uniqueidentifier")
@@ -507,7 +507,7 @@ namespace MovieManagement.Server.Migrations
                     b.Navigation("Room");
                 });
 
-            modelBuilder.Entity("MovieManagement.Server.Models.Entities.Showtime", b =>
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.ShowTime", b =>
                 {
                     b.HasOne("MovieManagement.Server.Models.Entities.Movie", "Movie")
                         .WithMany("Showtimes")

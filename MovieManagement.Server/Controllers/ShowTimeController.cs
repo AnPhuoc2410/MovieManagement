@@ -26,16 +26,16 @@ namespace MovieManagement.Server.Controllers
 
         [HttpPost]
         [Route("CreateShowTime")]
-        public async Task<ActionResult<ShowtimeDto>> CreateShowTime
-        (ShowtimeDto showTimeDto)
+        public async Task<ActionResult<ShowTimeDto>> CreateShowTime
+        (ShowTimeDto showTimeDto)
         {
             return Ok(_showTimeService.CreateShowTime(showTimeDto));
         }
 
-        [HttpGet("{id:guid}")]
-        public async Task<ActionResult<ShowtimeDto>> GetShowTime(Guid id)
+        [HttpGet("{movieId:guid}/{roomId:guid}")]
+        public async Task<ActionResult<ShowTimeDto>> GetShowTime(Guid movieId, Guid roomId)
         {
-            var showTime = await _showTimeService.GetShowtime(id);
+            var showTime = await _showTimeService.GetShowtime(movieId, roomId);
             if (showTime == null)
             {
                 return NotFound();
@@ -44,11 +44,11 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPut("UpdateShowTime/{id:guid}")]
-        public async Task<IActionResult> UpdateShowTime(Guid id, ShowtimeDto showTimeDto)
+        public async Task<IActionResult> UpdateShowTime(Guid movieId, Guid roomId, ShowTimeDto showTimeDto)
         {
             try
             {
-                var updateShowTime= _showTimeService.UpdateShowTime(id, showTimeDto);
+                var updateShowTime= _showTimeService.UpdateShowTime(movieId, roomId, showTimeDto);
                 if (updateShowTime == null)
                 {
                     throw new Exception("Nothing were found!");

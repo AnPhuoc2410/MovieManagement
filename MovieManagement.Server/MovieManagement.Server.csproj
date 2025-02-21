@@ -48,7 +48,6 @@
     <Folder Include="Controllers\" />
     <Folder Include="Migrations\" />
     <Folder Include="Responses\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

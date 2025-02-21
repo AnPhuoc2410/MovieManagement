@@ -38,7 +38,7 @@ namespace MovieManagement.Server.Models.Entities
 
         public IEnumerable<CategoryDetail> CategoryDetails { get; set; } = new List<CategoryDetail>();
 
-        public IEnumerable<Showtime> Showtimes { get; set; } = new List<Showtime>();
+        public IEnumerable<ShowTime> Showtimes { get; set; } = new List<ShowTime>();
 
         public IEnumerable<Bill> Bills { get; set; } = new List<Bill>();
     }

@@ -17,7 +17,7 @@ namespace MovieManagement.Server.Data
         public DbSet<TicketDetail> TicketDetails { get; set; }
         public DbSet<Seat> Seats { get; set; }
         public DbSet<Room> Rooms { get; set; }
-        public DbSet<Showtime> Showtimes { get; set; }
+        public DbSet<ShowTime> Showtimes { get; set; }
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<CategoryDetail> CategoryDetails { get; set; }
@@ -47,7 +47,7 @@ namespace MovieManagement.Server.Data
             //modelBuilder.Entity<CategoryDetail>()
             //    .HasKey(ct => new { ct.MovieId, ct.CategoryId });
 
-            //modelBuilder.Entity<Showtime>()
+            //modelBuilder.Entity<ShowTime>()
             //    .HasKey(ct => new { ct.MovieId, ct.StartTime });
 
             modelBuilder.ApplyConfiguration(new BillConfiguration());

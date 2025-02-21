@@ -86,5 +86,34 @@ namespace MovieManagement.Server.Repositories
             await _context.SaveChangesAsync();
             return entity;
         }
+
+        public async Task<T> GetByComposeIdAsync(Guid id, Guid id2)
+        {
+            return await _context.Set<T>().FindAsync(id, id2);
+        }
+
+        public T GetByComposeId(Guid id, Guid id2)
+        {
+            return _context.Set<T>().Find(id, id2);
+        }
+
+        public bool DeleteCompose(Guid id, Guid id2)
+        {
+            var entity = GetByComposeId(id, id2);
+            if (entity == null) return false;
+            _context.Remove(entity);
+            _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteComposeAsync(Guid id, Guid id2)
+        {
+            var entity = await GetByComposeIdAsync(id, id2);
+            if (entity == null) return false;
+            _context.Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
     }
 }

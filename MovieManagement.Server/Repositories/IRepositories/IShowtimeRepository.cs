@@ -2,7 +2,7 @@
 
 namespace MovieManagement.Server.Repositories.IRepositories
 {
-    public interface IShowtimeRepository : IGenericRepository<Showtime>
+    public interface IShowtimeRepository : IGenericRepository<ShowTime>
     {
     }
 }

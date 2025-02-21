@@ -1,6 +1,6 @@
 ﻿namespace MovieManagement.Server.Models.Entities
 {
-    public class Showtime
+    public class ShowTime
     {
 
         public Guid MovieId { get; set; }

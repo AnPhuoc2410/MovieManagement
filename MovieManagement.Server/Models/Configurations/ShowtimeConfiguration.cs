@@ -4,9 +4,9 @@ using MovieManagement.Server.Models.Entities;
 
 namespace MovieManagement.Server.Models.Configurations
 {
-    public class ShowtimeConfiguration : IEntityTypeConfiguration<Showtime>
+    public class ShowtimeConfiguration : IEntityTypeConfiguration<ShowTime>
     {
-        public void Configure(EntityTypeBuilder<Showtime> builder)
+        public void Configure(EntityTypeBuilder<ShowTime> builder)
         {
             builder.ToTable("SHOWTIME");
             builder.HasKey(ct => new { ct.MovieId, ct.RoomId });

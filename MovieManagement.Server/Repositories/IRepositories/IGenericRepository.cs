@@ -21,7 +21,7 @@
         /// </summary>
 
         //Synchronous Interfaces
-        T GetById(Guid id);
+        T GetByComposeId(Guid id, Guid id2);
 
         /// <summary>
         /// Dùng List ở đây vì để lấy dữ liệu đưa vào trong RAM
@@ -47,10 +47,14 @@
 
         //Asynchronous Interfaces
         Task<T> GetByIdAsync(Guid id);
+        Task<T> GetByComposeIdAsync(Guid id, Guid id2);
         Task<List<T>> GetAllAsync();
         Task<T> CreateAsync(T entity);
         Task<T> UpdateAsync(T entity);
         Task<bool> DeleteAsync(Guid id);
         Task<List<T>> GetPageAsync(int page, int pageSize);
+
+        Task<bool> DeleteComposeAsync(Guid id, Guid id2);
+        bool DeleteCompose(Guid id, Guid id2);
     }
 }

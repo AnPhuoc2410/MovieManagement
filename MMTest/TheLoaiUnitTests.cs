@@ -6,7 +6,7 @@ namespace MMTest;
 public class TheLoaiUnitTests
     
 {
-    private TheLoai theLoai;
+    //private TheLoai theLoai;
 
     [SetUp]
     public void Setup()
