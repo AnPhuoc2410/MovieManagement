@@ -1,17 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import {
-  Box,
-  Button,
-  CssBaseline,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  TextField,
-  Stack,
-} from "@mui/material";
+import { Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Stack } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -24,9 +13,8 @@ import AppNavbar from "../../components/mui/AppNavbar";
 import Header from "../../components/mui/Header";
 import SideMenu from "../../components/mui/SideMenu";
 
-// Import Cloudinary Upload Widget & CloudinaryImage components
+// Import your Cloudinary Upload Widget component
 import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUploadWidget";
-import CloudinaryImage from "../../components/cloudinary/CloudinaryImage";
 
 // Theme & Customizations
 import AppTheme from "../../shared-theme/AppTheme";
@@ -49,7 +37,7 @@ const initialPromotions: Promotion[] = [
     startDate: "2025-11-25",
     endDate: "2025-11-30",
     detail: "Discount 30% for all products",
-    image: "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740121129/samples/chair.png",
+    image: "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740121129/samples/chair.png", // example placeholder
   },
   {
     id: 2,
@@ -79,7 +67,6 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
     uploadPreset: "movie_up",
   };
 
-  // When an image is uploaded, build the secure URL and update the form
   const handleSetPublicId = (publicId: string) => {
     const imageUrl = `https://res.cloudinary.com/dwqyqsqmq/image/upload/${publicId}`;
     setUploadedImage(imageUrl);
@@ -125,7 +112,7 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
       width: 120,
       renderCell: (params) =>
         params.row.image ? (
-          <CloudinaryImage imageUrl={params.row.image} />
+          <img src={params.row.image} alt="Promotion" style={{ width: "100%", height: "auto" }} />
         ) : (
           "No image"
         ),
@@ -229,7 +216,7 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
                 <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={handleSetPublicId} />
                 {uploadedImage && (
                   <Box sx={{ mt: 1 }}>
-                    <CloudinaryImage imageUrl={uploadedImage} />
+                    <img src={uploadedImage} alt="Uploaded" style={{ maxWidth: "100%", maxHeight: 150 }} />
                   </Box>
                 )}
               </Box>
