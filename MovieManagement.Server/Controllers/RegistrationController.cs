@@ -12,11 +12,11 @@ namespace MovieManagement.Server.Controllers
     public class RegistrationController : ControllerBase
     {
 
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly EmployeeService _employeeService;
 
 
-        public RegistrationController(UnitOfWork unitOfWork, EmployeeService employeeService)
+        public RegistrationController(IUnitOfWork unitOfWork, EmployeeService employeeService)
         {
             _unitOfWork = unitOfWork;
             _employeeService = employeeService;

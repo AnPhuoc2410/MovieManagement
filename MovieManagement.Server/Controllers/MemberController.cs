@@ -31,13 +31,13 @@ namespace MovieManagement.Server.Controllers
         }
         [HttpPost]
         [Route("register")]
-        public async Task<ActionResult<Member>> RegisterMember([FromBody] MemberDto memberDto)
+        public async Task<ActionResult<Member>> RegisterMember([FromBody] Member memberDto)
         {
             var newMember = await _memberService.CreateMember(memberDto);
             return Ok(newMember);
         }
         [HttpPut]
-        public async Task<ActionResult<Member>> UpdateMemberById(Guid id, [FromBody] MemberDto memberDto)
+        public async Task<ActionResult<Member>> UpdateMemberById(Guid id, [FromBody] Member memberDto)
         {
             return await _memberService.UpdateMember(id, memberDto);
         }
