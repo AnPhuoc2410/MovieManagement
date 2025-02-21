@@ -31,8 +31,7 @@ namespace MovieManagement.Server.Controllers
         [Route("CreatePromotion")]
         public async Task<ActionResult<Promotion>> CreatePromotion(PromotionDto promotionDto)
         {
-            Promotion promotion = _mapper.Map<Promotion>(promotionDto);
-            var createdPromotion = _mapper.Map<PromotionDto>(await _promotionService.CreatePromotion(promotion));
+            var createdPromotion = await _promotionService.CreatePromotion(_mapper.Map<Promotion>(promotionDto));
             return CreatedAtAction(nameof(GetPromotion), new { id = createdPromotion.PromotionId }, createdPromotion);
         }
 

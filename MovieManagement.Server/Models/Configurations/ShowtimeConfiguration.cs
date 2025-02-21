@@ -21,9 +21,9 @@ namespace MovieManagement.Server.Models.Configurations
             builder.HasOne(x => x.Movie)
                 .WithMany(x => x.Showtimes)
                 .HasForeignKey(x => x.MovieId);
-            //builder.HasOne(x => x.Room)
-            //    .WithMany(x => x.Showtimes)
-            //    .HasForeignKey(x => x.RoomId);
+            builder.HasOne(x => x.Room)
+                .WithMany(x => x.Showtimes)
+                .HasForeignKey(x => x.RoomId);
         }
     }
 }

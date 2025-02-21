@@ -16,5 +16,10 @@ namespace MovieManagement.Server.Models.Entities
         public int Version { get; set; } // 0: 2D...
 
         public decimal Price { get; set; } // Giá vé
+
+        public IEnumerable<TicketDetail> TicketDetails { get; set; } = new List<TicketDetail>();
+
+
+
     }
 }
