@@ -11,12 +11,10 @@ namespace MovieManagement.Server.Controllers
     public class ShowTimeController : ControllerBase
     {
         private readonly IShowTimeService _showTimeService;
-        private readonly IMapper _mapper;
 
-        public ShowTimeController(IShowTimeService showTimeService, IMapper mapper)
+        public ShowTimeController(IShowTimeService showTimeService)
         {
             _showTimeService = showTimeService;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -31,14 +29,13 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<ShowtimeDto>> CreateShowTime
         (ShowtimeDto showTimeDto)
         {
-            return Ok (_mapper.Map<ShowtimeDto>(await _showTimeService.CreateShowTime(_mapper.Map<Showtime>(showTimeDto))));
+            return Ok(_showTimeService.CreateShowTime(showTimeDto));
         }
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<ShowtimeDto>> GetShowTime(Guid id)
         {
-            var showTime = _mapper.Map<ShowtimeDto>(await
-                _showTimeService.GetShowtime(id));
+            var showTime = await _showTimeService.GetShowtime(id);
             if (showTime == null)
             {
                 return NotFound();
@@ -51,8 +48,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var updateShowTime= _mapper.Map<ShowtimeDto>(await
-_showTimeService.UpdateShowTime(id, _mapper.Map<Showtime>(showTimeDto)));
+                var updateShowTime= _showTimeService.UpdateShowTime(id, showTimeDto);
                 if (updateShowTime == null)
                 {
                     throw new Exception("Nothing were found!");

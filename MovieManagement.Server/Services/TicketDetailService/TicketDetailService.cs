@@ -1,4 +1,5 @@
 ﻿
+using AutoMapper;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
@@ -8,40 +9,43 @@ namespace MovieManagement.Server.Services.TicketDetailServices
     public class TicketDetailService : ITicketDetailService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public TicketDetailService(IUnitOfWork unitOfWork)
+        public TicketDetailService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<TicketDetail> CreateTicketDetail(TicketDetail ticketDetail)
+        public async Task<TicketDetailDto> CreateTicketDetail(TicketDetailDto ticketDetail)
         {
             var newTicketDetail = new TicketDetail()
             {
                 BillId = ticketDetail.BillId,
                 SeatId = ticketDetail.SeatId,
+                TicketTypeId = ticketDetail.TicketTypeId
             };
 
             var createdTicketDetail = await _unitOfWork.TicketDetailRepository.CreateAsync(newTicketDetail);
-            return createdTicketDetail;
+            return _mapper.Map<TicketDetailDto>(createdTicketDetail);
         }
-        public async Task<TicketDetail> GetTicketDetail(Guid id)
+        public async Task<TicketDetailDto> GetTicketDetail(Guid id)
         {
             var ticket = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id);
             if (ticket == null)
             {
                 throw new Exception("Ticket not found");
             }
-            return ticket;
+            return _mapper.Map<TicketDetailDto>(ticket);
         }
 
-        public async Task<IEnumerable<TicketDetail>> GetAllTicketDetails()
+        public async Task<IEnumerable<TicketDetailDto>> GetAllTicketDetails()
         {
             var ticketDetails = await _unitOfWork.TicketDetailRepository.GetAllAsync();
-            return ticketDetails;
+            return _mapper.Map<List<TicketDetailDto>>(ticketDetails);
         }
 
-        public async Task<TicketDetail> UpdateTicketDetail(Guid id, TicketDetail ticketDetail)
+        public async Task<TicketDetailDto> UpdateTicketDetail(Guid id, TicketDetailDto ticketDetail)
         {
             var existingTicketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync
                 (id);
@@ -54,7 +58,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             existingTicketDetail.SeatId = ticketDetail.SeatId;
 
             var updateTicketDetail = await _unitOfWork.TicketDetailRepository.UpdateAsync(existingTicketDetail);
-            return updateTicketDetail;
+            return _mapper.Map<TicketDetailDto>(updateTicketDetail);
         }
 
         public async Task<bool> DeleteTicketDetail(Guid id)

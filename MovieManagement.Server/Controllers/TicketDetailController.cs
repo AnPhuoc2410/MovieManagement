@@ -14,13 +14,13 @@ namespace MovieManagement.Server.Controllers
     public class TicketDetailController : ControllerBase
     {
         private readonly ITicketDetailService _ticketDetailService;
-        private readonly IMapper _mapper;
 
-        public TicketDetailController(ITicketDetailService ticketDetailService, IMapper mapper)
+
+        public TicketDetailController(ITicketDetailService ticketDetailService)
         {
             _ticketDetailService = ticketDetailService;
-            _mapper = mapper;
         }
+
 
         [HttpGet]
         [Route("GetAllTicketDetail")]
@@ -30,18 +30,20 @@ namespace MovieManagement.Server.Controllers
             return Ok(ticket);
         }
 
+
         [HttpPost]
         [Route("CreateTicketDetail")]
         public async Task<ActionResult<TicketDetail>> CreateTicketDetail(TicketDetailDto ticketDetail)
         {
-            var createdTicketDetail = _mapper.Map<TicketDetailDto>(await _ticketDetailService.CreateTicketDetail(_mapper.Map<TicketDetail>(ticketDetail)));
-            return CreatedAtAction(nameof(GetTicketDetail), new { id = createdTicketDetail.BillId }, createdTicketDetail);
+            var createdTicketDetail = _ticketDetailService.CreateTicketDetail(ticketDetail);
+            return Ok(createdTicketDetail);
         }
+
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<TicketDetailDto>> GetTicketDetail(Guid id)
         {
-            var ticket = _mapper.Map<TicketDetailDto>(await _ticketDetailService.GetTicketDetail(id));
+            var ticket = await _ticketDetailService.GetTicketDetail(id);
             if (ticket == null)
             {
                 return NotFound();
@@ -49,13 +51,13 @@ namespace MovieManagement.Server.Controllers
             return ticket;
         }
 
+
         [HttpPut("UpdateTicketDetail/{id:guid}")]
         public async Task<IActionResult> UpdateTicketDetail(Guid id, TicketDetailDto ticketDetailDto)
         {
             try
             {
-                var updateTicket = _mapper.Map<TicketDetailDto>(await
-_ticketDetailService.UpdateTicketDetail(id, _mapper.Map<TicketDetail>(ticketDetailDto)));
+                var updateTicket = _ticketDetailService.UpdateTicketDetail(id, ticketDetailDto);
                 if (updateTicket == null)
                 {
                     throw new Exception("Nothing were found!");
@@ -67,6 +69,8 @@ _ticketDetailService.UpdateTicketDetail(id, _mapper.Map<TicketDetail>(ticketDeta
                 return NotFound(ex.Message);
             }
         }
+
+
         [HttpDelete("DeleteTicketDetail/{id:guid}")]
         public async Task<IActionResult> DeleteTicketDetail(Guid id)
         {

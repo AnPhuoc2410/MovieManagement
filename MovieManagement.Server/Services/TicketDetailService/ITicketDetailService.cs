@@ -5,10 +5,10 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 {
     public interface ITicketDetailService
     {
-        Task<TicketDetail> CreateTicketDetail(TicketDetail ticketDetail);
-        Task<TicketDetail> GetTicketDetail(Guid ticketId);
-        Task<IEnumerable<TicketDetail>> GetAllTicketDetails();
-        Task<TicketDetail> UpdateTicketDetail(Guid id, TicketDetail ticketDetail);
+        Task<TicketDetailDto> CreateTicketDetail(TicketDetailDto ticketDetail);
+        Task<TicketDetailDto> GetTicketDetail(Guid ticketId);
+        Task<IEnumerable<TicketDetailDto>> GetAllTicketDetails();
+        Task<TicketDetailDto> UpdateTicketDetail(Guid id, TicketDetailDto ticketDetail);
         Task<bool> DeleteTicketDetail(Guid id);
     }
 }

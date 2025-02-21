@@ -7,8 +7,8 @@ namespace MovieManagement.Server.Services.MemberService
     {
         Task<IEnumerable<MemberDto>> GetAllMembersAsync();
         Task<MemberDto> GetMemberByIdAsync(Guid memberId);
-        Task<MemberDto> CreateMemberAsync(MemberDto memberDto);
-        Task<MemberDto> UpdateMemberAsync(Guid memberId, MemberDto memberDto);
+        Task<MemberDto> CreateMemberAsync(MemberDto member);
+        Task<MemberDto> UpdateMemberAsync(Guid memberId, MemberDto member);
         Task<bool> DeleteMemberAsync(Guid memberId);
     }
 }

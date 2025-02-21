@@ -13,12 +13,11 @@ namespace MovieManagement.Server.Controllers
     public class TicketTypeController : ControllerBase
     {
         private readonly ITicketTypeService _ticketTypeService;
-        private readonly IMapper _mapper;
 
-        public TicketTypeController(ITicketTypeService ticketTypeService, IMapper mapper)
+
+        public TicketTypeController(ITicketTypeService ticketTypeService)
         {
             _ticketTypeService = ticketTypeService;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -32,15 +31,14 @@ namespace MovieManagement.Server.Controllers
         [Route("CreateTicketType")]
         public async Task<ActionResult<TicketType>> CreateTicketType(TicketTypeDto ticketTypeDto)
         {
-            var createdTicketType = (await _ticketTypeService.CreateTicketType(_mapper.Map<TicketType>(ticketTypeDto)));
+            var createdTicketType = await _ticketTypeService.CreateTicketType(ticketTypeDto);
             return Ok(createdTicketType);
         }
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<TicketTypeDto>> GetTicketType(Guid id)
         {
-            var ticket = _mapper.Map<TicketTypeDto>(await
-                _ticketTypeService.GetTicketType(id));
+            var ticket = await _ticketTypeService.GetTicketType(id);
             if (ticket == null)
             {
                 return NotFound();
@@ -53,8 +51,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var updateTicket = _mapper.Map<TicketTypeDto>(await
-_ticketTypeService.UpdateTicketType(id, _mapper.Map<TicketType>(ticketTypeDto)));
+                var updateTicket = _ticketTypeService.UpdateTicketType(id, ticketTypeDto);
                 if (updateTicket == null)
                 {
                     throw new Exception("Nothing were found!");

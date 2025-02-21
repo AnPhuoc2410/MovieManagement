@@ -25,6 +25,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(promotions);
         }
 
+
         [HttpPost]
         [Route("CreatePromotion")]
         public async Task<ActionResult<PromotionDto>> CreatePromotion([FromBody] PromotionDto promotionDto)
@@ -32,6 +33,7 @@ namespace MovieManagement.Server.Controllers
             var @new = await _promotionService.CreatePromotion(promotionDto);
             return @new;
         }
+
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<PromotionDto>> GetPromotion(Guid id)
@@ -50,7 +52,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var updatedPromotion = _mapper.Map<PromotionDto>(await _promotionService.UpdatePromotion(id, _mapper.Map<Promotion>(promotionDto)));
+                var updatedPromotion = _promotionService.UpdatePromotion(id, promotionDto);
                 return Ok(updatedPromotion);
             }
             catch (Exception ex)

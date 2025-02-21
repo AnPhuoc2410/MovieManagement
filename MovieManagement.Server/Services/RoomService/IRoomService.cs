@@ -8,8 +8,8 @@ namespace MovieManagement.Server.Services.RoomService
         Task<IEnumerable<RoomDto>> GetAllRoomsAsync();
         Task<RoomDto> GetRoomByIdAsync(Guid roomId);
         //renaming please
-        Task<RoomDto> CreateRoomAsync(RoomDto roomDto);
-        Task<RoomDto> UpdateRoomAsync(Guid roomId, RoomDto roomDto);
+        Task<RoomDto> CreateRoomAsync(RoomDto room);
+        Task<RoomDto> UpdateRoomAsync(Guid roomId, RoomDto room);
         Task<bool> DeleteRoomAsync(Guid roomId);
     }
 }

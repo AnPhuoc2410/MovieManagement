@@ -9,21 +9,30 @@ namespace MovieManagement.Server.Services.BillService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+
+
         public BillService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+
+
         public async Task<IEnumerable<BillDto>> GetAllBillsAsync()
         {
             var bills = await _unitOfWork.BillRepository.GetAllAsync();
             return _mapper.Map<List<BillDto>>(bills);
         }
+
+
         public async Task<BillDto> GetBillByIdAsync(Guid billId)
         {
             var bill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
             return _mapper.Map<BillDto>(bill);
         }
+
+
+
         public async Task<BillDto> CreateBillAsync(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, BillDto billDto)
         {
             var newBill = new Bill
@@ -42,6 +51,9 @@ namespace MovieManagement.Server.Services.BillService
             var bill = await _unitOfWork.BillRepository.CreateAsync(newBill);
             return _mapper.Map<BillDto>(bill);
         }
+
+
+
         public async Task<BillDto> UpdateBillAsync(Guid billId, BillDto billDto)
         {
             var updateBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
@@ -60,6 +72,8 @@ namespace MovieManagement.Server.Services.BillService
             var bill = await _unitOfWork.BillRepository.UpdateAsync(updateBill);
             return _mapper.Map<BillDto>(bill);
         }
+
+
         public async Task<bool> DeleteBillAsync(Guid billId)
         {
             return await _unitOfWork.BillRepository.DeleteAsync(billId);

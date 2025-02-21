@@ -66,6 +66,7 @@ namespace MovieManagement.Server.Services.PromotionService
             existingPromotion.ToDate = promotionDto.ToDate;
             existingPromotion.Discount = promotionDto.Discount;
             existingPromotion.Content = promotionDto.Content;
+            existingPromotion.Content = promotionDto.Content;
 
             // Update the promotion in the repository and return the updated entity
             var updatedPromotion = await _unitOfWork.PromotionRepository.UpdateAsync(existingPromotion);

@@ -9,11 +9,10 @@ namespace MovieManagement.Server.Controllers
     public class MemberController : Controller
     {
         private readonly IMemberService _memberService;
-        private readonly IMapper _mapper;
-        public MemberController(IMemberService memberService, IMapper mapper)
+
+        public MemberController(IMemberService memberService)
         {
             _memberService = memberService;
-            _mapper = mapper;
         }
         [HttpGet]
         [Route("all")]
