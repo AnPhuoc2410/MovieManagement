@@ -41,6 +41,7 @@ namespace MovieManagement.Server.Controllers
         }
         [HttpPut]
         public async Task<ActionResult<MemberDto>> UpdateMemberById(Guid id, [FromBody] MemberDto memberDto)
+
         {
             return _mapper.Map<MemberDto>(await _memberService.UpdateMember(id, _mapper.Map<Member>(memberDto)));
         }
