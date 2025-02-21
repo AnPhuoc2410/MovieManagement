@@ -34,7 +34,7 @@ namespace MovieManagement.Server.Models.Entities
 
         public Guid EmployeeId { get; set; }
 
-        public Guid RoomId { get; set; }
+        //public Guid RoomId { get; set; }
 
         public IEnumerable<CategoryDetail> CategoryDetails { get; set; } = new List<CategoryDetail>();
 

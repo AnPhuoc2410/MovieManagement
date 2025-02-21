@@ -10,12 +10,14 @@ namespace MovieManagement.Server.Models.Entities
 
         public Guid SeatId { get; set; }
 
-        public int Price { get; set; }
+        public Guid TicketTypeId { get; set; }
 
         // Navigation properties
 
         public virtual Bill Bill { get; set; }
 
         public virtual Seat Seat { get; set; }
+
+        public virtual TicketType TicketType { get; set; }
     }
 }

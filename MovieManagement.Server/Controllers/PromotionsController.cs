@@ -50,7 +50,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var updatedPromotion = await _promotionService.UpdatePromotion(id, promotionDto);
+                var updatedPromotion = _mapper.Map<PromotionDto>(await _promotionService.UpdatePromotion(id, _mapper.Map<Promotion>(promotionDto)));
                 return Ok(updatedPromotion);
             }
             catch (Exception ex)

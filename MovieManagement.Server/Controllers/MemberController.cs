@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Services.MemberService;
 
@@ -9,9 +9,11 @@ namespace MovieManagement.Server.Controllers
     public class MemberController : Controller
     {
         private readonly IMemberService _memberService;
-        public MemberController(IMemberService memberService)
+        private readonly IMapper _mapper;
+        public MemberController(IMemberService memberService, IMapper mapper)
         {
             _memberService = memberService;
+            _mapper = mapper;
         }
         [HttpGet]
         [Route("all")]

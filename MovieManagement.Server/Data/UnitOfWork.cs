@@ -5,6 +5,7 @@ namespace MovieManagement.Server.Data
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _context;
+
         public IBillRepository BillRepository { get; private set; }
 
         public ICategoryDetailRepository CategoryDetailRepository { get; private set; }
