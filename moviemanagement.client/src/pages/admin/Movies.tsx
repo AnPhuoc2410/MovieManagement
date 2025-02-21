@@ -53,6 +53,7 @@ const Movies: React.FC = ({ disableCustomTheme = false }: { disableCustomTheme?:
             <Stack spacing={2} alignItems="center">
               <Header />
               {/* <MainGrid /> */}
+              
             </Stack>
           </Box>
         </Box>
