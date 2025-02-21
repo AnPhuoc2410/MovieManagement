@@ -17,6 +17,9 @@ import Dashboard from "./pages/admin/Dashboard";
 import PromotionManagement from "./pages/admin/Promotions";
 import Movies from "./pages/admin/Movies";
 
+import {Cloudinary} from "@cloudinary/url-gen";
+
+
 const theme = createTheme({
   components: {
     MuiLink: {
@@ -30,6 +33,12 @@ const theme = createTheme({
       },
     },
   },
+});
+
+const cld = new Cloudinary({
+  cloud: {
+    cloudName: 'demo'
+  }
 });
 
 const App = () => {

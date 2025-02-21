@@ -24,21 +24,12 @@ import AppNavbar from "../../components/mui/AppNavbar";
 import Header from "../../components/mui/Header";
 import SideMenu from "../../components/mui/SideMenu";
 
+// Import Cloudinary Upload Widget & CloudinaryImage components
+import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUploadWidget";
+import CloudinaryImage from "../../components/cloudinary/CloudinaryImage";
+
 // Theme & Customizations
 import AppTheme from "../../shared-theme/AppTheme";
-import {
-  chartsCustomizations,
-  dataGridCustomizations,
-  datePickersCustomizations,
-  treeViewCustomizations,
-} from "../../theme/customizations";
-
-const xThemeComponents = {
-  ...chartsCustomizations,
-  ...dataGridCustomizations,
-  ...datePickersCustomizations,
-  ...treeViewCustomizations,
-};
 
 interface Promotion {
   id: number;
@@ -47,6 +38,7 @@ interface Promotion {
   startDate: string;
   endDate: string;
   detail: string;
+  image?: string;
 }
 
 const initialPromotions: Promotion[] = [
@@ -57,6 +49,7 @@ const initialPromotions: Promotion[] = [
     startDate: "2025-11-25",
     endDate: "2025-11-30",
     detail: "Discount 30% for all products",
+    image: "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740121129/samples/chair.png",
   },
   {
     id: 2,
@@ -65,6 +58,7 @@ const initialPromotions: Promotion[] = [
     startDate: "2025-12-31",
     endDate: "2026-01-05",
     detail: "Discount 20% for all products",
+    image: "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740121129/samples/coffee.jpg",
   },
 ];
 
@@ -72,20 +66,37 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
   const [promotions, setPromotions] = useState<Promotion[]>(initialPromotions);
   const [open, setOpen] = useState(false);
   const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null);
+  // For image preview from Cloudinary
+  const [uploadedImage, setUploadedImage] = useState<string>("");
 
-  const { control, handleSubmit, reset } = useForm<Promotion>({
-    defaultValues: { id: 0, title: "", discount: 0, startDate: "", endDate: "", detail: "" },
+  const { control, handleSubmit, reset, setValue } = useForm<Promotion>({
+    defaultValues: { id: 0, title: "", discount: 0, startDate: "", endDate: "", detail: "", image: "" },
   });
+
+  // Cloudinary widget configuration
+  const uwConfig = {
+    cloudName: "dwqyqsqmq", 
+    uploadPreset: "movie_up",
+  };
+
+  // When an image is uploaded, build the secure URL and update the form
+  const handleSetPublicId = (publicId: string) => {
+    const imageUrl = `https://res.cloudinary.com/dwqyqsqmq/image/upload/${publicId}`;
+    setUploadedImage(imageUrl);
+    setValue("image", imageUrl);
+  };
 
   const handleOpen = (promotion?: Promotion) => {
     setSelectedPromotion(promotion || null);
-    reset(promotion || { id: 0, title: "", discount: 0, startDate: "", endDate: "", detail: "" });
+    reset(promotion || { id: 0, title: "", discount: 0, startDate: "", endDate: "", detail: "", image: "" });
+    setUploadedImage(promotion?.image || "");
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
     setSelectedPromotion(null);
+    setUploadedImage("");
   };
 
   const onSubmit = (data: Promotion) => {
@@ -109,6 +120,17 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
     { field: "endDate", headerName: "End Date", width: 150 },
     { field: "detail", headerName: "Detail", flex: 1 },
     {
+      field: "image",
+      headerName: "Image",
+      width: 120,
+      renderCell: (params) =>
+        params.row.image ? (
+          <CloudinaryImage imageUrl={params.row.image} />
+        ) : (
+          "No image"
+        ),
+    },
+    {
       field: "actions",
       headerName: "Actions",
       width: 150,
@@ -126,17 +148,17 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
   ];
 
   return (
-    <AppTheme disableCustomTheme={disableCustomTheme} themeComponents={xThemeComponents}>
+    <AppTheme disableCustomTheme={disableCustomTheme}>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: "flex", height: "100vh" }}>
         {/* Sidebar */}
         <SideMenu />
-        
+
         {/* Main Content Area */}
         <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
           {/* Top Navigation Bar */}
           <AppNavbar />
-          
+
           {/* Page Content */}
           <Box
             component="main"
@@ -153,7 +175,7 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
               <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpen()} sx={{ mb: 2 }}>
                 Add Promotion
               </Button>
-              
+
               {/* Promotions Table */}
               <Box sx={{ height: 400, width: "100%" }}>
                 <DataGrid rows={promotions} columns={columns} pageSizeOptions={[5, 10, 20]} />
@@ -161,7 +183,7 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
             </Stack>
           </Box>
         </Box>
-        
+
         {/* Add/Edit Promotion Dialog */}
         <Dialog open={open} onClose={handleClose} fullWidth>
           <DialogTitle>{selectedPromotion ? "Edit Promotion" : "Add Promotion"}</DialogTitle>
@@ -184,14 +206,7 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
                 control={control}
                 rules={{ required: "Start date is required" }}
                 render={({ field }) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    label="Start Date"
-                    type="date"
-                    margin="dense"
-                    InputLabelProps={{ shrink: true }}
-                  />
+                  <TextField {...field} fullWidth label="Start Date" type="date" margin="dense" InputLabelProps={{ shrink: true }} />
                 )}
               />
               <Controller
@@ -199,14 +214,7 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
                 control={control}
                 rules={{ required: "End date is required" }}
                 render={({ field }) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    label="End Date"
-                    type="date"
-                    margin="dense"
-                    InputLabelProps={{ shrink: true }}
-                  />
+                  <TextField {...field} fullWidth label="End Date" type="date" margin="dense" InputLabelProps={{ shrink: true }} />
                 )}
               />
               <Controller
@@ -215,6 +223,16 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
                 rules={{ required: "Detail is required" }}
                 render={({ field }) => <TextField {...field} fullWidth label="Detail" margin="dense" />}
               />
+
+              {/* Cloudinary Upload Section */}
+              <Box sx={{ my: 2 }}>
+                <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={handleSetPublicId} />
+                {uploadedImage && (
+                  <Box sx={{ mt: 1 }}>
+                    <CloudinaryImage imageUrl={uploadedImage} />
+                  </Box>
+                )}
+              </Box>
               <DialogActions>
                 <Button onClick={handleClose} color="secondary">
                   Cancel
