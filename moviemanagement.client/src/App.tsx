@@ -15,10 +15,8 @@ import UserDetail from "./pages/user/UserDetail";
 import { createTheme, ThemeProvider } from "@mui/material";
 import Dashboard from "./pages/admin/Dashboard";
 import PromotionManagement from "./pages/admin/Promotions";
+import PromotionDetailManagement from "./pages/admin/PromotionDetail";
 import Movies from "./pages/admin/Movies";
-
-import {Cloudinary} from "@cloudinary/url-gen";
-
 
 const theme = createTheme({
   components: {
@@ -33,12 +31,6 @@ const theme = createTheme({
       },
     },
   },
-});
-
-const cld = new Cloudinary({
-  cloud: {
-    cloudName: 'demo'
-  }
 });
 
 const App = () => {
@@ -67,6 +59,7 @@ const App = () => {
               <Route path="thong-ke" element={<Dashboard />} />
               <Route path="khuyen-mai" element={<PromotionManagement />} />
               <Route path="phim" element={<Movies />} />
+              <Route path="promotions/:id" element={<PromotionDetailManagement />} />
 
             </Route>
 

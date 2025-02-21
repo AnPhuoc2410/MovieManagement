@@ -7,6 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useForm, Controller } from "react-hook-form";
 import { alpha } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom"; 
 
 // Layout Components
 import AppNavbar from "../../components/mui/AppNavbar";
@@ -99,6 +100,11 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
     setPromotions(promotions.filter((p) => p.id !== id));
   };
 
+  const navigate = useNavigate();
+  const handleEdit = (promotion: Promotion) => {
+    navigate(`/admin/promotions/${promotion.id}`, { state: { promotion } });
+  };
+
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "title", headerName: "Title", flex: 1 },
@@ -123,7 +129,7 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
       width: 150,
       renderCell: (params) => (
         <>
-          <IconButton onClick={() => handleOpen(params.row)}>
+          <IconButton onClick={() => handleEdit(params.row)}>
             <EditIcon color="primary" />
           </IconButton>
           <IconButton onClick={() => handleDelete(params.row.id)}>
