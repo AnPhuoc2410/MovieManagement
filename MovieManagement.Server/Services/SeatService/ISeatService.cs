@@ -5,10 +5,10 @@ namespace MovieManagement.Server.Services.SeatService
 {
     public interface ISeatService
     {
-        public Task<IEnumerable<Seat>> GetAllSeatsAsync();
-        public Task<Seat> GetSeatByIdAsync(Guid seatId);
-        public Task<Seat> CreateSeatAsync(SeatDto seatDto);
-        public Task<Seat> UpdateSeatAsync(Guid seatId, SeatDto seatDto);
+        public Task<IEnumerable<SeatDto>> GetAllSeatsAsync();
+        public Task<SeatDto> GetSeatByIdAsync(Guid seatId);
+        public Task<SeatDto> CreateSeatAsync(SeatDto seatDto);
+        public Task<SeatDto> UpdateSeatAsync(Guid seatId, SeatDto seatDto);
         public Task<bool> DeleteSeatAsync(Guid seatId);
     }
 }

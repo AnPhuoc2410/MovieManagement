@@ -1,4 +1,5 @@
-﻿using MovieManagement.Server.Data;
+﻿using AutoMapper;
+using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 
@@ -7,19 +8,23 @@ namespace MovieManagement.Server.Services.SeatService
     public class SeatService : ISeatService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public SeatService(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public SeatService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
-        public async Task<IEnumerable<Seat>> GetAllSeatsAsync()
+        public async Task<IEnumerable<SeatDto>> GetAllSeatsAsync()
         {
-            return await _unitOfWork.SeatRepository.GetAllAsync();
+            var seats = await _unitOfWork.SeatRepository.GetAllAsync();
+            return _mapper.Map<List<SeatDto>>(seats);
         }
-        public async Task<Seat> GetSeatByIdAsync(Guid seatId)
+        public async Task<SeatDto> GetSeatByIdAsync(Guid seatId)
         {
-            return await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
+            var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
+            return _mapper.Map<SeatDto>(seat);
         }
-        public async Task<Seat> CreateSeatAsync(SeatDto seatDto)
+        public async Task<SeatDto> CreateSeatAsync(SeatDto seatDto)
         {
             var newSeat = new Seat
             {
@@ -28,18 +33,20 @@ namespace MovieManagement.Server.Services.SeatService
                 RoomId = seatDto.RoomId,
                 Type = seatDto.Type,
             };
-            return await _unitOfWork.SeatRepository.CreateAsync(newSeat);
+            var createdSeat = await _unitOfWork.SeatRepository.CreateAsync(newSeat);
+            return _mapper.Map<SeatDto>(createdSeat);
         }
-        public async Task<Seat> UpdateSeatAsync(Guid seatId, SeatDto seatDto)
+        public async Task<SeatDto> UpdateSeatAsync(Guid seatId, SeatDto seatDto)
         {
-            var updateSeat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
+            var newSeat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
 
-            updateSeat.Level = seatDto.Level;
-            updateSeat.Number = seatDto.Number;
-            updateSeat.RoomId = seatDto.RoomId;
-            updateSeat.Type = seatDto.Type;
+            newSeat.Level = seatDto.Level;
+            newSeat.Number = seatDto.Number;
+            newSeat.RoomId = seatDto.RoomId;
+            newSeat.Type = seatDto.Type;
 
-            return await _unitOfWork.SeatRepository.UpdateAsync(updateSeat);
+            var updatedSeat = await _unitOfWork.SeatRepository.UpdateAsync(newSeat);
+            return _mapper.Map<SeatDto>(updatedSeat);
         }
         public async Task<bool> DeleteSeatAsync(Guid seatId)
         {

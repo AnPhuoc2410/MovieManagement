@@ -2,6 +2,8 @@
 {
     public class SeatDto
     {
+        public Guid? SeatId { get; set; }
+
         public string Level { get; set; }
 
         public int Number { get; set; }

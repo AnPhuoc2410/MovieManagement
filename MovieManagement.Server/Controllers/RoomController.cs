@@ -11,36 +11,34 @@ namespace MovieManagement.Server.Controllers
     public class RoomController : Controller
     {
         private readonly IRoomService _roomService;
-        private readonly IMapper _mapper;
 
-        public RoomController(IRoomService roomService, IMapper mapper)
+        public RoomController(IRoomService roomService)
         {
             _roomService = roomService;
-            _mapper = mapper;
         }
         [HttpGet]
         [Route("all")]
         public async Task<ActionResult> GetAll()
         {
-            var rooms = _mapper.Map<List<RoomDto>>(await _roomService.GetAllRoomsAsync());
+            var rooms = await _roomService.GetAllRoomsAsync();
             return Ok(rooms);
         }
         [HttpGet]
         [Route("{roomId:guid}")]
         public async Task<ActionResult<RoomDto>> GetRoomById(Guid roomId)
         {
-            return _mapper.Map<RoomDto>(await _roomService.GetRoomByIdAsync(roomId));
+            return await _roomService.GetRoomByIdAsync(roomId);
         }
         [HttpPost]
         public async Task<ActionResult<RoomDto>> CreateRoom([FromBody] RoomDto roomDto)
         {
-            return _mapper.Map<RoomDto>(await _roomService.CreateRoomAsync(_mapper.Map<Room>(roomDto)));
+            return await _roomService.CreateRoomAsync(roomDto);
         }
         [HttpPut]
         [Route("{roomId:guid}")]
         public async Task<ActionResult<RoomDto>> UpdateRoom(Guid roomId, [FromBody] RoomDto roomDto)
         {
-            return _mapper.Map<RoomDto>(await _roomService.UpdateRoomAsync(roomId, roomDto));
+            return await _roomService.UpdateRoomAsync(roomId, roomDto);
         }
         [HttpDelete]
         public async Task<bool> DeleteRoom(Guid roomId)

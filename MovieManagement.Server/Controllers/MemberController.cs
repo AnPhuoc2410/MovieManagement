@@ -1,8 +1,5 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using MovieManagement.Server.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Models.DTOs;
-using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services.MemberService;
 
 namespace MovieManagement.Server.Controllers
@@ -12,34 +9,35 @@ namespace MovieManagement.Server.Controllers
     public class MemberController : Controller
     {
         private readonly IMemberService _memberService;
-        private readonly IMapper _mapper;
-        public MemberController(IMemberService memberService, IMapper mapper)
+        public MemberController(IMemberService memberService)
         {
             _memberService = memberService;
-            _mapper = mapper;
         }
         [HttpGet]
         [Route("all")]
         public async Task<ActionResult> GetAllMembers()
         {
-            var members = _mapper.Map<List<MemberDto>>(await _memberService.GetAllMembersAsync());
+            var members = await _memberService.GetAllMembersAsync();
             return Ok(members);
         }
         [HttpGet]
         [Route("{id:guid}")]
         public async Task<ActionResult<MemberDto>> GetMemberById(Guid id)
         {
-            return _mapper.Map<MemberDto>(await _memberService.GetMemberByIdAsync(id));
+            var member = await _memberService.GetMemberByIdAsync(id);
+            return member;
         }
         [HttpPost]
-        public async Task<ActionResult<MemberDto>> RegisterMember([FromBody] MemberDto memberDto)
+        public async Task<ActionResult<MemberDto>> CreateMember([FromBody] MemberDto memberDto)
         {
-            return _mapper.Map<MemberDto>(await _memberService.CreateMemberAsync(_mapper.Map<Member>(memberDto)));
+            var @new = await _memberService.CreateMemberAsync(memberDto);
+            return @new;
         }
         [HttpPut]
         public async Task<ActionResult<MemberDto>> UpdateMemberById(Guid id, [FromBody] MemberDto memberDto)
         {
-            return _mapper.Map<MemberDto>(await _memberService.UpdateMemberAsync(id, _mapper.Map<Member>(memberDto)));
+            var updated = await _memberService.UpdateMemberAsync(id, memberDto);
+            return updated;
         }
         [HttpDelete]
         public async Task<bool> DeleteMemberById(Guid id)

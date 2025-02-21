@@ -5,10 +5,10 @@ namespace MovieManagement.Server.Services.BillService
 {
     public interface IBillService
     {
-        public Task<IEnumerable<Bill>> GetAllBillsAsync();
-        public Task<Bill> GetBillAsync(Guid billId);
-        public Task<Bill> CreateBillAsync(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, Bill bill);
-        public Task<Bill> UpdateBillAsync(Guid billId, Bill bill);
+        public Task<IEnumerable<BillDto>> GetAllBillsAsync();
+        public Task<BillDto> GetBillByIdAsync(Guid billId);
+        public Task<BillDto> CreateBillAsync(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, BillDto billDto);
+        public Task<BillDto> UpdateBillAsync(Guid billId, BillDto billDto);
         public Task<bool> DeleteBillAsync(Guid billId);
     }
 }

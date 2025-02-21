@@ -2,6 +2,8 @@
 {
     public class BillDto
     {
+        public Guid? BillId { get; set; }
+
         public DateTime CreatedDate { get; set; }
 
         public decimal Point { get; set; }
