@@ -40,7 +40,7 @@ const CloudinaryUploadWidget: React.FC<CloudinaryUploadWidgetProps> = ({ uwConfi
 
   return (
     <Button variant="contained" color="primary" onClick={handleUploadClick}>
-      Upload Image
+      Tải Ảnh
     </Button>
   );
 };

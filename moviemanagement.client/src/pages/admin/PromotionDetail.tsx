@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 // Layout Components
 import AppNavbar from "../../components/mui/AppNavbar";
 import SideMenu from "../../components/mui/SideMenu";
+import TextEdit from "../../components/admin/TextEdit";
 
 // Import Cloudinary Upload Widget component
 import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUploadWidget";
@@ -33,11 +34,11 @@ export default function PromotionDetail() {
   // If promotion is not passed, you might redirect or show an error.
   useEffect(() => {
     if (!promotion) {
-      navigate("/promotions");
+      navigate("/admin/khuyen-mai");
     }
   }, [promotion, navigate]);
 
-  const { control, handleSubmit, reset, setValue } = useForm<Promotion>({
+  const { watch, control, handleSubmit, reset, setValue } = useForm<Promotion>({
     defaultValues: promotion || {
       id: 0,
       title: "",
@@ -70,12 +71,23 @@ export default function PromotionDetail() {
     setValue("image", imageUrl);
   };
 
-  const onSubmit = (data: Promotion) => {
-    // Update the promotion details (e.g., call an API or update global state).
-    console.log("Updated Promotion:", data);
-    // Navigate back to the promotions list or detail view after updating.
-    navigate("/promotions");
+  const onSubmit = async (data: Promotion) => {
+    // try {
+    //   const response = await fetch(`https://your-api.com/promotions/${data.id}`, {
+    //     method: "PUT",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(data),
+    //   });
+    //   if (!response.ok) {
+    //     throw new Error("Update failed");
+    //   }
+    console.log("Promotion updated:", data);
+    navigate("/admin/khuyen-mai");
+    // } catch (error) {
+    //   console.error("Error updating promotion:", error);
+    // }
   };
+
 
   return (
     <AppTheme disableCustomTheme={false}>
@@ -99,67 +111,98 @@ export default function PromotionDetail() {
             })}
           >
             <Stack spacing={2}>
-              <Button onClick={() => navigate("/promotions")}>Back</Button>
-              <h2>{promotion ? "Edit Promotion" : "Add Promotion"}</h2>
+              <h1>{promotion ? "Cập Nhật Khuyến Mãi" : "Tạo Khuyến Mãi"}</h1>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Controller
                   name="title"
                   control={control}
-                  rules={{ required: "Title is required" }}
-                  render={({ field }) => (
-                    <TextField {...field} fullWidth label="Title" margin="dense" />
+                  rules={{ required: "Tiêu đề yêu cầu" }}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label="Tiêu đề"
+                      margin="dense"
+                      variant="outlined"
+                      InputLabelProps={{ shrink: true }}
+                      error={!!error}
+                      helperText={error ? error.message : ""}
+                    />
                   )}
                 />
                 <Controller
                   name="discount"
                   control={control}
-                  rules={{ required: "Discount is required", min: 1, max: 100 }}
-                  render={({ field }) => (
+                  rules={{
+                    required: "Nhập giảm giá",
+                    min: { value: 1, message: "Giảm giá ít nhất 1%" },
+                    max: { value: 100, message: "Giảm giá không vượt quá 100%" },
+                  }}
+                  render={({ field, fieldState: { error } }) => (
                     <TextField
                       {...field}
                       fullWidth
-                      label="Discount (%)"
+                      label="Giảm giá (%)"
                       type="number"
                       margin="dense"
+                      error={!!error}
+                      helperText={error ? error.message : ""}
                     />
                   )}
                 />
                 <Controller
                   name="startDate"
                   control={control}
-                  rules={{ required: "Start date is required" }}
-                  render={({ field }) => (
+                  rules={{ required: "Nhập thời gian bắt đầu" }}
+                  render={({ field, fieldState: { error } }) => (
                     <TextField
                       {...field}
                       fullWidth
-                      label="Start Date"
+                      label="Bắt đầu"
                       type="date"
                       margin="dense"
                       InputLabelProps={{ shrink: true }}
+                      error={!!error}
+                      helperText={error ? error.message : ""}
                     />
                   )}
                 />
                 <Controller
                   name="endDate"
                   control={control}
-                  rules={{ required: "End date is required" }}
-                  render={({ field }) => (
+                  rules={{
+                    required: "Nhập thời gian kết thúc",
+                    validate: (value) => {
+                      const start = watch("startDate");
+                      if (new Date(value) < new Date(start)) {
+                        return "Thời gian kết thúc phải sau thời gian bắt đầu";
+                      }
+                      return true;
+                    },
+                  }}
+                  render={({ field, fieldState: { error } }) => (
                     <TextField
                       {...field}
                       fullWidth
-                      label="End Date"
+                      label="Kết thúc"
                       type="date"
                       margin="dense"
                       InputLabelProps={{ shrink: true }}
+                      error={!!error}
+                      helperText={error ? error.message : ""}
                     />
                   )}
                 />
                 <Controller
                   name="detail"
                   control={control}
-                  rules={{ required: "Detail is required" }}
+                  defaultValue=""
+                  rules={{ required: "Nhập chi tiết" }}
                   render={({ field }) => (
-                    <TextField {...field} fullWidth label="Detail" margin="dense" />
+                    <TextEdit
+                      value={field.value}
+                      onChange={(val) => field.onChange(val)}
+                    />
                   )}
                 />
 
@@ -178,10 +221,11 @@ export default function PromotionDetail() {
                 </Box>
 
                 <Button type="submit" variant="contained">
-                  Update Promotion
+                  Cập Nhật Khuyến Mãi
                 </Button>
               </form>
             </Stack>
+            <Button onClick={() => navigate("/admin/khuyen-mai")}>Trở lại</Button>
           </Box>
         </Box>
       </Box>

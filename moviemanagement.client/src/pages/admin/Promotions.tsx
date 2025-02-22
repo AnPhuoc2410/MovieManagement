@@ -7,7 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useForm, Controller } from "react-hook-form";
 import { alpha } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 // Layout Components
 import AppNavbar from "../../components/mui/AppNavbar";
@@ -19,6 +19,7 @@ import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUpload
 
 // Theme & Customizations
 import AppTheme from "../../shared-theme/AppTheme";
+import TextEdit from "../../components/admin/TextEdit";
 
 interface Promotion {
   id: number;
@@ -58,13 +59,13 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
   // For image preview from Cloudinary
   const [uploadedImage, setUploadedImage] = useState<string>("");
 
-  const { control, handleSubmit, reset, setValue } = useForm<Promotion>({
+  const { watch, control, handleSubmit, reset, setValue } = useForm<Promotion>({
     defaultValues: { id: 0, title: "", discount: 0, startDate: "", endDate: "", detail: "", image: "" },
   });
 
   // Cloudinary widget configuration
   const uwConfig = {
-    cloudName: "dwqyqsqmq", 
+    cloudName: "dwqyqsqmq",
     uploadPreset: "movie_up",
   };
 
@@ -102,19 +103,19 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
 
   const navigate = useNavigate();
   const handleEdit = (promotion: Promotion) => {
-    navigate(`/admin/promotions/${promotion.id}`, { state: { promotion } });
+    navigate(`/admin/khuyen-mai/${promotion.id}`, { state: { promotion } });
   };
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 70 },
-    { field: "title", headerName: "Title", flex: 1 },
-    { field: "discount", headerName: "Discount (%)", width: 130 },
-    { field: "startDate", headerName: "Start Date", width: 150 },
-    { field: "endDate", headerName: "End Date", width: 150 },
-    { field: "detail", headerName: "Detail", flex: 1 },
+    { field: "title", headerName: "Tiêu Đề", flex: 1 },
+    { field: "discount", headerName: "Giảm giá (%)", width: 130 },
+    { field: "startDate", headerName: "Thời gian bắt đầu", width: 150 },
+    { field: "endDate", headerName: "Thời gian kết thúc", width: 150 },
+    { field: "detail", headerName: "Chi Tiết", flex: 1 },
     {
       field: "image",
-      headerName: "Image",
+      headerName: "Ảnh",
       width: 120,
       renderCell: (params) =>
         params.row.image ? (
@@ -125,7 +126,7 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
     },
     {
       field: "actions",
-      headerName: "Actions",
+      headerName: "Chức năng",
       width: 150,
       renderCell: (params) => (
         <>
@@ -166,10 +167,9 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
             <Stack spacing={2} alignItems="center">
               <Header />
               <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpen()} sx={{ mb: 2 }}>
-                Add Promotion
+                Thêm Khuyến Mãi
               </Button>
 
-              {/* Promotions Table */}
               <Box sx={{ height: 400, width: "100%" }}>
                 <DataGrid rows={promotions} columns={columns} pageSizeOptions={[5, 10, 20]} />
               </Box>
@@ -177,47 +177,103 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
           </Box>
         </Box>
 
-        {/* Add/Edit Promotion Dialog */}
         <Dialog open={open} onClose={handleClose} fullWidth>
-          <DialogTitle>{selectedPromotion ? "Edit Promotion" : "Add Promotion"}</DialogTitle>
+          <DialogTitle>{selectedPromotion ? "Sửa Khuyến Mãi" : "Tạo Khuyến Mãi"}</DialogTitle>
           <DialogContent>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Controller
                 name="title"
                 control={control}
-                rules={{ required: "Title is required" }}
-                render={({ field }) => <TextField {...field} fullWidth label="Title" margin="dense" />}
+                rules={{ required: "Tiêu đề yêu cầu" }}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Tiêu đề"
+                    margin="dense"
+                    variant="outlined"
+                    InputLabelProps={{ shrink: true }}
+                    error={!!error}
+                    helperText={error ? error.message : ""}
+                  />
+                )}
               />
               <Controller
                 name="discount"
                 control={control}
-                rules={{ required: "Discount is required", min: 1, max: 100 }}
-                render={({ field }) => <TextField {...field} fullWidth label="Discount (%)" type="number" margin="dense" />}
+                rules={{
+                  required: "Nhập giảm giá",
+                  min: { value: 1, message: "Giảm giá ít nhất 1%" },
+                  max: { value: 100, message: "Giảm giá không vượt quá 100%" },
+                }}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Giảm giá (%)"
+                    type="number"
+                    margin="dense"
+                    error={!!error}
+                    helperText={error ? error.message : ""}
+                  />
+                )}
               />
               <Controller
                 name="startDate"
                 control={control}
-                rules={{ required: "Start date is required" }}
-                render={({ field }) => (
-                  <TextField {...field} fullWidth label="Start Date" type="date" margin="dense" InputLabelProps={{ shrink: true }} />
+                rules={{ required: "Nhập thời gian bắt đầu" }}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Bắt đầu"
+                    type="date"
+                    margin="dense"
+                    InputLabelProps={{ shrink: true }}
+                    error={!!error}
+                    helperText={error ? error.message : ""}
+                  />
                 )}
               />
               <Controller
                 name="endDate"
                 control={control}
-                rules={{ required: "End date is required" }}
-                render={({ field }) => (
-                  <TextField {...field} fullWidth label="End Date" type="date" margin="dense" InputLabelProps={{ shrink: true }} />
+                rules={{
+                  required: "Nhập thời gian kết thúc",
+                  validate: (value) => {
+                    const start = watch("startDate");
+                    if (new Date(value) < new Date(start)) {
+                      return "Thời gian kết thúc phải sau thời gian bắt đầu";
+                    }
+                    return true;
+                  },
+                }}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Kết thúc"
+                    type="date"
+                    margin="dense"
+                    InputLabelProps={{ shrink: true }}
+                    error={!!error}
+                    helperText={error ? error.message : ""}
+                  />
                 )}
               />
               <Controller
-                name="detail"
-                control={control}
-                rules={{ required: "Detail is required" }}
-                render={({ field }) => <TextField {...field} fullWidth label="Detail" margin="dense" />}
-              />
+                  name="detail"
+                  control={control}
+                  defaultValue=""
+                  rules={{ required: "Nhập chi tiết" }}
+                  render={({ field }) => (
+                    <TextEdit
+                      value={field.value}
+                      onChange={(val) => field.onChange(val)}
+                    />
+                  )}
+                />
 
-              {/* Cloudinary Upload Section */}
               <Box sx={{ my: 2 }}>
                 <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={handleSetPublicId} />
                 {uploadedImage && (
@@ -228,10 +284,10 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
               </Box>
               <DialogActions>
                 <Button onClick={handleClose} color="secondary">
-                  Cancel
+                  Hủy
                 </Button>
                 <Button type="submit" variant="contained">
-                  {selectedPromotion ? "Update" : "Add"}
+                  {selectedPromotion ? "Cập nhật" : "Tạo"}
                 </Button>
               </DialogActions>
             </form>
