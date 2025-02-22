@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 interface Promotion {
   promotionId: string;
   promotionName: string;
-  image: string;
+  image?: string;
   fromDate: string;
   toDate: string;
   discount: number;
