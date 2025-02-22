@@ -23,10 +23,8 @@ const slides = [
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215wx365h_4_.jpg",
   "https://images.squarespace-cdn.com/content/v1/51b3dc8ee4b051b96ceb10de/a528ec50-cc70-46f0-a2e3-31b279594daa/spider-man-across-the-spider-verse-banner-features-an-epic-number-of-spider-people.jpg?format=1500w",
-  "https://www.bhdstar.vn/wp-content/uploads/2024/12/Captain-America.jpg",
+  "https://th.bing.com/th/id/R.dc64e9a3281832f4d2d87ca943dd4e36?rik=%2fPgUk7wh6wxEQQ&riu=http%3a%2f%2fwww.hidefninja.com%2fwp-content%2fuploads%2f2015%2f01%2finterstellar-banner.jpg&ehk=PYHmoxpd%2f0b3o5xBZIgAI8ojH4Lj7D0Pc37sg8O9mqU%3d&risl=&pid=ImgRaw&r=0",
   "https://www.bhdstar.vn/wp-content/uploads/2025/02/referenceSchemeHeadOfficeallowPlaceHoldertrueheight1069ldapp.jpg",
-  
-
 ];
 
 const Homepage: React.FC = () => {
