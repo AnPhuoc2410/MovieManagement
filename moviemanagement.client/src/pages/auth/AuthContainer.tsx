@@ -38,6 +38,10 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (data: LoginDTO) => {
+    if (data.email === "admin@admin" && data.password === "admin") {
+      navigate("/admin/thong-ke");
+    }
+
     const user = { ...data };
     for (let i = 0; i < SampleMemberProfiles.length; i++) {
       if (
@@ -125,7 +129,7 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = async (data: UserRegisterDTO) => {
+  const onSubmit = async (data: any) => {
     try {
       const response = await register(data);
 

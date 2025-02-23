@@ -6,6 +6,7 @@ import { fetchThanhVien } from "../../../apis/mock.apis";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import ManagementPageLayout from "../../../layouts/ManagementPageLayout";
 import EmployeeTable, { Employee } from "./BangNhanVien";
+import { Button } from "@mui/material";
 
 const QuanLiNhanVien: React.FC = () => {
   const {
@@ -16,6 +17,10 @@ const QuanLiNhanVien: React.FC = () => {
     "NhanVienData", // Cache key
     fetchThanhVien,
   );
+
+  const handleAdd = () => {
+    console.log("Prepare to add ");
+  };
 
   const handleEdit = (id: string) => {
     console.log("Editing", id);
@@ -31,15 +36,20 @@ const QuanLiNhanVien: React.FC = () => {
   if (error) return <div>Failed to fetch data</div>;
 
   return (
-    <ManagementPageLayout
-      children={
-        <EmployeeTable
-          employees={danhSachNhanVien}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-      }
-    />
+    <>
+      <Button variant="contained" onClick={handleAdd}>
+        Add Nhan Vien
+      </Button>
+      <ManagementPageLayout
+        children={
+          <EmployeeTable
+            employees={danhSachNhanVien}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        }
+      />
+    </>
   );
 };
 
