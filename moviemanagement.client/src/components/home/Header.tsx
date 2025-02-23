@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -7,15 +7,26 @@ import {
   IconButton,
   Box,
   Typography,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VietnamFlag from "../../assets/vietnam-icon.svg";
+import AmericaFlag from "../../assets/usa.svg";
+import JapanFlag from "../../assets/japan.svg";
 import { useNavigate } from "react-router";
 
 const Header: React.FC = () => {
+  const [language, setLanguage] = useState("VN");
   const navigate = useNavigate();
+
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    setLanguage(event.target.value as string);
+  };
+
   return (
     <AppBar
       position="fixed"
@@ -62,7 +73,7 @@ const Header: React.FC = () => {
             variant="outlined"
             size="small"
             placeholder="Tìm phim, rạp"
-            sx={{ backgroundColor: "white", borderRadius: 2, width: 300 }}
+            sx={{ backgroundColor: "white", borderRadius: 2, width: "70%" }}
             InputProps={{
               endAdornment: (
                 <IconButton>
@@ -146,10 +157,42 @@ const Header: React.FC = () => {
             <AccountCircleIcon />
             <Typography>Đăng nhập</Typography>
           </IconButton>
-          <IconButton color="inherit">
-            <img src={VietnamFlag} alt="Vietnam Flag" width="25" height="25" />
-          </IconButton>
-          <Typography>VN ▼</Typography>
+          <Select
+            value={language}
+            onChange={handleChange}
+            displayEmpty
+            renderValue={(selected) => <Typography>{selected} ▼</Typography>}
+            sx={{ backgroundColor: "#FFFFFF" }}
+          >
+            <MenuItem value="VN">
+              VN
+              <IconButton color="inherit">
+                <img
+                  src={VietnamFlag}
+                  alt="Vietnam Flag"
+                  width="25"
+                  height="25"
+                />
+              </IconButton>
+            </MenuItem>
+            <MenuItem value="EN">
+              EN
+              <IconButton color="inherit">
+                <img
+                  src={AmericaFlag}
+                  alt="America Flag"
+                  width="25"
+                  height="25"
+                />
+              </IconButton>
+            </MenuItem>
+            <MenuItem value="JP">
+              JP
+              <IconButton color="inherit">
+                <img src={JapanFlag} alt="Japan Flag" width="25" height="25" />
+              </IconButton>
+            </MenuItem>
+          </Select>
         </Box>
       </Toolbar>
     </AppBar>
