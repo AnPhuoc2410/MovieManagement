@@ -62,7 +62,11 @@ export default defineConfig({
         secure: false,
       },
     },
+    host: true,
     port: 3000,
+    watch: {
+      usePolling: true,
+    },
     https: {
       key: fs.readFileSync(keyFilePath),
       cert: fs.readFileSync(certFilePath),
