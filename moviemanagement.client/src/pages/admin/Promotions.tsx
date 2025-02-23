@@ -1,12 +1,22 @@
-import * as React from "react";
-import { useState } from "react";
-import { Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Stack } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useForm, Controller } from "react-hook-form";
+import EditIcon from "@mui/icons-material/Edit";
+import {
+  Box,
+  Button,
+  CssBaseline,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Stack,
+  TextField,
+} from "@mui/material";
 import { alpha } from "@mui/material/styles";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 // Layout Components
@@ -18,8 +28,8 @@ import SideMenu from "../../components/mui/SideMenu";
 import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUploadWidget";
 
 // Theme & Customizations
-import AppTheme from "../../shared-theme/AppTheme";
 import TextEdit from "../../components/admin/TextEdit";
+import AppTheme from "../../shared-theme/AppTheme";
 
 interface Promotion {
   id: number;
@@ -39,7 +49,8 @@ const initialPromotions: Promotion[] = [
     startDate: "2025-11-25",
     endDate: "2025-11-30",
     detail: "Discount 30% for all products",
-    image: "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740121129/samples/chair.png", // example placeholder
+    image:
+      "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740121129/samples/chair.png", // example placeholder
   },
   {
     id: 2,
@@ -48,19 +59,34 @@ const initialPromotions: Promotion[] = [
     startDate: "2025-12-31",
     endDate: "2026-01-05",
     detail: "Discount 20% for all products",
-    image: "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740121129/samples/coffee.jpg",
+    image:
+      "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740121129/samples/coffee.jpg",
   },
 ];
 
-export default function Promotions({ disableCustomTheme = false }: { disableCustomTheme?: boolean }) {
+export default function Promotions({
+  disableCustomTheme = false,
+}: {
+  disableCustomTheme?: boolean;
+}) {
   const [promotions, setPromotions] = useState<Promotion[]>(initialPromotions);
   const [open, setOpen] = useState(false);
-  const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null);
+  const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(
+    null,
+  );
   // For image preview from Cloudinary
   const [uploadedImage, setUploadedImage] = useState<string>("");
 
   const { watch, control, handleSubmit, reset, setValue } = useForm<Promotion>({
-    defaultValues: { id: 0, title: "", discount: 0, startDate: "", endDate: "", detail: "", image: "" },
+    defaultValues: {
+      id: 0,
+      title: "",
+      discount: 0,
+      startDate: "",
+      endDate: "",
+      detail: "",
+      image: "",
+    },
   });
 
   // Cloudinary widget configuration
@@ -77,7 +103,17 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
 
   const handleOpen = (promotion?: Promotion) => {
     setSelectedPromotion(promotion || null);
-    reset(promotion || { id: 0, title: "", discount: 0, startDate: "", endDate: "", detail: "", image: "" });
+    reset(
+      promotion || {
+        id: 0,
+        title: "",
+        discount: 0,
+        startDate: "",
+        endDate: "",
+        detail: "",
+        image: "",
+      },
+    );
     setUploadedImage(promotion?.image || "");
     setOpen(true);
   };
@@ -119,7 +155,11 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
       width: 120,
       renderCell: (params) =>
         params.row.image ? (
-          <img src={params.row.image} alt="Promotion" style={{ width: "100%", height: "auto" }} />
+          <img
+            src={params.row.image}
+            alt="Promotion"
+            style={{ width: "100%", height: "auto" }}
+          />
         ) : (
           "No image"
         ),
@@ -166,19 +206,30 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
           >
             <Stack spacing={2} alignItems="center">
               <Header />
-              <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpen()} sx={{ mb: 2 }}>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => handleOpen()}
+                sx={{ mb: 2 }}
+              >
                 Thêm Khuyến Mãi
               </Button>
 
               <Box sx={{ height: 400, width: "100%" }}>
-                <DataGrid rows={promotions} columns={columns} pageSizeOptions={[5, 10, 20]} />
+                <DataGrid
+                  rows={promotions}
+                  columns={columns}
+                  pageSizeOptions={[5, 10, 20]}
+                />
               </Box>
             </Stack>
           </Box>
         </Box>
 
         <Dialog open={open} onClose={handleClose} fullWidth>
-          <DialogTitle>{selectedPromotion ? "Sửa Khuyến Mãi" : "Tạo Khuyến Mãi"}</DialogTitle>
+          <DialogTitle>
+            {selectedPromotion ? "Sửa Khuyến Mãi" : "Tạo Khuyến Mãi"}
+          </DialogTitle>
           <DialogContent>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Controller
@@ -262,23 +313,30 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
                 )}
               />
               <Controller
-                  name="detail"
-                  control={control}
-                  defaultValue=""
-                  rules={{ required: "Nhập chi tiết" }}
-                  render={({ field }) => (
-                    <TextEdit
-                      value={field.value}
-                      onChange={(val) => field.onChange(val)}
-                    />
-                  )}
-                />
+                name="detail"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Nhập chi tiết" }}
+                render={({ field }) => (
+                  <TextEdit
+                    value={field.value}
+                    onChange={(val) => field.onChange(val)}
+                  />
+                )}
+              />
 
               <Box sx={{ my: 2 }}>
-                <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={handleSetPublicId} />
+                <CloudinaryUploadWidget
+                  uwConfig={uwConfig}
+                  setPublicId={handleSetPublicId}
+                />
                 {uploadedImage && (
                   <Box sx={{ mt: 1 }}>
-                    <img src={uploadedImage} alt="Uploaded" style={{ maxWidth: "100%", maxHeight: 150 }} />
+                    <img
+                      src={uploadedImage}
+                      alt="Uploaded"
+                      style={{ maxWidth: "100%", maxHeight: 150 }}
+                    />
                   </Box>
                 )}
               </Box>
