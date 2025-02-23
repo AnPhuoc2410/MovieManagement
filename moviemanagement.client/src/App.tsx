@@ -5,6 +5,7 @@ import AuthContainer from "./pages/auth/AuthContainer";
 import Home from "./pages/Home";
 import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
 import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
+import ScrollToTop from "./components/common/ScrollToTop";
 import Promotion from "./pages/promotion/PromotionsPage";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
 import Ticket from "./pages/ticket/Ticket";
@@ -18,6 +19,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import PromotionManagement from "./pages/admin/Promotions";
 import PromotionDetailManagement from "./pages/admin/PromotionDetail";
 import Movies from "./pages/admin/Movies";
+
 
 const theme = createTheme({
   components: {
@@ -41,6 +43,7 @@ const App = () => {
     <BrowserRouter>
       <AuthProvider>
         <ThemeProvider theme={theme}>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/auth" element={<AuthContainer />} />
@@ -65,7 +68,6 @@ const App = () => {
               <Route path="khuyen-mai/:id" element={<PromotionDetailManagement />} />
 
             </Route>
-
           </Routes>
         </ThemeProvider>
       </AuthProvider>
