@@ -5,7 +5,7 @@ import AuthContainer from "./pages/auth/AuthContainer";
 import Home from "./pages/Home";
 import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
 import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
-import Promotion from "./pages/promotion/Promotion";
+import Promotion from "./pages/promotion/PromotionsPage";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
 import Ticket from "./pages/ticket/Ticket";
 import MovieSeat from "./pages/ticket/MovieSeat";

@@ -33,7 +33,6 @@ export default function PromotionDetail() {
   // Expect the promotion details to be passed via location state.
   const promotion: Promotion | undefined = location.state?.promotion;
 
-  // If promotion is not passed, you might redirect or show an error.
   useEffect(() => {
     if (!promotion) {
       navigate("/admin/khuyen-mai");
@@ -65,9 +64,16 @@ export default function PromotionDetail() {
 
   const onSubmit = async (data: Promotion) => {
     try {
+      const payload = {
+        ...data,
+        promotionId: data.promotionId ? data.promotionId : null,
+        fromDate: dayjs(data.fromDate).toISOString(),
+        toDate: dayjs(data.toDate).toISOString(),
+      };
+  
       const response = await axios.put(
         `https://localhost:7119/api/Promotions/UpdatePromotion/${data.promotionId}`,
-        data,
+        payload,
         {
           headers: {
             "Content-Type": "application/json",
@@ -80,8 +86,7 @@ export default function PromotionDetail() {
       console.error("Error updating promotion:", error);
     }
   };
-
-
+  
   return (
     <AppTheme disableCustomTheme={false}>
       <CssBaseline enableColorScheme />

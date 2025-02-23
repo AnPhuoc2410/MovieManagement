@@ -6,6 +6,7 @@ import { autoGravity } from '@cloudinary/url-gen/qualifiers/gravity';
 
 interface CloudinaryImageProps {
   imageUrl: string;
+  hd?: boolean; // Pass true to get HD image
 }
 
 // Initialize Cloudinary instance with your cloud name
@@ -18,23 +19,24 @@ const cld = new Cloudinary({
 // Helper function to extract publicId from the full URL
 const extractPublicId = (url: string): string => {
   // Expected URL format: 
-  // https://res.cloudinary.com/dwqyqsqmq/image/upload/{version}/{public_id}
+  // https://res.cloudinary.com/dwqyqsqmq/image/upload/{public_id}
   const parts = url.split('/');
   const uploadIndex = parts.indexOf('upload');
-  if (uploadIndex > -1 && parts.length > uploadIndex + 2) {
-    return parts.slice(uploadIndex + 2).join('/');
+  if (uploadIndex > -1 && parts.length > uploadIndex + 1) {
+    return parts.slice(uploadIndex + 1).join('/');
   }
-  return url;
+  return '';
 };
 
-const CloudinaryImage: React.FC<CloudinaryImageProps> = ({ imageUrl }) => {
+const CloudinaryImage: React.FC<CloudinaryImageProps> = ({ imageUrl, hd = false }) => {
   const publicId = extractPublicId(imageUrl);
-  const img = cld
-    .image(publicId)
-    .format('auto')
-    .quality('auto')
-    .resize(auto().gravity(autoGravity()).width(100).height(50));
+  let img = cld.image(publicId).format('auto').quality('auto');
 
+  // If hd prop is true, request a higher resolution image
+  if (hd) {
+    img = img.resize(auto().gravity(autoGravity()).width(1920).height(1080));
+  }
+  
   return <AdvancedImage cldImg={img} />;
 };
 

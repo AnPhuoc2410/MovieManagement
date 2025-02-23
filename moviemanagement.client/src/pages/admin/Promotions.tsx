@@ -41,30 +41,6 @@ interface Promotion {
   image?: string;
 }
 
-// Optional initial promotions for testing
-const initialPromotions: Promotion[] = [
-  {
-    promotionId: "1",
-    promotionName: "Black Friday",
-    discount: 30,
-    fromDate: "2025-11-25",
-    toDate: "2025-11-30",
-    content: "Discount 30% for all products",
-    image:
-      "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740121129/samples/chair.png",
-  },
-  {
-    promotionId: "2",
-    promotionName: "New Year Sale",
-    discount: 20,
-    fromDate: "2025-12-31",
-    toDate: "2026-01-05",
-    content: "Discount 20% for all products",
-    image:
-      "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740121129/samples/coffee.jpg",
-  },
-];
-
 export default function Promotions({ disableCustomTheme = false }: { disableCustomTheme?: boolean }) {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [open, setOpen] = useState(false);
@@ -86,6 +62,7 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
   const { watch, control, handleSubmit, reset, setValue } = useForm<Promotion>({
     defaultValues: { promotionId: "", promotionName: "", discount: 0, fromDate: "", toDate: "", content: "", image: "", },
   });
+  const navigate = useNavigate();
 
   const uwConfig = {
     cloudName: "dwqyqsqmq",
@@ -127,20 +104,6 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
         ...data,
         promotionId: data.promotionId ? data.promotionId : null,
       };
-  
-      if (selectedPromotion) {
-        // Update existing promotion
-        const response = await axios.put(
-          `https://localhost:7119/api/Promotions/UpdatePromotion/${data.promotionId}`,
-          payload,
-          { headers: { "Content-Type": "application/json" } }
-        );
-        setPromotions(
-          promotions.map((p) =>
-            p.promotionId === data.promotionId ? response.data : p
-          )
-        );
-      } else {
         // Create new promotion
         const response = await axios.post(
           "https://localhost:7119/api/Promotions/CreatePromotion",
@@ -148,18 +111,25 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
           { headers: { "Content-Type": "application/json" } }
         );
         setPromotions([...promotions, response.data]);
-      }
+      
       handleClose();
     } catch (error) {
       console.error("Error posting promotion:", error);
     }
   };
 
-  const handleDelete = (promotionId: string) => {
-    setPromotions(promotions.filter((p) => p.promotionId !== promotionId));
+  const handleDelete = async (promotionId: string) => {
+    try {
+      await axios.delete(`https://localhost:7119/api/Promotions/DeletePromotion/${promotionId}`, {
+        headers: { "Content-Type": "application/json" },
+      });
+      setPromotions(promotions.filter((p) => p.promotionId !== promotionId));
+    } catch (error) {
+      console.error("Error deleting promotion:", error);
+    }
   };
+  
 
-  const navigate = useNavigate();
   const handleEdit = (promotion: Promotion) => {
     navigate(`/admin/khuyen-mai/${promotion.promotionId}`, { state: { promotion } });
   };
@@ -352,8 +322,8 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
                 control={control}
                 defaultValue=""
                 rules={{ required: "Nhập chi tiết" }}
-                render={({ field }) => (
-                  <TextEdit value={field.value} onChange={(val) => field.onChange(val)} />
+                render={({ field, fieldState: { error }  }) => (
+                  <TextEdit value={field.value} onChange={(val) => field.onChange(val)} error={error?.message}/>
                 )}
               />
               <Box sx={{ my: 2 }}>
