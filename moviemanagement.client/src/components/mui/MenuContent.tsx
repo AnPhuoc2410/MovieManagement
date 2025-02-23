@@ -1,31 +1,30 @@
-import * as React from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Icons
+import ConfirmationNumberRoundedIcon from "@mui/icons-material/ConfirmationNumberRounded";
+import DiscountRoundedIcon from "@mui/icons-material/DiscountRounded";
+import EventSeatRoundedIcon from "@mui/icons-material/EventSeatRounded";
+import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import LocalActivityRoundedIcon from "@mui/icons-material/LocalActivityRounded";
+import MovieCreationRoundedIcon from "@mui/icons-material/MovieCreationRounded";
 import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import PermIdentityRoundedIcon from "@mui/icons-material/PermIdentityRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
-import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
-import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
-import LocalActivityRoundedIcon from "@mui/icons-material/LocalActivityRounded";
-import ConfirmationNumberRoundedIcon from "@mui/icons-material/ConfirmationNumberRounded";
-import EventSeatRoundedIcon from "@mui/icons-material/EventSeatRounded";
-import MovieCreationRoundedIcon from "@mui/icons-material/MovieCreationRounded";
-import DiscountRoundedIcon from "@mui/icons-material/DiscountRounded";
 
 const mainListItems = [
   { text: "Trang chủ", icon: <HomeRoundedIcon />, path: "/admin/thong-ke" },
   {
-    text: "Quản lý Khách hàng",
+    text: "Quản lý Thành viên",
     icon: <PeopleRoundedIcon />,
-    path: "/admin/khach-hang",
+    path: "/admin/ql-thanh-vien",
   },
   {
     text: "Quản lý Nhân viên",
