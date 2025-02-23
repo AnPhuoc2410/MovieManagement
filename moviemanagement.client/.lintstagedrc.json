@@ -1,5 +1,5 @@
 {
-  "*.{js,jsx,ts,tsx}": [
+  "*.{js,jsx,ts,tsx,md,html}": [
     "prettier --write",
     "eslint --fix",
     "bash -c 'tsc --project tsconfig.json --noEmit'"
