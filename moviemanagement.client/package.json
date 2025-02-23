@@ -6,10 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
     "preview": "vite preview",
     "prettier:fix": "prettier --write . --cache",
-    "prepare": "husky"
+    "lint": "eslint \"**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "eslint . --fix",
+    "prettier": "prettier --check .",
+    "format": "prettier --write .",
+    "prepare": "[ \"$NODE_ENV\" != \"production\" ] && husky install || exit 0"
   },
   "dependencies": {
     "@cloudinary/react": "^1.13.1",
@@ -65,6 +68,7 @@
     "eslint-plugin-tailwindcss": "^3.17.4",
     "globals": "^15.9.0",
     "husky": "^9.1.5",
+    "lint-staged": "^15.2.2",
     "postcss": "^8.5.1",
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.6.5",
@@ -73,5 +77,8 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
