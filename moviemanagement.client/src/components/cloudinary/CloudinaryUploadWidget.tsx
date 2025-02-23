@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import Button from '@mui/material/Button';
-
+import React, { useEffect, useRef } from "react";
+import Button from "@mui/material/Button";
 
 declare global {
   interface Window {
@@ -13,7 +12,10 @@ interface CloudinaryUploadWidgetProps {
   setPublicId: (publicId: string) => void;
 }
 
-const CloudinaryUploadWidget: React.FC<CloudinaryUploadWidgetProps> = ({ uwConfig, setPublicId }) => {
+const CloudinaryUploadWidget: React.FC<CloudinaryUploadWidgetProps> = ({
+  uwConfig,
+  setPublicId,
+}) => {
   const uploadWidgetRef = useRef<any>(null);
 
   useEffect(() => {
@@ -22,11 +24,11 @@ const CloudinaryUploadWidget: React.FC<CloudinaryUploadWidgetProps> = ({ uwConfi
       uploadWidgetRef.current = window.cloudinary.createUploadWidget(
         uwConfig,
         (error: any, result: any) => {
-          if (!error && result && result.event === 'success') {
-            console.log('Upload successful:', result.info);
+          if (!error && result && result.event === "success") {
+            console.log("Upload successful:", result.info);
             setPublicId(result.info.public_id);
           }
-        }
+        },
       );
     }
   }, [uwConfig, setPublicId]);

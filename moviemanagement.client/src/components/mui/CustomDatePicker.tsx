@@ -1,16 +1,16 @@
-import * as React from 'react';
-import dayjs, { Dayjs } from 'dayjs';
-import Button from '@mui/material/Button';
-import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { UseDateFieldProps } from '@mui/x-date-pickers/DateField';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import * as React from "react";
+import dayjs, { Dayjs } from "dayjs";
+import Button from "@mui/material/Button";
+import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { UseDateFieldProps } from "@mui/x-date-pickers/DateField";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
   BaseSingleInputFieldProps,
   DateValidationError,
   FieldSection,
-} from '@mui/x-date-pickers/models';
+} from "@mui/x-date-pickers/models";
 
 interface ButtonFieldProps
   extends UseDateFieldProps<Dayjs, false>,
@@ -31,7 +31,7 @@ function ButtonField(props: ButtonFieldProps) {
     id,
     disabled,
     InputProps: { ref } = {},
-    inputProps: { 'aria-label': ariaLabel } = {},
+    inputProps: { "aria-label": ariaLabel } = {},
   } = props;
 
   return (
@@ -44,9 +44,9 @@ function ButtonField(props: ButtonFieldProps) {
       size="small"
       onClick={() => setOpen?.((prev) => !prev)}
       startIcon={<CalendarTodayRoundedIcon fontSize="small" />}
-      sx={{ minWidth: 'fit-content' }}
+      sx={{ minWidth: "fit-content" }}
     >
-      {label ? `${label}` : 'Pick a date'}
+      {label ? `${label}` : "Pick a date"}
     </Button>
   );
 }
@@ -59,18 +59,18 @@ export default function CustomDatePicker() {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         value={value}
-        label={value == null ? null : value.format('MMM DD, YYYY')}
+        label={value == null ? null : value.format("MMM DD, YYYY")}
         onChange={(newValue) => setValue(newValue)}
         slots={{ field: ButtonField }}
         slotProps={{
           field: { setOpen } as any,
-          nextIconButton: { size: 'small' },
-          previousIconButton: { size: 'small' },
+          nextIconButton: { size: "small" },
+          previousIconButton: { size: "small" },
         }}
         open={open}
         onClose={() => setOpen(false)}
         onOpen={() => setOpen(true)}
-        views={['day', 'month', 'year']}
+        views={["day", "month", "year"]}
       />
     </LocalizationProvider>
   );

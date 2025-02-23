@@ -50,7 +50,10 @@ const Ticket: React.FC = () => {
         <MovieDetail />
 
         {/* ShowTime component for picking date */}
-        <ShowTime selectedDate={selectedDate} onDateChange={(newDate) => setSelectedDate(newDate)} />
+        <ShowTime
+          selectedDate={selectedDate}
+          onDateChange={(newDate) => setSelectedDate(newDate)}
+        />
 
         {/* ListCinema for picking a showtime */}
         <ListCinema

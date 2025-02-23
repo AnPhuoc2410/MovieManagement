@@ -131,7 +131,6 @@ const upComingMovies = [
     image:
       "https://th.bing.com/th/id/R.3689c865e31936ceee7588a094638911?rik=fXjX%2ferUrFzFRA&pid=ImgRaw&r=0",
   },
-  
 ];
 
 const UpComingMoviesPage: React.FC = () => {
@@ -167,7 +166,11 @@ const UpComingMoviesPage: React.FC = () => {
           ))}
         </Swiper>
       </Box>
-      <MovieList movies={upComingMovies} title="PHIM SẮP CHIẾU" buttonText="TÌM HIỂU THÊM"/>
+      <MovieList
+        movies={upComingMovies}
+        title="PHIM SẮP CHIẾU"
+        buttonText="TÌM HIỂU THÊM"
+      />
       <Footer />
     </Box>
   );
