@@ -1,5 +1,11 @@
 import React from "react";
-import { Container, Typography, ToggleButtonGroup, ToggleButton, Box } from "@mui/material";
+import {
+  Container,
+  Typography,
+  ToggleButtonGroup,
+  ToggleButton,
+  Box,
+} from "@mui/material";
 import { format, addDays } from "date-fns";
 import { vi as viLocale } from "date-fns/locale";
 
@@ -58,7 +64,7 @@ const ShowTime: React.FC<ShowTimeProps> = ({ selectedDate, onDateChange }) => {
                   border: "2px solid yellow !important",
                   color: "yellow",
                   backgroundColor:
-                  selectedDate === day.formatted ? "yellow" : "transparent",
+                    selectedDate === day.formatted ? "yellow" : "transparent",
                   "&.Mui-selected": {
                     backgroundColor: "yellow",
                     color: "#834bff",
@@ -97,7 +103,12 @@ const ShowTime: React.FC<ShowTimeProps> = ({ selectedDate, onDateChange }) => {
                   </Typography>
                 )}
                 <Box textAlign="center">
-                  <Typography variant="h6" fontWeight="bold" mb={1} fontFamily="JetBrains Mono">
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    mb={1}
+                    fontFamily="JetBrains Mono"
+                  >
                     {day.formatted}
                   </Typography>
                   <Typography variant="body2">{day.label}</Typography>

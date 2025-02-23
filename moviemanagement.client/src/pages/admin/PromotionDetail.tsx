@@ -63,7 +63,9 @@ export default function PromotionDetail() {
     uploadPreset: "movie_up",
   };
 
-  const [uploadedImage, setUploadedImage] = useState<string>(promotion?.image || "");
+  const [uploadedImage, setUploadedImage] = useState<string>(
+    promotion?.image || "",
+  );
 
   const handleSetPublicId = (publicId: string) => {
     const imageUrl = `https://res.cloudinary.com/dwqyqsqmq/image/upload/${publicId}`;
@@ -87,7 +89,6 @@ export default function PromotionDetail() {
     //   console.error("Error updating promotion:", error);
     // }
   };
-
 
   return (
     <AppTheme disableCustomTheme={false}>
@@ -136,7 +137,10 @@ export default function PromotionDetail() {
                   rules={{
                     required: "Nhập giảm giá",
                     min: { value: 1, message: "Giảm giá ít nhất 1%" },
-                    max: { value: 100, message: "Giảm giá không vượt quá 100%" },
+                    max: {
+                      value: 100,
+                      message: "Giảm giá không vượt quá 100%",
+                    },
                   }}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
@@ -208,7 +212,10 @@ export default function PromotionDetail() {
 
                 {/* Cloudinary Upload Section */}
                 <Box sx={{ my: 2 }}>
-                  <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={handleSetPublicId} />
+                  <CloudinaryUploadWidget
+                    uwConfig={uwConfig}
+                    setPublicId={handleSetPublicId}
+                  />
                   {uploadedImage && (
                     <Box sx={{ mt: 1 }}>
                       <img
@@ -225,7 +232,9 @@ export default function PromotionDetail() {
                 </Button>
               </form>
             </Stack>
-            <Button onClick={() => navigate("/admin/khuyen-mai")}>Trở lại</Button>
+            <Button onClick={() => navigate("/admin/khuyen-mai")}>
+              Trở lại
+            </Button>
           </Box>
         </Box>
       </Box>

@@ -41,7 +41,9 @@ const PromotionsPage: React.FC = () => {
   }, []);
 
   return (
-    <Box sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}>
+    <Box
+      sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
+    >
       <Header />
       <Container>
         <Typography

@@ -52,7 +52,7 @@ const nowShowingMovies = [
     title: "Minecraft: The Movie (T16)",
     image:
       "https://www.bhdstar.vn/wp-content/uploads/2025/02/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-22.jpg",
-  }
+  },
 ];
 
 const upcomingMovies = [
@@ -101,7 +101,15 @@ const upcomingMovies = [
   },
 ];
 
-const MovieSlider = ({ movies, title, navigateTo }: { movies: any[]; title: string; navigateTo: string }) => {
+const MovieSlider = ({
+  movies,
+  title,
+  navigateTo,
+}: {
+  movies: any[];
+  title: string;
+  navigateTo: string;
+}) => {
   const navigate = useNavigate();
   return (
     <Container sx={{ mt: 4, textAlign: "center" }}>
@@ -129,7 +137,12 @@ const MovieSlider = ({ movies, title, navigateTo }: { movies: any[]; title: stri
               <Typography variant="h6" className="movie-title">
                 {movie.title}
               </Typography>
-              <Button variant="contained" color="warning" className="book-button" onClick={() => navigate(`/ticket/${index}`)}>
+              <Button
+                variant="contained"
+                color="warning"
+                className="book-button"
+                onClick={() => navigate(`/ticket/${index}`)}
+              >
                 ĐẶT VÉ
               </Button>
             </Box>
@@ -178,10 +191,18 @@ const ListMovies: React.FC = () => {
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", color: "white" }}>
       {/* Now Showing Section */}
-      <MovieSlider movies={nowShowingMovies} title="PHIM ĐANG CHIẾU" navigateTo="/movies/now-showing" />
+      <MovieSlider
+        movies={nowShowingMovies}
+        title="PHIM ĐANG CHIẾU"
+        navigateTo="/movies/now-showing"
+      />
 
       {/* Upcoming Movies Section */}
-      <MovieSlider movies={upcomingMovies} title="PHIM SẮP CHIẾU" navigateTo="/movies/up-coming"/>
+      <MovieSlider
+        movies={upcomingMovies}
+        title="PHIM SẮP CHIẾU"
+        navigateTo="/movies/up-coming"
+      />
     </Box>
   );
 };

@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prettier:fix": "prettier --write . --cache"
+    "prettier:fix": "prettier --write . --cache",
+    "prepare": "husky"
   },
   "dependencies": {
     "@cloudinary/react": "^1.13.1",

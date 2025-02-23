@@ -29,14 +29,14 @@ const MovieList = ({
       <Grid item xs={12} sm={6} md={3} key={index}>
         <Box className="movie-card">
           <Link to="/">
-          <img src={movie.image} alt={movie.title} className="movie-image" />
-          <Typography variant="h6" className="movie-title">
-            <Box sx={{ mb: 2 }} />
-            {movie.title}
-          </Typography>
+            <img src={movie.image} alt={movie.title} className="movie-image" />
+            <Typography variant="h6" className="movie-title">
+              <Box sx={{ mb: 2 }} />
+              {movie.title}
+            </Typography>
           </Link>
           <Box sx={{ mb: 2 }} />
-          
+
           <Button
             variant="contained"
             color="warning"
