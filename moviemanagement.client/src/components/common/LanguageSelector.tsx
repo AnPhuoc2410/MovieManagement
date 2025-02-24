@@ -17,7 +17,7 @@ const LanguageSelector = () => {
   const handleChange = (event: any) => {
     const newLanguage = event.target.value;
     setLanguage(newLanguage);
-    i18n.changeLanguage(newLanguage); // Change language in i18n
+    i18n.changeLanguage(newLanguage);
   };
 
   return (

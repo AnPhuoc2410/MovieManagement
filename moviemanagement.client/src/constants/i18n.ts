@@ -5,7 +5,7 @@ import LanguageDetector from "i18next-browser-languagedetector";
 const resources = {
   en: {
     translation: {
-      welcome: "Welcome to Movie Management!",
+      search: "Search for a movie...",
       book_ticket: "Book Ticket",
       book_snacks: "Book Snacks",
       login: "Login",
@@ -13,7 +13,7 @@ const resources = {
   },
   vn: {
     translation: {
-      welcome: "Chào mừng đến với Movie Management!",
+      search: "Tìm kiếm phim...",
       book_ticket: "Đặt Vé",
       book_snacks: "Đặt Bắp Nước",
       login: "Đăng nhập",
@@ -21,7 +21,7 @@ const resources = {
   },
   jp: {
     translation: {
-      welcome: "ムービーマネジメントへようこそ！",
+      search: "映画を検索する...",
       book_ticket: "チケットを予約する",
       book_snacks: "スナックを予約する",
       login: "ログイン",
@@ -34,7 +34,7 @@ i18n
   .use(LanguageDetector)
   .init({
     resources,
-    fallbackLng: "en",
+    fallbackLng: "vn",
     debug: true,
     interpolation: { escapeValue: false },
   });

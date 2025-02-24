@@ -64,7 +64,7 @@ const Header: React.FC = () => {
           <TextField
             variant="outlined"
             size="small"
-            placeholder="Tìm phim, rạp"
+            placeholder={t("search")} 
             sx={{ backgroundColor: "white", borderRadius: 2, width: "70%" }}
             InputProps={{
               endAdornment: (
