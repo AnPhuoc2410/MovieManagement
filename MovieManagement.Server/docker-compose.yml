@@ -3,29 +3,29 @@ networks:
         driver: bridge
 
 services:
-  post_management.api:
-    container_name: postmanagement-api
-    image: ${DOCKER_REGISTRY-}postmanagementapi
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "0.0.0.0:7119:7119"
-    depends_on:
-      post_management.db:
-        condition: service_healthy
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:7119
-      - ConnectionStrings__PostgresConnection=Host=post_management.db;Database=fsa_mvm;Username=db_user;Password=Iloveyou3000!;Port=5432
-      - EXTERNAL_API_HOST=localhost:7119
-    networks:
-      - mvm_network
-    volumes:
-      - post_management.images:/app/Images
+  # post_management.api:
+  #   container_name: postmanagement-api
+  #   image: ${DOCKER_REGISTRY-}postmanagementapi
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "0.0.0.0:7119:7119"
+  #   depends_on:
+  #     post_management.db:
+  #       condition: service_healthy
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_URLS=http://+:7119
+  #     - ConnectionStrings__PostgresConnection=Host=post_management.db;Database=fsa_mvm;Username=db_user;Password=Iloveyou3000!;Port=5432
+  #     - EXTERNAL_API_HOST=localhost:7119
+  #   networks:
+  #     - mvm_network
+  #   volumes:
+  #     - post_management.images:/app/Images
 
   post_management.db:
-    container_name: postmanagement-db
+    container_name: mvm_db
     image: postgres:latest
     environment:
       POSTGRES_USER: db_user
@@ -51,8 +51,6 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
-    depends_on:
-      - post_management.db
     networks:
       - mvm_network
 

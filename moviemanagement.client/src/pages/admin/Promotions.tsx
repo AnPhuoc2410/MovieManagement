@@ -1,6 +1,6 @@
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import * as React from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Box,
   Button,
@@ -10,86 +10,60 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  Stack,
   TextField,
+  Stack,
 } from "@mui/material";
-import { alpha } from "@mui/material/styles";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useForm, Controller } from "react-hook-form";
+import { alpha } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 
-// Layout Components
 import AppNavbar from "../../components/mui/AppNavbar";
 import Header from "../../components/mui/Header";
 import SideMenu from "../../components/mui/SideMenu";
 
-// Import your Cloudinary Upload Widget component
 import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUploadWidget";
 
-// Theme & Customizations
-import TextEdit from "../../components/admin/TextEdit";
 import AppTheme from "../../shared-theme/AppTheme";
+import TextEdit from "../../components/admin/TextEdit";
+import dayjs from "dayjs";
 
 interface Promotion {
-  id: number;
-  title: string;
+  promotionId: string;
+  promotionName: string;
   discount: number;
-  startDate: string;
-  endDate: string;
-  detail: string;
+  fromDate: string;
+  toDate: string;
+  content: string;
   image?: string;
 }
 
-const initialPromotions: Promotion[] = [
-  {
-    id: 1,
-    title: "Black Friday",
-    discount: 30,
-    startDate: "2025-11-25",
-    endDate: "2025-11-30",
-    detail: "Discount 30% for all products",
-    image:
-      "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740121129/samples/chair.png", // example placeholder
-  },
-  {
-    id: 2,
-    title: "New Year Sale",
-    discount: 20,
-    startDate: "2025-12-31",
-    endDate: "2026-01-05",
-    detail: "Discount 20% for all products",
-    image:
-      "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740121129/samples/coffee.jpg",
-  },
-];
-
-export default function Promotions({
-  disableCustomTheme = false,
-}: {
-  disableCustomTheme?: boolean;
-}) {
-  const [promotions, setPromotions] = useState<Promotion[]>(initialPromotions);
+export default function Promotions({ disableCustomTheme = false }: { disableCustomTheme?: boolean }) {
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [open, setOpen] = useState(false);
-  const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(
-    null,
-  );
-  // For image preview from Cloudinary
+  const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string>("");
 
-  const { watch, control, handleSubmit, reset, setValue } = useForm<Promotion>({
-    defaultValues: {
-      id: 0,
-      title: "",
-      discount: 0,
-      startDate: "",
-      endDate: "",
-      detail: "",
-      image: "",
-    },
-  });
+  useEffect(() => {
+    async function fetchPromotions() {
+      try {
+        const response = await axios.get("https://localhost:7119/api/Promotions/GetAllPromotions");
+        setPromotions(response.data);
+      } catch (error) {
+        console.error("Error fetching promotions:", error);
+      }
+    }
+    fetchPromotions();
+  }, []);
 
-  // Cloudinary widget configuration
+  const { watch, control, handleSubmit, reset, setValue } = useForm<Promotion>({
+    defaultValues: { promotionId: "", promotionName: "", discount: 0, fromDate: "", toDate: "", content: "", image: "", },
+  });
+  const navigate = useNavigate();
+
   const uwConfig = {
     cloudName: "dwqyqsqmq",
     uploadPreset: "movie_up",
@@ -105,14 +79,14 @@ export default function Promotions({
     setSelectedPromotion(promotion || null);
     reset(
       promotion || {
-        id: 0,
-        title: "",
+        promotionId: "",
+        promotionName: "",
         discount: 0,
-        startDate: "",
-        endDate: "",
-        detail: "",
+        fromDate: "",
+        toDate: "",
+        content: "",
         image: "",
-      },
+      }
     );
     setUploadedImage(promotion?.image || "");
     setOpen(true);
@@ -124,42 +98,72 @@ export default function Promotions({
     setUploadedImage("");
   };
 
-  const onSubmit = (data: Promotion) => {
-    if (selectedPromotion) {
-      setPromotions(promotions.map((p) => (p.id === data.id ? data : p)));
-    } else {
-      setPromotions([...promotions, { ...data, id: promotions.length + 1 }]);
+  const onSubmit = async (data: Promotion) => {
+    try {
+      const payload = {
+        ...data,
+        promotionId: data.promotionId ? data.promotionId : null,
+      };
+        // Create new promotion
+        const response = await axios.post(
+          "https://localhost:7119/api/Promotions/CreatePromotion",
+          payload,
+          { headers: { "Content-Type": "application/json" } }
+        );
+        setPromotions([...promotions, response.data]);
+      
+      handleClose();
+    } catch (error) {
+      console.error("Error posting promotion:", error);
     }
-    handleClose();
   };
 
-  const handleDelete = (id: number) => {
-    setPromotions(promotions.filter((p) => p.id !== id));
+  const handleDelete = async (promotionId: string) => {
+    try {
+      await axios.delete(`https://localhost:7119/api/Promotions/DeletePromotion/${promotionId}`, {
+        headers: { "Content-Type": "application/json" },
+      });
+      setPromotions(promotions.filter((p) => p.promotionId !== promotionId));
+    } catch (error) {
+      console.error("Error deleting promotion:", error);
+    }
   };
+  
 
-  const navigate = useNavigate();
   const handleEdit = (promotion: Promotion) => {
-    navigate(`/admin/khuyen-mai/${promotion.id}`, { state: { promotion } });
+    navigate(`/admin/khuyen-mai/${promotion.promotionId}`, { state: { promotion } });
   };
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "title", headerName: "Tiêu Đề", flex: 1 },
+    {
+      field: "promotionId", headerName: "ID", width: 100, sortable:false, filterable:false,
+    },
+    { field: "promotionName", headerName: "Tiêu Đề", flex: 1 },
     { field: "discount", headerName: "Giảm giá (%)", width: 130 },
-    { field: "startDate", headerName: "Thời gian bắt đầu", width: 150 },
-    { field: "endDate", headerName: "Thời gian kết thúc", width: 150 },
-    { field: "detail", headerName: "Chi Tiết", flex: 1 },
+    {
+      field: "fromDate",
+      headerName: "Bắt đầu",
+      width: 150,
+      renderCell: (params) => (
+        <span>{params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}</span>
+      ),
+    },
+    {
+      field: "toDate",
+      headerName: "Kết thúc",
+      width: 150,
+      renderCell: (params) => (
+        <span>{params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}</span>
+      ),
+    },
+    { field: "content", headerName: "Chi Tiết", flex: 1 },
     {
       field: "image",
       headerName: "Ảnh",
       width: 120,
       renderCell: (params) =>
         params.row.image ? (
-          <img
-            src={params.row.image}
-            alt="Promotion"
-            style={{ width: "100%", height: "auto" }}
-          />
+          <img src={params.row.image} alt="Promotion" style={{ width: "100%", height: "auto" }} />
         ) : (
           "No image"
         ),
@@ -173,7 +177,7 @@ export default function Promotions({
           <IconButton onClick={() => handleEdit(params.row)}>
             <EditIcon color="primary" />
           </IconButton>
-          <IconButton onClick={() => handleDelete(params.row.id)}>
+          <IconButton onClick={() => handleDelete(params.row.promotionId)}>
             <DeleteIcon color="error" />
           </IconButton>
         </>
@@ -220,6 +224,7 @@ export default function Promotions({
                   rows={promotions}
                   columns={columns}
                   pageSizeOptions={[5, 10, 20]}
+                  getRowId={(row) => row.promotionId}
                 />
               </Box>
             </Stack>
@@ -233,7 +238,7 @@ export default function Promotions({
           <DialogContent>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Controller
-                name="title"
+                name="promotionName"
                 control={control}
                 rules={{ required: "Tiêu đề yêu cầu" }}
                 render={({ field, fieldState: { error } }) => (
@@ -270,7 +275,7 @@ export default function Promotions({
                 )}
               />
               <Controller
-                name="startDate"
+                name="fromDate"
                 control={control}
                 rules={{ required: "Nhập thời gian bắt đầu" }}
                 render={({ field, fieldState: { error } }) => (
@@ -287,12 +292,12 @@ export default function Promotions({
                 )}
               />
               <Controller
-                name="endDate"
+                name="toDate"
                 control={control}
                 rules={{
                   required: "Nhập thời gian kết thúc",
                   validate: (value) => {
-                    const start = watch("startDate");
+                    const start = watch("fromDate");
                     if (new Date(value) < new Date(start)) {
                       return "Thời gian kết thúc phải sau thời gian bắt đầu";
                     }
@@ -313,23 +318,16 @@ export default function Promotions({
                 )}
               />
               <Controller
-                name="detail"
+                name="content"
                 control={control}
                 defaultValue=""
                 rules={{ required: "Nhập chi tiết" }}
-                render={({ field }) => (
-                  <TextEdit
-                    value={field.value}
-                    onChange={(val) => field.onChange(val)}
-                  />
+                render={({ field, fieldState: { error }  }) => (
+                  <TextEdit value={field.value} onChange={(val) => field.onChange(val)} error={error?.message}/>
                 )}
               />
-
               <Box sx={{ my: 2 }}>
-                <CloudinaryUploadWidget
-                  uwConfig={uwConfig}
-                  setPublicId={handleSetPublicId}
-                />
+                <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={handleSetPublicId} />
                 {uploadedImage && (
                   <Box sx={{ mt: 1 }}>
                     <img

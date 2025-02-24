@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Card,
@@ -7,34 +7,95 @@ import {
   CardMedia,
   Box,
   Button,
-  Grid,
 } from "@mui/material";
 import Header from "../../components/home/Header";
 import Footer from "../../components/home/Footer";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import dayjs from "dayjs";
+
+interface Promotion {
+  promotionId: string;
+  promotionName: string;
+  image?: string;
+  fromDate: string;
+  toDate: string;
+  discount: number;
+  content: string;
+}
 
 const PromotionDetail: React.FC = () => {
-  const id = useParams();
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
+  // Local state for promotion detail, loading, and error
+  const [promotion, setPromotion] = useState<Promotion | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    if (id) {
+      axios
+        .get(`https://localhost:7119/api/Promotions/${id}`)
+        .then((response) => {
+          setPromotion(response.data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching promotion:", err);
+          setError("Không thể tải thông tin khuyến mãi.");
+          setLoading(false);
+        });
+    } else {
+      setError("Không có mã khuyến mãi.");
+      setLoading(false);
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <Box sx={{ backgroundColor: "#0B0D1A", color: "white", minHeight: "100vh", p: 4 }}>
+        <Header />
+        <Typography variant="h6" align="center">
+          Đang tải...
+        </Typography>
+        <Footer />
+      </Box>
+    );
+  }
+
+  if (error || !promotion) {
+    return (
+      <Box sx={{ backgroundColor: "#0B0D1A", color: "white", minHeight: "100vh", p: 4 }}>
+        <Header />
+        <Typography variant="h6" align="center">
+          {error || "Không tìm thấy khuyến mãi."}
+        </Typography>
+        <Button onClick={() => navigate("/promotions")} variant="contained" sx={{ mt: 2 }}>
+          Quay lại
+        </Button>
+        <Footer />
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", color: "white" }}>
       <Header />
       <Container maxWidth="md" sx={{ mt: 10, mb: 7, py: 6 }}>
-        <Card
-          sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}
-        >
-          {/* Left Side - Image */}
+        <Card sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}>
+          {/* Left Side - Image Section */}
           <CardMedia
             component="img"
-            image="https://iguov8nhvyobj.vcdn.cloud/media/wysiwyg/2024/092024/T4VV_350x495.jpg"
-            alt="Promotion Banner"
+            image={promotion.image || "https://thumbs.dreamstime.com/b/page-not-found-error-hand-drawn-ghost-doodle-vector-illustration-internet-connection-trouble-concept-105206287.jpg"}
+            alt={promotion.promotionName}
             sx={{
-              width: { xs: "100%", md: "40%" },
+              width: { xs: "100%", md: "50%" },
               height: "auto",
-              objectFit: "cover",
+              objectFit: "inherit",
             }}
           />
-
-          {/* Right Side - Text Content */}
+          {/* Right Side - Text Section */}
           <CardContent
             sx={{
               flex: 1,
@@ -45,35 +106,17 @@ const PromotionDetail: React.FC = () => {
             }}
           >
             <Typography variant="h5" color="primary" gutterBottom>
-              HAPPY WEDNESDAY - THỨ TƯ VUI VẺ - GIÁ VÉ HẠT DẺ
+              {promotion.promotionName}
             </Typography>
-            <Typography variant="body1" paragraph>
-              Chân thành cảm ơn quý khách hàng đã tin tưởng và đồng hành cùng
-              CGV. CGV áp dụng chính sách giá vé đặc biệt nhằm tri ân khách
-              hàng:
+            <Typography variant="subtitle2" gutterBottom>
+              Thời gian: {dayjs(promotion.fromDate).format("DD/MM/YYYY")} - {dayjs(promotion.toDate).format("DD/MM/YYYY")}
             </Typography>
-            <Box sx={{ my: 2 }}>
-              <Typography variant="h6" fontWeight="bold">
-                🎟 Giá vé ưu đãi:
-              </Typography>
-              <Typography variant="body1">
-                🎬 55.000đ - Một số khu vực
-              </Typography>
-              <Typography variant="body1">
-                🎬 60.000đ - Một số khu vực khác
-              </Typography>
-              <Typography variant="body1">
-                🎬 70.000đ - Các thành phố lớn
-              </Typography>
-              <Typography variant="body1">
-                🎬 75.000đ - TP. Hồ Chí Minh, Hà Nội, Hải Phòng...
-              </Typography>
-            </Box>
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ mt: 2, alignSelf: "start" }}
-            >
+            <Box 
+              sx={{ typography: "body1", mt: 1 }}
+              className="quill-content"
+              dangerouslySetInnerHTML={{ __html: promotion.content }} 
+            />
+            <Button variant="contained" color="secondary" sx={{ mt: 2, alignSelf: "start" }}>
               Đặt Vé Ngay
             </Button>
           </CardContent>
