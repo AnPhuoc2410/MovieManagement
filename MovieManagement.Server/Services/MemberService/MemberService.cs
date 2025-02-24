@@ -16,9 +16,9 @@ namespace MovieManagement.Server.Services.MemberService
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<MemberDto>> GetAllMembersAsync()
+        public async Task<IEnumerable<MemberPort.MemberResponseDTO>> GetAllMembersAsync()
         {
-            return _mapper.Map<List<MemberDto>>(await _unitOfWork.MemberRepository.GetAllAsync());
+            return _mapper.Map<List<MemberPort.MemberResponseDTO>>(await _unitOfWork.MemberRepository.GetAllAsync());
         }
 
         public async Task<MemberDto> GetMemberByIdAsync(Guid memberId)
