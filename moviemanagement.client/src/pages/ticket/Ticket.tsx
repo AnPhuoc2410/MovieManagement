@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import StepTracker from "../../components/Ticket/StepTracker";
@@ -8,6 +8,8 @@ import ListCinema from "../../components/Ticket/ListCinema";
 import TicketPrice, { TicketType } from "../../components/Ticket/TicketPrice";
 import Footer from "../../components/home/Footer";
 import { format } from "date-fns";
+
+
 
 const Ticket: React.FC = () => {
   const navigate = useNavigate();
@@ -50,7 +52,10 @@ const Ticket: React.FC = () => {
         <MovieDetail />
 
         {/* ShowTime component for picking date */}
-        <ShowTime selectedDate={selectedDate} onDateChange={(newDate) => setSelectedDate(newDate)} />
+        <ShowTime
+          selectedDate={selectedDate}
+          onDateChange={(newDate) => setSelectedDate(newDate)}
+        />
 
         {/* ListCinema for picking a showtime */}
         <ListCinema

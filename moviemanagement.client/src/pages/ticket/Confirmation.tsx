@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Paper,
-  Button
-} from "@mui/material";
+import { Box, Container, Typography, Grid, Paper, Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
@@ -18,7 +11,7 @@ const Confirmation: React.FC = () => {
   // Extract details from location.state (with defaults)
   const { selectedTime, selectedDate } = location.state || {
     selectedTime: "Not selected",
-    selectedDate: "Not selected"
+    selectedDate: "Not selected",
   };
 
   const {
@@ -58,7 +51,14 @@ const Confirmation: React.FC = () => {
           minHeight: "50vh",
         }}
       >
-        <Typography variant="h4" fontWeight="bold" align="center" gutterBottom fontFamily={"JetBrains Mono"} sx={{ textTransform: "uppercase" }}>
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          align="center"
+          gutterBottom
+          fontFamily={"JetBrains Mono"}
+          sx={{ textTransform: "uppercase" }}
+        >
           Xác Nhận Đặt Vé
         </Typography>
 
@@ -82,7 +82,9 @@ const Confirmation: React.FC = () => {
           </Grid>
 
           <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 3, backgroundColor: "#1c1c1c", color: "white", mb: 3 }}>
+            <Paper
+              sx={{ p: 3, backgroundColor: "#1c1c1c", color: "white", mb: 3 }}
+            >
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="h6" gutterBottom color="secondary">

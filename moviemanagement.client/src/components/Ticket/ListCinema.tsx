@@ -10,7 +10,7 @@ import {
   Grid,
   MenuItem,
   FormControl,
-  Select
+  Select,
 } from "@mui/material";
 
 interface ListCinemaProps {
@@ -18,7 +18,10 @@ interface ListCinemaProps {
   onTimeSelect: (time: string) => void;
 }
 
-const ListCinema: React.FC<ListCinemaProps> = ({ selectedTime, onTimeSelect }) => {
+const ListCinema: React.FC<ListCinemaProps> = ({
+  selectedTime,
+  onTimeSelect,
+}) => {
   const [selectedCity, setSelectedCity] = useState<string>("hcm");
 
   const handleCityChange = (event: any) => {
@@ -26,12 +29,28 @@ const ListCinema: React.FC<ListCinemaProps> = ({ selectedTime, onTimeSelect }) =
   };
 
   return (
-    <Box sx={{ backgroundColor: "#0B0D1A", color: "white", minHeight: "50vh", py: 5 }}>
+    <Box
+      sx={{
+        backgroundColor: "#0B0D1A",
+        color: "white",
+        minHeight: "50vh",
+        py: 5,
+      }}
+    >
       <Container maxWidth="md">
         {/* Title and Location Selection */}
-        <Grid container alignItems="center" justifyContent="space-between" mb={3}>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="space-between"
+          mb={3}
+        >
           <Grid item>
-            <Typography variant="h4" fontWeight="bold" fontFamily={"JetBrains Mono"}>
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              fontFamily={"JetBrains Mono"}
+            >
               🎬 DANH SÁCH RẠP
             </Typography>
           </Grid>
@@ -116,11 +135,31 @@ interface CinemaCardProps {
   onTimeSelect: (time: string) => void;
 }
 
-const CinemaCard: React.FC<CinemaCardProps> = ({ name, address, times, selectedTime, onTimeSelect }) => {
+const CinemaCard: React.FC<CinemaCardProps> = ({
+  name,
+  address,
+  times,
+  selectedTime,
+  onTimeSelect,
+}) => {
   return (
-    <Card sx={{ backgroundColor: "#834bff", color: "white", borderRadius: "12px", p: 2, mb: 2 }}>
+    <Card
+      sx={{
+        backgroundColor: "#834bff",
+        color: "white",
+        borderRadius: "12px",
+        p: 2,
+        mb: 2,
+      }}
+    >
       <CardContent>
-        <Typography variant="h6" fontWeight="bold" color="yellow" mb={1} fontFamily={"JetBrains Mono"}>
+        <Typography
+          variant="h6"
+          fontWeight="bold"
+          color="yellow"
+          mb={1}
+          fontFamily={"JetBrains Mono"}
+        >
           {name}
         </Typography>
         <Typography variant="body2" mb={2} fontFamily={"JetBrains Mono"}>
@@ -132,7 +171,8 @@ const CinemaCard: React.FC<CinemaCardProps> = ({ name, address, times, selectedT
               key={idx}
               variant="contained"
               sx={{
-                backgroundColor: selectedTime === time ? "yellow" : "transparent",
+                backgroundColor:
+                  selectedTime === time ? "yellow" : "transparent",
                 color: selectedTime === time ? "black" : "white",
                 border: "1px solid white",
                 fontWeight: "bold",

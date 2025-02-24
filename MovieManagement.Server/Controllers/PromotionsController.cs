@@ -52,7 +52,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var updatedPromotion = _promotionService.UpdatePromotion(id, promotionDto);
+                var updatedPromotion = await _promotionService.UpdatePromotion(id, promotionDto);
                 return Ok(updatedPromotion);
             }
             catch (Exception ex)

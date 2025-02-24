@@ -5,7 +5,8 @@ import AuthContainer from "./pages/auth/AuthContainer";
 import Home from "./pages/Home";
 import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
 import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
-import Promotion from "./pages/promotion/Promotion";
+import ScrollToTop from "./components/common/ScrollToTop";
+import Promotion from "./pages/promotion/PromotionsPage";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
 import Ticket from "./pages/ticket/Ticket";
 import MovieSeat from "./pages/ticket/MovieSeat";
@@ -18,6 +19,9 @@ import Dashboard from "./pages/admin/Dashboard";
 import PromotionManagement from "./pages/admin/Promotions";
 import PromotionDetailManagement from "./pages/admin/PromotionDetail";
 import Movies from "./pages/admin/Movies";
+import QuanLiThanhVien from "./pages/admin/QuanLyThanhVien/QuanLiThanhVien";
+import QuanLiNhanVien from "./pages/admin/QuanLyNhanVien";
+
 
 const theme = createTheme({
   components: {
@@ -34,13 +38,12 @@ const theme = createTheme({
   },
 });
 
-
-
 const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
         <ThemeProvider theme={theme}>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/auth" element={<AuthContainer />} />
@@ -62,10 +65,13 @@ const App = () => {
               <Route path="thong-ke" element={<Dashboard />} />
               <Route path="khuyen-mai" element={<PromotionManagement />} />
               <Route path="phim" element={<Movies />} />
-              <Route path="khuyen-mai/:id" element={<PromotionDetailManagement />} />
-
+              <Route
+                path="khuyen-mai/:id"
+                element={<PromotionDetailManagement />}
+              />
+              <Route path="ql-nhan-vien" element={<QuanLiNhanVien />} />
+              <Route path="ql-thanh-vien" element={<QuanLiThanhVien />} />
             </Route>
-
           </Routes>
         </ThemeProvider>
       </AuthProvider>

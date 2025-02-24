@@ -1,22 +1,20 @@
-import * as React from 'react';
-import type {} from '@mui/x-date-pickers/themeAugmentation';
-import type {} from '@mui/x-charts/themeAugmentation';
-import type {} from '@mui/x-data-grid-pro/themeAugmentation';
-import type {} from '@mui/x-tree-view/themeAugmentation';
+import type {} from "@mui/x-charts/themeAugmentation";
+import type {} from "@mui/x-data-grid-pro/themeAugmentation";
+import type {} from "@mui/x-date-pickers/themeAugmentation";
 
-import { alpha } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import Stack from "@mui/material/Stack";
+import { alpha } from "@mui/material/styles";
 
 // Components
-import AppNavbar from '../../components/mui/AppNavbar';
-import Header from '../../components/mui/Header';
-import MainGrid from '../../components/mui/MainGrid';
-import SideMenu from '../../components/mui/SideMenu';
+import AppNavbar from "../../components/mui/AppNavbar";
+import Header from "../../components/mui/Header";
+import MainGrid from "../../components/mui/MainGrid";
+import SideMenu from "../../components/mui/SideMenu";
 
 // Theme & Customizations
-import AppTheme from '../../shared-theme/AppTheme';
+import AppTheme from "../../shared-theme/AppTheme";
 import {
   chartsCustomizations,
   dataGridCustomizations,
@@ -31,22 +29,29 @@ const xThemeComponents = {
   ...treeViewCustomizations,
 };
 
-export default function Dashboard({ disableCustomTheme = false }: { disableCustomTheme?: boolean }) {
+export default function Dashboard({
+  disableCustomTheme = false,
+}: {
+  disableCustomTheme?: boolean;
+}) {
   return (
-    <AppTheme disableCustomTheme={disableCustomTheme} themeComponents={xThemeComponents}>
+    <AppTheme
+      disableCustomTheme={disableCustomTheme}
+      themeComponents={xThemeComponents}
+    >
       <CssBaseline enableColorScheme />
-      <Box sx={{ display: 'flex', height: '100vh' }}>
+      <Box sx={{ display: "flex", height: "100vh" }}>
         <SideMenu />
-        
-        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+
+        <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
           <AppNavbar />
-          
+
           <Box
             component="main"
             sx={(theme) => ({
               flexGrow: 1,
               backgroundColor: alpha(theme.palette.background.default, 1),
-              overflowY: 'auto',
+              overflowY: "auto",
               px: 3,
               py: 2,
             })}

@@ -20,9 +20,9 @@ namespace MovieManagement.Server
 
             // Đăng ký DbContext
             // su dung SQL Server option
-            builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+            // builder.Services.AddDbContext<AppDbContext>(options =>
+            //     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+            // );
 
             // su dung Postgres option
             //builder.Services.AddDbContext<AppDbContext>(options =>
@@ -54,8 +54,8 @@ namespace MovieManagement.Server
             {
                 options.AddPolicy("AllowReactApp",
                     policy => policy.WithOrigins("https://localhost:7119", "https://localhost:3000")
-                                   .AllowAnyMethod()
-                                   .AllowAnyHeader());
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
             });
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<AppDbContext>(options =>

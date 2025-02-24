@@ -14,7 +14,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 export interface TicketType {
   id: string;
   name: string;
-  type: string;  // e.g. "Đơn" or "Đôi"
+  type: string; // e.g. "Đơn" or "Đôi"
   price: number;
   quantity: number;
 }
@@ -57,8 +57,8 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
       prevTickets.map((ticket) =>
         ticket.id === id
           ? { ...ticket, quantity: ticket.quantity + 1 }
-          : ticket
-      )
+          : ticket,
+      ),
     );
   };
 
@@ -67,8 +67,8 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
       prevTickets.map((ticket) =>
         ticket.id === id && ticket.quantity > 0
           ? { ...ticket, quantity: ticket.quantity - 1 }
-          : ticket
-      )
+          : ticket,
+      ),
     );
   };
 
@@ -103,8 +103,8 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
                 borderRadius: 2,
                 p: 3,
                 backgroundColor: "rgba(255,255,255,0.05)",
-                textAlign: "left",       // Left-align all text
-                color: "white",          // Make text white
+                textAlign: "left", // Left-align all text
+                color: "white", // Make text white
                 display: "flex",
                 flexDirection: "column",
                 gap: 1,

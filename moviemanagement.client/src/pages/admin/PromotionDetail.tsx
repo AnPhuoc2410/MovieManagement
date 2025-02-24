@@ -3,6 +3,7 @@ import { Box, Button, CssBaseline, TextField, Stack } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { alpha } from "@mui/material/styles";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // Layout Components
 import AppNavbar from "../../components/mui/AppNavbar";
@@ -14,14 +15,15 @@ import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUpload
 
 // Theme & Customizations
 import AppTheme from "../../shared-theme/AppTheme";
+import dayjs from "dayjs";
 
 interface Promotion {
-  id: number;
-  title: string;
+  promotionId: string;
+  promotionName: string;
   discount: number;
-  startDate: string;
-  endDate: string;
-  detail: string;
+  fromDate: string;
+  toDate: string;
+  content: string;
   image?: string;
 }
 
@@ -31,7 +33,6 @@ export default function PromotionDetail() {
   // Expect the promotion details to be passed via location state.
   const promotion: Promotion | undefined = location.state?.promotion;
 
-  // If promotion is not passed, you might redirect or show an error.
   useEffect(() => {
     if (!promotion) {
       navigate("/admin/khuyen-mai");
@@ -39,25 +40,15 @@ export default function PromotionDetail() {
   }, [promotion, navigate]);
 
   const { watch, control, handleSubmit, reset, setValue } = useForm<Promotion>({
-    defaultValues: promotion || {
-      id: 0,
-      title: "",
-      discount: 0,
-      startDate: "",
-      endDate: "",
-      detail: "",
-      image: "",
-    },
+    defaultValues: { promotionId: "", promotionName: "", discount: 0, fromDate: "", toDate: "", content: "", image: "", },
   });
 
-  // Update the form if promotion changes.
   useEffect(() => {
     if (promotion) {
       reset(promotion);
     }
   }, [promotion, reset]);
 
-  // Cloudinary widget configuration
   const uwConfig = {
     cloudName: "dwqyqsqmq",
     uploadPreset: "movie_up",
@@ -72,23 +63,30 @@ export default function PromotionDetail() {
   };
 
   const onSubmit = async (data: Promotion) => {
-    // try {
-    //   const response = await fetch(`https://your-api.com/promotions/${data.id}`, {
-    //     method: "PUT",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(data),
-    //   });
-    //   if (!response.ok) {
-    //     throw new Error("Update failed");
-    //   }
-    console.log("Promotion updated:", data);
-    navigate("/admin/khuyen-mai");
-    // } catch (error) {
-    //   console.error("Error updating promotion:", error);
-    // }
+    try {
+      const payload = {
+        ...data,
+        promotionId: data.promotionId ? data.promotionId : null,
+        fromDate: dayjs(data.fromDate).toISOString(),
+        toDate: dayjs(data.toDate).toISOString(),
+      };
+  
+      const response = await axios.put(
+        `https://localhost:7119/api/Promotions/UpdatePromotion/${data.promotionId}`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Promotion updated:", response.data);
+      navigate("/admin/khuyen-mai");
+    } catch (error) {
+      console.error("Error updating promotion:", error);
+    }
   };
-
-
+  
   return (
     <AppTheme disableCustomTheme={false}>
       <CssBaseline enableColorScheme />
@@ -114,7 +112,7 @@ export default function PromotionDetail() {
               <h1>{promotion ? "Cập Nhật Khuyến Mãi" : "Tạo Khuyến Mãi"}</h1>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Controller
-                  name="title"
+                  name="promotionName"
                   control={control}
                   rules={{ required: "Tiêu đề yêu cầu" }}
                   render={({ field, fieldState: { error } }) => (
@@ -151,7 +149,7 @@ export default function PromotionDetail() {
                   )}
                 />
                 <Controller
-                  name="startDate"
+                  name="fromDate"
                   control={control}
                   rules={{ required: "Nhập thời gian bắt đầu" }}
                   render={({ field, fieldState: { error } }) => (
@@ -164,16 +162,19 @@ export default function PromotionDetail() {
                       InputLabelProps={{ shrink: true }}
                       error={!!error}
                       helperText={error ? error.message : ""}
+                      value={field.value ? dayjs(field.value).format("YYYY-MM-DD") : ""}
+                      onChange={(e) => field.onChange(e.target.value)}
                     />
                   )}
                 />
+
                 <Controller
-                  name="endDate"
+                  name="toDate"
                   control={control}
                   rules={{
                     required: "Nhập thời gian kết thúc",
                     validate: (value) => {
-                      const start = watch("startDate");
+                      const start = watch("fromDate");
                       if (new Date(value) < new Date(start)) {
                         return "Thời gian kết thúc phải sau thời gian bắt đầu";
                       }
@@ -190,11 +191,13 @@ export default function PromotionDetail() {
                       InputLabelProps={{ shrink: true }}
                       error={!!error}
                       helperText={error ? error.message : ""}
+                      value={field.value ? dayjs(field.value).format("YYYY-MM-DD") : ""}
+                      onChange={(e) => field.onChange(e.target.value)}
                     />
                   )}
                 />
                 <Controller
-                  name="detail"
+                  name="content"
                   control={control}
                   defaultValue=""
                   rules={{ required: "Nhập chi tiết" }}
