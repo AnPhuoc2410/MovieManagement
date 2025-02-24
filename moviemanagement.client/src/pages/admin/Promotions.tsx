@@ -30,6 +30,7 @@ import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUpload
 import AppTheme from "../../shared-theme/AppTheme";
 import TextEdit from "../../components/admin/TextEdit";
 import dayjs from "dayjs";
+import { ENV } from "../../components/cloudinary/CloudinaryImage";
 
 interface Promotion {
   promotionId: string;
@@ -65,12 +66,13 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
   const navigate = useNavigate();
 
   const uwConfig = {
-    cloudName: "dwqyqsqmq",
+    cloudName: ENV.CLOUDINARY_CLOUD_NAME,
     uploadPreset: "movie_up",
   };
 
   const handleSetPublicId = (publicId: string) => {
-    const imageUrl = `https://res.cloudinary.com/dwqyqsqmq/image/upload/${publicId}`;
+    var cloud = ENV.CLOUDINARY_CLOUD_NAME;
+    const imageUrl = `https://res.cloudinary.com/${cloud}/image/upload/${publicId}`;
     setUploadedImage(imageUrl);
     setValue("image", imageUrl);
   };
