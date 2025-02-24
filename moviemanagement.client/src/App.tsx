@@ -13,8 +13,11 @@ import Payment from "./pages/ticket/Payment";
 import Confirmation from "./pages/ticket/Confirmation";
 import UserDetail from "./pages/user/UserDetail";
 import { createTheme, ThemeProvider } from "@mui/material";
+import AdminTheme from "./shared-theme/AdminTheme";
 import Dashboard from "./pages/admin/Dashboard";
 import PromotionManagement from "./pages/admin/Promotions";
+import PromotionDetailManagement from "./pages/admin/PromotionDetail";
+import Movies from "./pages/admin/Movies";
 
 const theme = createTheme({
   components: {
@@ -30,6 +33,8 @@ const theme = createTheme({
     },
   },
 });
+
+
 
 const App = () => {
   return (
@@ -53,9 +58,12 @@ const App = () => {
               <Route path="up-coming" element={<UpComingMoviesPage />} />
             </Route>
 
-            <Route path="/admin">
+            <Route path="/admin" element={<AdminTheme />}>
               <Route path="thong-ke" element={<Dashboard />} />
               <Route path="khuyen-mai" element={<PromotionManagement />} />
+              <Route path="phim" element={<Movies />} />
+              <Route path="khuyen-mai/:id" element={<PromotionDetailManagement />} />
+
             </Route>
 
           </Routes>

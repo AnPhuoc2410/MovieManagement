@@ -22,13 +22,13 @@ import DiscountRoundedIcon from '@mui/icons-material/DiscountRounded';
 
 const mainListItems = [
   { text: 'Trang chủ', icon: <HomeRoundedIcon />, path: '/admin/thong-ke' },
-  { text: 'Quản lý khách Hàng', icon: <PeopleRoundedIcon />, path: '/admin/khach-hang' },
-  { text: 'Quản lý nhân Viên', icon: <PermIdentityRoundedIcon />, path: '/admin/nhan-vien' },
-  { text: 'Quản lý bán vé', icon: <LocalActivityRoundedIcon />, path: '/admin/ban-ve' },
-  { text: 'Quản lý đặt vé', icon: <ConfirmationNumberRoundedIcon />, path: '/admin/dat-ve' },
-  { text: 'Quản lý phòng chiếu', icon: <EventSeatRoundedIcon />, path: '/admin/phong-chieu' },
-  { text: 'Quản lý phim', icon: <MovieCreationRoundedIcon />, path: '/admin/phim' },
-  { text: 'Quản lý khuyến mãi', icon: <DiscountRoundedIcon />, path: '/admin/khuyen-mai' },
+  { text: 'Quản lý Khách hàng', icon: <PeopleRoundedIcon />, path: '/admin/khach-hang' },
+  { text: 'Quản lý Nhân viên', icon: <PermIdentityRoundedIcon />, path: '/admin/nhan-vien' },
+  { text: 'Quản lý Bán vé', icon: <LocalActivityRoundedIcon />, path: '/admin/ban-ve' },
+  { text: 'Quản lý Đặt vé', icon: <ConfirmationNumberRoundedIcon />, path: '/admin/dat-ve' },
+  { text: 'Quản lý Phòng chiếu', icon: <EventSeatRoundedIcon />, path: '/admin/phong-chieu' },
+  { text: 'Quản lý Phim', icon: <MovieCreationRoundedIcon />, path: '/admin/phim' },
+  { text: 'Quản lý Khuyến mãi', icon: <DiscountRoundedIcon />, path: '/admin/khuyen-mai' },
 ];
 
 const secondaryListItems = [
