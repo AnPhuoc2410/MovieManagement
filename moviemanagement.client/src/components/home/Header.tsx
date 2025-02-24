@@ -1,36 +1,23 @@
-import React, { useState } from "react";
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  TextField,
-  IconButton,
-  Box,
-  Typography,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-  ListItemIcon,
-} from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import {
+  AppBar,
+  Box,
+  Button,
+  IconButton,
+  TextField,
+  Toolbar,
+  Typography
+} from "@mui/material";
+import React from "react";
 import { useNavigate } from "react-router";
-import { VietnamFlag, UsaFlag, JapanFlag } from "../../data/CustomIcons";
+import { useTranslation } from "react-i18next";
+import LanguageSelector from "../common/LanguageSelector";
 
 const Header: React.FC = () => {
-  const [language, setLanguage] = useState("VN");
   const navigate = useNavigate();
-
-  const handleChange = (event: SelectChangeEvent<string>) => {
-    setLanguage(event.target.value as string);
-  };
-
-  const languages: { [key: string]: { name: string; icon: JSX.Element } } = {
-    VN: { name: "Tiếng Việt", icon: <VietnamFlag /> },
-    EN: { name: "English", icon: <UsaFlag /> },
-    JP: { name: "日本語", icon: <JapanFlag /> },
-  };
+  const { t } = useTranslation();
 
   return (
     <AppBar
@@ -122,7 +109,7 @@ const Header: React.FC = () => {
               },
             }}
           >
-            <span> ĐẶT VÉ</span>
+            <span>{t("book_ticket")}</span>
           </Button>
           <Button
             onClick={() => navigate("/")}
@@ -156,38 +143,13 @@ const Header: React.FC = () => {
             }}
             startIcon={<ShoppingCartIcon />}
           >
-            <span>ĐẶT BẮP NƯỚC</span>
+            <span>{t("book_snacks")}</span>
           </Button>
           <IconButton color="inherit" onClick={() => navigate("/auth")}>
             <AccountCircleIcon />
-            <Typography>Đăng nhập</Typography>
+            <Typography>{t("login")}</Typography>
           </IconButton>
-          <Select
-            value={language}
-            onChange={handleChange}
-            displayEmpty
-            renderValue={(selected: string) => (
-              <Box display="flex" alignItems="center">
-                {languages[selected]?.icon}
-              </Box>
-            )}
-            sx={{
-              backgroundColor: "transparent",
-              minWidth: "50px",
-              border: "none",
-              boxShadow: "none", 
-              "& .MuiOutlinedInput-notchedOutline": { border: "none" }, 
-              "&:hover .MuiOutlinedInput-notchedOutline": { border: "none" },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { border: "none" },
-            }}
-          >
-            {Object.entries(languages).map(([code, { name, icon }]) => (
-              <MenuItem key={code} value={code}>
-                <ListItemIcon>{icon}</ListItemIcon>
-                <Typography>{name}</Typography>
-              </MenuItem>
-            ))}
-          </Select>
+          <LanguageSelector />
         </Box>
       </Toolbar>
     </AppBar>
