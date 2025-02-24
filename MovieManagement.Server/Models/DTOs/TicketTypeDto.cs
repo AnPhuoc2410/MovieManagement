@@ -2,6 +2,8 @@
 {
     public class TicketTypeDto
     {
+
+
         public int DayOfWeek { get; set; } 
 
         public int Hours { get; set; } 

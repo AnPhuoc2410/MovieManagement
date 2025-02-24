@@ -74,6 +74,7 @@ namespace MovieManagement.Server
             });
             var app = builder.Build();
 
+
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
@@ -93,6 +94,10 @@ namespace MovieManagement.Server
             }
 
             app.UseHttpsRedirection();
+
+            //Enable Websocket support
+            app.UseWebSockets();
+            app.UseRouting();
 
             app.UseAuthorization();
 
