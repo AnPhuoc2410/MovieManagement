@@ -19,7 +19,7 @@ namespace MovieManagement.Server.Services.EmployeeService
         }
 
 
-        public async Task<EmployeeDto> CreateEmployee(EmployeeDto employee)
+        public async Task<EmployeeDto> CreateEmployeeAsync(EmployeeDto employee)
         {
             Employee newEmployee = new Employee
             {
@@ -42,18 +42,18 @@ namespace MovieManagement.Server.Services.EmployeeService
 
         }
 
-        public Task<bool> DeleteEmployee(Guid id)
+        public Task<bool> DeleteEmployeeAsynce(Guid id)
         {
             return _unitOfWork.EmployeeRepository.DeleteAsync(id);
         }
 
-        public async Task<IEnumerable<EmployeeDto>> GetAllEmployees()
+        public async Task<IEnumerable<EmployeeDto>> GetAllEmployeesAsync()
         {
             var employees = await _unitOfWork.EmployeeRepository.GetAllAsync();
             return _mapper.Map<List<EmployeeDto>>(await _unitOfWork.EmployeeRepository.GetAllAsync());
         }
 
-        public async Task<EmployeeDto> GetEmployee(Guid id)
+        public async Task<EmployeeDto> GetEmployeeByIdAsync(Guid id)
         {
             var employee = await _unitOfWork.EmployeeRepository.GetByIdAsync(id);
             if (employee == null)
@@ -61,7 +61,7 @@ namespace MovieManagement.Server.Services.EmployeeService
             return _mapper.Map<EmployeeDto>(employee);
         }
 
-        public async Task<EmployeeDto> UpdateEmployee(Guid id, EmployeeDto employee)
+        public async Task<EmployeeDto> UpdateEmployeeAsync(Guid id, EmployeeDto employee)
         {
             var existingEmployee = await _unitOfWork.EmployeeRepository.GetByIdAsync(id);
             if (existingEmployee == null)
