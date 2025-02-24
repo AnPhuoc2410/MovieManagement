@@ -10,9 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\**" />
     <Compile Remove="Responses\**" />
+    <Content Remove="Migrations\**" />
     <Content Remove="Responses\**" />
+    <EmbeddedResource Remove="Migrations\**" />
     <EmbeddedResource Remove="Responses\**" />
+    <None Remove="Migrations\**" />
     <None Remove="Responses\**" />
   </ItemGroup>
 
@@ -42,10 +46,6 @@
     <ProjectReference Include="..\moviemanagement.client\moviemanagement.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>
