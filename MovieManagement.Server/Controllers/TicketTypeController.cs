@@ -22,46 +22,34 @@ namespace MovieManagement.Server.Controllers
 
         [HttpGet]
         [Route("GetAllTicketType")]
-        public async Task<ActionResult> GetAllTicketType()
+        public async Task<ActionResult<ResponseDto>> GetAllTicketType()
         {
-            return Ok(await _ticketTypeService.GetAllTicketType());
+            var TicketTypes =  await _ticketTypeService.GetAllTicketType();
+            return TicketTypes;
         }
 
         [HttpPost]
         [Route("CreateTicketType")]
-        public async Task<ActionResult<TicketType>> CreateTicketType(TicketTypeDto ticketTypeDto)
+        public async Task<ActionResult<ResponseDto>> CreateTicketType(TicketTypeDto ticketTypeDto)
         {
             var createdTicketType = await _ticketTypeService.CreateTicketType(ticketTypeDto);
-            return Ok(createdTicketType);
+            return createdTicketType;
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<TicketTypeDto>> GetTicketType(Guid id)
+        public async Task<ActionResult<ResponseDto>> GetTicketType(Guid id)
         {
             var ticket = await _ticketTypeService.GetTicketType(id);
-            if (ticket == null)
-            {
-                return NotFound();
-            }
             return ticket;
         }
 
         [HttpPut("UpdateTicketType/{id:guid}")]
-        public async Task<IActionResult> UpdateTicketType(Guid id, TicketTypeDto ticketTypeDto)
+        public async Task<ActionResult<ResponseDto>> UpdateTicketType(Guid id, TicketTypeDto ticketTypeDto)
         {
-            try
-            {
-                var updateTicket = _ticketTypeService.UpdateTicketType(id, ticketTypeDto);
-                if (updateTicket == null)
-                {
-                    throw new Exception("Nothing were found!");
-                }
-                return Ok(UpdateTicketType);
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+            
+            var updateTicket = await _ticketTypeService.UpdateTicketType(id, ticketTypeDto);
+            return updateTicket;
+             
         }
 
     }
