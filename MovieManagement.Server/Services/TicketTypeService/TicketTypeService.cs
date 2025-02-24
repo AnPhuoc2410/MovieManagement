@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
@@ -16,8 +17,9 @@ namespace MovieManagement.Server.Services.TicketTypeService
             _mapper = mapper;
         }
 
-        public async Task<TicketTypeDto> CreateTicketType(TicketTypeDto ticketType)
+        public async Task<ResponseDto> CreateTicketType(TicketTypeDto ticketType)
         {
+            var response = new ResponseDto();
             var newTicketType = new TicketType
             {
                 Consumer = ticketType.Consumer,
@@ -26,32 +28,76 @@ namespace MovieManagement.Server.Services.TicketTypeService
                 Price = ticketType.Price,
                 Version = ticketType.Version,
             };
-            return _mapper.Map<TicketTypeDto>(await _unitOfWork.TicketTypeRepository.CreateAsync(newTicketType));
+            var createdTicketType = _mapper.Map<TicketTypeDto>(await _unitOfWork.TicketTypeRepository.CreateAsync(newTicketType));
+
+            response.Success = true;
+            response.Message = "TicketType created successfully!";
+            response.StatusCode = StatusCodes.Status200OK;
+            response.Data = createdTicketType;
+            return response;
+
         }
 
         public async Task<bool> DeleteTicketType(Guid ticketId)
         => await _unitOfWork.TicketTypeRepository.DeleteAsync(ticketId);
 
-        public async Task<IEnumerable<TicketTypeDto>> GetAllTicketType()
-        => _mapper.Map<List<TicketTypeDto>>(await _unitOfWork.TicketTypeRepository.GetAllAsync());
-
-        public async Task<TicketTypeDto> GetTicketType(Guid ticketId)
+        public async Task<ResponseDto> GetAllTicketType()
         {
-            var ticket = await _unitOfWork.TicketTypeRepository.GetByIdAsync(ticketId);
-            if (ticket == null)
+            ResponseDto response = new ResponseDto();
+
+            var TicketTypes = _mapper.Map<List<TicketTypeDto>>(await _unitOfWork.TicketTypeRepository.GetAllAsync());
+    
+            if (TicketTypes == null)
             {
-                throw new Exception("Ticket not found");
+                response.StatusCode = StatusCodes.Status404NotFound;
+                response.Success = false;
+                response.Message = "TicketTypes are not found!";
+                return response;
             }
-            return _mapper.Map<TicketTypeDto>(ticket);
+
+            response.StatusCode = StatusCodes.Status200OK;
+            response.Success = true;
+            response.Message = "Successfully!";
+            response.Data = TicketTypes;
+            return response;
         }
 
-        public async Task<TicketTypeDto> UpdateTicketType(Guid ticketId, TicketTypeDto ticketType)
+        public async Task<ResponseDto> GetTicketType(Guid ticketId)
         {
+            var response = new ResponseDto();
+            var ticket = await _unitOfWork.TicketTypeRepository.GetByIdAsync(ticketId);
+
+            //Checking existing if not return.
+            if (ticket == null)
+            {
+                response.StatusCode = StatusCodes.Status404NotFound;
+                response.Success = false;
+                response.Message = "TicketType not found!";
+                return response;
+            }
+
+            //Return after found the TicketType
+            response.StatusCode = StatusCodes.Status200OK;
+            response.Success = true;
+            response.Message = "TicketType founded!";
+            response.Data = _mapper.Map<TicketTypeDto>(ticket);
+            return response;
+        }
+
+        public async Task<ResponseDto> UpdateTicketType(Guid ticketId, TicketTypeDto ticketType)
+        {
+            var response = new ResponseDto();
             var existingTicketType = await _unitOfWork.TicketTypeRepository.GetByIdAsync(ticketId);
+
+            //Checking exist if not return.
             if(existingTicketType == null)
             {
-                throw new Exception("Promotion not found");
+                response.StatusCode = StatusCodes.Status404NotFound;
+                response.Success = false;
+                response.Message = "TicketType not found!";
+                return response;
             }
+            //Update Existing TicketType here:
             existingTicketType.Hours = ticketType.Hours;
             existingTicketType.DayOfWeek = ticketType.DayOfWeek;    
             existingTicketType.Price = ticketType.Price;
@@ -59,7 +105,13 @@ namespace MovieManagement.Server.Services.TicketTypeService
             existingTicketType.Consumer = ticketType.Consumer;
             
             var updateTicketType = await _unitOfWork.TicketTypeRepository.UpdateAsync(existingTicketType);
-            return _mapper.Map<TicketTypeDto>(updateTicketType);
+
+            //Return if true
+            response.StatusCode = StatusCodes.Status200OK;
+            response.Success = true;
+            response.Message = "TicketType founded!";
+            response.Data = _mapper.Map<TicketTypeDto>(updateTicketType);
+            return response;
         }
 
     

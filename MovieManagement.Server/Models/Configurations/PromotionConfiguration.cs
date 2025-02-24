@@ -11,7 +11,6 @@ namespace MovieManagement.Server.Models.Configurations
             builder.HasKey(x => x.PromotionId);
             builder.Property(x => x.PromotionId).HasDefaultValueSql("NEWID()");
             builder.Property(x => x.Image).HasColumnType("Nvarchar(max)");
-            builder.Property(x => x.Content).HasColumnType("Nvarchar(500)");
             builder.Property(x => x.Content).HasColumnType("ntext");
             builder.HasMany(x => x.Bills)
                 .WithOne(x => x.Promotion)
