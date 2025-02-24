@@ -269,9 +269,6 @@ namespace MovieManagement.Server.Migrations
                         .IsRequired()
                         .HasColumnType("Nvarchar(30)");
 
-                    b.Property<Guid>("RoomId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("ToDate")
                         .HasColumnType("datetime2");
 
@@ -384,7 +381,12 @@ namespace MovieManagement.Server.Migrations
                         .HasColumnType("time")
                         .HasColumnOrder(1);
 
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("MovieId", "StartTime");
+
+                    b.HasIndex("RoomId");
 
                     b.ToTable("SHOWTIME", (string)null);
                 });
@@ -397,12 +399,14 @@ namespace MovieManagement.Server.Migrations
                     b.Property<Guid>("SeatId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TicketTypeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("BillId", "SeatId");
 
                     b.HasIndex("SeatId");
+
+                    b.HasIndex("TicketTypeId");
 
                     b.ToTable("TICKETDETAIL", (string)null);
                 });
@@ -508,7 +512,15 @@ namespace MovieManagement.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MovieManagement.Server.Models.Entities.Room", "Room")
+                        .WithMany("Showtimes")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Movie");
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.TicketDetail", b =>
@@ -525,9 +537,17 @@ namespace MovieManagement.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MovieManagement.Server.Models.Entities.TicketType", "TicketType")
+                        .WithMany("TicketDetails")
+                        .HasForeignKey("TicketTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Bill");
 
                     b.Navigation("Seat");
+
+                    b.Navigation("TicketType");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Bill", b =>
@@ -567,11 +587,18 @@ namespace MovieManagement.Server.Migrations
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Room", b =>
                 {
                     b.Navigation("Seats");
+
+                    b.Navigation("Showtimes");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Seat", b =>
                 {
                     b.Navigation("TicketDetail");
+                });
+
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.TicketType", b =>
+                {
+                    b.Navigation("TicketDetails");
                 });
 #pragma warning restore 612, 618
         }

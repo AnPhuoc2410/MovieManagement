@@ -26,6 +26,14 @@ namespace MovieManagement.Server.Extensions
             CreateMap<Member, MemberDto>();
             CreateMap<MemberDto, Member>();
 
+            CreateMap<TicketDetail, TicketDetailDto>();
+            CreateMap<TicketDetailDto, TicketDetail>();
+
+            CreateMap<TicketType, TicketTypeDto>();
+            CreateMap<TicketTypeDto, TicketType>();
+
+            CreateMap<Showtime, ShowTimeDto>();
+            CreateMap<ShowTimeDto, Showtime>();
         }
     }
 }

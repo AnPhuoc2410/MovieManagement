@@ -15,6 +15,7 @@ namespace MovieManagement.Server.Controllers
         public RoomController(IRoomService roomService)
         {
             _roomService = roomService;
+            _mapper = mapper;
         }
         [HttpGet]
         [Route("all")]

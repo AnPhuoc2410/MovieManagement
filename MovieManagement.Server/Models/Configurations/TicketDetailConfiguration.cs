@@ -18,6 +18,9 @@ namespace MovieManagement.Server.Models.Configurations
             builder.HasOne(x => x.Seat)
                 .WithMany(x => x.TicketDetail)
                 .HasForeignKey(x => x.SeatId);
+            builder.HasOne(x => x.TicketType)
+                .WithMany(x => x.TicketDetails)
+                .HasForeignKey(x => x.TicketTypeId);
         }
     }
 }
