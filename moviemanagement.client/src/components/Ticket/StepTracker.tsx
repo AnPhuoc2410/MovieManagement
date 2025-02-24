@@ -72,7 +72,7 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
                 sx={{
                   // Force the label text color for all states
                   "& .MuiStepLabel-label": {
-                    color: "gray",            // default color
+                    color: "gray", // default color
                   },
                   "& .MuiStepLabel-label.Mui-active": {
                     color: "white !important", // active step color
@@ -81,7 +81,7 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
                     color: "white !important", // completed step color
                   },
                   "& .MuiStepLabel-label.Mui-disabled": {
-                    color: "gray !important",  // disabled step color
+                    color: "gray !important", // disabled step color
                   },
                 }}
               >

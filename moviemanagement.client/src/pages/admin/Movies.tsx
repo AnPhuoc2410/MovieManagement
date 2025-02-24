@@ -1,38 +1,41 @@
-import * as React from 'react';
-import type {} from '@mui/x-date-pickers/themeAugmentation';
-import type {} from '@mui/x-charts/themeAugmentation';
-import type {} from '@mui/x-data-grid-pro/themeAugmentation';
-import type {} from '@mui/x-tree-view/themeAugmentation';
+import * as React from "react";
+import type {} from "@mui/x-date-pickers/themeAugmentation";
+import type {} from "@mui/x-charts/themeAugmentation";
+import type {} from "@mui/x-data-grid-pro/themeAugmentation";
+import type {} from "@mui/x-tree-view/themeAugmentation";
 
-import { alpha } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
+import { alpha } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 
 // Components
-import AppNavbar from '../../components/mui/AppNavbar';
-import Header from '../../components/mui/Header';
-import SideMenu from '../../components/mui/SideMenu';
-
+import AppNavbar from "../../components/mui/AppNavbar";
+import Header from "../../components/mui/Header";
+import SideMenu from "../../components/mui/SideMenu";
 
 // Theme & Customizations
-import AppTheme from '../../shared-theme/AppTheme';
-const Movies: React.FC = ({ disableCustomTheme = false }: { disableCustomTheme?: boolean }) => {
-    return (
-        <AppTheme disableCustomTheme={disableCustomTheme}>
+import AppTheme from "../../shared-theme/AppTheme";
+const Movies: React.FC = ({
+  disableCustomTheme = false,
+}: {
+  disableCustomTheme?: boolean;
+}) => {
+  return (
+    <AppTheme disableCustomTheme={disableCustomTheme}>
       <CssBaseline enableColorScheme />
-      <Box sx={{ display: 'flex', height: '100vh' }}>
+      <Box sx={{ display: "flex", height: "100vh" }}>
         <SideMenu />
-        
-        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+
+        <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
           <AppNavbar />
-          
+
           <Box
             component="main"
             sx={(theme) => ({
               flexGrow: 1,
               backgroundColor: alpha(theme.palette.background.default, 1),
-              overflowY: 'auto',
+              overflowY: "auto",
               px: 3,
               py: 2,
             })}
@@ -40,13 +43,12 @@ const Movies: React.FC = ({ disableCustomTheme = false }: { disableCustomTheme?:
             <Stack spacing={2} alignItems="center">
               <Header />
               {/* <MainGrid /> */}
-              
             </Stack>
           </Box>
         </Box>
       </Box>
     </AppTheme>
-    );
+  );
 };
 
 export default Movies;

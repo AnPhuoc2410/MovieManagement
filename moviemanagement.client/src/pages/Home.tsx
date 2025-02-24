@@ -18,7 +18,6 @@ import ListMovies from "../components/home/ListMovies";
 import Promotions from "../components/home/Event";
 import Membership from "../components/home/Membership";
 
-
 const slides = [
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215wx365h_4_.jpg",

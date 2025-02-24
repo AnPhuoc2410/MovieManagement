@@ -1,8 +1,8 @@
-import React from 'react';
-import { Cloudinary } from '@cloudinary/url-gen';
-import { AdvancedImage } from '@cloudinary/react';
-import { auto } from '@cloudinary/url-gen/actions/resize';
-import { autoGravity } from '@cloudinary/url-gen/qualifiers/gravity';
+import React from "react";
+import { Cloudinary } from "@cloudinary/url-gen";
+import { AdvancedImage } from "@cloudinary/react";
+import { auto } from "@cloudinary/url-gen/actions/resize";
+import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 
 interface CloudinaryImageProps {
   imageUrl: string;
@@ -12,8 +12,8 @@ interface CloudinaryImageProps {
 // Initialize Cloudinary instance with your cloud name
 const cld = new Cloudinary({
   cloud: {
-    cloudName: 'dwqyqsqmq'
-  }
+    cloudName: "dwqyqsqmq",
+  },
 });
 
 // Helper function to extract publicId from the full URL

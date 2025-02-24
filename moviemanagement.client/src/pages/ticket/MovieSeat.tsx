@@ -8,10 +8,10 @@ import Footer from "../../components/home/Footer";
 const MovieSeat: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { selectedTime, selectedDate, tickets } = location.state || { 
-    selectedTime: "Not selected", 
-    selectedDate: "Not selected", 
-    tickets: [] 
+  const { selectedTime, selectedDate, tickets } = location.state || {
+    selectedTime: "Not selected",
+    selectedDate: "Not selected",
+    tickets: [],
   };
 
   // State to store selected seats
@@ -20,7 +20,7 @@ const MovieSeat: React.FC = () => {
   // Calculate the total number of seats that should be selected based on ticket quantities
   const maxSeats = (tickets || []).reduce(
     (acc: number, ticket: any) => acc + (ticket.quantity || 0),
-    0
+    0,
   );
 
   const handleNext = () => {
@@ -28,7 +28,9 @@ const MovieSeat: React.FC = () => {
       alert(`Vui lòng chọn đúng ${maxSeats} ghế.`);
       return;
     }
-    navigate("/payment", { state: { selectedDate, selectedTime, tickets, seats: selectedSeats } });
+    navigate("/payment", {
+      state: { selectedDate, selectedTime, tickets, seats: selectedSeats },
+    });
   };
 
   return (

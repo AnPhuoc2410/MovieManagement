@@ -6,7 +6,7 @@ import {
   TextField,
   Button,
   Grid,
-  Paper
+  Paper,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import StepTracker from "../../components/Ticket/StepTracker";
@@ -27,7 +27,7 @@ const Payment: React.FC = () => {
   // Calculate total ticket price from the tickets array
   const totalPrice = (tickets || []).reduce(
     (sum: number, t: any) => sum + t.price * (t.quantity || 0),
-    0
+    0,
   );
 
   // Additional info with defaults
@@ -36,7 +36,7 @@ const Payment: React.FC = () => {
     screen = "Màn hình 1",
     showDate = selectedDate,
     showTime = selectedTime,
-    price = totalPrice
+    price = totalPrice,
   } = location.state || {};
 
   const total = totalPrice;
@@ -148,7 +148,9 @@ const Payment: React.FC = () => {
           {/* Right Column: Movie/Ticket Info & Customer Form */}
           <Grid item xs={12} md={8}>
             {/* Combined Movie & Ticket Info */}
-            <Paper sx={{ p: 3, backgroundColor: "#1c1c1c", color: "white", mb: 3 }}>
+            <Paper
+              sx={{ p: 3, backgroundColor: "#1c1c1c", color: "white", mb: 3 }}
+            >
               <Grid container spacing={3}>
                 {/* Thông Tin Phim */}
                 <Grid item xs={12} sm={6}>
@@ -265,7 +267,11 @@ const Payment: React.FC = () => {
               </Grid>
 
               <Box sx={{ textAlign: "center", mt: 3 }}>
-                <Button variant="contained" color="primary" onClick={handleConfirm}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleConfirm}
+                >
                   Xác nhận đặt vé
                 </Button>
               </Box>

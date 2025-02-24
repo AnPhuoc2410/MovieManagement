@@ -19,6 +19,8 @@ import Dashboard from "./pages/admin/Dashboard";
 import PromotionManagement from "./pages/admin/Promotions";
 import PromotionDetailManagement from "./pages/admin/PromotionDetail";
 import Movies from "./pages/admin/Movies";
+import QuanLiThanhVien from "./pages/admin/QuanLyThanhVien/QuanLiThanhVien";
+import QuanLiNhanVien from "./pages/admin/QuanLyNhanVien";
 
 
 const theme = createTheme({
@@ -35,8 +37,6 @@ const theme = createTheme({
     },
   },
 });
-
-
 
 const App = () => {
   return (
@@ -65,8 +65,12 @@ const App = () => {
               <Route path="thong-ke" element={<Dashboard />} />
               <Route path="khuyen-mai" element={<PromotionManagement />} />
               <Route path="phim" element={<Movies />} />
-              <Route path="khuyen-mai/:id" element={<PromotionDetailManagement />} />
-
+              <Route
+                path="khuyen-mai/:id"
+                element={<PromotionDetailManagement />}
+              />
+              <Route path="ql-nhan-vien" element={<QuanLiNhanVien />} />
+              <Route path="ql-thanh-vien" element={<QuanLiThanhVien />} />
             </Route>
           </Routes>
         </ThemeProvider>
