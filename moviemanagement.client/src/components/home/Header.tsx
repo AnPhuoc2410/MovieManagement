@@ -1,31 +1,23 @@
-import React, { useState } from "react";
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  TextField,
-  IconButton,
-  Box,
-  Typography,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-} from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import VietnamFlag from "../../assets/vietnam-icon.svg";
-import AmericaFlag from "../../assets/usa.svg";
-import JapanFlag from "../../assets/japan.svg";
+import {
+  AppBar,
+  Box,
+  Button,
+  IconButton,
+  TextField,
+  Toolbar,
+  Typography
+} from "@mui/material";
+import React from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
+import LanguageSelector from "../common/LanguageSelector";
 
 const Header: React.FC = () => {
-  const [language, setLanguage] = useState("VN");
   const navigate = useNavigate();
-
-  const handleChange = (event: SelectChangeEvent<string>) => {
-    setLanguage(event.target.value as string);
-  };
+  const { t } = useTranslation();
 
   return (
     <AppBar
@@ -72,7 +64,7 @@ const Header: React.FC = () => {
           <TextField
             variant="outlined"
             size="small"
-            placeholder="Tìm phim, rạp"
+            placeholder={t("search")} 
             sx={{ backgroundColor: "white", borderRadius: 2, width: "70%" }}
             InputProps={{
               endAdornment: (
@@ -117,7 +109,7 @@ const Header: React.FC = () => {
               },
             }}
           >
-            <span> ĐẶT VÉ</span>
+            <span>{t("book_ticket")}</span>
           </Button>
           <Button
             onClick={() => navigate("/")}
@@ -151,48 +143,13 @@ const Header: React.FC = () => {
             }}
             startIcon={<ShoppingCartIcon />}
           >
-            <span>ĐẶT BẮP NƯỚC</span>
+            <span>{t("book_snacks")}</span>
           </Button>
           <IconButton color="inherit" onClick={() => navigate("/auth")}>
             <AccountCircleIcon />
-            <Typography>Đăng nhập</Typography>
+            <Typography>{t("login")}</Typography>
           </IconButton>
-          <Select
-            value={language}
-            onChange={handleChange}
-            displayEmpty
-            renderValue={(selected) => <Typography>{selected} ▼</Typography>}
-            sx={{ backgroundColor: "#FFFFFF" }}
-          >
-            <MenuItem value="VN">
-              VN
-              <IconButton color="inherit">
-                <img
-                  src={VietnamFlag}
-                  alt="Vietnam Flag"
-                  width="25"
-                  height="25"
-                />
-              </IconButton>
-            </MenuItem>
-            <MenuItem value="EN">
-              EN
-              <IconButton color="inherit">
-                <img
-                  src={AmericaFlag}
-                  alt="America Flag"
-                  width="25"
-                  height="25"
-                />
-              </IconButton>
-            </MenuItem>
-            <MenuItem value="JP">
-              JP
-              <IconButton color="inherit">
-                <img src={JapanFlag} alt="Japan Flag" width="25" height="25" />
-              </IconButton>
-            </MenuItem>
-          </Select>
+          <LanguageSelector />
         </Box>
       </Toolbar>
     </AppBar>

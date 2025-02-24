@@ -8,6 +8,8 @@ import "swiper/css/pagination";
 import "./ListMovies.css";
 import "../../index.scss";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
+
 
 const nowShowingMovies = [
   {
@@ -101,6 +103,9 @@ const upcomingMovies = [
   },
 ];
 
+const { t } = useTranslation();
+
+
 const MovieSlider = ({
   movies,
   title,
@@ -143,7 +148,7 @@ const MovieSlider = ({
                 className="book-button"
                 onClick={() => navigate(`/ticket/${index}`)}
               >
-                ĐẶT VÉ
+              {t("book_ticket")}
               </Button>
             </Box>
           </SwiperSlide>
