@@ -34,6 +34,9 @@ namespace MovieManagement.Server.Extensions
 
             CreateMap<ShowTime, ShowTimeDto>();
             CreateMap<ShowTimeDto, ShowTime>();
+
+            CreateMap<Movie, MovieDto>();
+            CreateMap<MovieDto, Movie>();
         }
     }
 }
