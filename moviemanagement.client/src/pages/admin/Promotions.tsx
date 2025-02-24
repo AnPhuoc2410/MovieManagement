@@ -15,24 +15,10 @@ import {
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import {
-  Box,
-  Button,
-  CssBaseline,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Stack,
-  TextField,
-} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useForm, Controller } from "react-hook-form";
 import { alpha } from "@mui/material/styles";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import AppNavbar from "../../components/mui/AppNavbar";
@@ -177,11 +163,7 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
       width: 120,
       renderCell: (params) =>
         params.row.image ? (
-          <img
-            src={params.row.image}
-            alt="Promotion"
-            style={{ width: "100%", height: "auto" }}
-          />
+          <img src={params.row.image} alt="Promotion" style={{ width: "100%", height: "auto" }} />
         ) : (
           "No image"
         ),
@@ -234,12 +216,6 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
                 onClick={() => handleOpen()}
                 sx={{ mb: 2 }}
               >
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => handleOpen()}
-                sx={{ mb: 2 }}
-              >
                 Thêm Khuyến Mãi
               </Button>
 
@@ -256,9 +232,6 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
         </Box>
 
         <Dialog open={open} onClose={handleClose} fullWidth>
-          <DialogTitle>
-            {selectedPromotion ? "Sửa Khuyến Mãi" : "Tạo Khuyến Mãi"}
-          </DialogTitle>
           <DialogTitle>
             {selectedPromotion ? "Sửa Khuyến Mãi" : "Tạo Khuyến Mãi"}
           </DialogTitle>
@@ -354,17 +327,9 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
                 )}
               />
               <Box sx={{ my: 2 }}>
-                <CloudinaryUploadWidget
-                  uwConfig={uwConfig}
-                  setPublicId={handleSetPublicId}
-                />
+                <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={handleSetPublicId} />
                 {uploadedImage && (
                   <Box sx={{ mt: 1 }}>
-                    <img
-                      src={uploadedImage}
-                      alt="Uploaded"
-                      style={{ maxWidth: "100%", maxHeight: 150 }}
-                    />
                     <img
                       src={uploadedImage}
                       alt="Uploaded"

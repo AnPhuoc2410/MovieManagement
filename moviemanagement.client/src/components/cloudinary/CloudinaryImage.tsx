@@ -9,10 +9,14 @@ interface CloudinaryImageProps {
   hd?: boolean; // Pass true to get HD image
 }
 
+export const ENV = {
+  CLOUDINARY_CLOUD_NAME: import.meta.env.VITE_CLOUND_NAME as string,
+}
+
 // Initialize Cloudinary instance with your cloud name
 const cld = new Cloudinary({
   cloud: {
-    cloudName: "dwqyqsqmq",
+    cloudName: ENV.CLOUDINARY_CLOUD_NAME,
   },
 });
 
@@ -30,6 +34,8 @@ const extractPublicId = (url: string): string => {
 
 const CloudinaryImage: React.FC<CloudinaryImageProps> = ({ imageUrl, hd = false }) => {
   const publicId = extractPublicId(imageUrl);
+console.log(`Env ne ${ENV.CLOUDINARY_CLOUD_NAME}`)
+
   let img = cld.image(publicId).format('auto').quality('auto');
 
   // If hd prop is true, request a higher resolution image

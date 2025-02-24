@@ -13,8 +13,8 @@ const slugMapping: { [key: string]: string } = {
   "phong-chieu": "Phòng chiếu",
   "dat-ve": "Đặt vé",
   "ban-ve": "Bán vé",
-  "nhan-vien": "Nhân viên",
-  "khach-hang": "Khách hàng",
+  "ql-nhan-vien": "Nhân viên",
+  "ql-thanh-vien": "Thành viên",
 };
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
