@@ -10,14 +10,13 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  ListItemIcon,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import VietnamFlag from "../../assets/vietnam-icon.svg";
-import AmericaFlag from "../../assets/usa.svg";
-import JapanFlag from "../../assets/japan.svg";
 import { useNavigate } from "react-router";
+import { VietnamFlag, UsaFlag, JapanFlag } from "../../data/CustomIcons";
 
 const Header: React.FC = () => {
   const [language, setLanguage] = useState("VN");
@@ -25,6 +24,12 @@ const Header: React.FC = () => {
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     setLanguage(event.target.value as string);
+  };
+
+  const languages: { [key: string]: { name: string; icon: JSX.Element } } = {
+    VN: { name: "Tiếng Việt", icon: <VietnamFlag /> },
+    EN: { name: "English", icon: <UsaFlag /> },
+    JP: { name: "日本語", icon: <JapanFlag /> },
   };
 
   return (
@@ -161,37 +166,27 @@ const Header: React.FC = () => {
             value={language}
             onChange={handleChange}
             displayEmpty
-            renderValue={(selected) => <Typography>{selected} ▼</Typography>}
-            sx={{ backgroundColor: "#FFFFFF" }}
+            renderValue={(selected: string) => (
+              <Box display="flex" alignItems="center">
+                {languages[selected]?.icon}
+              </Box>
+            )}
+            sx={{
+              backgroundColor: "transparent",
+              minWidth: "50px",
+              border: "none",
+              boxShadow: "none", 
+              "& .MuiOutlinedInput-notchedOutline": { border: "none" }, 
+              "&:hover .MuiOutlinedInput-notchedOutline": { border: "none" },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { border: "none" },
+            }}
           >
-            <MenuItem value="VN">
-              VN
-              <IconButton color="inherit">
-                <img
-                  src={VietnamFlag}
-                  alt="Vietnam Flag"
-                  width="25"
-                  height="25"
-                />
-              </IconButton>
-            </MenuItem>
-            <MenuItem value="EN">
-              EN
-              <IconButton color="inherit">
-                <img
-                  src={AmericaFlag}
-                  alt="America Flag"
-                  width="25"
-                  height="25"
-                />
-              </IconButton>
-            </MenuItem>
-            <MenuItem value="JP">
-              JP
-              <IconButton color="inherit">
-                <img src={JapanFlag} alt="Japan Flag" width="25" height="25" />
-              </IconButton>
-            </MenuItem>
+            {Object.entries(languages).map(([code, { name, icon }]) => (
+              <MenuItem key={code} value={code}>
+                <ListItemIcon>{icon}</ListItemIcon>
+                <Typography>{name}</Typography>
+              </MenuItem>
+            ))}
           </Select>
         </Box>
       </Toolbar>
