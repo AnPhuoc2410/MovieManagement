@@ -45,8 +45,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Migrations\" />
     <Folder Include="Responses\" />
   </ItemGroup>
 
