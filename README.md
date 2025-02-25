@@ -1,8 +1,8 @@
-# Movie Management System
-![Movie Management System](https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740222771/dbtlvkwequ3gdqyhtp1d.png)  
+# Eigaa Cinema
+![Eigaa Cinema](https://res.cloudinary.com/dwqyqsqmq/image/upload/v1740222771/dbtlvkwequ3gdqyhtp1d.png)  
 [Live Demo](https://eigaa.vercel.app/)
 ## Overview
-The **Movie Management System** is a web-based application designed to facilitate the management of movie theaters, including scheduling, ticket booking, and user management. The project consists of a **React (Vite + TypeScript)** frontend and an **ASP.NET Core** backend.
+The **Eigaa Cinema** is a web-based application designed to facilitate the management of movie theaters, including scheduling, ticket booking, and user management. The project consists of a **React (Vite + TypeScript)** frontend and an **ASP.NET Core** backend.
 
 ## Features
 ### User Features
@@ -109,5 +109,3 @@ For full API documentation, access `https://localhost:7119/swagger`
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-
