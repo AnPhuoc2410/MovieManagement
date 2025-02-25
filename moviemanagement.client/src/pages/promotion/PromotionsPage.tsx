@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import dayjs from "dayjs";
 import CloudinaryImage from "../../components/cloudinary/CloudinaryImage";
+import { useTranslation } from "react-i18next";
 
 interface Promotion {
   promotionId: string;
@@ -27,6 +28,7 @@ interface Promotion {
 
 const PromotionsPage: React.FC = () => {
   const navigate = useNavigate();
+  const {t} = useTranslation();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
 
   useEffect(() => {
@@ -50,7 +52,7 @@ const PromotionsPage: React.FC = () => {
           variant="h4"
           sx={{ textAlign: "center", mb: 4, fontWeight: "bold" }}
         >
-          ƯU ĐÃI ĐẶC BIỆT
+        {t("promotions")}
         </Typography>
         <Grid container spacing={4}>
           {promotions.map((promotion, index) => (

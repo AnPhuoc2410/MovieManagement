@@ -103,9 +103,6 @@ const upcomingMovies = [
   },
 ];
 
-const { t } = useTranslation();
-
-
 const MovieSlider = ({
   movies,
   title,
@@ -116,6 +113,8 @@ const MovieSlider = ({
   navigateTo: string;
 }) => {
   const navigate = useNavigate();
+const { t } = useTranslation();
+
   return (
     <Container sx={{ mt: 4, textAlign: "center" }}>
       <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
@@ -148,7 +147,7 @@ const MovieSlider = ({
                 className="book-button"
                 onClick={() => navigate(`/ticket/${index}`)}
               >
-              {t("book_ticket")}
+              <span>{t("book_ticket")}</span>
               </Button>
             </Box>
           </SwiperSlide>
@@ -186,26 +185,27 @@ const MovieSlider = ({
           },
         }}
       >
-        <span>XEM THÊM</span>
+        <span>{t("see_more")}</span>
       </Button>
     </Container>
   );
 };
 
 const ListMovies: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", color: "white" }}>
       {/* Now Showing Section */}
       <MovieSlider
         movies={nowShowingMovies}
-        title="PHIM ĐANG CHIẾU"
+        title={t("now_showing")}
         navigateTo="/movies/now-showing"
       />
 
       {/* Upcoming Movies Section */}
       <MovieSlider
         movies={upcomingMovies}
-        title="PHIM SẮP CHIẾU"
+        title={t("upcoming")}
         navigateTo="/movies/up-coming"
       />
     </Box>
