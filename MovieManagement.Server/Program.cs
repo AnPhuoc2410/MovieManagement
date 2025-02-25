@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
-using MovieManagement.Server.Services.EmployeeService;
-using MovieManagement.Server.Services.PromotionService;
 
 namespace MovieManagement.Server
 {
@@ -20,9 +18,9 @@ namespace MovieManagement.Server
 
             // Đăng ký DbContext
             // su dung SQL Server option
-            // builder.Services.AddDbContext<AppDbContext>(options =>
-            //     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-            // );
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+            );
 
             // su dung Postgres option
             //builder.Services.AddDbContext<AppDbContext>(options =>

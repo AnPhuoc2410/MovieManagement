@@ -43,6 +43,20 @@ namespace MovieManagement.Server.Repositories
             return true;
         }
 
+        public bool Delete(T Entity)
+        {
+            _context.Remove(Entity);
+            _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(T Entity)
+        {
+            _context.Remove(Entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public List<T> GetAll()
         {
             return _context.Set<T>().ToList();

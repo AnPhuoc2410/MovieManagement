@@ -29,6 +29,8 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             var createdTicketDetail = await _unitOfWork.TicketDetailRepository.CreateAsync(newTicketDetail);
             return _mapper.Map<TicketDetailDto>(createdTicketDetail);
         }
+
+
         public async Task<TicketDetailDto> GetTicketDetail(Guid id)
         {
             var ticket = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id);
@@ -39,11 +41,18 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return _mapper.Map<TicketDetailDto>(ticket);
         }
 
+
+
+
         public async Task<IEnumerable<TicketDetailDto>> GetAllTicketDetails()
         {
             var ticketDetails = await _unitOfWork.TicketDetailRepository.GetAllAsync();
             return _mapper.Map<List<TicketDetailDto>>(ticketDetails);
         }
+
+
+
+
 
         public async Task<TicketDetailDto> UpdateTicketDetail(Guid id, TicketDetailDto ticketDetail)
         {
@@ -61,10 +70,17 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return _mapper.Map<TicketDetailDto>(updateTicketDetail);
         }
 
+
+
+
         public async Task<bool> DeleteTicketDetail(Guid id)
         {
             var result = await _unitOfWork.TicketDetailRepository.DeleteAsync(id);
             return result;
         }
+
+
+
+
     }
 }

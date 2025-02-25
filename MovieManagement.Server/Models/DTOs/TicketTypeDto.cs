@@ -3,6 +3,7 @@
     public class TicketTypeDto
     {
 
+        public Guid Id { get; set; }
 
         public int DayOfWeek { get; set; } 
 
