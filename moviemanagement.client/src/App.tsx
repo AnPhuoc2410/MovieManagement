@@ -21,7 +21,7 @@ import PromotionDetailManagement from "./pages/admin/PromotionDetail";
 import Movies from "./pages/admin/Movies";
 import QuanLiThanhVien from "./pages/admin/QuanLyThanhVien/QuanLiThanhVien";
 import QuanLiNhanVien from "./pages/admin/QuanLyNhanVien";
-
+import JapaneseQuiz from "./pages/JapaneseQuiz";
 
 const theme = createTheme({
   components: {
@@ -72,6 +72,8 @@ const App = () => {
               <Route path="ql-nhan-vien" element={<QuanLiNhanVien />} />
               <Route path="ql-thanh-vien" element={<QuanLiThanhVien />} />
             </Route>
+
+            <Route path="/japan" element={<JapaneseQuiz />} />
           </Routes>
         </ThemeProvider>
       </AuthProvider>
