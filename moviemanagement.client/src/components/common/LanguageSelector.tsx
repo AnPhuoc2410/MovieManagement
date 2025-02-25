@@ -5,19 +5,17 @@ import i18n from "../../constants/i18n";
 import { VietnamFlag, UsaFlag, JapanFlag } from "../../data/CustomIcons";
 
 const languages: { [key: string]: { name: string; icon: JSX.Element } } = {
-    vn: { name: "Tiếng Việt", icon: <VietnamFlag /> },
+    vi: { name: "Tiếng Việt", icon: <VietnamFlag /> },
     en: { name: "English", icon: <UsaFlag /> },
     jp: { name: "日本語", icon: <JapanFlag /> },
   };
 
 const LanguageSelector = () => {
-  const { t } = useTranslation();
-  const [language, setLanguage] = useState("vn");
+  const { i18n } = useTranslation();
+  const language = i18n.language;
 
   const handleChange = (event: any) => {
-    const newLanguage = event.target.value;
-    setLanguage(newLanguage);
-    i18n.changeLanguage(newLanguage);
+    i18n.changeLanguage(event.target.value);
   };
 
   return (

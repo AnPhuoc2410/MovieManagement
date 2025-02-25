@@ -6,6 +6,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 
 const promotions = [
   {
@@ -28,11 +29,13 @@ const promotions = [
 
 const Promotions: React.FC = () => {
   const navigate = useNavigate();
+  const {t} = useTranslation();
+
 
   return (
     <Container sx={{ mt: 4, textAlign: "center", padding: 5 }}>
       <Typography variant="h4" fontWeight="bold" color="white" sx={{ mb: 2 }}>
-        KHUYẾN MÃI
+        {t("promotions")}
       </Typography>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
@@ -90,7 +93,7 @@ const Promotions: React.FC = () => {
           },
         }}
       >
-        <span>TẤT CẢ ƯU ĐÃI</span>
+        <span>{t("list_promotions")}</span>
       </Button>
     </Container>
   );

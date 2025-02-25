@@ -1,7 +1,9 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const Membership: React.FC = () => {
+const {t} = useTranslation();
   return (
     <Box
       sx={{
@@ -17,7 +19,7 @@ const Membership: React.FC = () => {
       }}
     >
       <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
-        CHƯƠNG TRÌNH THÀNH VIÊN
+        {t("membership")}
       </Typography>
 
       <Box

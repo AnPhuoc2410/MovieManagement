@@ -9,14 +9,26 @@ const resources = {
       book_ticket: "Book Ticket",
       book_snacks: "Book Snacks",
       login: "Login",
+      see_more: "See More",
+      now_showing: "Now Showing",
+      upcoming: "Upcoming",
+      membership: "Membership",
+      promotions: "Promotions",
+      list_promotions: "See more Promotions",
     },
   },
-  vn: {
+  vi: {
     translation: {
       search: "Tìm kiếm phim...",
       book_ticket: "Đặt Vé",
       book_snacks: "Đặt Bắp Nước",
       login: "Đăng nhập",
+      see_more: "Xem Thêm",
+      now_showing: "Phim Đang Chiếu",
+      upcoming: "Phim Sắp Chiếu",
+      membership: "Thẻ Thành Viên",
+      promotions: "Khuyến Mãi",
+      list_promotions: "Xem Thêm Khuyến Mãi"
     },
   },
   jp: {
@@ -25,6 +37,12 @@ const resources = {
       book_ticket: "チケットを予約する",
       book_snacks: "スナックを予約する",
       login: "ログイン",
+      see_more: "もっと見る",
+      now_showing: "上映中",
+      upcoming: "近日公開",
+      membership: "メンバーシップ",
+      promotions: "プロモーション",
+      list_promotions: "もっと見るプロモーション"
     },
   },
 };
@@ -34,7 +52,7 @@ i18n
   .use(LanguageDetector)
   .init({
     resources,
-    fallbackLng: "vn",
+    fallbackLng: "vi",
     debug: true,
     interpolation: { escapeValue: false },
   });
