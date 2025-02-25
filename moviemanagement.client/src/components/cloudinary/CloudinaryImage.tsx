@@ -13,17 +13,13 @@ export const ENV = {
   CLOUDINARY_CLOUD_NAME: import.meta.env.VITE_CLOUND_NAME as string,
 }
 
-// Initialize Cloudinary instance with your cloud name
 const cld = new Cloudinary({
   cloud: {
     cloudName: ENV.CLOUDINARY_CLOUD_NAME,
   },
 });
 
-// Helper function to extract publicId from the full URL
 const extractPublicId = (url: string): string => {
-  // Expected URL format: 
-  // https://res.cloudinary.com/dwqyqsqmq/image/upload/{public_id}
   const parts = url.split('/');
   const uploadIndex = parts.indexOf('upload');
   if (uploadIndex > -1 && parts.length > uploadIndex + 1) {
