@@ -1,5 +1,4 @@
 ﻿using MovieManagement.Server.Models.DTOs;
-using MovieManagement.Server.Models.Entities;
 
 namespace MovieManagement.Server.Services.EmployeeService
 {
