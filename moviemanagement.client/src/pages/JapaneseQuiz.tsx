@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Container, TextField, Button, Typography, Card, CardContent, Input } from "@mui/material";
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Card,
+  CardContent,
+  Input,
+} from "@mui/material";
 
 interface Word {
   kanji: string;
@@ -16,7 +24,11 @@ const JapaneseQuiz: React.FC = () => {
   const [kunyomi, setKunyomi] = useState<string>("");
   const [meaning, setMeaning] = useState<string | null>(null);
   const [kanjiAnimation, setKanjiAnimation] = useState<string[]>([]);
-  const [example, setExample] = useState<{ japanese: string; meaning: string; audio: string } | null>(null);
+  const [example, setExample] = useState<{
+    japanese: string;
+    meaning: string;
+    audio: string;
+  } | null>(null);
 
   const fetchGoogleSheet = async () => {
     const url =
@@ -28,10 +40,9 @@ const JapaneseQuiz: React.FC = () => {
 
       const rows = text
         .split("\n")
-        .map((row) =>
-          row
-            .split(",")
-            .map((cell) => cell.replace(/^"|"$/g, "").trim()) // Remove quotes
+        .map(
+          (row) =>
+            row.split(",").map((cell) => cell.replace(/^"|"$/g, "").trim()), // Remove quotes
         )
         .filter((row) => row.length > 2 && row[1] && row[2]); // Ensure valid data
 
@@ -57,13 +68,17 @@ const JapaneseQuiz: React.FC = () => {
 
   const fetchKanjiDetails = async (kanji: string) => {
     try {
-      const response = await fetch(`https://kanjialive-api.p.rapidapi.com/api/public/kanji/${kanji}`, {
-        method: "GET",
-        headers: {
-          "X-RapidAPI-Host": "kanjialive-api.p.rapidapi.com",
-          "X-RapidAPI-Key": "3837d9f885msh5b586904f09211ep1cb7c2jsnc56232b3a963",
+      const response = await fetch(
+        `https://kanjialive-api.p.rapidapi.com/api/public/kanji/${kanji}`,
+        {
+          method: "GET",
+          headers: {
+            "X-RapidAPI-Host": "kanjialive-api.p.rapidapi.com",
+            "X-RapidAPI-Key":
+              "3837d9f885msh5b586904f09211ep1cb7c2jsnc56232b3a963",
+          },
         },
-      });
+      );
 
       const data = await response.json();
       console.log("Kanji API Response:", data);
@@ -116,9 +131,23 @@ const JapaneseQuiz: React.FC = () => {
     setExample(null);
   };
 
+  const prevWord = () => {
+    if (words.length === 0) return;
+    if (prev == 0) return;
+    setIndex((prev) => (prev - 1) % words.length);
+    setInput("");
+    setMessage("");
+    setMeaning(null); // Hide meaning until answer is checked
+    setOnyomi("");
+    setKunyomi("");
+    setKanjiAnimation([]);
+    setExample(null);
+  };
+
   return (
     <Container maxWidth="sm" style={{ textAlign: "center", marginTop: 50 }}>
-      <Input type="file" disabled /> {/* File upload removed since we're using Google Sheets */}
+      <Input type="file" disabled />{" "}
+      {/* File upload removed since we're using Google Sheets */}
       {words.length > 0 && (
         <Card>
           <CardContent>
@@ -126,12 +155,26 @@ const JapaneseQuiz: React.FC = () => {
               {words[index].kanji}
             </Typography>
 
-            {meaning && <Typography variant="h6">Ý nghĩa: {meaning}</Typography>}
+            {meaning && (
+              <Typography variant="h6">Ý nghĩa: {meaning}</Typography>
+            )}
 
             {kanjiAnimation.length > 0 && (
-              <div style={{ display: "flex", justifyContent: "center", gap: "5px", marginBottom: 10 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "5px",
+                  marginBottom: 10,
+                }}
+              >
                 {kanjiAnimation.map((frame, idx) => (
-                  <img key={idx} src={frame} alt={`Stroke ${idx}`} style={{ width: 50, height: 50 }} />
+                  <img
+                    key={idx}
+                    src={frame}
+                    alt={`Stroke ${idx}`}
+                    style={{ width: 50, height: 50 }}
+                  />
                 ))}
               </div>
             )}
@@ -161,7 +204,15 @@ const JapaneseQuiz: React.FC = () => {
             <Typography variant="h6" color="primary">
               {message}
             </Typography>
-            <Button variant="contained" color="primary" onClick={checkAnswer} style={{ marginRight: 10 }}>
+            <Button variant="outlined" color="info" onClick={prevWord}>
+              Từ trước đó
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={checkAnswer}
+              style={{ marginRight: 10, marginLeft: 10 }}
+            >
               Kiểm tra
             </Button>
             <Button variant="outlined" color="secondary" onClick={nextWord}>
