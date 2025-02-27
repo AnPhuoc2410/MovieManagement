@@ -9,8 +9,6 @@ import TicketPrice, { TicketType } from "../../components/Ticket/TicketPrice";
 import Footer from "../../components/home/Footer";
 import { format } from "date-fns";
 
-
-
 const Ticket: React.FC = () => {
   const navigate = useNavigate();
 
