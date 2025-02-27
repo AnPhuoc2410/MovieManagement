@@ -121,14 +121,8 @@ const Homepage: React.FC = () => {
         <ListMovies />
         <Promotions />
       </Container>
-
       {/* Membership */}
       <Membership />
-
-      <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pt: 10 }}>
-        <Button onClick={() => navigate("/japan")}>Japanese Quiz</Button>
-      </Box>
-
       {/* Footer */}
       <Footer />
     </Box>
