@@ -12,7 +12,7 @@ namespace MovieManagement.Server.Data
 
         public ICategoryRepository CategoryRepository { get; private set; }
 
-        public IEmployeeRepository EmployeeRepository { get; private set; }
+        public IUserRepository UserRepository { get; private set; }
 
         //public IMemberRepository MemberRepository { get; private set; }
 
@@ -30,13 +30,13 @@ namespace MovieManagement.Server.Data
 
         public ITicketTypeRepository TicketTypeRepository { get; private set; }
 
-        public UnitOfWork(AppDbContext context, IBillRepository billRepository, ICategoryDetailRepository categoryDetailRepository, ICategoryRepository categoryRepository, IEmployeeRepository employeeRepository,  IMovieRepository movieRepository, IPromotionRepository promotionRepository, IRoomRepository roomRepository, ISeatRepository seatRepository, IShowtimeRepository showtimeRepository, ITicketDetailRepository ticketDetailRepository, ITicketTypeRepository ticketTypeRepository)
+        public UnitOfWork(AppDbContext context, IBillRepository billRepository, ICategoryDetailRepository categoryDetailRepository, ICategoryRepository categoryRepository, IUserRepository userRepository,  IMovieRepository movieRepository, IPromotionRepository promotionRepository, IRoomRepository roomRepository, ISeatRepository seatRepository, IShowtimeRepository showtimeRepository, ITicketDetailRepository ticketDetailRepository, ITicketTypeRepository ticketTypeRepository)
         {
             _context = context;
             BillRepository = billRepository;
             CategoryDetailRepository = categoryDetailRepository;
             CategoryRepository = categoryRepository;
-            EmployeeRepository = employeeRepository;
+            UserRepository = userRepository;
             MovieRepository = movieRepository;
             PromotionRepository = promotionRepository;
             RoomRepository = roomRepository;

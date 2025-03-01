@@ -4,9 +4,9 @@ using MovieManagement.Server.Repositories.IRepositories;
 
 namespace MovieManagement.Server.Repositories
 {
-    public class EmployeeRepository : GenericRepository<User>, IEmployeeRepository
+    public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        public EmployeeRepository(AppDbContext context) : base(context)
+        public UserRepository(AppDbContext context) : base(context)
         {
         }
     }

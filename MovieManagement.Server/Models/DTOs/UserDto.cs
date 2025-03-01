@@ -3,7 +3,7 @@
     public class UserDto
     {
 
-        public Guid? EmployeeId { get; set; }
+        public Guid? UserId { get; set; }
 
         public string AccountName { get; set; }
 
@@ -11,7 +11,7 @@
 
         public string? Avatar { get; set; }
 
-        //public DateTime JoinDate { get; set; }
+        public DateTime JoinDate { get; set; }
 
         public string? FullName { get; set; }
 
@@ -30,6 +30,8 @@
         public int Status { get; set; } // 0: Khóa, 1: Mở
 
         public int Level { get; set; }
+
+        public decimal Point { get; set; }
 
     }
 

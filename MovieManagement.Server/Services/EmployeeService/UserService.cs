@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
@@ -19,43 +20,48 @@ namespace MovieManagement.Server.Services.UserService
         }
 
 
-        public async Task<UserDto> CreateUser(UserDto employee)
+        public async Task<UserDto> CreateUser(UserDto user)
         {
-            User newEmployee = new User
+            User newUser = new User
             {
-                UserName = employee.AccountName,
-                Password = employee.Password,
-                BirthDate = employee.BirthDate,
-                Address = employee.Address,
-                Avatar = employee.Avatar,
-                Email = employee.Email,
-                FullName = employee.FullName,
-                Gender = employee.Gender,
-                IDCard = employee.IDCard,
+                UserName = user.AccountName,
+                Password = user.Password,
+                BirthDate = user.BirthDate,
+                Address = user.Address,
+                Avatar = user.Avatar,
+                Email = user.Email,
+                FullName = user.FullName,
+                Gender = user.Gender,
+                IDCard = user.IDCard,
                 JoinDate = DateTime.Now,
-                Level = employee.Level,
-                PhoneNumber = employee.PhoneNumber,
-                Status = employee.Status
+                Role = user.Level,
+                PhoneNumber = user.PhoneNumber,
+                Status = user.Status
             };
 
-            return _mapper.Map<UserDto>(await _unitOfWork.EmployeeRepository.CreateAsync(newEmployee));
+            // Hash the password
+            //var passwordHasher = new PasswordHasher<User>();
+            //newUser.Password = passwordHasher.HashPassword(newUser, user.Password);
+
+
+            return _mapper.Map<UserDto>(await _unitOfWork.UserRepository.CreateAsync(newUser));
 
         }
 
         public Task<bool> DeleteUser(Guid id)
         {
-            return _unitOfWork.EmployeeRepository.DeleteAsync(id);
+            return _unitOfWork.UserRepository.DeleteAsync(id);
         }
 
         public async Task<IEnumerable<UserDto>> GetAllUsers()
         {
-            var employees = await _unitOfWork.EmployeeRepository.GetAllAsync();
-            return _mapper.Map<List<UserDto>>(await _unitOfWork.EmployeeRepository.GetAllAsync());
+            var employees = await _unitOfWork.UserRepository.GetAllAsync();
+            return _mapper.Map<List<UserDto>>(await _unitOfWork.UserRepository.GetAllAsync());
         }
 
         public async Task<UserDto> GetUser(Guid id)
         {
-            var employee = await _unitOfWork.EmployeeRepository.GetByIdAsync(id);
+            var employee = await _unitOfWork.UserRepository.GetByIdAsync(id);
             if (employee == null)
                 return null;
             return _mapper.Map<UserDto>(employee);
@@ -63,7 +69,7 @@ namespace MovieManagement.Server.Services.UserService
 
         public async Task<UserDto> UpdateUser(Guid id, UserDto employee)
         {
-            var existingEmployee = await _unitOfWork.EmployeeRepository.GetByIdAsync(id);
+            var existingEmployee = await _unitOfWork.UserRepository.GetByIdAsync(id);
             if (existingEmployee == null)
             {
                 return null;
@@ -76,11 +82,11 @@ namespace MovieManagement.Server.Services.UserService
             existingEmployee.PhoneNumber = employee.PhoneNumber;
             existingEmployee.Address = employee.Address;
             existingEmployee.Status = employee.Status;
-            existingEmployee.Level = employee.Level;
+            existingEmployee.Role = employee.Level;
             existingEmployee.FullName = employee.FullName;
             existingEmployee.Avatar = employee.Avatar;
 
-            return _mapper.Map<UserDto>(await _unitOfWork.EmployeeRepository.UpdateAsync(existingEmployee));
+            return _mapper.Map<UserDto>(await _unitOfWork.UserRepository.UpdateAsync(existingEmployee));
         }
 
         

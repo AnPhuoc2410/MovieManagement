@@ -3,7 +3,7 @@
     public interface IJwtService
     {
 
-        public string GenerateToken(string email, string role);
+        public string GenerateToken(Guid id, string userName, string role);
 
 
     }

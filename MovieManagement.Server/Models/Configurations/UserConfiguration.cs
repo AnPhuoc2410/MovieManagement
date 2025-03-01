@@ -4,7 +4,7 @@ using MovieManagement.Server.Models.Entities;
 
 namespace MovieManagement.Server.Models.Configurations
 {
-    public class EmployeeConfiguration : IEntityTypeConfiguration<User>
+    public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {

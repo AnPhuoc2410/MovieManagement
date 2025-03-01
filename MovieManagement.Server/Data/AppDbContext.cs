@@ -46,7 +46,7 @@ namespace MovieManagement.Server.Data
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryDetailConfiguration());
             modelBuilder.ApplyConfiguration(new MovieConfiguration());
-            modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
             //modelBuilder.ApplyConfiguration(new MemberConfiguration());
             modelBuilder.ApplyConfiguration(new PromotionConfiguration());
             modelBuilder.ApplyConfiguration(new RoomConfiguration());
