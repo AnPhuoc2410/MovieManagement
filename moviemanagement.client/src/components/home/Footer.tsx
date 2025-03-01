@@ -177,7 +177,9 @@ const Footer: React.FC = () => {
           </Typography>
         </Grid>
       </Grid>
-
+      <Box sx={{ textAlign: "center", mt: 4, width: "100%", height: "50%" }}>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.5400730334272!2d106.83740207489461!3d10.846466057898201!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317521af4730391f%3A0xfa0bd6efed6cc3f9!2sS10.06%20Origami%2C%20Vinhomes%20Grandpark!5e0!3m2!1svi!2s!4v1740818652811!5m2!1svi!2s" width="600" height="450" style={{ border: 0 }} allowFullScreen={true} loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+      </Box>
       <Box sx={{ textAlign: "center", mt: 4 }}>
         <Typography variant="body2">
           © 2025 EIGA. All rights reserved.

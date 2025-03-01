@@ -124,6 +124,7 @@ const Homepage: React.FC = () => {
       {/* Membership */}
       <Membership />
       {/* Footer */}
+      
       <Footer />
     </Box>
   );
