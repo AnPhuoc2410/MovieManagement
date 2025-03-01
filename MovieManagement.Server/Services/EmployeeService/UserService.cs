@@ -42,7 +42,7 @@ namespace MovieManagement.Server.Services.UserService
 
         }
 
-        public Task<bool> DeleteEmployee(Guid id)
+        public Task<bool> DeleteEmployeeAsynce(Guid id)
         {
             return _unitOfWork.EmployeeRepository.DeleteAsync(id);
         }
