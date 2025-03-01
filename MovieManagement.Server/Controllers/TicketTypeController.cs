@@ -55,7 +55,7 @@ namespace MovieManagement.Server.Controllers
                     IsSuccess = false,
                     Reason = ex.Message
                 };
-                return response;
+                return NotFound(response);
             }
 
 
