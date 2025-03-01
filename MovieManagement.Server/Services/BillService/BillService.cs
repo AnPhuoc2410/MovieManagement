@@ -41,10 +41,7 @@ namespace MovieManagement.Server.Services.BillService
                 Point = billDto.Point,
                 TotalTicket = billDto.TotalTicket,
                 Amount = billDto.Amount,
-                MovieId = movieId,
-                Showtime = billDto.Showtime,
-                MemberId = memberId,
-                EmployeeId = employeeId,
+                UserId = billDto.UserId,
                 PromotionId = promotionId,
                 Status = billDto.Status,
             };
@@ -62,10 +59,7 @@ namespace MovieManagement.Server.Services.BillService
             updateBill.Point = billDto.Point;
             updateBill.TotalTicket = billDto.TotalTicket;
             updateBill.Amount = billDto.Amount;
-            updateBill.MovieId = billDto.MovieId;
-            updateBill.Showtime = billDto.Showtime;
-            updateBill.MemberId = billDto.MemberId;
-            updateBill.EmployeeId = billDto.EmployeeId;
+            updateBill.UserId = billDto.UserId;
             updateBill.PromotionId = billDto.PromotionId;
             updateBill.Status = billDto.Status;
 

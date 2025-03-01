@@ -8,8 +8,8 @@ namespace MovieManagement.Server.Extensions
         public AutoMapperProfiles()
         {
 
-            CreateMap<Employee, EmployeeDto>();
-            CreateMap<EmployeeDto, Employee>();
+            CreateMap<User, UserDto>();
+            CreateMap<UserDto, User>();
 
             CreateMap<Promotion, PromotionDto>();
             CreateMap<PromotionDto, Promotion>();
@@ -23,8 +23,8 @@ namespace MovieManagement.Server.Extensions
             CreateMap<Bill, BillDto>();
             CreateMap<BillDto, BillDto>();
 
-            CreateMap<Member, MemberDto>();
-            CreateMap<MemberDto, Member>();
+            //CreateMap<Member, MemberDto>();
+            //CreateMap<MemberDto, Member>();
 
             CreateMap<TicketDetail, TicketDetailDto>();
             CreateMap<TicketDetailDto, TicketDetail>();

@@ -4,26 +4,26 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 
-namespace MovieManagement.Server.Services.EmployeeService
+namespace MovieManagement.Server.Services.UserService
 {
-    public class EmployeeService : IEmployeeService
+    public class UserService : IUserService
     {
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public EmployeeService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
 
-        public async Task<EmployeeDto> CreateEmployee(EmployeeDto employee)
+        public async Task<UserDto> CreateEmployee(UserDto employee)
         {
-            Employee newEmployee = new Employee
+            User newEmployee = new User
             {
-                AccountName = employee.AccountName,
+                UserName = employee.AccountName,
                 Password = employee.Password,
                 BirthDate = employee.BirthDate,
                 Address = employee.Address,
@@ -38,7 +38,7 @@ namespace MovieManagement.Server.Services.EmployeeService
                 Status = employee.Status
             };
 
-            return _mapper.Map<EmployeeDto>(await _unitOfWork.EmployeeRepository.CreateAsync(newEmployee));
+            return _mapper.Map<UserDto>(await _unitOfWork.EmployeeRepository.CreateAsync(newEmployee));
 
         }
 
@@ -47,21 +47,21 @@ namespace MovieManagement.Server.Services.EmployeeService
             return _unitOfWork.EmployeeRepository.DeleteAsync(id);
         }
 
-        public async Task<IEnumerable<EmployeeDto>> GetAllEmployees()
+        public async Task<IEnumerable<UserDto>> GetAllEmployees()
         {
             var employees = await _unitOfWork.EmployeeRepository.GetAllAsync();
-            return _mapper.Map<List<EmployeeDto>>(await _unitOfWork.EmployeeRepository.GetAllAsync());
+            return _mapper.Map<List<UserDto>>(await _unitOfWork.EmployeeRepository.GetAllAsync());
         }
 
-        public async Task<EmployeeDto> GetEmployee(Guid id)
+        public async Task<UserDto> GetEmployee(Guid id)
         {
             var employee = await _unitOfWork.EmployeeRepository.GetByIdAsync(id);
             if (employee == null)
                 return null;
-            return _mapper.Map<EmployeeDto>(employee);
+            return _mapper.Map<UserDto>(employee);
         }
 
-        public async Task<EmployeeDto> UpdateEmployee(Guid id, EmployeeDto employee)
+        public async Task<UserDto> UpdateEmployee(Guid id, UserDto employee)
         {
             var existingEmployee = await _unitOfWork.EmployeeRepository.GetByIdAsync(id);
             if (existingEmployee == null)
@@ -80,7 +80,7 @@ namespace MovieManagement.Server.Services.EmployeeService
             existingEmployee.FullName = employee.FullName;
             existingEmployee.Avatar = employee.Avatar;
 
-            return _mapper.Map<EmployeeDto>(await _unitOfWork.EmployeeRepository.UpdateAsync(existingEmployee));
+            return _mapper.Map<UserDto>(await _unitOfWork.EmployeeRepository.UpdateAsync(existingEmployee));
         }
 
         

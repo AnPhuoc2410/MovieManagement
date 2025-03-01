@@ -10,8 +10,8 @@ namespace MovieManagement.Server.Data
         public AppDbContext() { }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Member> Members { get; set; }
+        public DbSet<User> Employees { get; set; }
+        //public DbSet<Member> Members { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<Bill> Bills { get; set; }
         public DbSet<TicketDetail> TicketDetails { get; set; }
@@ -47,7 +47,7 @@ namespace MovieManagement.Server.Data
             modelBuilder.ApplyConfiguration(new CategoryDetailConfiguration());
             modelBuilder.ApplyConfiguration(new MovieConfiguration());
             modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
-            modelBuilder.ApplyConfiguration(new MemberConfiguration());
+            //modelBuilder.ApplyConfiguration(new MemberConfiguration());
             modelBuilder.ApplyConfiguration(new PromotionConfiguration());
             modelBuilder.ApplyConfiguration(new RoomConfiguration());
             modelBuilder.ApplyConfiguration(new SeatConfiguration());

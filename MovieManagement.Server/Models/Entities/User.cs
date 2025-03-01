@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieManagement.Server.Models.Entities
 {
-    public class Employee
+    public class User
     {
 
-        public Guid EmployeeId { get; set; }  // PK
+        public Guid UserId { get; set; }  // PK
 
-        public string AccountName { get; set; }
+        public string UserName { get; set; }
 
         public string Password { get; set; }
 
@@ -34,6 +34,8 @@ namespace MovieManagement.Server.Models.Entities
         public int Status { get; set; } // 0: Khóa, 1: Mở
 
         public int Level { get; set; }
+
+        public decimal Point { get; set; }
 
         // Quan hệ 1-N với HoaDonBanVe
         public IEnumerable<Bill> Bills { get; set; } = new List<Bill>();

@@ -40,6 +40,5 @@ namespace MovieManagement.Server.Models.Entities
 
         public IEnumerable<ShowTime> Showtimes { get; set; } = new List<ShowTime>();
 
-        public IEnumerable<Bill> Bills { get; set; } = new List<Bill>();
     }
 }

@@ -12,6 +12,8 @@ namespace MovieManagement.Server.Models.Entities
 
         public Guid TicketTypeId { get; set; }
 
+        public Guid ShowTimeId { get; set; }
+
         // Navigation properties
 
         public virtual Bill Bill { get; set; }
@@ -19,5 +21,7 @@ namespace MovieManagement.Server.Models.Entities
         public virtual Seat Seat { get; set; }
 
         public virtual TicketType TicketType { get; set; }
+
+        public virtual ShowTime ShowTime { get; set; }
     }
 }

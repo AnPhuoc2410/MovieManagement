@@ -8,6 +8,6 @@ namespace MovieManagement.Server.Models.DTOs
 
         public Guid RoomId { get; set; }
 
-        public TimeSpan StartTime { get; set; }
+        public DateTime StartTime { get; set; }
     }
 }

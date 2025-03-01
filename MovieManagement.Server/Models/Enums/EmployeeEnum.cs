@@ -3,14 +3,12 @@
     public class EmployeeEnum
     {
 
-        //enum EmployeeType
-        //{
-        //    Manager,
-        //    Cashier,
-        //    Accountant,
-        //    Security,
-        //    Cleaner
-        //}
+        enum EmployeeType
+        {
+            Admin = 0,
+            Manager = 1,
+            Employee = 2
+        }
 
         enum EmployeeStatus
         {

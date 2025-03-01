@@ -2,7 +2,7 @@
 
 namespace MovieManagement.Server.Repositories.IRepositories
 {
-    public interface IEmployeeRepository : IGenericRepository<Employee>
+    public interface IEmployeeRepository : IGenericRepository<User>
     {
     }
 }
