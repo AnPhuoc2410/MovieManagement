@@ -21,7 +21,7 @@ import Confirmation from "./pages/ticket/Confirmation";
 import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
 import Ticket from "./pages/ticket/Ticket";
-import UserDetail from "./pages/user/UserDetail";
+import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
 
 const theme = createTheme({
