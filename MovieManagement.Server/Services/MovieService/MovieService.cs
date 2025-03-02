@@ -46,7 +46,7 @@ namespace MovieManagement.Server.Services.MovieService
                 Version = movieDto.Version,
                 Trailer = movieDto.Trailer,
                 Content = movieDto.Content,
-                EmployeeId = employeeId,
+                UserId = employeeId,
             };
             var movie = await _unitOfWork.MovieRepository.CreateAsync(newMovie);
             return _mapper.Map<MovieDto>(movie);
@@ -68,7 +68,7 @@ namespace MovieManagement.Server.Services.MovieService
             updateMovie.Version = movieDto.Version;
             updateMovie.Trailer = movieDto.Trailer;
             updateMovie.Content = movieDto.Content;
-            updateMovie.EmployeeId = movieDto.EmployeeId;
+            updateMovie.UserId = movieDto.UserId;
 
             var updatedMovie = await _unitOfWork.MovieRepository.UpdateAsync(updateMovie);
             return _mapper.Map<MovieDto>(updatedMovie);

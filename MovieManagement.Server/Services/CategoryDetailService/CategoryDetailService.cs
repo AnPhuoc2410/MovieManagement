@@ -44,8 +44,7 @@ namespace MovieManagement.Server.Services.CategoryDetailService
             var newCategory = new CategoryDetail
             {
                 Name = categoryDetailDto.Name,
-                Description = categoryDetailDto.Description,
-                CategoryId = categoryDetailDto.CategoryId
+                Description = categoryDetailDto.Description
             };
             var createdCategory = await _unitOfWork.CategoryDetailRepository.CreateAsync(newCategory);
             return _mapper.Map<CategoryDetailDto>(createdCategory);

@@ -49,7 +49,7 @@ namespace MovieManagement.Server.Controllers
         [Route("CreateAsync")]
         public async Task<ActionResult<ShowTimeDto>> CreateShowTime([FromBody] ShowTimeDto showTimeDto)
         {
-            return Ok(_showTimeService.CreateAsync(showTimeDto));
+            return await _showTimeService.CreateAsync(showTimeDto);
         }
 
 

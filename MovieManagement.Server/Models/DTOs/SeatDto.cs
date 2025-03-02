@@ -12,6 +12,6 @@
 
         public Guid SeatTypeId { get; set; }
 
-        public bool IsAtive { get; set; }
+        public bool IsActive { get; set; }
     }
 }

@@ -39,7 +39,7 @@ namespace MovieManagement.Server.Services.SeatService
                 AtColumn = seat.AtColumn,
                 RoomId = seat.RoomId,
                 SeatTypeId = seat.SeatTypeId,
-                IsAtive = true
+                IsActive = true
             };
             var createdSeat = await _unitOfWork.SeatRepository.CreateAsync(newSeat);
             return _mapper.Map<SeatDto>(createdSeat);
@@ -53,7 +53,7 @@ namespace MovieManagement.Server.Services.SeatService
             newSeat.AtColumn = seat.AtColumn;
             newSeat.RoomId = seat.RoomId;
             newSeat.SeatTypeId = seat.SeatTypeId;
-            newSeat.IsAtive = seat.IsAtive;
+            newSeat.IsActive = seat.IsActive;
 
             var updatedSeat = await _unitOfWork.SeatRepository.UpdateAsync(newSeat);
             return _mapper.Map<SeatDto>(updatedSeat);
@@ -63,5 +63,46 @@ namespace MovieManagement.Server.Services.SeatService
         {
             return await _unitOfWork.SeatRepository.DeleteAsync(seatId);
         }
+
+        public async Task CreateByRoomAsync(RoomDto room, Guid SeatTypeId)
+        {
+
+            for (int i = 0; i < room.Row; i++)
+            {
+                for (int j = 0; j < room.Column; j++)
+                {
+                    _unitOfWork.SeatRepository.Create(new Seat
+                    {
+                        AtRow = NumberToLetter(i).ToString(),
+                        AtColumn = j + 1,
+                        RoomId = room.RoomId.Value,
+                        SeatTypeId = SeatTypeId,
+                        IsActive = true
+                    });
+                }
+            }
+
+        }
+
+        public static int LetterToNumber(char letter)
+        {
+            letter = char.ToUpper(letter);
+            if (letter < 'A' || letter > 'Z')
+            {
+                throw new ArgumentOutOfRangeException(nameof(letter), "The letter must be between A and Z.");
+            }
+            return letter - 'A';
+        }
+
+        public static char NumberToLetter(int number)
+        {
+            if (number < 0 || number > 25)
+            {
+                throw new ArgumentOutOfRangeException(nameof(number), "The number must be between 0 and 25.");
+            }
+            return (char)(number + 'A');
+        }
+
+
     }
 }

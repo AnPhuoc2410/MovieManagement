@@ -20,14 +20,9 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
         public async Task<ShowTimeDto> CreateAsync(ShowTimeDto showtime)
         {
-            var newShowTime = new ShowTime() 
-            {
-                MovieId = showtime.MovieId,
-                StartTime = showtime.StartTime,
-                RoomId = showtime.RoomId
-            };
+            
 
-            return _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.CreateAsync(newShowTime));
+            return _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.CreateAsync(_mapper.Map<ShowTime>(showtime)));
         }
 
         public async Task<bool> DeleteAsync(Guid movieId, Guid roomId)

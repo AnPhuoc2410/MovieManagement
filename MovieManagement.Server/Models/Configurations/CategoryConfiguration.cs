@@ -14,7 +14,7 @@ namespace MovieManagement.Server.Models.Configurations
                 .WithMany(x => x.Categories)
                 .HasForeignKey(x => x.MovieId);
             builder.HasOne(x => x.CategoryDetail)
-                .WithMany(x => x.Categorys)
+                .WithMany(x => x.Categories)
                 .HasForeignKey(x => x.CategoryId);
 
             

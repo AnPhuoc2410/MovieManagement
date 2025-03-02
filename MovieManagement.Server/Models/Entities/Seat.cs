@@ -15,7 +15,7 @@ namespace MovieManagement.Server.Models.Entities
 
         public Guid SeatTypeId { get; set; }
 
-        public bool IsAtive { get; set; }
+        public bool IsActive { get; set; }
 
         public Room Room { get; set; }
 

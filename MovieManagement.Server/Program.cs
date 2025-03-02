@@ -42,7 +42,8 @@ namespace MovieManagement.Server
             {
                 options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "0"));
                 options.AddPolicy("Manager", policy => policy.RequireClaim("Role", "1"));
-                options.AddPolicy("Employy", policy => policy.RequireClaim("Role", "2"));
+                options.AddPolicy("Employee", policy => policy.RequireClaim("Role", "2"));
+                options.AddPolicy("Customer", policy => policy.RequireClaim("Role", "3"));
             });
 
             // Đăng ký JwtService

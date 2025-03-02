@@ -8,7 +8,7 @@
             Admin = 0,
             Manager = 1,
             Employee = 2,
-            Member = 3
+            Customer = 3
         }
 
         enum UserStatus

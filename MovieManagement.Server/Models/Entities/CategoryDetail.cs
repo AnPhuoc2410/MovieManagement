@@ -11,7 +11,7 @@ namespace MovieManagement.Server.Models.Entities
 
         public string Description { get; set; }
 
-        public IEnumerable<Category> Categorys { get; set; } = new List<Category>();
+        public IEnumerable<Category> Categories { get; set; } = new List<Category>();
 
     }
 }

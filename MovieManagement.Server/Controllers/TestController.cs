@@ -6,6 +6,8 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services.JwtService;
+using MovieManagement.Server.Services.PromotionService;
+using MovieManagement.Server.Services.SeatService;
 using MovieManagement.Server.Services.UserService;
 
 namespace MovieManagement.Server.Controllers
@@ -18,12 +20,16 @@ namespace MovieManagement.Server.Controllers
         private readonly IUserService _userService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtService _jwtService;
+        private readonly IPromotionService _promotionService;
+        private readonly ISeatService _seatService;
 
-        public TestController(IUserService userService, IUnitOfWork unitOfWork, IJwtService jwtService)
+        public TestController(IUserService userService, IUnitOfWork unitOfWork, IJwtService jwtService, IPromotionService promotionService, ISeatService seatService)
         {
             _userService = userService;
             _unitOfWork = unitOfWork;
             _jwtService = jwtService;
+            _promotionService = promotionService;
+            _seatService = seatService;
         }
 
         [HttpPost("Registration")]
@@ -75,6 +81,13 @@ namespace MovieManagement.Server.Controllers
             return Ok("Hello chat!");
         }
 
+        [HttpPost]
+        [Route("RoomCreating")]
+        public async Task<ActionResult> RoomCreating(RoomDto room, Guid SeatTypeId)
+        {
+            _seatService.CreateByRoomAsync(room, SeatTypeId);
+            return Ok("Every seat in the room created!");
+        }
 
 
     }

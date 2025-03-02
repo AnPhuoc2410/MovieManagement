@@ -14,8 +14,6 @@ namespace MovieManagement.Server.Data
 
         public IUserRepository UserRepository { get; private set; }
 
-        //public IMemberRepository MemberRepository { get; private set; }
-
         public IMovieRepository MovieRepository { get; private set; }
 
         public IPromotionRepository PromotionRepository { get; private set; }
