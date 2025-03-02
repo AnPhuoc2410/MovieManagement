@@ -28,7 +28,6 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GetAllShowTime()
         {
-
             try
             {
                 var ListShowTime = await _showTimeService.GetAllShowtime();
@@ -67,21 +66,55 @@ namespace MovieManagement.Server.Controllers
 
         [HttpPost]
         [Route("CreateShowTime")]
-        public async Task<ActionResult<ShowTimeDto>> CreateShowTime
-        (ShowTimeDto showTimeDto)
+        public async Task<ActionResult<ShowTimeDto>> CreateShowTime(ShowTimeDto showTimeDto)
         {
-            return Ok(_showTimeService.CreateShowTime(showTimeDto));
+            try
+            {
+                var createdShowTime = await _showTimeService.CreateShowTime(showTimeDto);
+                return Ok(createdShowTime);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while creating show time",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
         [HttpGet("{movieId:guid}/{roomId:guid}")]
         public async Task<ActionResult<ShowTimeDto>> GetShowTime(Guid movieId, Guid roomId)
         {
-            var showTime = await _showTimeService.GetShowtime(movieId, roomId);
-            if (showTime == null)
+            try
             {
-                return NotFound();
+                var showTime = await _showTimeService.GetShowtime(movieId, roomId);
+                if (showTime == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Show Time not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(showTime);
             }
-            return showTime;
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving show time",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
         [HttpPut("UpdateShowTime/{id:guid}")]
@@ -89,18 +122,30 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var updateShowTime= _showTimeService.UpdateShowTime(movieId, roomId, showTimeDto);
+                var updateShowTime = await _showTimeService.UpdateShowTime(movieId, roomId, showTimeDto);
                 if (updateShowTime == null)
                 {
-                    throw new Exception("Nothing were found!");
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Show Time not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
                 }
                 return Ok(updateShowTime);
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating show time",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-
     }
 }
