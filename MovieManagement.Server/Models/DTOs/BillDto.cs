@@ -12,13 +12,9 @@
 
         public decimal Amount { get; set; }
 
-        public Guid MovieId { get; set; }
+        public Guid UserId { get; set; }
 
-        public TimeSpan Showtime { get; set; } // Using TimeSpan for time representation
-
-        public Guid MemberId { get; set; }
-
-        public Guid EmployeeId { get; set; }
+        //public Guid UserId { get; set; }
 
         public Guid PromotionId { get; set; }
 

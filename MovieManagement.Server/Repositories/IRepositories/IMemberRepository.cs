@@ -1,8 +1,8 @@
-﻿using MovieManagement.Server.Models.Entities;
+﻿//using MovieManagement.Server.Models.Entities;
 
-namespace MovieManagement.Server.Repositories.IRepositories
-{
-    public interface IMemberRepository : IGenericRepository<Member>
-    {
-    }
-}
+//namespace MovieManagement.Server.Repositories.IRepositories
+//{
+//    public interface IMemberRepository : IGenericRepository<Member>
+//    {
+//    }
+//}

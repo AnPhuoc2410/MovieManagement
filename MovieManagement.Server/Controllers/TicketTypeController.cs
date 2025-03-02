@@ -28,7 +28,6 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ApiResponseServices<IEnumerable<TicketTypeDto>>>> GetAllTicketType()
         {
@@ -55,7 +54,7 @@ namespace MovieManagement.Server.Controllers
                     IsSuccess = false,
                     Reason = ex.Message
                 };
-                return response;
+                return NotFound(response);
             }
 
 
