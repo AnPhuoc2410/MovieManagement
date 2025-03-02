@@ -9,13 +9,16 @@ namespace MovieManagement.Server.Models.Configurations
         {
             builder.ToTable("SEAT");
             builder.HasKey(x => x.SeatId);
-            //builder.Property(x => x.SeatId).HasDefaultValueSql("NEWID()");
-            builder.Property(x => x.Level).HasColumnType("varchar(1)");
-            builder.Property(x => x.Level).IsRequired();
-            builder.Property(x => x.Level).HasMaxLength(1);
+            builder.Property(x => x.SeatId).HasDefaultValueSql("NEWID()");
+            builder.Property(x => x.AtRow).HasColumnType("varchar(1)");
+            builder.Property(x => x.AtRow).IsRequired();
+            builder.Property(x => x.AtRow).HasMaxLength(1);
             builder.HasOne(x => x.Room)
                 .WithMany(x => x.Seats)
                 .HasForeignKey(x => x.RoomId);
+            builder.HasOne(x => x.SeatType)
+                .WithMany(x => x.Seats)
+                .HasForeignKey(x => x.SeatTypeId);
         }
     }
 }

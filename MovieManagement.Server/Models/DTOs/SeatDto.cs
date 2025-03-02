@@ -4,12 +4,14 @@
     {
         public Guid? SeatId { get; set; }
 
-        public string Level { get; set; }
+        public string AtRow { get; set; }
 
-        public int Number { get; set; }
-
-        public int Type { get; set; }
+        public int AtColumn { get; set; }
 
         public Guid RoomId { get; set; }
+
+        public Guid SeatTypeId { get; set; }
+
+        public bool IsAtive { get; set; }
     }
 }

@@ -24,8 +24,8 @@ namespace MovieManagement.Server.Services.UserService
         {
             User newUser = new User
             {
-                UserName = user.AccountName,
-                Password = user.Password,
+                UserName = user.UserName,
+                //Password = user.Password,
                 BirthDate = user.BirthDate,
                 Address = user.Address,
                 Avatar = user.Avatar,
@@ -34,14 +34,15 @@ namespace MovieManagement.Server.Services.UserService
                 Gender = user.Gender,
                 IDCard = user.IDCard,
                 JoinDate = DateTime.Now,
-                Role = user.Level,
+                Role = user.Role,
                 PhoneNumber = user.PhoneNumber,
-                Status = user.Status
+                Status = user.Status,
+                Point = 0
             };
 
             // Hash the password
-            //var passwordHasher = new PasswordHasher<User>();
-            //newUser.Password = passwordHasher.HashPassword(newUser, user.Password);
+            var passwordHasher = new PasswordHasher<User>();
+            newUser.Password = passwordHasher.HashPassword(newUser, user.Password);
 
 
             return _mapper.Map<UserDto>(await _unitOfWork.UserRepository.CreateAsync(newUser));
@@ -82,7 +83,7 @@ namespace MovieManagement.Server.Services.UserService
             existingEmployee.PhoneNumber = employee.PhoneNumber;
             existingEmployee.Address = employee.Address;
             existingEmployee.Status = employee.Status;
-            existingEmployee.Role = employee.Level;
+            existingEmployee.Role = employee.Role;
             existingEmployee.FullName = employee.FullName;
             existingEmployee.Avatar = employee.Avatar;
 

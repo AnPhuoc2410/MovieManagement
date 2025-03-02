@@ -31,10 +31,11 @@ namespace MovieManagement.Server.Services.SeatService
         {
             var newSeat = new Seat
             {
-                Level = seat.Level,
-                Number = seat.Number,
+                AtRow = seat.AtRow,
+                AtColumn = seat.AtColumn,
                 RoomId = seat.RoomId,
-                Type = seat.Type,
+                SeatTypeId = seat.SeatTypeId,
+                IsAtive = true
             };
             var createdSeat = await _unitOfWork.SeatRepository.CreateAsync(newSeat);
             return _mapper.Map<SeatDto>(createdSeat);
@@ -44,10 +45,11 @@ namespace MovieManagement.Server.Services.SeatService
         {
             var newSeat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
 
-            newSeat.Level = seat.Level;
-            newSeat.Number = seat.Number;
+            newSeat.AtRow = seat.AtRow;
+            newSeat.AtColumn = seat.AtColumn;
             newSeat.RoomId = seat.RoomId;
-            newSeat.Type = seat.Type;
+            newSeat.SeatTypeId = seat.SeatTypeId;
+            newSeat.IsAtive = seat.IsAtive;
 
             var updatedSeat = await _unitOfWork.SeatRepository.UpdateAsync(newSeat);
             return _mapper.Map<SeatDto>(updatedSeat);

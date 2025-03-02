@@ -3,22 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieManagement.Server.Models.Entities
 {
-    //[Table("CATEGORYDETAIL")]
     public class CategoryDetail
     {
-        public Guid MovieId { get; set; }
-
         public Guid CategoryId { get; set; }
 
-        //[ForeignKey(nameof(MovieId))]
-        public Movie Movie { get; set; }
+        public string Name { get; set; }
 
-        //[ForeignKey(nameof(CategoryId))]
-        public Category Category { get; set; }
+        public string Description { get; set; }
 
-        //public IEnumerable<Movie> Movies { get; set; }
-
-        //public IEnumerable<Category> Categories { get; set; }
+        public IEnumerable<Category> Categorys { get; set; } = new List<Category>();
 
     }
 }

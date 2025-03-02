@@ -30,7 +30,9 @@ namespace MovieManagement.Server.Data
 
         public ITicketTypeRepository TicketTypeRepository { get; private set; }
 
-        public UnitOfWork(AppDbContext context, IBillRepository billRepository, ICategoryDetailRepository categoryDetailRepository, ICategoryRepository categoryRepository, IUserRepository userRepository,  IMovieRepository movieRepository, IPromotionRepository promotionRepository, IRoomRepository roomRepository, ISeatRepository seatRepository, IShowtimeRepository showtimeRepository, ITicketDetailRepository ticketDetailRepository, ITicketTypeRepository ticketTypeRepository)
+        public ISeatTypeRepository SeatTypeRepository { get; private set; }
+
+        public UnitOfWork(AppDbContext context, IBillRepository billRepository, ICategoryDetailRepository categoryDetailRepository, ICategoryRepository categoryRepository, IUserRepository userRepository,  IMovieRepository movieRepository, IPromotionRepository promotionRepository, IRoomRepository roomRepository, ISeatRepository seatRepository, IShowtimeRepository showtimeRepository, ITicketDetailRepository ticketDetailRepository, ITicketTypeRepository ticketTypeRepository, ISeatTypeRepository seatTypeRepository)
         {
             _context = context;
             BillRepository = billRepository;
@@ -44,6 +46,7 @@ namespace MovieManagement.Server.Data
             ShowtimeRepository = showtimeRepository;
             TicketDetailRepository = ticketDetailRepository;
             TicketTypeRepository = ticketTypeRepository;
+            SeatTypeRepository = seatTypeRepository;
         }
 
         public async Task<int> CompleteAsync()

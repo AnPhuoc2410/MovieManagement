@@ -23,8 +23,8 @@ namespace MovieManagement.Server.Extensions
             CreateMap<Bill, BillDto>();
             CreateMap<BillDto, BillDto>();
 
-            //CreateMap<Member, MemberDto>();
-            //CreateMap<MemberDto, Member>();
+            CreateMap<SeatType, SeatTypeDto>();
+            CreateMap<SeatTypeDto, SeatType>();
 
             CreateMap<TicketDetail, TicketDetailDto>();
             CreateMap<TicketDetailDto, TicketDetail>();

@@ -1,22 +1,23 @@
 ﻿namespace MovieManagement.Server.Models.Enums
 {
-    public class EmployeeEnum
+    public class UserEnum
     {
 
-        enum EmployeeType
+        enum UserType
         {
             Admin = 0,
             Manager = 1,
-            Employee = 2
+            Employee = 2,
+            Member = 3
         }
 
-        enum EmployeeStatus
+        enum UserStatus
         {
             Inactive = 0,
             Active = 1
         }
 
-        enum EmployeeGender
+        enum UserGender
         {
             Male = 0,
             Female = 1

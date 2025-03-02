@@ -13,8 +13,7 @@ namespace MovieManagement.Server.Models.Configurations
             builder.HasKey(x => x.UserId);
             builder.Property(x => x.UserId).HasDefaultValueSql("NEWID()");
             builder.Property(x => x.UserName).HasColumnType("Varchar(20)");
-            builder.Property(x => x.UserName).HasColumnType("varchar(20)");
-            builder.Property(x => x.Avatar).HasColumnType("varchar(50)");
+            builder.Property(x => x.Avatar).HasColumnType("varchar(50)");   
             builder.Property(x => x.FullName).HasColumnType("varchar(30)");
             builder.Property(x => x.IDCard).HasColumnType("varchar(15)");
             builder.Property(x => x.Email).HasColumnType("varchar(50)");
