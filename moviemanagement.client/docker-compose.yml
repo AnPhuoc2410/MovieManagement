@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  # Development environment
+  vite-dev:
+    build:
+      context: .
+      target: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+
+  # Production environment
+  vite-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=production
