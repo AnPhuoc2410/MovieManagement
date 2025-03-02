@@ -23,11 +23,10 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost("Registration")]
-        public IActionResult Registration(UserDto userDto)
+        public async Task<IActionResult> Registration(UserDto userDto)
         {
 
-            var output = _userService.CreateUser(userDto);
-
+            var output = await _userService.CreateUser(userDto);
             return Ok(output);
 
         }
@@ -38,10 +37,6 @@ namespace MovieManagement.Server.Controllers
         {
             return Ok(await _userService.GetAllUsers());
         }
-
-
-
-
 
     }
 }
