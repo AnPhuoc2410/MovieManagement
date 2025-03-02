@@ -2,11 +2,19 @@ import type {} from "@mui/x-charts/themeAugmentation";
 import type {} from "@mui/x-data-grid-pro/themeAugmentation";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
 import { useQuery } from "react-query";
-import { fetchThanhVien } from "../../../apis/mock.apis";
+import { fetchNhanVien, fetchThanhVien } from "../../../apis/mock.apis";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import ManagementPageLayout from "../../../layouts/ManagementPageLayout";
 import EmployeeTable, { Employee } from "./BangNhanVien";
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, DialogContentText } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  DialogContentText,
+} from "@mui/material";
 import { useState } from "react";
 
 const QuanLiNhanVien: React.FC = () => {
@@ -16,18 +24,20 @@ const QuanLiNhanVien: React.FC = () => {
     error,
   } = useQuery<Employee[]>(
     "NhanVienData", // Cache key
-    fetchThanhVien,
+    fetchNhanVien,
   );
 
   // Add new state variables
   const [openDialog, setOpenDialog] = useState(false);
-  const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add');
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    null,
+  );
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    position: ''
+    name: "",
+    email: "",
+    phone: "",
+    position: "",
   });
 
   // Add new state for delete confirmation
@@ -38,30 +48,30 @@ const QuanLiNhanVien: React.FC = () => {
     { name: "name", label: "Name", type: "text", required: true },
     { name: "email", label: "Email", type: "email", required: true },
     { name: "phone", label: "Phone", type: "text", required: true },
-    { name: "position", label: "Position", type: "text", required: true }
+    { name: "position", label: "Position", type: "text", required: true },
   ];
 
   const handleAdd = () => {
-    setDialogMode('add');
+    setDialogMode("add");
     setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      position: ''
+      name: "",
+      email: "",
+      phone: "",
+      position: "",
     });
     setOpenDialog(true);
   };
 
   const handleEdit = (id: string) => {
-    const employeeToEdit = danhSachNhanVien.find(emp => emp.id === id);
+    const employeeToEdit = danhSachNhanVien.find((emp) => emp.id === id);
     if (employeeToEdit) {
-      setDialogMode('edit');
+      setDialogMode("edit");
       setSelectedEmployee(employeeToEdit);
       setFormData({
         name: employeeToEdit.name,
         email: employeeToEdit.email,
         phone: employeeToEdit.phone,
-        position: employeeToEdit.position
+        position: employeeToEdit.position,
       });
       setOpenDialog(true);
     }
@@ -73,21 +83,21 @@ const QuanLiNhanVien: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    if (dialogMode === 'add') {
+    if (dialogMode === "add") {
       // Add logic here
-      console.log('Adding new employee:', formData);
+      console.log("Adding new employee:", formData);
     } else {
       // Edit logic here
-      console.log('Editing employee:', selectedEmployee?.id, formData);
+      console.log("Editing employee:", selectedEmployee?.id, formData);
     }
     handleClose();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -131,31 +141,29 @@ const QuanLiNhanVien: React.FC = () => {
       />
       <GenericEditDialog
         open={openDialog}
-        title={dialogMode === 'add' ? 'Add New Employee' : 'Edit Employee'}
+        title={dialogMode === "add" ? "Add New Employee" : "Edit Employee"}
         formData={formData}
         fields={formFields}
         handleInputChange={handleInputChange}
         handleClose={handleClose}
         handleSubmit={handleSubmit}
-        submitLabel={dialogMode === 'add' ? 'Add' : 'Save Changes'}
+        submitLabel={dialogMode === "add" ? "Add" : "Save Changes"}
       />
-      
+
       {/* Add Delete Confirmation Dialog */}
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={handleCancelDelete}
-      >
+      <Dialog open={deleteDialogOpen} onClose={handleCancelDelete}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this employee? This action cannot be undone.
+            Are you sure you want to delete this employee? This action cannot be
+            undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelDelete}>Cancel</Button>
-          <Button 
-            onClick={handleConfirmDelete} 
-            variant="contained" 
+          <Button
+            onClick={handleConfirmDelete}
+            variant="contained"
             color="error"
           >
             Delete
@@ -167,21 +175,21 @@ const QuanLiNhanVien: React.FC = () => {
 };
 
 interface FormFieldConfig {
-  name: string;           // Name of the field (key in formData)
-  label: string;          // Label to be displayed
-  type: string;           // Type of the input (text, email, etc.)
-  required?: boolean;     // Optional: Whether the field is required
+  name: string; // Name of the field (key in formData)
+  label: string; // Label to be displayed
+  type: string; // Type of the input (text, email, etc.)
+  required?: boolean; // Optional: Whether the field is required
 }
 
 interface GenericDialogProps {
   open: boolean;
   title: string;
-  formData: { [key: string]: any };    // Generic object to hold form data
-  fields: FormFieldConfig[];           // Array of form fields configuration
+  formData: { [key: string]: any }; // Generic object to hold form data
+  fields: FormFieldConfig[]; // Array of form fields configuration
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleClose: () => void;
   handleSubmit: () => void;
-  submitLabel?: string;                // Label for submit button (e.g., "Add", "Save")
+  submitLabel?: string; // Label for submit button (e.g., "Add", "Save")
 }
 
 const GenericEditDialog: React.FC<GenericDialogProps> = ({
@@ -192,7 +200,7 @@ const GenericEditDialog: React.FC<GenericDialogProps> = ({
   handleInputChange,
   handleClose,
   handleSubmit,
-  submitLabel = "Submit"               // Default label for submit button
+  submitLabel = "Submit", // Default label for submit button
 }) => {
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -201,14 +209,14 @@ const GenericEditDialog: React.FC<GenericDialogProps> = ({
         {fields.map((field) => (
           <TextField
             key={field.name}
-            autoFocus={field.name === fields[0].name}  // Autofocus on the first field
+            autoFocus={field.name === fields[0].name} // Autofocus on the first field
             margin="dense"
             name={field.name}
             label={field.label}
             type={field.type}
             fullWidth
             required={field.required}
-            value={formData[field.name] || ''}        // Get value from formData using the field name
+            value={formData[field.name] || ""} // Get value from formData using the field name
             onChange={handleInputChange}
           />
         ))}
