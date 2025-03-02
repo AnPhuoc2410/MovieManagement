@@ -6,6 +6,7 @@ namespace MovieManagement.Server.Services.PromotionService
     public interface IPromotionService
     {
         Task<PromotionDto> CreatePromotion(PromotionDto promotion);
+        Task<IEnumerable<PromotionDto>> GetPageAsync(int page, int pageSize);
         Task<PromotionDto> GetPromotion(Guid id);
         Task<IEnumerable<PromotionDto>> GetAllPromotions();
         Task<PromotionDto> UpdatePromotion(Guid id, PromotionDto promotion);

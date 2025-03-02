@@ -40,19 +40,17 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             }
             return _mapper.Map<TicketDetailDto>(ticket);
         }
-
-
-
+        public async Task<IEnumerable<TicketDetailDto>> GetPageAsync(int page, int pageSize)
+        {
+            var ticketDetails = await _unitOfWork.TicketDetailRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<IEnumerable<TicketDetailDto>>(ticketDetails);
+        }
 
         public async Task<IEnumerable<TicketDetailDto>> GetAllTicketDetails()
         {
             var ticketDetails = await _unitOfWork.TicketDetailRepository.GetAllAsync();
             return _mapper.Map<List<TicketDetailDto>>(ticketDetails);
         }
-
-
-
-
 
         public async Task<TicketDetailDto> UpdateTicketDetail(Guid id, TicketDetailDto ticketDetail)
         {

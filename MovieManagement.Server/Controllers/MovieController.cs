@@ -20,6 +20,12 @@ namespace MovieManagement.Server.Controllers
             var movies = await _movieService.GetAllMoviesAsync();
             return Ok(movies);
         }
+        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        {
+            var movies = await _movieService.GetPageAsync(page, pageSize);
+            return Ok(movies);
+        }
         [HttpGet]
         [Route("{movieId:guid}")]
         public async Task<ActionResult<MovieDto>> GetMovieById(Guid movieId)

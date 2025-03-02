@@ -40,7 +40,11 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var showtimes = await _unitOfWork.ShowtimeRepository.GetAllAsync();
             return _mapper.Map<List<ShowTimeDto>>(showtimes);
         }
-
+        public async Task<IEnumerable<ShowTimeDto>> GetPageAsync(int page, int pageSize)
+        {
+            var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<IEnumerable<ShowTimeDto>>(showtimes);
+        }
         public async Task<ShowTimeDto> GetShowtime(Guid movieId, Guid roomId)
         {
             var ticket = await _unitOfWork.ShowtimeRepository.GetByComposeIdAsync(movieId, roomId);

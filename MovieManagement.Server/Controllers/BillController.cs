@@ -24,7 +24,12 @@ namespace MovieManagement.Server.Controllers
             var bills = await _billService.GetAllBillsAsync();
             return Ok(bills);
         }
-
+        [HttpGet("page/{page:int}/pagesize{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsynce(int page, int pageSize)
+        {
+            var bills = await _billService.GetPageAsync(page, pageSize);
+            return Ok(bills);
+        }
 
         [HttpGet]
         [Route("{billId:guid}")]

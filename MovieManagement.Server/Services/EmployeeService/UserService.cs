@@ -68,7 +68,13 @@ namespace MovieManagement.Server.Services.UserService
             return _mapper.Map<UserDto>(employee);
         }
 
-        public async Task<UserDto> UpdateUser(Guid id, UserDto employee)
+        public async Task<IEnumerable<UserDto>> GetPageAsync(int page, int pageSize)
+        {
+            var employees = await _unitOfWork.EmployeeRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<List<UserDto>>(employees);
+        }
+
+        public async Task<UserDto> UpdateEmployee(Guid id, UserDto employee)
         {
             var existingEmployee = await _unitOfWork.UserRepository.GetByIdAsync(id);
             if (existingEmployee == null)

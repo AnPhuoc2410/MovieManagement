@@ -24,8 +24,12 @@ namespace MovieManagement.Server.Controllers
             var promotions = await _promotionService.GetAllPromotions();
             return Ok(promotions);
         }
-
-
+        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        {
+            var promotions = await _promotionService.GetPageAsync(page, pageSize);
+            return Ok(promotions);
+        }
         [HttpPost]
         [Route("CreatePromotion")]
         public async Task<ActionResult<PromotionDto>> CreatePromotion([FromBody] PromotionDto promotionDto)
