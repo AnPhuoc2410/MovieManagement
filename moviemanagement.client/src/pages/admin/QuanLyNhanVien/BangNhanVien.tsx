@@ -18,7 +18,7 @@ export interface Employee extends TableData {
   TaiKhoan?: string;
   MatKhau?: string;
   NgaySinh?: string;
-  GioiTinh?: 'Male' | 'Female';
+  GioiTinh?: "Male" | "Female";
 }
 
 const EmployeeTable: React.FC<{
