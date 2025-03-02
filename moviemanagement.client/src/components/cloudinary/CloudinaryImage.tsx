@@ -10,7 +10,8 @@ interface CloudinaryImageProps {
 }
 
 export const ENV = {
-  CLOUDINARY_CLOUD_NAME: import.meta.env.VITE_CLOUND_NAME as string,
+  CLOUDINARY_CLOUD_NAME:
+    (import.meta.env.VITE_CLOUND_NAME as string) ?? "Not found",
 };
 
 const cld = new Cloudinary({
@@ -33,6 +34,10 @@ const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
   hd = false,
 }) => {
   const publicId = extractPublicId(imageUrl);
+
+  if (!ENV.CLOUDINARY_CLOUD_NAME)
+    throw new Error("Cloudinary cloud name is not found");
+
   console.log(`Env ne ${ENV.CLOUDINARY_CLOUD_NAME}`);
 
   let img = cld.image(publicId).format("auto").quality("auto");
