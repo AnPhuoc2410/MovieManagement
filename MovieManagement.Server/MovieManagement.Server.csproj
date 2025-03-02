@@ -9,19 +9,16 @@
     <SpaProxyServerUrl>https://localhost:3000</SpaProxyServerUrl>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Migrations\**" />
-    <Compile Remove="Responses\**" />
-    <Content Remove="Migrations\**" />
-    <Content Remove="Responses\**" />
-    <EmbeddedResource Remove="Migrations\**" />
-    <EmbeddedResource Remove="Responses\**" />
-    <None Remove="Migrations\**" />
-    <None Remove="Responses\**" />
-  </ItemGroup>
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>bin\Debug\net8.0\MovieManagement.Server.xml</DocumentationFile>
+	</PropertyGroup>
+
+
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
       <Version>8.*-*</Version>
     </PackageReference>
@@ -40,6 +37,7 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.6.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,6 +48,7 @@
 
   <ItemGroup>
     <Folder Include="Responses\" />
+	  
   </ItemGroup>
 
 </Project>

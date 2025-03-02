@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MovieManagement.Server.Models.DTOs
+namespace MovieManagement.Server.Services
 {
-    public class ApiResponse<T>
+    public class ApiResponseServices <T>
     {
         [JsonPropertyName("status_code")]
-        public int StatusCode { get; set; }
+        public int StatusCode { get; set; } = 500;
 
         [JsonPropertyName("message")]
         public string Message { get; set; }

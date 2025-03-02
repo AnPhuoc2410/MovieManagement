@@ -10,8 +10,8 @@ namespace MovieManagement.Server.Data
         public AppDbContext() { }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Member> Members { get; set; }
+        public DbSet<User> Employees { get; set; }
+        //public DbSet<Member> Members { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<Bill> Bills { get; set; }
         public DbSet<TicketDetail> TicketDetails { get; set; }
@@ -33,30 +33,21 @@ namespace MovieManagement.Server.Data
             string connectionString = config.GetConnectionString(connectionStringName);
             return connectionString;
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseNpgsql(GetConnectionString("PostgresConnection"));
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection"));
+
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseNpgsql(GetConnectionString("PostgresConnection"));
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<TicketDetail>()
-            //    .HasKey(ct => new { ct.BillId, ct.SeatId });
-            //modelBuilder.Entity<TicketDetail>()
-            //    .HasOne(t => t.Bill)
-            //    .WithMany(b => b.TicketDetails)
-            //    .HasForeignKey(t => t.BillId);
 
-            //modelBuilder.Entity<CategoryDetail>()
-            //    .HasKey(ct => new { ct.MovieId, ct.CategoryId });
-
-            //modelBuilder.Entity<ShowTime>()
-            //    .HasKey(ct => new { ct.MovieId, ct.StartTime });
-
+            //Configure entities
             modelBuilder.ApplyConfiguration(new BillConfiguration());
             modelBuilder.ApplyConfiguration(new TicketDetailConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryDetailConfiguration());
             modelBuilder.ApplyConfiguration(new MovieConfiguration());
-            modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
-            modelBuilder.ApplyConfiguration(new MemberConfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            //modelBuilder.ApplyConfiguration(new MemberConfiguration());
             modelBuilder.ApplyConfiguration(new PromotionConfiguration());
             modelBuilder.ApplyConfiguration(new RoomConfiguration());
             modelBuilder.ApplyConfiguration(new SeatConfiguration());

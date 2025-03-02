@@ -52,6 +52,8 @@
         Task<T> CreateAsync(T entity);
         Task<T> UpdateAsync(T entity);
         Task<bool> DeleteAsync(Guid id);
+        Task<bool> DeleteAsync(T Entity);
+        bool Delete(T Entity);
         Task<List<T>> GetPageAsync(int page, int pageSize);
 
         Task<bool> DeleteComposeAsync(Guid id, Guid id2);
