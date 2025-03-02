@@ -9,8 +9,6 @@ import TicketPrice, { TicketType } from "../../components/Ticket/TicketPrice";
 import Footer from "../../components/home/Footer";
 import { format } from "date-fns";
 
-
-
 const Ticket: React.FC = () => {
   const navigate = useNavigate();
 
@@ -22,7 +20,7 @@ const Ticket: React.FC = () => {
   const handleTicketSelection = (tickets: TicketType[]) => {
     // Validate that a showtime is selected
     if (!selectedTime) {
-      alert("Vui lòng chọn suất chiếu!");
+      alert("Vui lòng chọn xuất chiếu!");
       return;
     }
     // Validate that at least one ticket is selected

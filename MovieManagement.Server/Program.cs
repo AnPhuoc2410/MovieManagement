@@ -86,7 +86,10 @@ namespace MovieManagement.Server
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowReactApp",
-                    policy => policy.WithOrigins("https://localhost:7119", "https://localhost:3000")
+                    policy => policy.WithOrigins(
+                    "https://localhost:3000",
+                    "http://localhost:3000",
+                    "https://eigaa.vercel.app")
                         .AllowAnyMethod()
                         .AllowAnyHeader());
             });

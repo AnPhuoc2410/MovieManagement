@@ -17,6 +17,7 @@ import Footer from "../components/home/Footer";
 import ListMovies from "../components/home/ListMovies";
 import Promotions from "../components/home/Event";
 import Membership from "../components/home/Membership";
+import { useNavigate } from "react-router-dom";
 
 const slides = [
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",
@@ -27,6 +28,8 @@ const slides = [
 ];
 
 const Homepage: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <Box
       sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
@@ -118,11 +121,10 @@ const Homepage: React.FC = () => {
         <ListMovies />
         <Promotions />
       </Container>
-
       {/* Membership */}
       <Membership />
-
       {/* Footer */}
+      
       <Footer />
     </Box>
   );

@@ -28,7 +28,7 @@ interface Promotion {
 
 const PromotionsPage: React.FC = () => {
   const navigate = useNavigate();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const PromotionsPage: React.FC = () => {
           variant="h4"
           sx={{ textAlign: "center", mb: 4, fontWeight: "bold" }}
         >
-        {t("promotions")}
+          {t("promotions")}
         </Typography>
         <Grid container spacing={4}>
           {promotions.map((promotion, index) => (
@@ -75,7 +75,7 @@ const PromotionsPage: React.FC = () => {
                   }}
                 >
                   {promotion.image ? (
-                    <CloudinaryImage imageUrl={promotion.image} hd/>
+                    <CloudinaryImage imageUrl={promotion.image} hd />
                   ) : (
                     <Typography variant="subtitle1">No image</Typography>
                   )}

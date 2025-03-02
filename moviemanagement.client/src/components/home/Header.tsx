@@ -8,7 +8,7 @@ import {
   IconButton,
   TextField,
   Toolbar,
-  Typography
+  Typography,
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router";
@@ -64,7 +64,7 @@ const Header: React.FC = () => {
           <TextField
             variant="outlined"
             size="small"
-            placeholder={t("search")} 
+            placeholder={t("search")}
             sx={{ backgroundColor: "white", borderRadius: 2, width: "70%" }}
             InputProps={{
               endAdornment: (
@@ -145,7 +145,7 @@ const Header: React.FC = () => {
           >
             <span>{t("book_snacks")}</span>
           </Button>
-          <IconButton color="inherit" onClick={() => navigate("/auth")}>
+          <IconButton color="inherit" onClick={() => navigate("/auth/login")}>
             <AccountCircleIcon />
             <Typography>{t("login")}</Typography>
           </IconButton>

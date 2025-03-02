@@ -3,7 +3,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 const Membership: React.FC = () => {
-const {t} = useTranslation();
+  const { t } = useTranslation();
   return (
     <Box
       sx={{

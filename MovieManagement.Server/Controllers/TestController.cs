@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +27,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost("Registration")]
-        public async Task<ActionResult> Registration(UserDto userDto)
+        public async Task<IActionResult> Registration(UserDto userDto)
         {
 
             var output = await _userService.CreateAsync(userDto);

@@ -7,11 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieManagement.Server", "M
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "moviemanagement.client", "moviemanagement.client\moviemanagement.client.esproj", "{A9554460-E83B-4473-8EE4-B432DD5B4D97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMTest", "MMTest\MMTest.csproj", "{E27616C2-89C2-4C75-983F-C3843C45CF0A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{52C1BAE0-C681-4E44-878F-734A1D2B7F42} = {52C1BAE0-C681-4E44-878F-734A1D2B7F42}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { useQuery } from "react-query";
 import { fetchThanhVien } from "../../../apis/mock.apis";
-import LoadingSpinner from "../../../components/LoadingSpinner";
 import ManagementPageLayout from "../../../layouts/ManagementPageLayout";
 import MemberTable, { ThanhVien } from "./BangThanhVien";
+import ChinhSuaThanhVien from "./ChinhSuaThanhVien";
 
 const QuanLiThanhVien: React.FC = () => {
   const {
@@ -14,29 +15,45 @@ const QuanLiThanhVien: React.FC = () => {
     fetchThanhVien,
   );
 
+  const [selectedEmployee, setSelectedEmployee] = useState<ThanhVien | null>(
+    null,
+  );
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
   const handleEdit = (id: string) => {
-    console.log("Editing", id);
-    // Add your edit logic here
+    console.log("Handling edit for ID:", id);
+    const employee = danhSachThanhVien.find((emp) => emp.MaNhanVien === id);
+    if (employee) {
+      setSelectedEmployee(employee);
+      setIsEditDialogOpen(true);
+    }
   };
 
   const handleDelete = (id: string) => {
-    console.log("Deleting", id);
-    // Add your delete logic here
+    console.log("Handling delete for ID:", id);
+    const employee = danhSachThanhVien.find((emp) => emp.MaNhanVien === id);
+    if (employee) {
+      setSelectedEmployee(employee);
+    }
   };
 
-  if (isLoading) return <LoadingSpinner />;
-  if (error) return <div>Failed to fetch data</div>;
-
   return (
-    <ManagementPageLayout
-      children={
-        <MemberTable
-          employees={danhSachThanhVien}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-      }
-    />
+    <ManagementPageLayout>
+      <MemberTable
+        employees={danhSachThanhVien}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+
+      <ChinhSuaThanhVien
+        isDialogOpen={isEditDialogOpen}
+        handleCloseDialog={() => {
+          setIsEditDialogOpen(false);
+          setSelectedEmployee(null);
+        }}
+        memberData={selectedEmployee}
+      />
+    </ManagementPageLayout>
   );
 };
 
