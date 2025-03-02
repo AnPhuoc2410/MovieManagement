@@ -37,6 +37,12 @@ namespace MovieManagement.Server.Extensions
 
             CreateMap<Movie, MovieDto>();
             CreateMap<MovieDto, Movie>();
+
+            CreateMap<Category, CategoryDto>();
+            CreateMap<CategoryDto, Category>();
+
+            CreateMap<CategoryDetail, CategoryDetailDto>();
+            CreateMap<CategoryDetailDto, CategoryDetail>();
         }
     }
 }
