@@ -76,7 +76,7 @@
 
 //        public async Task<bool> DeleteMemberAsync(Guid memberId)
 //        {
-//            return await _unitOfWork.MemberRepository.DeleteAsync(memberId);
+//            return await _unitOfWork.MemberRepository.DeleteComposeAsync(memberId);
 //        }
 
 //    }

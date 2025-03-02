@@ -16,45 +16,54 @@ namespace MovieManagement.Server.Controllers
         {
             _seatService = seatService;
         }
+
+
         [HttpGet]
-        [Route("all")]
+        [Route("GetAll")]
         public async Task<ActionResult> GetAllSeatsAsync()
         {
-            var seats = await _seatService.GetAllSeatsAsync();
+            var seats = await _seatService.GetAllAsync();
             return Ok(seats);
         }
+
+
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
         public async Task<ActionResult> GetPageAsync(int page, int pageSize)
         {
             var seats = await _seatService.GetPageAsync(page, pageSize);
             return Ok(seats);
         }
+
+
         [HttpGet]
-        [Route("{seatId:guid}")]
+        [Route("GetById/{seatId:guid}")]
         public async Task<SeatDto> GetSeatByIdAsync(Guid seatId)
         {
-            return await _seatService.GetSeatByIdAsync(seatId);
+            return await _seatService.GetByIdAsync(seatId);
         }
 
 
         [HttpPost]
-        public async Task<SeatDto> CreateSeatAsync(SeatDto seatDto)
+        [Route("Create")]
+        public async Task<SeatDto> CreateSeatAsync([FromBody] SeatDto seatDto)
         {
-            return await _seatService.CreateSeatAsync(seatDto);
+            return await _seatService.CreateAsync(seatDto);
         }
 
 
         [HttpPut]
-        public async Task<SeatDto> UpdateSeatAsync(Guid seatId, SeatDto seatDto)
+        [Route("Update/{seatId:guid}")]
+        public async Task<SeatDto> UpdateSeatAsync(Guid seatId, [FromBody] SeatDto seatDto)
         {
-            return await _seatService.UpdateSeatAsync(seatId, seatDto);
+            return await _seatService.UpdateAsync(seatId, seatDto);
         }
 
 
         [HttpDelete]
+        [Route("Delete/{seatId:guid}")]
         public async Task<bool> DeleteSeatAsync(Guid seatId)
         {
-            return await _seatService.DeleteSeatAsync(seatId);
+            return await _seatService.DeleteAsync(seatId);
         }
 
 

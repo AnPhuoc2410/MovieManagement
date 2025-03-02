@@ -18,7 +18,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
         }
 
-        public async Task<ShowTimeDto> CreateShowTime(ShowTimeDto showtime)
+        public async Task<ShowTimeDto> CreateAsync(ShowTimeDto showtime)
         {
             var newShowTime = new ShowTime() 
             {
@@ -30,12 +30,12 @@ namespace MovieManagement.Server.Services.ShowTimeService
             return _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.CreateAsync(newShowTime));
         }
 
-        public Task<bool> DeleteShowtime(Guid movieId, Guid roomId)
+        public async Task<bool> DeleteAsync(Guid movieId, Guid roomId)
         {
-            return _unitOfWork.ShowtimeRepository.DeleteComposeAsync(movieId, roomId);
+            return await _unitOfWork.ShowtimeRepository.DeleteComposeAsync(movieId, roomId);
         }
 
-        public async Task<IEnumerable<ShowTimeDto>> GetAllShowtime()
+        public async Task<IEnumerable<ShowTimeDto>> GetAll()
         {
             var showtimes = await _unitOfWork.ShowtimeRepository.GetAllAsync();
             return _mapper.Map<List<ShowTimeDto>>(showtimes);
@@ -45,7 +45,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
             return _mapper.Map<IEnumerable<ShowTimeDto>>(showtimes);
         }
-        public async Task<ShowTimeDto> GetShowtime(Guid movieId, Guid roomId)
+        public async Task<ShowTimeDto> GetByComposeId(Guid movieId, Guid roomId)
         {
             var ticket = await _unitOfWork.ShowtimeRepository.GetByComposeIdAsync(movieId, roomId);
             //if(ticket == null)
@@ -55,7 +55,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             return _mapper.Map<ShowTimeDto>(ticket);  
         }
 
-        public async Task<ShowTimeDto> UpdateShowTime(Guid movieId, Guid roomId, ShowTimeDto showtime)
+        public async Task<ShowTimeDto> UpdateAsync(Guid movieId, Guid roomId, ShowTimeDto showtime)
         {
             var existingShowTime = await _unitOfWork.ShowtimeRepository.GetByComposeIdAsync(movieId, roomId);
             if (existingShowTime == null)

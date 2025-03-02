@@ -15,7 +15,7 @@ namespace MovieManagement.Server.Services.SeatService
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<SeatDto>> GetAllSeatsAsync()
+        public async Task<IEnumerable<SeatDto>> GetAllAsync()
         {
             var seats = await _unitOfWork.SeatRepository.GetAllAsync();
             return _mapper.Map<List<SeatDto>>(seats);
@@ -25,13 +25,13 @@ namespace MovieManagement.Server.Services.SeatService
             var seats = await _unitOfWork.SeatRepository.GetPageAsync(page, pageSize);
             return _mapper.Map<IEnumerable<SeatDto>>(seats);
         }
-        public async Task<SeatDto> GetSeatByIdAsync(Guid seatId)
+        public async Task<SeatDto> GetByIdAsync(Guid seatId)
         {
             var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
             return _mapper.Map<SeatDto>(seat);
         }
 
-        public async Task<SeatDto> CreateSeatAsync(SeatDto seat)
+        public async Task<SeatDto> CreateAsync(SeatDto seat)
         {
             var newSeat = new Seat
             {
@@ -45,7 +45,7 @@ namespace MovieManagement.Server.Services.SeatService
             return _mapper.Map<SeatDto>(createdSeat);
         }
 
-        public async Task<SeatDto> UpdateSeatAsync(Guid seatId, SeatDto seat)
+        public async Task<SeatDto> UpdateAsync(Guid seatId, SeatDto seat)
         {
             var newSeat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
 
@@ -59,7 +59,7 @@ namespace MovieManagement.Server.Services.SeatService
             return _mapper.Map<SeatDto>(updatedSeat);
         }
 
-        public async Task<bool> DeleteSeatAsync(Guid seatId)
+        public async Task<bool> DeleteAsync(Guid seatId)
         {
             return await _unitOfWork.SeatRepository.DeleteAsync(seatId);
         }

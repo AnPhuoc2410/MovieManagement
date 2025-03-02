@@ -9,47 +9,66 @@ namespace MovieManagement.Server.Services.CategoryDetailService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+
+
         public CategoryDetailService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<CategoryDetailDto>> GetAllCategoryDetailsAsync()
+
+
+        public async Task<IEnumerable<CategoryDetailDto>> GetAllAsync()
         {
             var categoryDetails = await _unitOfWork.CategoryDetailRepository.GetAllAsync();
             return _mapper.Map<List<CategoryDetailDto>>(categoryDetails);
         }
+
+
         public async Task<IEnumerable<CategoryDetailDto>> GetPageAsync(int page, int pageSize)
         {
             var categoryDetails = await _unitOfWork.CategoryDetailRepository.GetPageAsync(page, pageSize);
             return _mapper.Map<List<CategoryDetailDto>>(categoryDetails);
         }
-        public async Task<CategoryDetailDto> GetCategoryDetailByIdAsync(Guid movieId, Guid categoryId)
+
+
+        public async Task<CategoryDetailDto> GetByIdAsync(Guid categoryId)
         {
-            var categoryDetail = await _unitOfWork.CategoryDetailRepository.GetByComposeIdAsync(movieId, categoryId);
+            var categoryDetail = await _unitOfWork.CategoryDetailRepository.GetByIdAsync(categoryId);
             return _mapper.Map<CategoryDetailDto>(categoryDetail);
         }
-        public async Task<CategoryDetailDto> CreateCategoryDetailAsync(CategoryDetailDto categoryDetailDto)
+
+
+        public async Task<CategoryDetailDto> CreateAsync(CategoryDetailDto categoryDetailDto)
         {
             var newCategory = new CategoryDetail
             {
-                MovieId = categoryDetailDto.MovieId,
-                CategoryId = categoryDetailDto.CategoryId,
+                Name = categoryDetailDto.Name,
+                Description = categoryDetailDto.Description,
+                CategoryId = categoryDetailDto.CategoryId
             };
             var createdCategory = await _unitOfWork.CategoryDetailRepository.CreateAsync(newCategory);
             return _mapper.Map<CategoryDetailDto>(createdCategory);
         }
-        public async Task<CategoryDetailDto> UpdateCategoryDetailAsync(Guid categoryId, Guid movieId)
+
+
+        public async Task<CategoryDetailDto> UpdateAsync(Guid categoryId, CategoryDetailDto categoryDetailDto)
         {
-            var existingCategoryDetail = await _unitOfWork.CategoryDetailRepository.GetByComposeIdAsync(movieId, categoryId);
-            existingCategoryDetail.MovieId = movieId;
-            existingCategoryDetail.CategoryId = categoryId;
+            var existingCategoryDetail = await _unitOfWork.CategoryDetailRepository.GetByIdAsync(categoryId);
+
+            existingCategoryDetail.Description = categoryDetailDto.Description;
+            existingCategoryDetail.Name = categoryDetailDto.Name;
+
             var updatedCategory = await _unitOfWork.CategoryDetailRepository.UpdateAsync(existingCategoryDetail);
             return _mapper.Map<CategoryDetailDto>(updatedCategory);
         }
-        public Task<bool> DeleteCategoryDetailAsync(Guid categoryId, Guid movieId)
+
+
+        public async Task<bool> DeleteAsync(Guid categoryId)
         {
-            return _unitOfWork.CategoryDetailRepository.DeleteComposeAsync(movieId, categoryId);
+            return await _unitOfWork.CategoryDetailRepository.DeleteAsync(categoryId);
         }
+
+
     }
 }

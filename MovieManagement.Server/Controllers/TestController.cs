@@ -30,7 +30,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult> Registration(UserDto userDto)
         {
 
-            var output = await _userService.CreateUser(userDto);
+            var output = await _userService.CreateAsync(userDto);
 
             return Ok(output);
 
@@ -39,7 +39,7 @@ namespace MovieManagement.Server.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult> Login(String userName, String pass)
         {
-            var userList = await _userService.GetAllUsers();
+            var userList = await _userService.GetAllAsync();
 
             var user = userList.FirstOrDefault(x => x.UserName == userName);
 
@@ -64,7 +64,7 @@ namespace MovieManagement.Server.Controllers
         [Route("GetAll")]
         public async Task<ActionResult> GetAll()
         {
-            return Ok(await _userService.GetAllUsers());
+            return Ok(await _userService.GetAllAsync());
         }
 
         [HttpGet]

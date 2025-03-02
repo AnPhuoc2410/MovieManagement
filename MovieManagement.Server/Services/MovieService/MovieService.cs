@@ -14,7 +14,7 @@ namespace MovieManagement.Server.Services.MovieService
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
+        public async Task<IEnumerable<MovieDto>> GetAllAsync()
         {
             var movies = await _unitOfWork.MovieRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<MovieDto>>(movies);
@@ -24,13 +24,13 @@ namespace MovieManagement.Server.Services.MovieService
             var movies = await _unitOfWork.MovieRepository.GetPageAsync(page, pageSize);
             return _mapper.Map<IEnumerable<MovieDto>>(movies);
         }
-        public async Task<MovieDto> GetMovieByIdAsync(Guid movieId)
+        public async Task<MovieDto> GetAsync(Guid movieId)
         {
             var movie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
             return _mapper.Map<MovieDto>(movie);
         }
 
-        public async Task<MovieDto> CreateMovieAsync(Guid employeeId, MovieDto movieDto)
+        public async Task<MovieDto> CreateAsync(Guid employeeId, MovieDto movieDto)
         {
             var newMovie = new Movie
             {
@@ -52,7 +52,7 @@ namespace MovieManagement.Server.Services.MovieService
             return _mapper.Map<MovieDto>(movie);
         }
 
-        public async Task<MovieDto> UpdateMovieAsync(Guid movieId, MovieDto movieDto)
+        public async Task<MovieDto> UpdateAsync(Guid movieId, MovieDto movieDto)
         {
             var updateMovie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
 
@@ -74,7 +74,7 @@ namespace MovieManagement.Server.Services.MovieService
             return _mapper.Map<MovieDto>(updatedMovie);
         }
 
-        public Task<bool> DeleteMovieAsync(Guid movieId)
+        public Task<bool> DeleteAsync(Guid movieId)
         {
             return _unitOfWork.MovieRepository.DeleteAsync(movieId);
         }

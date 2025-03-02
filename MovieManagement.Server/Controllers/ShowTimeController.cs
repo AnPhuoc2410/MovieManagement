@@ -18,29 +18,25 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllShowTime")]
+        [Route("GetAll")]
         public async Task<ActionResult> GetAllShowTime()
         {
-            return Ok(await _showTimeService.GetAllShowtime());
+            return Ok(await _showTimeService.GetAll());
         }
+
+
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
         public async Task<ActionResult> GetPageAsync(int page, int pageSize)
         {
             var showTimes = await _showTimeService.GetPageAsync(page, pageSize);
             return Ok(showTimes);
         }
-        [HttpPost]
-        [Route("CreateShowTime")]
-        public async Task<ActionResult<ShowTimeDto>> CreateShowTime
-        (ShowTimeDto showTimeDto)
-        {
-            return Ok(_showTimeService.CreateShowTime(showTimeDto));
-        }
 
-        [HttpGet("{movieId:guid}/{roomId:guid}")]
+
+        [HttpGet("GetById/{movieId:guid}/{roomId:guid}")]
         public async Task<ActionResult<ShowTimeDto>> GetShowTime(Guid movieId, Guid roomId)
         {
-            var showTime = await _showTimeService.GetShowtime(movieId, roomId);
+            var showTime = await _showTimeService.GetByComposeId(movieId, roomId);
             if (showTime == null)
             {
                 return NotFound();
@@ -48,12 +44,21 @@ namespace MovieManagement.Server.Controllers
             return showTime;
         }
 
-        [HttpPut("UpdateShowTime/{id:guid}")]
-        public async Task<IActionResult> UpdateShowTime(Guid movieId, Guid roomId, ShowTimeDto showTimeDto)
+
+        [HttpPost]
+        [Route("CreateAsync")]
+        public async Task<ActionResult<ShowTimeDto>> CreateShowTime([FromBody] ShowTimeDto showTimeDto)
+        {
+            return Ok(_showTimeService.CreateAsync(showTimeDto));
+        }
+
+
+        [HttpPut("Update/{movieId:guid}/{roomId:guid}")]
+        public async Task<IActionResult> UpdateShowTime(Guid movieId, Guid roomId, [FromBody] ShowTimeDto showTimeDto)
         {
             try
             {
-                var updateShowTime= _showTimeService.UpdateShowTime(movieId, roomId, showTimeDto);
+                var updateShowTime= _showTimeService.UpdateAsync(movieId, roomId, showTimeDto);
                 if (updateShowTime == null)
                 {
                     throw new Exception("Nothing were found!");
@@ -64,6 +69,17 @@ namespace MovieManagement.Server.Controllers
             {
                 return NotFound(ex.Message);
             }
+        }
+
+        [HttpDelete("Delete/{movieId:guid}/{roomId:guid}")]
+        public async Task<IActionResult> DeleteShowTime(Guid movieId, Guid roomId)
+        {
+            var result = await _showTimeService.DeleteAsync(movieId, roomId);
+            if (result)
+            {
+                return Ok(result);
+            }
+            return NotFound();
         }
 
     }
