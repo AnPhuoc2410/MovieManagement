@@ -164,6 +164,23 @@ export const Login = () => {
               </Link>
             </Typography>
           </Box>
+
+          <Box sx={{ mt: 3, textAlign: "center" }}>
+            <Typography variant="body2" color="text.secondary">
+              Quick access user detail?{" "}
+            </Typography>
+            <Button
+              sx={{
+                color: "white",
+                backgroundColor: "red",
+              }}
+              onClick={() => {
+                navigate("/users/profile/1");
+              }}
+              Click
+              here
+            ></Button>
+          </Box>
         </form>
       </Paper>
     </Box>
