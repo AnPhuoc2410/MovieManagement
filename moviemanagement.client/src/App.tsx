@@ -6,8 +6,9 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Dashboard from "./pages/admin/Dashboard";
 import Movies from "./pages/admin/Movies";
 import PromotionDetailManagement from "./pages/admin/PromotionDetail";
+import Promotion from "./pages/promotion/PromotionsPage";
 import PromotionManagement from "./pages/admin/Promotions";
-import BuyTicket from "./pages/admin/QuanLyBanVe/BuyTicket";
+import BuyTicket from "./pages/admin/QuanLyBanVe/SoldTicket";
 import QuanLiNhanVien from "./pages/admin/QuanLyNhanVien";
 import QuanLiThanhVien from "./pages/admin/QuanLyThanhVien/QuanLiThanhVien";
 import LoginForm from "./pages/auth/Login";
@@ -16,13 +17,13 @@ import Home from "./pages/Home";
 import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
 import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
-import Promotion from "./pages/promotion/PromotionsPage";
-import Confirmation from "./pages/ticket/Confirmation";
+import Ticket from "./pages/ticket/ShowTime";
 import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
-import Ticket from "./pages/ticket/Ticket";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
+import Confirmation from "./pages/ticket/Confirmation";
+
 
 const theme = createTheme({
   components: {
@@ -53,7 +54,7 @@ const App = () => {
             </Route>
             <Route path="/promotions" element={<Promotion />} />
             <Route path="/promotions/:id" element={<PromotionDetail />} />
-            <Route path="/ticket/:id" element={<Ticket />} />
+            <Route path="/showtime/:id" element={<Ticket />} />
             <Route path="/movie-seat" element={<MovieSeat />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/confirmation" element={<Confirmation />} />

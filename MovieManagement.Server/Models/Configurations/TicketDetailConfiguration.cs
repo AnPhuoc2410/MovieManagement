@@ -9,7 +9,7 @@ namespace MovieManagement.Server.Models.Configurations
         public void Configure(EntityTypeBuilder<TicketDetail> builder)
         {
             builder.ToTable("TICKETDETAIL");
-            builder.HasKey(x => new { x.BillId, x.SeatId });
+            builder.HasKey(x => new { x.BillId, x.SeatId, x.ShowTimeId });
             //builder.Property(x => x.SeatId).IsRequired();
             //builder.Property(x => x.Price).IsRequired();
             builder.HasOne(x => x.Bill)
@@ -18,6 +18,10 @@ namespace MovieManagement.Server.Models.Configurations
             builder.HasOne(x => x.Seat)
                 .WithMany(x => x.TicketDetail)
                 .HasForeignKey(x => x.SeatId);
+            builder.HasOne(x => x.ShowTime)
+                .WithMany(x => x.TicketDetails)
+                .HasForeignKey(x => x.ShowTimeId)
+                .OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(x => x.TicketType)
                 .WithMany(x => x.TicketDetails)
                 .HasForeignKey(x => x.TicketTypeId);

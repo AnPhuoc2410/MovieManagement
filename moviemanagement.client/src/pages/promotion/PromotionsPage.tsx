@@ -34,9 +34,7 @@ const PromotionsPage: React.FC = () => {
   useEffect(() => {
     const fetchPromotions = async () => {
       try {
-        const response = await axios.get(
-          "https://localhost:7119/api/Promotions/GetAllPromotions",
-        );
+        const response = await axios.get("https://localhost:7119/api/Promotions/GetAllPromotions");
         setPromotions(response.data);
       } catch (error) {
         console.error("Error fetching promotions:", error);
@@ -47,9 +45,7 @@ const PromotionsPage: React.FC = () => {
   }, []);
 
   return (
-    <Box
-      sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
-    >
+    <Box sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}>
       <Header />
       <Container>
         <Typography
@@ -69,12 +65,7 @@ const PromotionsPage: React.FC = () => {
               flexDirection={index % 2 === 0 ? "row" : "row-reverse"}
             >
               {/* Image Section */}
-              <Grid
-                item
-                xs={12}
-                md={6}
-                sx={{ display: "flex", justifyContent: "center" }}
-              >
+              <Grid item xs={12} md={6} sx={{ display: "flex", justifyContent: "center" }}>
                 <Box
                   sx={{
                     height: 300,
@@ -110,13 +101,9 @@ const PromotionsPage: React.FC = () => {
                       {promotion.promotionName}
                     </Typography>
                     <Typography variant="body2" sx={{ mt: 1 }}>
-                      {dayjs(promotion.fromDate).format("DD/MM/YYYY")} -{" "}
-                      {dayjs(promotion.toDate).format("DD/MM/YYYY")}
+                      {dayjs(promotion.fromDate).format("DD/MM/YYYY")} - {dayjs(promotion.toDate).format("DD/MM/YYYY")}
                     </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ mt: 1, fontWeight: "bold", color: "yellow" }}
-                    >
+                    <Typography variant="body2" sx={{ mt: 1, fontWeight: "bold", color: "yellow" }}>
                       {promotion.discount}% Giảm Giá
                     </Typography>
                     <Button
