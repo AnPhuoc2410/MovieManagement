@@ -8,7 +8,7 @@ import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
 import ScrollToTop from "./components/common/ScrollToTop";
 import Promotion from "./pages/promotion/PromotionsPage";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
-import Ticket from "./pages/ticket/Ticket";
+import Ticket from "./pages/ticket/ShowTime";
 import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
 import Confirmation from "./pages/ticket/Confirmation";
@@ -21,7 +21,7 @@ import PromotionDetailManagement from "./pages/admin/PromotionDetail";
 import Movies from "./pages/admin/Movies";
 import QuanLiThanhVien from "./pages/admin/QuanLyThanhVien/QuanLiThanhVien";
 import QuanLiNhanVien from "./pages/admin/QuanLyNhanVien";
-import BuyTicket from "./pages/admin/QuanLyBanVe/BuyTicket";
+import BuyTicket from "./pages/admin/QuanLyBanVe/SoldTicket";
 
 const theme = createTheme({
   components: {
@@ -49,7 +49,7 @@ const App = () => {
             <Route path="/auth" element={<AuthContainer />} />
             <Route path="/promotions" element={<Promotion />} />
             <Route path="/promotions/:id" element={<PromotionDetail />} />
-            <Route path="/ticket/:id" element={<Ticket />} />
+            <Route path="/showtime/:id" element={<Ticket />} />
             <Route path="/movie-seat" element={<MovieSeat />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/confirmation" element={<Confirmation />} />

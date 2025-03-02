@@ -145,7 +145,7 @@ const { t } = useTranslation();
                 variant="contained"
                 color="warning"
                 className="book-button"
-                onClick={() => navigate(`/ticket/${index}`)}
+                onClick={() => navigate(`/showtime/${index}`)}
               >
               <span>{t("book_ticket")}</span>
               </Button>
