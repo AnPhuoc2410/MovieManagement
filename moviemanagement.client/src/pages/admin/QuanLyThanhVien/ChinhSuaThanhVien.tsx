@@ -13,33 +13,34 @@ import {
   Typography,
 } from "@mui/material";
 import { FileUploadOutlined } from "@mui/icons-material";
-import { Employee } from "./BangNhanVien";
-import { useState, useRef, useEffect } from "react";
 
-interface ChinhSuaNhanVienProps {
+import { useState, useRef, useEffect } from "react";
+import { ThanhVien } from "./BangThanhVien";
+
+interface ChinhSuaThanhVienProps {
   isDialogOpen: boolean;
   handleCloseDialog: () => void;
-  employeeData: Employee | null;
+  memberData: ThanhVien | null;
 }
 
-const ChinhSuaNhanVien = ({
+const ChinhSuaThanhVien = ({
   isDialogOpen,
   handleCloseDialog,
-  employeeData,
-}: ChinhSuaNhanVienProps) => {
+  memberData,
+}: ChinhSuaThanhVienProps) => {
   // Track both the original URL and a preview URL (for newly uploaded files)
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Set the initial image URL when component mounts or employeeData changes
+  // Set the initial image URL when component mounts or memberData changes
   useEffect(() => {
-    if (employeeData && employeeData.HinhAnh) {
-      setImageUrl(employeeData.HinhAnh);
+    if (memberData && memberData.HinhAnh) {
+      setImageUrl(memberData.HinhAnh);
     }
-  }, [employeeData]);
+  }, [memberData]);
 
-  if (!employeeData) return null;
+  if (!memberData) return null;
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -143,14 +144,14 @@ const ChinhSuaNhanVien = ({
           variant="standard"
           fullWidth
           margin="normal"
-          defaultValue={employeeData.TaiKhoan}
+          defaultValue={memberData.TaiKhoan}
         />
         <TextField
           label="Họ tên"
           variant="standard"
           fullWidth
           margin="normal"
-          defaultValue={employeeData.TenNhanVien}
+          defaultValue={memberData.TenNhanVien}
         />
         <TextField
           label="Ngày sinh"
@@ -158,7 +159,7 @@ const ChinhSuaNhanVien = ({
           fullWidth
           margin="normal"
           type="date"
-          defaultValue={employeeData.NgaySinh}
+          defaultValue={memberData.NgaySinh}
           InputLabelProps={{
             style: { top: "-1.5rem" },
           }}
@@ -173,7 +174,7 @@ const ChinhSuaNhanVien = ({
         >
           <Typography>Giới tính</Typography>
           <RadioGroup
-            defaultValue={employeeData.GioiTinh || "Male"}
+            defaultValue={memberData.GioiTinh || "Male"}
             sx={{ display: "flex", gap: 10, flexDirection: "row" }}
           >
             <FormControlLabel value="Male" control={<Radio />} label="Nam" />
@@ -185,28 +186,28 @@ const ChinhSuaNhanVien = ({
           variant="standard"
           fullWidth
           margin="normal"
-          defaultValue={employeeData.Email}
+          defaultValue={memberData.Email}
         />
         <TextField
           label="Số CMND"
           variant="standard"
           fullWidth
           margin="normal"
-          defaultValue={employeeData.SoCMND}
+          defaultValue={memberData.SoCMND}
         />
         <TextField
           label="Số điện thoại"
           variant="standard"
           fullWidth
           margin="normal"
-          defaultValue={employeeData.SoDienThoai}
+          defaultValue={memberData.SoDienThoai}
         />
         <TextField
           label="Địa chỉ"
           variant="standard"
           fullWidth
           margin="normal"
-          defaultValue={employeeData.DiaChi}
+          defaultValue={memberData.DiaChi}
         />
       </DialogContent>
       <DialogActions>
@@ -221,4 +222,4 @@ const ChinhSuaNhanVien = ({
   );
 };
 
-export default ChinhSuaNhanVien;
+export default ChinhSuaThanhVien;

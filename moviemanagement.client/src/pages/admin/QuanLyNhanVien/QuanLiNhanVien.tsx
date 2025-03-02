@@ -11,18 +11,21 @@ import ChinhSuaNhanVien from "./ChinhSuaNhanVien";
 import XoaNhanVien from "./XoaNhanVien";
 
 const QuanLiNhanVien: React.FC = () => {
-  const { data: danhSachNhanVien = [], isLoading, error } = useQuery<Employee[]>(
-    "NhanVienData",
-    fetchNhanVien,
-  );
+  const {
+    data: danhSachNhanVien = [],
+    isLoading,
+    error,
+  } = useQuery<Employee[]>("NhanVienData", fetchNhanVien);
 
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    null,
+  );
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleEdit = (id: string) => {
     console.log("Handling edit for ID:", id);
-    const employee = danhSachNhanVien.find(emp => emp.MaNhanVien === id);
+    const employee = danhSachNhanVien.find((emp) => emp.MaNhanVien === id);
     if (employee) {
       setSelectedEmployee(employee);
       setIsEditDialogOpen(true);
@@ -31,7 +34,7 @@ const QuanLiNhanVien: React.FC = () => {
 
   const handleDelete = (id: string) => {
     console.log("Handling delete for ID:", id);
-    const employee = danhSachNhanVien.find(emp => emp.MaNhanVien === id);
+    const employee = danhSachNhanVien.find((emp) => emp.MaNhanVien === id);
     if (employee) {
       setSelectedEmployee(employee);
       setIsDeleteDialogOpen(true);

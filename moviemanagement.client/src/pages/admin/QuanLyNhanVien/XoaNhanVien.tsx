@@ -28,8 +28,8 @@ const XoaNhanVien = ({
       <DialogTitle>Xác nhận xóa nhân viên</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Bạn có chắc chắn muốn xóa nhân viên {employeeData.TenNhanVien}? 
-          Hành động này không thể hoàn tác.
+          Bạn có chắc chắn muốn xóa nhân viên {employeeData.TenNhanVien}? Hành
+          động này không thể hoàn tác.
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -42,4 +42,4 @@ const XoaNhanVien = ({
   );
 };
 
-export default XoaNhanVien; 
+export default XoaNhanVien;

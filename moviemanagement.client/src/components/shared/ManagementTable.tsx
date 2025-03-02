@@ -96,18 +96,12 @@ function ManagementTable<T extends TableData>({
       align={actionColumn.align}
     >
       {onEdit && (
-        <IconButton 
-          color="primary" 
-          onClick={() => onEdit(item.MaNhanVien)}
-        >
+        <IconButton color="primary" onClick={() => onEdit(item.MaNhanVien)}>
           <Edit />
         </IconButton>
       )}
       {onDelete && (
-        <IconButton 
-          color="secondary" 
-          onClick={() => onDelete(item.MaNhanVien)}
-        >
+        <IconButton color="secondary" onClick={() => onDelete(item.MaNhanVien)}>
           <Delete />
         </IconButton>
       )}
