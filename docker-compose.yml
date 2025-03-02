@@ -1,0 +1,50 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    networks:
+      - app-network
+
+  client1:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "8081:80"
+    environment:
+      - REACT_APP_API_URL=http://server:3000
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+    networks:
+      - app-network
+
+  client2:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "8082:80"
+    environment:
+      - REACT_APP_API_URL=http://server:3000
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
