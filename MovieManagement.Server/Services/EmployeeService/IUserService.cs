@@ -7,6 +7,7 @@ namespace MovieManagement.Server.Services.UserService
 
         Task<UserDto> CreateEmployee(UserDto employee);
         Task<UserDto> GetEmployee(Guid id);
+        Task<IEnumerable<UserDto>> GetPageAsync(int page, int pageSize);
         Task<IEnumerable<UserDto>> GetAllEmployees();
         Task<UserDto> UpdateEmployee(Guid id, UserDto employee);
         Task<bool> DeleteEmployee(Guid id);

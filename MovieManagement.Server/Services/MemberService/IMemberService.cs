@@ -6,6 +6,7 @@ namespace MovieManagement.Server.Services.MemberService
     public interface IMemberService
     {
         Task<IEnumerable<MemberPort.MemberResponseDTO>> GetAllMembersAsync();
+        Task<IEnumerable<MemberDto>> GetPageAsync(int page, int pageSize);
         Task<MemberDto> GetMemberByIdAsync(Guid memberId);
         Task<MemberDto> CreateMemberAsync(MemberDto member);
         Task<MemberDto> UpdateMemberAsync(Guid memberId, MemberDto member);

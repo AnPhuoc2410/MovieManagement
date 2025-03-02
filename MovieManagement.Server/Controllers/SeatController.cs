@@ -23,8 +23,12 @@ namespace MovieManagement.Server.Controllers
             var seats = await _seatService.GetAllSeatsAsync();
             return Ok(seats);
         }
-
-
+        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        {
+            var seats = await _seatService.GetPageAsync(page, pageSize);
+            return Ok(seats);
+        }
         [HttpGet]
         [Route("{seatId:guid}")]
         public async Task<SeatDto> GetSeatByIdAsync(Guid seatId)

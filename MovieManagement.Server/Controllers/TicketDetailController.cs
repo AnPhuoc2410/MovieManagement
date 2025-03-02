@@ -38,8 +38,12 @@ namespace MovieManagement.Server.Controllers
             var createdTicketDetail = _ticketDetailService.CreateTicketDetail(ticketDetail);
             return Ok(createdTicketDetail);
         }
-
-
+        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        {
+            var ticketDetails = await _ticketDetailService.GetPageAsync(page, pageSize);
+            return Ok(ticketDetails);
+        }
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<TicketDetailDto>> GetTicketDetail(Guid id)
         {

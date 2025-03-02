@@ -20,7 +20,11 @@ namespace MovieManagement.Server.Services.SeatService
             var seats = await _unitOfWork.SeatRepository.GetAllAsync();
             return _mapper.Map<List<SeatDto>>(seats);
         }
-
+        public async Task<IEnumerable<SeatDto>> GetPageAsync(int page, int pageSize)
+        {
+            var seats = await _unitOfWork.SeatRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<IEnumerable<SeatDto>>(seats);
+        }
         public async Task<SeatDto> GetSeatByIdAsync(Guid seatId)
         {
             var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);

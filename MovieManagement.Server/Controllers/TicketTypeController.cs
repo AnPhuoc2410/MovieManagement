@@ -22,14 +22,15 @@ namespace MovieManagement.Server.Controllers
             _ticketTypeService = ticketTypeService;
         }
 
-        [HttpGet]
-        [Route("GetAllTicketType")]
         [ProducesResponseType(typeof(ApiResponseServices<TicketTypeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+
+        [HttpGet]
+        [Route("GetAllTicketType")]
         public async Task<ActionResult<ApiResponseServices<IEnumerable<TicketTypeDto>>>> GetAllTicketType()
         {
             try
@@ -57,9 +58,6 @@ namespace MovieManagement.Server.Controllers
                 };
                 return response;
             }
-
-
-
         }
 
         [HttpPost]
@@ -110,7 +108,12 @@ namespace MovieManagement.Server.Controllers
                 throw;
             }
         }
-
+        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        {
+            var tickets = await _ticketTypeService.GetPageAsync(page, pageSize);
+            return Ok(tickets);
+        }
         [HttpPut("UpdateTicketType/{id:guid}")]
         public async Task<ActionResult<ApiResponseServices<TicketTypeDto>>> UpdateTicketType(Guid id, TicketTypeDto ticketTypeDto)
         {

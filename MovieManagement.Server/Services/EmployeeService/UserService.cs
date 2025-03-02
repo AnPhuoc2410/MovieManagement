@@ -42,6 +42,11 @@ namespace MovieManagement.Server.Services.UserService
 
         }
 
+        public Task<bool> DeleteEmployee(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<bool> DeleteEmployeeAsynce(Guid id)
         {
             return _unitOfWork.EmployeeRepository.DeleteAsync(id);
@@ -59,6 +64,12 @@ namespace MovieManagement.Server.Services.UserService
             if (employee == null)
                 return null;
             return _mapper.Map<UserDto>(employee);
+        }
+
+        public async Task<IEnumerable<UserDto>> GetPageAsync(int page, int pageSize)
+        {
+            var employees = await _unitOfWork.EmployeeRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<List<UserDto>>(employees);
         }
 
         public async Task<UserDto> UpdateEmployee(Guid id, UserDto employee)

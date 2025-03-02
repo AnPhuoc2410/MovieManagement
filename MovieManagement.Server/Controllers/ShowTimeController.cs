@@ -23,7 +23,12 @@ namespace MovieManagement.Server.Controllers
         {
             return Ok(await _showTimeService.GetAllShowtime());
         }
-
+        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        {
+            var showTimes = await _showTimeService.GetPageAsync(page, pageSize);
+            return Ok(showTimes);
+        }
         [HttpPost]
         [Route("CreateShowTime")]
         public async Task<ActionResult<ShowTimeDto>> CreateShowTime

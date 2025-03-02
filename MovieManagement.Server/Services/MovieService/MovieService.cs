@@ -19,7 +19,11 @@ namespace MovieManagement.Server.Services.MovieService
             var movies = await _unitOfWork.MovieRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<MovieDto>>(movies);
         }
-
+        public async Task<IEnumerable<MovieDto>> GetPageAsync(int page, int pageSize)
+        {
+            var movies = await _unitOfWork.MovieRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<IEnumerable<MovieDto>>(movies);
+        }
         public async Task<MovieDto> GetMovieByIdAsync(Guid movieId)
         {
             var movie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);

@@ -23,6 +23,12 @@ namespace MovieManagement.Server.Controllers
             var rooms = await _roomService.GetAllRoomsAsync();
             return Ok(rooms);
         }
+        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        {
+            var rooms = await _roomService.GetPageAsync(page, pageSize);
+            return Ok(rooms);
+        }
         [HttpGet]
         [Route("{roomId:guid}")]
         public async Task<ActionResult<RoomDto>> GetRoomById(Guid roomId)

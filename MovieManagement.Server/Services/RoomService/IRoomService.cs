@@ -6,6 +6,7 @@ namespace MovieManagement.Server.Services.RoomService
     public interface IRoomService
     {
         Task<IEnumerable<RoomDto>> GetAllRoomsAsync();
+        Task<IEnumerable<RoomDto>> GetPageAsync(int page, int pageSize);    
         Task<RoomDto> GetRoomByIdAsync(Guid roomId);
         //renaming please
         Task<RoomDto> CreateRoomAsync(RoomDto room);

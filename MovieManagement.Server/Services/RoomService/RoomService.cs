@@ -19,6 +19,11 @@ namespace MovieManagement.Server.Services.RoomService
             var rooms = await _unitOfWork.RoomRepository.GetAllAsync();
             return _mapper.Map<List<RoomDto>>(rooms);
         }
+        public async Task<IEnumerable<RoomDto>> GetPageAsync(int page, int pageSize)
+        {
+            var rooms = await _unitOfWork.RoomRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<IEnumerable<RoomDto>>(rooms);
+        }
         public async Task<RoomDto> GetRoomByIdAsync(Guid roomId)
         {
             var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);

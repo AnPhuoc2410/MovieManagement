@@ -79,5 +79,11 @@ namespace MovieManagement.Server.Services.PromotionService
             var result = await _unitOfWork.PromotionRepository.DeleteAsync(id);
             return result;
         }
+
+        public async Task<IEnumerable<PromotionDto>> GetPageAsync(int page, int pageSize)
+        {
+            var promotions = await _unitOfWork.PromotionRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<IEnumerable<PromotionDto>>(promotions);
+        }
     }
 }

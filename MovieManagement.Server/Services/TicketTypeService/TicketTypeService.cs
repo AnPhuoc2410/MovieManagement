@@ -84,7 +84,11 @@ namespace MovieManagement.Server.Services.TicketTypeService
                 throw new Exception("Couldn't access into database due to systems error.", ex);
             }
         }
-
+        public async Task<IEnumerable<TicketTypeDto>> GetPageAsync(int page, int pageSize)
+        {
+            var tickets = await _unitOfWork.TicketTypeRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<IEnumerable<TicketTypeDto>>(tickets);
+        }
         public async Task<TicketTypeDto> GetTicketType(Guid ticketId)
         {
 
