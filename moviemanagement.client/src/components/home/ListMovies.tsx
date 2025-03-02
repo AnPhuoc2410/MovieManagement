@@ -10,7 +10,6 @@ import "../../index.scss";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 
-
 const nowShowingMovies = [
   {
     title: "Kimi wo Aishita Hitori no Boku e (T16)",
@@ -113,7 +112,7 @@ const MovieSlider = ({
   navigateTo: string;
 }) => {
   const navigate = useNavigate();
-const { t } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Container sx={{ mt: 4, textAlign: "center" }}>
@@ -147,7 +146,7 @@ const { t } = useTranslation();
                 className="book-button"
                 onClick={() => navigate(`/ticket/${index}`)}
               >
-              <span>{t("book_ticket")}</span>
+                <span>{t("book_ticket")}</span>
               </Button>
             </Box>
           </SwiperSlide>

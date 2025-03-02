@@ -16,17 +16,23 @@ import { useNavigate } from "react-router-dom";
 import MovieDetail from "../../../components/Movie/MovieDetail";
 import ShowTime from "../../../components/Ticket/ShowTime";
 import ListCinema from "../../../components/Ticket/ListCinema";
-import TicketPrice, { TicketType } from "../../../components/Ticket/TicketPrice";
+import TicketPrice, {
+  TicketType,
+} from "../../../components/Ticket/TicketPrice";
 import { format } from "date-fns";
 
 interface BuyTicketProps {
   disableCustomTheme?: boolean;
 }
 
-export default function BuyTicket({ disableCustomTheme = false }: BuyTicketProps) {
+export default function BuyTicket({
+  disableCustomTheme = false,
+}: BuyTicketProps) {
   const navigate = useNavigate();
 
-  const [selectedDate, setSelectedDate] = useState(() => format(new Date(), "dd/MM"));
+  const [selectedDate, setSelectedDate] = useState(() =>
+    format(new Date(), "dd/MM"),
+  );
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   const handleTicketSelection = (tickets: TicketType[]) => {

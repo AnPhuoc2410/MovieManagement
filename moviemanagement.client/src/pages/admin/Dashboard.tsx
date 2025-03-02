@@ -24,7 +24,7 @@ import {
 const xThemeComponents = {
   ...chartsCustomizations,
   ...dataGridCustomizations,
-  ...datePickersCustomizations
+  ...datePickersCustomizations,
 };
 
 export default function Dashboard({

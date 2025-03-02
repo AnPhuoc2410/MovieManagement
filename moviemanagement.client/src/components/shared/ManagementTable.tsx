@@ -38,6 +38,7 @@ interface ManagementTableProps<T extends TableData> {
     align?: "left" | "center" | "right";
     width?: string | number;
     headerName?: string;
+    backgroundColor?: string;
   };
 }
 
@@ -51,6 +52,7 @@ function ManagementTable<T extends TableData>({
     align: "center",
     headerName: "Actions",
     width: "120px",
+    backgroundColor: "#FFA09B",
   },
 }: ManagementTableProps<T>) {
   const renderHeaderCells = () => {
@@ -59,6 +61,10 @@ function ManagementTable<T extends TableData>({
         key={String(column.field)}
         align={column.align}
         style={{ width: column.width }}
+        sx={{
+          backgroundColor: "#FFA09B", // Change to your preferred color
+          fontWeight: "bold", // Optional: make the text bold
+        }}
       >
         {column.headerName}
       </TableCell>
@@ -70,6 +76,9 @@ function ManagementTable<T extends TableData>({
           key="actions"
           align={actionColumn.align}
           style={{ width: actionColumn.width }}
+          sx={{
+            fontWeight: "bold",
+          }}
         >
           {actionColumn.headerName}
         </TableCell>,
@@ -80,7 +89,13 @@ function ManagementTable<T extends TableData>({
   };
 
   const renderActionButtons = (id: string) => (
-    <TableCell align={actionColumn.align}>
+    <TableCell
+      sx={{
+        display: "flex",
+        gap: "2rem",
+      }}
+      align={actionColumn.align}
+    >
       {onEdit && (
         <IconButton color="primary" onClick={() => onEdit(id)}>
           <Edit />

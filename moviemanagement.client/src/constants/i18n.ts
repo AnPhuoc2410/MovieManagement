@@ -28,7 +28,7 @@ const resources = {
       upcoming: "Phim Sắp Chiếu",
       membership: "Thẻ Thành Viên",
       promotions: "Khuyến Mãi",
-      list_promotions: "Xem Thêm Khuyến Mãi"
+      list_promotions: "Xem Thêm Khuyến Mãi",
     },
   },
   jp: {
@@ -42,7 +42,7 @@ const resources = {
       upcoming: "近日公開",
       membership: "メンバーシップ",
       promotions: "プロモーション",
-      list_promotions: "もっと見るプロモーション"
+      list_promotions: "もっと見るプロモーション",
     },
   },
 };
