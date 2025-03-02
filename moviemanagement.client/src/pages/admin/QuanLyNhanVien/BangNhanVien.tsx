@@ -14,6 +14,11 @@ export interface Employee extends TableData {
   Email: string;
   SoDienThoai: string;
   DiaChi: string;
+  HinhAnh?: string;
+  TaiKhoan?: string;
+  MatKhau?: string;
+  NgaySinh?: string;
+  GioiTinh?: 'Male' | 'Female';
 }
 
 const EmployeeTable: React.FC<{
@@ -22,14 +27,6 @@ const EmployeeTable: React.FC<{
   onDelete: (id: string) => void;
 }> = ({ employees, onEdit, onDelete }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const handleOpenDialog = () => {
-    setIsDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-  };
 
   const columns: ColumnDef<Employee>[] = [
     {
@@ -87,7 +84,7 @@ const EmployeeTable: React.FC<{
             flexShrink: 0, // Prevent button from shrinking
           }}
           onClick={() => {
-            handleOpenDialog();
+            setIsDialogOpen(true);
           }}
         >
           Thêm nhân viên
@@ -106,8 +103,14 @@ const EmployeeTable: React.FC<{
       <ManagementTable
         data={employees}
         columns={columns}
-        onEdit={onEdit}
-        onDelete={onDelete}
+        onEdit={(id) => {
+          console.log("Editing:", id);
+          onEdit(id);
+        }}
+        onDelete={(id) => {
+          console.log("Deleting:", id);
+          onDelete(id);
+        }}
         actionColumn={{
           align: "center",
           headerName: "Hành động",
@@ -117,7 +120,7 @@ const EmployeeTable: React.FC<{
 
       <ThemNhanVien
         isDialogOpen={isDialogOpen}
-        handleCloseDialog={handleCloseDialog}
+        handleCloseDialog={() => setIsDialogOpen(false)}
       />
     </>
   );
