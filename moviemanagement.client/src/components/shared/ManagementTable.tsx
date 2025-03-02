@@ -14,7 +14,6 @@ import { Delete, Edit } from "@mui/icons-material";
 
 // Base interface for table data with string id
 export interface TableData {
-  id: string;
   [key: string]: any;
 }
 
@@ -88,7 +87,7 @@ function ManagementTable<T extends TableData>({
     return headerCells;
   };
 
-  const renderActionButtons = (id: string) => (
+  const renderActionButtons = (item: T) => (
     <TableCell
       sx={{
         display: "flex",
@@ -97,12 +96,18 @@ function ManagementTable<T extends TableData>({
       align={actionColumn.align}
     >
       {onEdit && (
-        <IconButton color="primary" onClick={() => onEdit(id)}>
+        <IconButton 
+          color="primary" 
+          onClick={() => onEdit(item.MaNhanVien)}
+        >
           <Edit />
         </IconButton>
       )}
       {onDelete && (
-        <IconButton color="secondary" onClick={() => onDelete(id)}>
+        <IconButton 
+          color="secondary" 
+          onClick={() => onDelete(item.MaNhanVien)}
+        >
           <Delete />
         </IconButton>
       )}
@@ -117,7 +122,7 @@ function ManagementTable<T extends TableData>({
     ));
 
     if (showActions) {
-      cells.push(renderActionButtons(item.id));
+      cells.push(renderActionButtons(item));
     }
 
     return cells;
@@ -131,7 +136,7 @@ function ManagementTable<T extends TableData>({
         </TableHead>
         <TableBody>
           {data.map((item) => (
-            <TableRow key={item.id}>{renderRowCells(item)}</TableRow>
+            <TableRow key={item.MaNhanVien}>{renderRowCells(item)}</TableRow>
           ))}
         </TableBody>
       </Table>
