@@ -1,6 +1,5 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
-
-import { useState } from "react";
+import { Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import ManagementTable, {
   ColumnDef,
   TableData,
@@ -15,8 +14,8 @@ export interface Room extends TableData {
 const RoomTable: React.FC<{
   rooms: Room[];
   onEdit: (id: string) => void;
-}> = ({ rooms, onEdit }) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+}> = ({ rooms }) => {
+  const navigate = useNavigate();
 
   const columns: ColumnDef<Room>[] = [
     {
@@ -33,13 +32,24 @@ const RoomTable: React.FC<{
     },
   ];
 
+  const handleEditClick = (roomId: string) => {
+    console.log("Handling click for roomId:", roomId);
+    console.log("Available rooms:", rooms);
+    
+    if (roomId) {
+      navigate(`/admin/ql-phong-chieu/${roomId}`);
+    } else {
+      console.error("No roomId provided");
+    }
+  };
+
   return (
     <>
       <Typography
         variant="h5"
         sx={{
           textAlign: "left",
-          flexGrow: 1, // Allow this to take extra space if needed
+          flexGrow: 1,
         }}
       >
         Danh sách phòng chiếu
@@ -48,10 +58,7 @@ const RoomTable: React.FC<{
       <ManagementTable
         data={rooms}
         columns={columns}
-        onEdit={(id) => {
-          console.log("Editing:", id);
-          onEdit(id);
-        }}
+        onEdit={handleEditClick}
         actionColumn={{
           align: "center",
           headerName: "Chi tiết ghế",
