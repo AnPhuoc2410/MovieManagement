@@ -16,7 +16,7 @@ namespace MovieManagement.Server.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpGet("GetAll")]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAllCategoriesAsync()
         {
             var categories = await _categoryService.GetAllCategoriesAsync();
@@ -32,7 +32,7 @@ namespace MovieManagement.Server.Controllers
         }
 
 
-        [HttpGet("/{categoryId:guid}/{movieId:guid}")]
+        [HttpGet("category/{categoryId:guid}/movie/{movieId:guid}")]
         public async Task<ActionResult<CategoryDto>> GetCategoryByIdAsync(Guid categoryId, Guid movieId)
         {
             var category = await _categoryService.GetCategoryByComposeIdAsync(categoryId, movieId);
@@ -41,7 +41,6 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPost]
-        [Route("Create")]
         public async Task<ActionResult<CategoryDto>> CreateCategoryAsync([FromBody] CategoryDto categoryDto)
         {
             var newCategory = await _categoryService.CreateCategoryAsync(categoryDto);
@@ -50,7 +49,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPut]
-        [Route("Update/{categoryId:guid}/{movieId:guid}")]
+        [Route("category/{categoryId:guid}/movie/{movieId:guid}")]
         public async Task<ActionResult<CategoryDto>> UpdateCategoryAsync(Guid categoryId, Guid movieId, [FromBody] CategoryDto categoryDto)
         {
             var updatedCategory = await _categoryService.UpdateCategoryAsync(categoryId, movieId, categoryDto);
@@ -59,7 +58,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpDelete]
-        [Route("Delete/{categoryId:guid}/{movieId:guid}")]
+        [Route("category/{categoryId:guid}/movie/{movieId:guid}")]
         public async Task<bool> DeleteCategoryAsync(Guid categoryId, Guid movieId)
         {
             var deleteCategory = await _categoryService.DeleteCategoryComposeAsync(categoryId, movieId);

@@ -18,7 +18,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet]
-        [Route("GetAll")]
+        [Route("all")]
         public async Task<IActionResult> GetAllMovieAsync()
         {
             var movies = await _movieService.GetAllMoviesAsync();
@@ -43,7 +43,6 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPost]
-        [Route("Create")]
         public async Task<ActionResult<MovieDto>> CreateMovieAsync(Guid employeeId, [FromBody] MovieDto movieDto)
         {
             return await _movieService.CreateMovieAsync(employeeId, movieDto);
@@ -51,7 +50,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPut]
-        [Route("Update/{movieId:guid}")]
+        [Route("{movieId:guid}")]
         public async Task<ActionResult<MovieDto>> UpdateRoomAsync(Guid movieId, [FromBody] MovieDto movieDto)
         {
             return await _movieService.UpdateMovieAsync(movieId, movieDto);
@@ -59,7 +58,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpDelete]
-        [Route("Delete/{movieId:guid}")]
+        [Route("{movieId:guid}")]
         public async Task<bool> DeleteRoomAsync(Guid movieId)
         {
             return await _movieService.DeleteMovieAsync(movieId);

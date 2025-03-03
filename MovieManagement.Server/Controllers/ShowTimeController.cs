@@ -59,8 +59,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var updateShowTime = await _showTimeService.UpdateShowTime(movieId, roomId, showTimeDto);
-                var updateShowTime= _showTimeService.UpdateShowtimeAsync(movieId, roomId, showTimeDto);
+                var updateShowTime= await _showTimeService.UpdateShowtimeAsync(movieId, roomId, showTimeDto);
                 if (updateShowTime == null)
                 {
                     var response = new ApiResponseServices<object>
