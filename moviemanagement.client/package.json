@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.config.dev.ts",
+    "build:vercel": "vite build --config vite.config.dev.ts",
     "build": "vite build --config vite.config.prod.ts",
     "preview": "vite preview --config vite.config.prod.ts",
     "prettier:fix": "prettier --write . --cache",
