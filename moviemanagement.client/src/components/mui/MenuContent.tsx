@@ -39,7 +39,7 @@ const mainListItems = [
   {
     text: "Quản lý Đặt vé",
     icon: <ConfirmationNumberRoundedIcon />,
-    path: "/admin/dat-ve",
+    path: "/admin/ql-dat-ve",
   },
   {
     text: "Quản lý Phòng chiếu",
