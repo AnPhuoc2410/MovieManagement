@@ -10,7 +10,7 @@ const slugMapping: { [key: string]: string } = {
   "khuyen-mai": "Khuyến mãi",
   "thong-ke": "Thống kê",
   phim: "Phim",
-  "phong-chieu": "Phòng chiếu",
+  "ql-phong-chieu": "Phòng chiếu",
   "dat-ve": "Đặt vé",
   "ban-ve": "Bán vé",
   "ql-nhan-vien": "Nhân viên",
