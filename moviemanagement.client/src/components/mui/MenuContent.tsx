@@ -44,7 +44,7 @@ const mainListItems = [
   {
     text: "Quản lý Phòng chiếu",
     icon: <EventSeatRoundedIcon />,
-    path: "/admin/phong-chieu",
+    path: "/admin/ql-phong-chieu",
   },
   {
     text: "Quản lý Phim",
