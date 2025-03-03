@@ -52,7 +52,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpPut]
         [Route("Update/{movieId:guid}")]
-        public async Task<ActionResult<MovieDto>> UpdateRoom(Guid movieId, [FromBody] MovieDto movieDto)
+        public async Task<ActionResult<MovieDto>> UpdateMovie(Guid movieId, [FromBody] MovieDto movieDto)
         {
             return await _movieService.UpdateAsync(movieId, movieDto);
         }
@@ -60,7 +60,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpDelete]
         [Route("Delete/{movieId:guid}")]
-        public async Task<bool> DeleteRoom(Guid movieId)
+        public async Task<bool> DeleteMovie(Guid movieId)
         {
             return await _movieService.DeleteAsync(movieId);
         }

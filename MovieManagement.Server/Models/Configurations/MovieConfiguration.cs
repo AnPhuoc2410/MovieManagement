@@ -10,7 +10,7 @@ namespace MovieManagement.Server.Models.Configurations
 
             builder.ToTable("MOVIE");
             builder.HasKey(x => x.MovieId);
-            //builder.Property(x => x.MovieId).HasDefaultValueSql("NEWID()");
+            builder.Property(x => x.MovieId).HasDefaultValueSql("NEWID()");
             builder.Property(x => x.Name).HasColumnType("varchar(50)");
             builder.Property(x => x.Name).IsRequired();
             builder.Property(x => x.Name).HasMaxLength(50);
@@ -23,6 +23,7 @@ namespace MovieManagement.Server.Models.Configurations
             builder.Property(x => x.Rating).HasColumnType("varchar(30)");
             builder.Property(x => x.Trailer).HasColumnType("varchar(50)");
             builder.Property(x => x.Content).HasColumnType("varchar(500)");
+            
 
 
         }
