@@ -18,43 +18,51 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet]
-        [Route("all")]
+        [Route("GetAll")]
         public async Task<ActionResult> GetAllBills()
         {
-            var bills = await _billService.GetAllBillsAsync();
+            var bills = await _billService.GetAllAsync();
+            return Ok(bills);
+        }
+        [HttpGet("page/{page:int}/pagesize{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsynce(int page, int pageSize)
+        {
+            var bills = await _billService.GetPageAsync(page, pageSize);
             return Ok(bills);
         }
 
-
         [HttpGet]
-        [Route("{billId:guid}")]
+        [Route("GetById/{billId:guid}")]
         public async Task<ActionResult<BillDto>> GetBillById(Guid billId)
         {
-            var bill = await _billService.GetBillByIdAsync(billId);
+            var bill = await _billService.GetByIdAsync(billId);
             return bill;
         }
 
 
         [HttpPost]
-        public async Task<ActionResult<BillDto>> CreateBill(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, BillDto billDto)
+        [Route("Create")]
+        public async Task<ActionResult<BillDto>> CreateBill(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, [FromBody] BillDto billDto)
         {
-            var @new = await _billService.CreateBillAsync(movieId, memberId, employeeId, promotionId, billDto);
+            var @new = await _billService.CreateAsync(movieId, memberId, employeeId, promotionId, billDto);
             return @new;
         }
 
 
         [HttpPut]
-        public async Task<ActionResult<BillDto>> UpdateBill(Guid billId, BillDto billDto)
+        [Route("Update/{billId:guid}")]
+        public async Task<ActionResult<BillDto>> UpdateBill(Guid billId,[FromBody] BillDto billDto)
         {
-            var updated = await _billService.UpdateBillAsync(billId, billDto);
+            var updated = await _billService.UpdateAsync(billId, billDto);
             return updated;
         }
 
 
         [HttpDelete]
+        [Route("Delete/{billId:guid}")]
         public async Task<bool> DeleteBill(Guid billId)
         {
-            bool deleted = await _billService.DeleteBillAsync(billId);
+            bool deleted = await _billService.DeleteAsync(billId);
             return deleted;
         }
 

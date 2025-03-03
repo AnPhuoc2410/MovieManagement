@@ -22,14 +22,14 @@ namespace MovieManagement.Server.Controllers
             _ticketTypeService = ticketTypeService;
         }
 
-        [HttpGet]
-        [Route("GetAllTicketType")]
         [ProducesResponseType(typeof(ApiResponseServices<TicketTypeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+
+        [HttpGet]
+        [Route("GetAllTicketType")]
         public async Task<ActionResult<ApiResponseServices<IEnumerable<TicketTypeDto>>>> GetAllTicketType()
         {
             try
@@ -39,7 +39,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<IEnumerable<TicketTypeDto>>
                 {
                     StatusCode = 200,
-                    Message = "Ticket Type retrieved successfully",
+                    Message = "Ticket AtColumn retrieved successfully",
                     IsSuccess = true,
                     Data = ListTicketTypes
                 };
@@ -51,15 +51,12 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<IEnumerable<TicketTypeDto>>
                 {
                     StatusCode = 404,
-                    Message = "Ticket Type not found",
+                    Message = "Ticket AtColumn not found",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
                 return NotFound(response);
             }
-
-
-
         }
 
         [HttpPost]
@@ -79,7 +76,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<TicketTypeDto>
                 {
                     StatusCode = 201,
-                    Message = "Ticket Type created successfully",
+                    Message = "Ticket AtColumn created successfully",
                     IsSuccess = true,
                     Data = createdTicketType
                 };
@@ -103,7 +100,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<TicketTypeDto>
                 {
                     StatusCode = 200,
-                    Message = "Ticket Type retrieved successfully",
+                    Message = "Ticket AtColumn retrieved successfully",
                     IsSuccess = true,
                     Data = ticket
                 };
@@ -116,7 +113,12 @@ namespace MovieManagement.Server.Controllers
                 throw;
             }
         }
-
+        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        {
+            var tickets = await _ticketTypeService.GetPageAsync(page, pageSize);
+            return Ok(tickets);
+        }
         [HttpPut("UpdateTicketType/{id:guid}")]
         public async Task<ActionResult<ApiResponseServices<TicketTypeDto>>> UpdateTicketType(Guid id, TicketTypeDto ticketTypeDto)
         {
@@ -127,7 +129,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<TicketTypeDto>
                 {
                     StatusCode = 200,
-                    Message = "Ticket Type updated successfully",
+                    Message = "Ticket AtColumn updated successfully",
                     IsSuccess = true,
                     Data = updateTicket
                 };

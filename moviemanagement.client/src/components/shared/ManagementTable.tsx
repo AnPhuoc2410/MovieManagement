@@ -14,7 +14,6 @@ import { Delete, Edit } from "@mui/icons-material";
 
 // Base interface for table data with string id
 export interface TableData {
-  id: string;
   [key: string]: any;
 }
 
@@ -38,6 +37,7 @@ interface ManagementTableProps<T extends TableData> {
     align?: "left" | "center" | "right";
     width?: string | number;
     headerName?: string;
+    backgroundColor?: string;
   };
 }
 
@@ -51,6 +51,7 @@ function ManagementTable<T extends TableData>({
     align: "center",
     headerName: "Actions",
     width: "120px",
+    backgroundColor: "#FFA09B",
   },
 }: ManagementTableProps<T>) {
   const renderHeaderCells = () => {
@@ -59,6 +60,10 @@ function ManagementTable<T extends TableData>({
         key={String(column.field)}
         align={column.align}
         style={{ width: column.width }}
+        sx={{
+          backgroundColor: "#FFA09B", // Change to your preferred color
+          fontWeight: "bold", // Optional: make the text bold
+        }}
       >
         {column.headerName}
       </TableCell>
@@ -70,6 +75,9 @@ function ManagementTable<T extends TableData>({
           key="actions"
           align={actionColumn.align}
           style={{ width: actionColumn.width }}
+          sx={{
+            fontWeight: "bold",
+          }}
         >
           {actionColumn.headerName}
         </TableCell>,
@@ -79,15 +87,21 @@ function ManagementTable<T extends TableData>({
     return headerCells;
   };
 
-  const renderActionButtons = (id: string) => (
-    <TableCell align={actionColumn.align}>
+  const renderActionButtons = (item: T) => (
+    <TableCell
+      sx={{
+        display: "flex",
+        gap: "2rem",
+      }}
+      align={actionColumn.align}
+    >
       {onEdit && (
-        <IconButton color="primary" onClick={() => onEdit(id)}>
+        <IconButton color="primary" onClick={() => onEdit(item.MaNhanVien)}>
           <Edit />
         </IconButton>
       )}
       {onDelete && (
-        <IconButton color="secondary" onClick={() => onDelete(id)}>
+        <IconButton color="secondary" onClick={() => onDelete(item.MaNhanVien)}>
           <Delete />
         </IconButton>
       )}
@@ -102,7 +116,7 @@ function ManagementTable<T extends TableData>({
     ));
 
     if (showActions) {
-      cells.push(renderActionButtons(item.id));
+      cells.push(renderActionButtons(item));
     }
 
     return cells;
@@ -116,7 +130,7 @@ function ManagementTable<T extends TableData>({
         </TableHead>
         <TableBody>
           {data.map((item) => (
-            <TableRow key={item.id}>{renderRowCells(item)}</TableRow>
+            <TableRow key={item.MaNhanVien}>{renderRowCells(item)}</TableRow>
           ))}
         </TableBody>
       </Table>

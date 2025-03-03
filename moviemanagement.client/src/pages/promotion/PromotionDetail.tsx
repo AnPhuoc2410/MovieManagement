@@ -111,10 +111,10 @@ const PromotionDetail: React.FC = () => {
             <Typography variant="subtitle2" gutterBottom>
               Thời gian: {dayjs(promotion.fromDate).format("DD/MM/YYYY")} - {dayjs(promotion.toDate).format("DD/MM/YYYY")}
             </Typography>
-            <Box 
+            <Box
               sx={{ typography: "body1", mt: 1 }}
               className="quill-content"
-              dangerouslySetInnerHTML={{ __html: promotion.content }} 
+              dangerouslySetInnerHTML={{ __html: promotion.content }}
             />
             <Button variant="contained" color="secondary" sx={{ mt: 2, alignSelf: "start" }}>
               Đặt Vé Ngay

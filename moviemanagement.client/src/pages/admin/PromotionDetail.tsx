@@ -41,7 +41,15 @@ export default function PromotionDetail() {
   }, [promotion, navigate]);
 
   const { watch, control, handleSubmit, reset, setValue } = useForm<Promotion>({
-    defaultValues: { promotionId: "", promotionName: "", discount: 0, fromDate: "", toDate: "", content: "", image: "", },
+    defaultValues: {
+      promotionId: "",
+      promotionName: "",
+      discount: 0,
+      fromDate: "",
+      toDate: "",
+      content: "",
+      image: "",
+    },
   });
 
   useEffect(() => {
@@ -55,7 +63,9 @@ export default function PromotionDetail() {
     uploadPreset: "movie_up",
   };
 
-  const [uploadedImage, setUploadedImage] = useState<string>(promotion?.image || "");
+  const [uploadedImage, setUploadedImage] = useState<string>(
+    promotion?.image || "",
+  );
 
   const handleSetPublicId = (publicId: string) => {
     var cloud = ENV.CLOUDINARY_CLOUD_NAME;
@@ -72,7 +82,7 @@ export default function PromotionDetail() {
         fromDate: dayjs(data.fromDate).toISOString(),
         toDate: dayjs(data.toDate).toISOString(),
       };
-  
+
       const response = await axios.put(
         `https://localhost:7119/api/Promotions/UpdatePromotion/${data.promotionId}`,
         payload,
@@ -80,7 +90,7 @@ export default function PromotionDetail() {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       console.log("Promotion updated:", response.data);
       navigate("/admin/khuyen-mai");
@@ -88,7 +98,7 @@ export default function PromotionDetail() {
       console.error("Error updating promotion:", error);
     }
   };
-  
+
   return (
     <AppTheme disableCustomTheme={false}>
       <CssBaseline enableColorScheme />
@@ -136,7 +146,10 @@ export default function PromotionDetail() {
                   rules={{
                     required: "Nhập giảm giá",
                     min: { value: 1, message: "Giảm giá ít nhất 1%" },
-                    max: { value: 100, message: "Giảm giá không vượt quá 100%" },
+                    max: {
+                      value: 100,
+                      message: "Giảm giá không vượt quá 100%",
+                    },
                   }}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
@@ -164,7 +177,11 @@ export default function PromotionDetail() {
                       InputLabelProps={{ shrink: true }}
                       error={!!error}
                       helperText={error ? error.message : ""}
-                      value={field.value ? dayjs(field.value).format("YYYY-MM-DD") : ""}
+                      value={
+                        field.value
+                          ? dayjs(field.value).format("YYYY-MM-DD")
+                          : ""
+                      }
                       onChange={(e) => field.onChange(e.target.value)}
                     />
                   )}
@@ -193,7 +210,11 @@ export default function PromotionDetail() {
                       InputLabelProps={{ shrink: true }}
                       error={!!error}
                       helperText={error ? error.message : ""}
-                      value={field.value ? dayjs(field.value).format("YYYY-MM-DD") : ""}
+                      value={
+                        field.value
+                          ? dayjs(field.value).format("YYYY-MM-DD")
+                          : ""
+                      }
                       onChange={(e) => field.onChange(e.target.value)}
                     />
                   )}
@@ -213,7 +234,10 @@ export default function PromotionDetail() {
 
                 {/* Cloudinary Upload Section */}
                 <Box sx={{ my: 2 }}>
-                  <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={handleSetPublicId} />
+                  <CloudinaryUploadWidget
+                    uwConfig={uwConfig}
+                    setPublicId={handleSetPublicId}
+                  />
                   {uploadedImage && (
                     <Box sx={{ mt: 1 }}>
                       <img
@@ -230,7 +254,9 @@ export default function PromotionDetail() {
                 </Button>
               </form>
             </Stack>
-            <Button onClick={() => navigate("/admin/khuyen-mai")}>Trở lại</Button>
+            <Button onClick={() => navigate("/admin/khuyen-mai")}>
+              Trở lại
+            </Button>
           </Box>
         </Box>
       </Box>

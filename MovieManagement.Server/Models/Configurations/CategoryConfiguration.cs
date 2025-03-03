@@ -9,12 +9,15 @@ namespace MovieManagement.Server.Models.Configurations
         public void Configure(EntityTypeBuilder<Category> builder)
         {
             builder.ToTable("CATEGORY");
-            builder.HasKey(x => x.CategoryId);
-            builder.Property(x => x.CategoryId).HasDefaultValueSql("NEWID()");
-            builder.Property(x => x.Name).HasColumnType("varchar(20)");
-            builder.Property(x => x.Name).IsRequired();
-            builder.Property(x => x.Name).HasMaxLength(20);
-            builder.Property(x => x.Name).IsUnicode(true);
+            builder.HasKey(x => new { x.MovieId, x.CategoryId });
+            builder.HasOne(x => x.Movie)
+                .WithMany(x => x.Categories)
+                .HasForeignKey(x => x.MovieId);
+            builder.HasOne(x => x.CategoryDetail)
+                .WithMany(x => x.Categories)
+                .HasForeignKey(x => x.CategoryId);
+
+            
         }
     }
 }

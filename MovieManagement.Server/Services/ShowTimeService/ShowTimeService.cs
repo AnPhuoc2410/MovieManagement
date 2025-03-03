@@ -17,7 +17,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             _mapper = mapper;
         }
 
-        public async Task<ShowTimeDto> CreateShowTime(ShowTimeDto showtime)
+        public async Task<ShowTimeDto> CreateAsync(ShowTimeDto showtime)
         {
             var newShowTime = new ShowTime()
             {
@@ -54,7 +54,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             }
         }
 
-        public async Task<IEnumerable<ShowTimeDto>> GetAllShowtime()
+        public async Task<IEnumerable<ShowTimeDto>> GetAll()
         {
             try
             {
@@ -70,8 +70,12 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 throw new Exception("Couldn't access into database due to systems error.", ex);
             }
         }
-
-        public async Task<ShowTimeDto> GetShowtime(Guid movieId, Guid roomId)
+        public async Task<IEnumerable<ShowTimeDto>> GetPageAsync(int page, int pageSize)
+        {
+            var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<IEnumerable<ShowTimeDto>>(showtimes);
+        }
+        public async Task<ShowTimeDto> GetByComposeId(Guid movieId, Guid roomId)
         {
             try
             {
@@ -88,7 +92,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             }
         }
 
-        public async Task<ShowTimeDto> UpdateShowTime(Guid movieId, Guid roomId, ShowTimeDto showtime)
+        public async Task<ShowTimeDto> UpdateAsync(Guid movieId, Guid roomId, ShowTimeDto showtime)
         {
             try
             {

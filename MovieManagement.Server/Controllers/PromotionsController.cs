@@ -18,27 +18,26 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllPromotions")]
+        [Route("GetAll")]
         public async Task<ActionResult> GetAllPromotions()
         {
-            var promotions = await _promotionService.GetAllPromotions();
+            var promotions = await _promotionService.GetAllAsync();
             return Ok(promotions);
         }
 
 
-        [HttpPost]
-        [Route("CreatePromotion")]
-        public async Task<ActionResult<PromotionDto>> CreatePromotion([FromBody] PromotionDto promotionDto)
+        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
         {
-            var @new = await _promotionService.CreatePromotion(promotionDto);
-            return @new;
+            var promotions = await _promotionService.GetPageAsync(page, pageSize);
+            return Ok(promotions);
         }
 
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("GetById/{id:guid}")]
         public async Task<ActionResult<PromotionDto>> GetPromotion(Guid id)
         {
-            var promotion = await _promotionService.GetPromotion(id);
+            var promotion = await _promotionService.GetByIdAsync(id);
             if (promotion == null)
             {
                 return NotFound();
@@ -47,12 +46,21 @@ namespace MovieManagement.Server.Controllers
         }
 
 
-        [HttpPut("UpdatePromotion/{id:guid}")]
+        [HttpPost]
+        [Route("CreateAsync")]
+        public async Task<ActionResult<PromotionDto>> CreatePromotion([FromBody] PromotionDto promotionDto)
+        {
+            var @new = await _promotionService.CreateAsync(promotionDto);
+            return @new;
+        }
+
+
+        [HttpPut("Update/{id:guid}")]
         public async Task<IActionResult> UpdatePromotion(Guid id, [FromBody] PromotionDto promotionDto)
         {
             try
             {
-                var updatedPromotion = await _promotionService.UpdatePromotion(id, promotionDto);
+                var updatedPromotion = await _promotionService.UpdateAsync(id, promotionDto);
                 return Ok(updatedPromotion);
             }
             catch (Exception ex)
@@ -62,10 +70,10 @@ namespace MovieManagement.Server.Controllers
         }
 
 
-        [HttpDelete("DeletePromotion/{id:guid}")]
+        [HttpDelete("Delete/{id:guid}")]
         public async Task<IActionResult> DeletePromotion(Guid id)
         {
-            var result = await _promotionService.DeletePromotion(id);
+            var result = await _promotionService.DeleteAsync(id);
             if (!result)
             {
                 return NotFound();

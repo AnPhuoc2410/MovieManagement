@@ -261,5 +261,15 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+        [HttpDelete("Delete/{movieId:guid}/{roomId:guid}")]
+        public async Task<IActionResult> DeleteShowTime(Guid movieId, Guid roomId)
+        {
+            var result = await _showTimeService.DeleteAsync(movieId, roomId);
+            if (result)
+            {
+                return Ok(result);
+            }
+            return NotFound();
+        }
     }
 }

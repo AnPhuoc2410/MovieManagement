@@ -16,7 +16,7 @@ namespace MovieManagement.Server.Services.PromotionService
             _mapper = mapper;
         }
 
-        public async Task<PromotionDto> CreatePromotion(PromotionDto promotionDto)
+        public async Task<PromotionDto> CreateAsync(PromotionDto promotionDto)
         {
             var newPromotion = new Promotion
             {
@@ -28,12 +28,12 @@ namespace MovieManagement.Server.Services.PromotionService
                 Content = promotionDto.Content
             };
 
-            // Create the promotion and return the created entity
+            // CreateAsync the promotion and return the created entity
             var createdPromotion = await _unitOfWork.PromotionRepository.CreateAsync(newPromotion);
             return _mapper.Map<PromotionDto>(createdPromotion);
         }
 
-        public async Task<PromotionDto> GetPromotion(Guid id)
+        public async Task<PromotionDto> GetByIdAsync(Guid id)
         {
             var promotion = await _unitOfWork.PromotionRepository.GetByIdAsync(id);
             if (promotion == null)
@@ -44,13 +44,13 @@ namespace MovieManagement.Server.Services.PromotionService
             return _mapper.Map<PromotionDto>(promotion);
         }
 
-        public async Task<IEnumerable<PromotionDto>> GetAllPromotions()
+        public async Task<IEnumerable<PromotionDto>> GetAllAsync()
         {
             var promotions = await _unitOfWork.PromotionRepository.GetAllAsync();
             return _mapper.Map<List<PromotionDto>>(promotions);
         }
 
-        public async Task<PromotionDto> UpdatePromotion(Guid id, PromotionDto promotionDto)
+        public async Task<PromotionDto> UpdateAsync(Guid id, PromotionDto promotionDto)
         {
             // Retrieve the existing promotion
             var existingPromotion = await _unitOfWork.PromotionRepository.GetByIdAsync(id);
@@ -73,11 +73,17 @@ namespace MovieManagement.Server.Services.PromotionService
             return _mapper.Map<PromotionDto>(updatedPromotion);
         }
 
-        public async Task<bool> DeletePromotion(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             // Delete the promotion using the repository
             var result = await _unitOfWork.PromotionRepository.DeleteAsync(id);
             return result;
+        }
+
+        public async Task<IEnumerable<PromotionDto>> GetPageAsync(int page, int pageSize)
+        {
+            var promotions = await _unitOfWork.PromotionRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<IEnumerable<PromotionDto>>(promotions);
         }
     }
 }
