@@ -26,7 +26,6 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
 
         [HttpGet]
@@ -40,7 +39,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<IEnumerable<TicketTypeDto>>
                 {
                     StatusCode = 200,
-                    Message = "Ticket Type retrieved successfully",
+                    Message = "Ticket AtColumn retrieved successfully",
                     IsSuccess = true,
                     Data = ListTicketTypes
                 };
@@ -52,11 +51,11 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<IEnumerable<TicketTypeDto>>
                 {
                     StatusCode = 404,
-                    Message = "Ticket Type not found",
+                    Message = "Ticket AtColumn not found",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
-                return response;
+                return NotFound(response);
             }
         }
 
@@ -71,7 +70,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<TicketTypeDto>
                 {
                     StatusCode = 201,
-                    Message = "Ticket Type created successfully",
+                    Message = "Ticket AtColumn created successfully",
                     IsSuccess = true,
                     Data = createdTicketType
                 };
@@ -95,7 +94,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<TicketTypeDto>
                 {
                     StatusCode = 200,
-                    Message = "Ticket Type retrieved successfully",
+                    Message = "Ticket AtColumn retrieved successfully",
                     IsSuccess = true,
                     Data = ticket
                 };
@@ -124,7 +123,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<TicketTypeDto>
                 {
                     StatusCode = 200,
-                    Message = "Ticket Type updated successfully",
+                    Message = "Ticket AtColumn updated successfully",
                     IsSuccess = true,
                     Data = updateTicket
                 };

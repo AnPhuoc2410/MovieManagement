@@ -33,7 +33,7 @@ namespace MovieManagement.Server.Models.Entities
 
         public int Status { get; set; } // 0: Khóa, 1: Mở
 
-        public int Level { get; set; }
+        public int Role { get; set; }
 
         public decimal Point { get; set; }
 

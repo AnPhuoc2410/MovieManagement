@@ -9,45 +9,66 @@ namespace MovieManagement.Server.Controllers
     public class CategoryDetailController : Controller
     {
         private readonly ICategoryDetailService _categoryDetailService;
+
+
         public CategoryDetailController(ICategoryDetailService categoryDetailService)
         {
             _categoryDetailService = categoryDetailService;
         }
-        [HttpGet("all")]
+
+
+        [HttpGet]
+        [Route("GetAll")]
         public async Task<ActionResult> GetAllCategoryDetail()
         {
-            var categoryDetails = await _categoryDetailService.GetAllCategoryDetailsAsync();
+            var categoryDetails = await _categoryDetailService.GetAllAsync();
             return Ok(categoryDetails);
         }
-        [HttpGet("{movieId:guid}/{categoryId:guid}")]
-        public async Task<ActionResult<CategoryDetailDto>> GetCategoryDetail(Guid movieId, Guid categoryId)
-        {
-            var categoryDetail = await _categoryDetailService.GetCategoryDetailByIdAsync(movieId, categoryId);
-            return Ok(categoryDetail);
-        }
+
+
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
         public async Task<ActionResult> GetCategoryPageAsync(int page, int pageSize)
         {
             var categorieDetails = await _categoryDetailService.GetPageAsync(page, pageSize);
             return Ok(categorieDetails);
         }
-        [HttpPost]
-        public async Task<ActionResult<CategoryDetailDto>> CreateCategoryDetail(CategoryDetailDto categoryDetail)
+
+
+        [HttpGet("GetById/{categoryId:guid}")]
+        public async Task<ActionResult<CategoryDetailDto>> GetCategoryDetail(Guid categoryId)
         {
-            var newCategoryDetail = await _categoryDetailService.CreateCategoryDetailAsync(categoryDetail);
+            var categoryDetail = await _categoryDetailService.GetByIdAsync(categoryId);
+            return Ok(categoryDetail);
+        }
+
+
+        [HttpPost]
+        [Route("Create")]
+        public async Task<ActionResult<CategoryDetailDto>> CreateCategoryDetail([FromBody] CategoryDetailDto categoryDetail)
+        {
+            var newCategoryDetail = await _categoryDetailService.CreateAsync(categoryDetail);
             return Ok(newCategoryDetail);
         }
+
+
         [HttpPut]
-        public async Task<ActionResult<CategoryDetailDto>> UpdateCategoryDetail(Guid categoryId, Guid movieId)
+        [Route("Update/{categoryId:guid}")]
+        public async Task<ActionResult<CategoryDetailDto>> UpdateCategoryDetail(Guid categoryId, [FromBody] CategoryDetailDto categoryDetailDto)
         {
-            var updatedCategoryDetail = await _categoryDetailService.UpdateCategoryDetailAsync(categoryId, movieId);
+            var updatedCategoryDetail = await _categoryDetailService.UpdateAsync(categoryId, categoryDetailDto);
             return Ok(updatedCategoryDetail);
         }
+
+
         [HttpDelete]
-        public async Task<bool> DeleteCategoryDetail(Guid movieId, Guid categoryId)
+        [Route("Delete/{categoryId:guid}")]
+        public async Task<bool> DeleteCategoryDetail(Guid categoryId)
         {
-            var deleted = await _categoryDetailService.DeleteCategoryDetailAsync(movieId, categoryId);
+            var deleted = await _categoryDetailService.DeleteAsync(categoryId);
             return deleted;
         }
+
+
+
     }
 }

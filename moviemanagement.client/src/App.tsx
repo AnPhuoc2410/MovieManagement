@@ -1,26 +1,28 @@
+import { createTheme, ThemeProvider } from "@mui/material";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { ToastContainer } from "react-toastify";
+import ScrollToTop from "./components/common/ScrollToTop";
 import { AuthProvider } from "./contexts/AuthContext";
-import AuthContainer from "./pages/auth/AuthContainer";
+import Dashboard from "./pages/admin/Dashboard";
+import Movies from "./pages/admin/Movies";
+import PromotionDetailManagement from "./pages/admin/PromotionDetail";
+import Promotion from "./pages/promotion/PromotionsPage";
+import PromotionManagement from "./pages/admin/Promotions";
+import BuyTicket from "./pages/admin/QuanLyBanVe/SoldTicket";
+import QuanLiNhanVien from "./pages/admin/QuanLyNhanVien";
+import QuanLiThanhVien from "./pages/admin/QuanLyThanhVien/QuanLiThanhVien";
+import LoginForm from "./pages/auth/Login";
+import SignupForm from "./pages/auth/Signup";
 import Home from "./pages/Home";
 import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
 import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
-import ScrollToTop from "./components/common/ScrollToTop";
-import Promotion from "./pages/promotion/PromotionsPage";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
-import Ticket from "./pages/ticket/Ticket";
+import Ticket from "./pages/ticket/ShowTime";
 import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
-import Confirmation from "./pages/ticket/Confirmation";
-import UserDetail from "./pages/user/UserDetail";
-import { createTheme, ThemeProvider } from "@mui/material";
+import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
-import Dashboard from "./pages/admin/Dashboard";
-import PromotionManagement from "./pages/admin/Promotions";
-import PromotionDetailManagement from "./pages/admin/PromotionDetail";
-import Movies from "./pages/admin/Movies";
-import QuanLiThanhVien from "./pages/admin/QuanLyThanhVien/QuanLiThanhVien";
-import QuanLiNhanVien from "./pages/admin/QuanLyNhanVien";
+import Confirmation from "./pages/ticket/Confirmation";
 
 
 const theme = createTheme({
@@ -46,10 +48,13 @@ const App = () => {
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/auth" element={<AuthContainer />} />
+            <Route path="/auth">
+              <Route path="login" element={<LoginForm />} />
+              <Route path="signup" element={<SignupForm />} />
+            </Route>
             <Route path="/promotions" element={<Promotion />} />
             <Route path="/promotions/:id" element={<PromotionDetail />} />
-            <Route path="/ticket/:id" element={<Ticket />} />
+            <Route path="/showtime/:id" element={<Ticket />} />
             <Route path="/movie-seat" element={<MovieSeat />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/confirmation" element={<Confirmation />} />
@@ -65,6 +70,7 @@ const App = () => {
               <Route path="thong-ke" element={<Dashboard />} />
               <Route path="khuyen-mai" element={<PromotionManagement />} />
               <Route path="phim" element={<Movies />} />
+              <Route path="ban-ve" element={<BuyTicket />} />
               <Route
                 path="khuyen-mai/:id"
                 element={<PromotionDetailManagement />}

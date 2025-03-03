@@ -67,22 +67,15 @@ namespace MovieManagement.Server.Services.TicketTypeService
 
         public async Task<IEnumerable<TicketTypeDto>> GetAllTicketType()
         {
-            try
-            {
-                var TicketTypes = _mapper.Map<List<TicketTypeDto>>(await _unitOfWork.TicketTypeRepository.GetAllAsync());
+            var TicketTypes = _mapper.Map<List<TicketTypeDto>>(await _unitOfWork.TicketTypeRepository.GetAllAsync());
 
-                if (TicketTypes == null)
-                {
-                    //Thrown exception here.
-                    throw new NotFoundException("TicketType does not found!");
-                }
-                return TicketTypes;
-            }
-            catch (Exception ex)
+            if (TicketTypes.Count == 0)
             {
-
-                throw new Exception("Couldn't access into database due to systems error.", ex);
+                //Thrown exception here.
+                throw new NotFoundException("TicketType does not found!");
             }
+            return TicketTypes;
+            
         }
         public async Task<IEnumerable<TicketTypeDto>> GetPageAsync(int page, int pageSize)
         {

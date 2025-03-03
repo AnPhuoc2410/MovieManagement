@@ -17,8 +17,6 @@ namespace MovieManagement.Server.Models.Entities
 
         public decimal Amount { get; set; }
 
-       // public Guid MemberId { get; set; }
-
         public Guid UserId { get; set; }
 
         public Guid PromotionId { get; set; }
@@ -28,8 +26,6 @@ namespace MovieManagement.Server.Models.Entities
         public IEnumerable<TicketDetail> TicketDetails { get; set; } = new List<TicketDetail>(); // Quan hệ 1-N với TicketDetail
 
         public User User { get; set; }
-
-        //public Member Member { get; set; }
 
         public Promotion Promotion { get; set; }
     }

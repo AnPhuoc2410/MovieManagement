@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Services.JwtService;
+using System.Reflection;
 using System.Text;
 
 namespace MovieManagement.Server
@@ -20,53 +23,54 @@ namespace MovieManagement.Server
             builder.Services.AddEndpointsApiExplorer();
 
             //Đăng ký JWT Authentication
-            //builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //    .AddJwtBearer(options =>
-            //    {
-            //        options.TokenValidationParameters = new TokenValidationParameters
-            //        {
-            //            ValidateIssuer = true,
-            //            ValidateAudience = true,
-            //            ValidateLifetime = true,
-            //            ValidateIssuerSigningKey = true,
-            //            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            //            ValidAudience = builder.Configuration["Jwt:Audience"],
-            //            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-            //        };
-            //    });
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
+                };
+            });
 
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "0"));
                 options.AddPolicy("Manager", policy => policy.RequireClaim("Role", "1"));
-                options.AddPolicy("Employy", policy => policy.RequireClaim("Role", "2"));
+                options.AddPolicy("Employee", policy => policy.RequireClaim("Role", "2"));
+                options.AddPolicy("Customer", policy => policy.RequireClaim("Role", "3"));
             });
 
             // Đăng ký JwtService
-            //builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IJwtService, JwtService>();
 
             // Đăng ký DbContext
             // su dung SQL Server option
-            //builder.Services.AddDbContext<AppDbContext>(options =>
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-            //);
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+            );
 
 
             // su dung Postgres option
-            builder.Services.AddDbContext<AppDbContext>(options =>
-            {
-                options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"),
-                    npgsqlOptionsAction: sqlOptions =>
-                    {
-                        sqlOptions.EnableRetryOnFailure(
-                            maxRetryCount: 5,
-                            maxRetryDelay: TimeSpan.FromSeconds(30),
-                            errorCodesToAdd: null);
+            //builder.Services.AddDbContext<AppDbContext>(options =>
+            //{
+            //    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"),
+            //        npgsqlOptionsAction: sqlOptions =>
+            //        {
+            //            sqlOptions.EnableRetryOnFailure(
+            //                maxRetryCount: 5,
+            //                maxRetryDelay: TimeSpan.FromSeconds(30),
+            //                errorCodesToAdd: null);
 
-                        // Add this line to ensure UTC timestamps
-                        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-                    });
-            });
+            //            // Add this line to ensure UTC timestamps
+            //            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            //        });
+            //});
 
             // Đăng ký UnitOfWork
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -83,11 +87,57 @@ namespace MovieManagement.Server
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowReactApp",
-                    policy => policy.WithOrigins("https://localhost:7119", "https://localhost:3000")
+                    policy => policy.WithOrigins(
+                    "https://localhost:3000",
+                    "http://localhost:3000",
+                    "https://eigaa.vercel.app")
                         .AllowAnyMethod()
                         .AllowAnyHeader());
             });
-            builder.Services.AddSwaggerGen();
+
+            // Đăng ký Swagger
+            // Setting json inside of appsettings.
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new() { Title = "MovieManagement.Server", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] { }
+                    }
+                });
+                // Set the comments path for the Swagger JSON and UI.
+                // Set up this in .csproj
+                /*
+                
+                 <PropertyGroup>
+                      <GenerateDocumentationFile>true</GenerateDocumentationFile>
+                      <NoWarn>$(NoWarn);1591</NoWarn>
+                </PropertyGroup>
+
+                 */
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+
+
 
 
             //builder.Services.AddDbContext<AppDbContext>(options =>

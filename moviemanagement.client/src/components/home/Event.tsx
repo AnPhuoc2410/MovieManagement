@@ -29,8 +29,7 @@ const promotions = [
 
 const Promotions: React.FC = () => {
   const navigate = useNavigate();
-  const {t} = useTranslation();
-
+  const { t } = useTranslation();
 
   return (
     <Container sx={{ mt: 4, textAlign: "center", padding: 5 }}>

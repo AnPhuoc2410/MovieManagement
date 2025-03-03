@@ -42,16 +42,24 @@ interface Promotion {
   image?: string;
 }
 
-export default function Promotions({ disableCustomTheme = false }: { disableCustomTheme?: boolean }) {
+export default function Promotions({
+  disableCustomTheme = false,
+}: {
+  disableCustomTheme?: boolean;
+}) {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [open, setOpen] = useState(false);
-  const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null);
+  const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(
+    null,
+  );
   const [uploadedImage, setUploadedImage] = useState<string>("");
 
   useEffect(() => {
     async function fetchPromotions() {
       try {
-        const response = await axios.get("https://localhost:7119/api/Promotions/GetAllPromotions");
+        const response = await axios.get(
+          "https://localhost:7119/api/Promotions/GetAllPromotions",
+        );
         setPromotions(response.data);
       } catch (error) {
         console.error("Error fetching promotions:", error);
@@ -61,7 +69,15 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
   }, []);
 
   const { watch, control, handleSubmit, reset, setValue } = useForm<Promotion>({
-    defaultValues: { promotionId: "", promotionName: "", discount: 0, fromDate: "", toDate: "", content: "", image: "", },
+    defaultValues: {
+      promotionId: "",
+      promotionName: "",
+      discount: 0,
+      fromDate: "",
+      toDate: "",
+      content: "",
+      image: "",
+    },
   });
   const navigate = useNavigate();
 
@@ -88,7 +104,7 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
         toDate: "",
         content: "",
         image: "",
-      }
+      },
     );
     setUploadedImage(promotion?.image || "");
     setOpen(true);
@@ -106,14 +122,14 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
         ...data,
         promotionId: data.promotionId ? data.promotionId : null,
       };
-        // Create new promotion
-        const response = await axios.post(
-          "https://localhost:7119/api/Promotions/CreatePromotion",
-          payload,
-          { headers: { "Content-Type": "application/json" } }
-        );
-        setPromotions([...promotions, response.data]);
-      
+      // Create new promotion
+      const response = await axios.post(
+        "https://localhost:7119/api/Promotions/CreatePromotion",
+        payload,
+        { headers: { "Content-Type": "application/json" } },
+      );
+      setPromotions([...promotions, response.data]);
+
       handleClose();
     } catch (error) {
       console.error("Error posting promotion:", error);
@@ -122,23 +138,31 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
 
   const handleDelete = async (promotionId: string) => {
     try {
-      await axios.delete(`https://localhost:7119/api/Promotions/DeletePromotion/${promotionId}`, {
-        headers: { "Content-Type": "application/json" },
-      });
+      await axios.delete(
+        `https://localhost:7119/api/Promotions/DeletePromotion/${promotionId}`,
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      );
       setPromotions(promotions.filter((p) => p.promotionId !== promotionId));
     } catch (error) {
       console.error("Error deleting promotion:", error);
     }
   };
-  
 
   const handleEdit = (promotion: Promotion) => {
-    navigate(`/admin/khuyen-mai/${promotion.promotionId}`, { state: { promotion } });
+    navigate(`/admin/khuyen-mai/${promotion.promotionId}`, {
+      state: { promotion },
+    });
   };
 
   const columns: GridColDef[] = [
     {
-      field: "promotionId", headerName: "ID", width: 100, sortable:false, filterable:false,
+      field: "promotionId",
+      headerName: "ID",
+      width: 100,
+      sortable: false,
+      filterable: false,
     },
     { field: "promotionName", headerName: "Tiêu Đề", flex: 1 },
     { field: "discount", headerName: "Giảm giá (%)", width: 130 },
@@ -147,7 +171,9 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
       headerName: "Bắt đầu",
       width: 150,
       renderCell: (params) => (
-        <span>{params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}</span>
+        <span>
+          {params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}
+        </span>
       ),
     },
     {
@@ -155,7 +181,9 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
       headerName: "Kết thúc",
       width: 150,
       renderCell: (params) => (
-        <span>{params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}</span>
+        <span>
+          {params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}
+        </span>
       ),
     },
     { field: "content", headerName: "Chi Tiết", flex: 1 },
@@ -165,7 +193,11 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
       width: 120,
       renderCell: (params) =>
         params.row.image ? (
-          <img src={params.row.image} alt="Promotion" style={{ width: "100%", height: "auto" }} />
+          <img
+            src={params.row.image}
+            alt="Promotion"
+            style={{ width: "100%", height: "auto" }}
+          />
         ) : (
           "No image"
         ),
@@ -324,12 +356,19 @@ export default function Promotions({ disableCustomTheme = false }: { disableCust
                 control={control}
                 defaultValue=""
                 rules={{ required: "Nhập chi tiết" }}
-                render={({ field, fieldState: { error }  }) => (
-                  <TextEdit value={field.value} onChange={(val) => field.onChange(val)} error={error?.message}/>
+                render={({ field, fieldState: { error } }) => (
+                  <TextEdit
+                    value={field.value}
+                    onChange={(val) => field.onChange(val)}
+                    error={error?.message}
+                  />
                 )}
               />
               <Box sx={{ my: 2 }}>
-                <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={handleSetPublicId} />
+                <CloudinaryUploadWidget
+                  uwConfig={uwConfig}
+                  setPublicId={handleSetPublicId}
+                />
                 {uploadedImage && (
                   <Box sx={{ mt: 1 }}>
                     <img
