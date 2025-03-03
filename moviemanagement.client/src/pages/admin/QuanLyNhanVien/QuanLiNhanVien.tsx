@@ -1,6 +1,3 @@
-import type {} from "@mui/x-charts/themeAugmentation";
-import type {} from "@mui/x-data-grid-pro/themeAugmentation";
-import type {} from "@mui/x-date-pickers/themeAugmentation";
 import { useQuery } from "react-query";
 import { fetchNhanVien } from "../../../apis/mock.apis";
 import LoadingSpinner from "../../../components/LoadingSpinner";

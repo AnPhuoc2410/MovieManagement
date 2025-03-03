@@ -18,19 +18,10 @@ namespace MovieManagement.Server.Services.PromotionService
 
         public async Task<PromotionDto> CreateAsync(PromotionDto promotionDto)
         {
-            var newPromotion = new Promotion
-            {
-                PromotionName = promotionDto.PromotionName,
-                Image = promotionDto.Image,
-                FromDate = promotionDto.FromDate,
-                ToDate = promotionDto.ToDate,
-                Discount = promotionDto.Discount,
-                Content = promotionDto.Content
-            };
+            var newPromotion = _mapper.Map<Promotion>(promotionDto);
 
             // CreateAsync the promotion and return the created entity
-            var createdPromotion = await _unitOfWork.PromotionRepository.CreateAsync(newPromotion);
-            return _mapper.Map<PromotionDto>(createdPromotion);
+            return _mapper.Map<PromotionDto>(await _unitOfWork.PromotionRepository.CreateAsync(newPromotion));
         }
 
         public async Task<PromotionDto> GetByIdAsync(Guid id)
@@ -59,14 +50,7 @@ namespace MovieManagement.Server.Services.PromotionService
                 throw new Exception("Promotion not found.");
             }
 
-            // Update the fields
-            existingPromotion.PromotionName = promotionDto.PromotionName;
-            existingPromotion.Image = promotionDto.Image;
-            existingPromotion.FromDate = promotionDto.FromDate;
-            existingPromotion.ToDate = promotionDto.ToDate;
-            existingPromotion.Discount = promotionDto.Discount;
-            existingPromotion.Content = promotionDto.Content;
-            existingPromotion.Content = promotionDto.Content;
+            existingPromotion = _mapper.Map(promotionDto, existingPromotion);
 
             // Update the promotion in the repository and return the updated entity
             var updatedPromotion = await _unitOfWork.PromotionRepository.UpdateAsync(existingPromotion);

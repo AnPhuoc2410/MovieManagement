@@ -12,7 +12,7 @@ namespace MovieManagement.Server.Models.Configurations
             builder.ToTable("CATEGORYDETAIL");
             builder.HasKey(x => x.CategoryId);
             builder.Property(x => x.CategoryId).HasDefaultValueSql("NEWID()");
-            builder.Property(x => x.Name).HasColumnType("varchar(20)");
+            builder.Property(x => x.Name).HasColumnType("nvarchar(20)");
             builder.Property(x => x.Name).IsRequired();
             builder.Property(x => x.Name).HasMaxLength(20);
             builder.Property(x => x.Name).IsUnicode(true);
