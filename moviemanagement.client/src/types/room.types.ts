@@ -1,4 +1,4 @@
-export type Room = {
+export interface Room {
   roomId: string;
   name: string;
   row: number;
@@ -6,4 +6,4 @@ export type Room = {
   total: number;
   //seats: Seat[];
   //showtimes: ShowTime[];
-};
+}

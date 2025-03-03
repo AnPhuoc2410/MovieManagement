@@ -24,9 +24,11 @@ export const fetchRoom = async (): Promise<Room[]> => {
   return response.data;
 };
 
-export const fetchRoomDetail = async (): Promise<Room> => {
+export const fetchRoomDetail = async (id: string): Promise<Room> => {
   const response = await axios.get<Room>(
-    "https://run.mocky.io/v3/a46ca746-c33d-4946-92d9-5b44f60293c9",
+    id === "1"
+      ? "https://run.mocky.io/v3/a46ca746-c33d-4946-92d9-5b44f60293c9"
+      : "notfound",
   );
   return response.data;
 };
