@@ -25,6 +25,8 @@ import AdminTheme from "./shared-theme/AdminTheme";
 import Confirmation from "./pages/ticket/Confirmation";
 import QuanLyPhongChieu from "./pages/admin/QuanLyPhongChieu/QuanLyPhongChieu";
 import ChiTietPhongChieu from "./pages/admin/QuanLyPhongChieu/ChiTietPhongChieu";
+import QuanLyDatVe from "./pages/admin/QuanLyDatVe/QuanLyDatVe";
+import ChiTietDatVe from "./pages/admin/QuanLyDatVe/ChiTietDatVe";
 
 const theme = createTheme({
   components: {
@@ -72,7 +74,6 @@ const App = () => {
               <Route path="khuyen-mai" element={<PromotionManagement />} />
               <Route path="phim" element={<Movies />} />
               <Route path="ban-ve" element={<BuyTicket />} />
-              <Route path="dat-ve" element={<>Hehe</>} />
               <Route
                 path="khuyen-mai/:id"
                 element={<PromotionDetailManagement />}
@@ -82,6 +83,10 @@ const App = () => {
               <Route path="ql-phong-chieu">
                 <Route path="" element={<QuanLyPhongChieu />} />
                 <Route path=":roomId" element={<ChiTietPhongChieu />} />
+              </Route>
+              <Route path="ql-dat-ve">
+                <Route path="" element={<QuanLyDatVe />} />
+                <Route path=":bId" element={<ChiTietDatVe />} />
               </Route>
             </Route>
           </Routes>
