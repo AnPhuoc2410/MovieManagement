@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 
@@ -12,10 +13,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
         public ShowTimeService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-
         }
 
         public async Task<ShowtimeDto> CreateShowtimeAsync(ShowtimeDto showtime)
@@ -63,6 +62,5 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var updatedShowTime = await _unitOfWork.ShowtimeRepository.UpdateAsync(existingShowTime);
             return _mapper.Map<ShowtimeDto>(updatedShowTime);
         }
-
     }
 }

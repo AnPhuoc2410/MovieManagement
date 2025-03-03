@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.ShowTimeService;
 
 namespace MovieManagement.Server.Controllers
@@ -57,16 +59,52 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
+                var updateShowTime = await _showTimeService.UpdateShowTime(movieId, roomId, showTimeDto);
                 var updateShowTime= _showTimeService.UpdateShowtimeAsync(movieId, roomId, showTimeDto);
                 if (updateShowTime == null)
                 {
-                    throw new Exception("Nothing were found!");
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Show Time not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
                 }
                 return Ok(updateShowTime);
             }
+            catch(BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating show time",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
 
