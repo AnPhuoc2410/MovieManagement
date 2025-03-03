@@ -2,7 +2,7 @@
 {
     public class MovieDto
     {
-        public Guid MovieId { get; set; }
+        public Guid? MovieId { get; set; }
 
         public string Name { get; set; }
 
