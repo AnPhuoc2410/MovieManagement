@@ -17,7 +17,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             _mapper = mapper;
         }
 
-        public async Task<TicketDetailDto> CreateTicketDetail(TicketDetailDto ticketDetail)
+        public async Task<TicketDetailDto> CreateAsync(TicketDetailDto ticketDetail)
         {
             var newTicketDetail = new TicketDetail()
             {
@@ -31,7 +31,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
         }
 
 
-        public async Task<TicketDetailDto> GetTicketDetail(Guid id)
+        public async Task<TicketDetailDto> GetByIdAsync(Guid id)
         {
             var ticket = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id);
             if (ticket == null)
@@ -40,21 +40,19 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             }
             return _mapper.Map<TicketDetailDto>(ticket);
         }
+        public async Task<IEnumerable<TicketDetailDto>> GetPageAsync(int page, int pageSize)
+        {
+            var ticketDetails = await _unitOfWork.TicketDetailRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<IEnumerable<TicketDetailDto>>(ticketDetails);
+        }
 
-
-
-
-        public async Task<IEnumerable<TicketDetailDto>> GetAllTicketDetails()
+        public async Task<IEnumerable<TicketDetailDto>> GetAllAsync()
         {
             var ticketDetails = await _unitOfWork.TicketDetailRepository.GetAllAsync();
             return _mapper.Map<List<TicketDetailDto>>(ticketDetails);
         }
 
-
-
-
-
-        public async Task<TicketDetailDto> UpdateTicketDetail(Guid id, TicketDetailDto ticketDetail)
+        public async Task<TicketDetailDto> UpdateAsync(Guid id, TicketDetailDto ticketDetail)
         {
             var existingTicketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync
                 (id);
@@ -73,7 +71,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 
 
 
-        public async Task<bool> DeleteTicketDetail(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             var result = await _unitOfWork.TicketDetailRepository.DeleteAsync(id);
             return result;

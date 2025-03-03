@@ -23,27 +23,27 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet]
-        [Route("GetAllTicketDetail")]
+        [Route("GetAll")]
         public async Task<ActionResult> GetAllTicketDetail()
         {
-            var ticket = await _ticketDetailService.GetAllTicketDetails();
+            var ticket = await _ticketDetailService.GetAllAsync();
             return Ok(ticket);
         }
 
 
-        [HttpPost]
-        [Route("CreateTicketDetail")]
-        public async Task<ActionResult<TicketDetail>> CreateTicketDetail(TicketDetailDto ticketDetail)
+
+        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
         {
-            var createdTicketDetail = _ticketDetailService.CreateTicketDetail(ticketDetail);
-            return Ok(createdTicketDetail);
+            var ticketDetails = await _ticketDetailService.GetPageAsync(page, pageSize);
+            return Ok(ticketDetails);
         }
 
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<TicketDetailDto>> GetTicketDetail(Guid id)
         {
-            var ticket = await _ticketDetailService.GetTicketDetail(id);
+            var ticket = await _ticketDetailService.GetByIdAsync(id);
             if (ticket == null)
             {
                 return NotFound();
@@ -52,12 +52,21 @@ namespace MovieManagement.Server.Controllers
         }
 
 
-        [HttpPut("UpdateTicketDetail/{id:guid}")]
-        public async Task<IActionResult> UpdateTicketDetail(Guid id, TicketDetailDto ticketDetailDto)
+        [HttpPost]
+        [Route("Create")]
+        public async Task<ActionResult<TicketDetail>> CreateTicketDetail([FromBody] TicketDetailDto ticketDetail)
+        {
+            var createdTicketDetail = _ticketDetailService.CreateAsync(ticketDetail);
+            return Ok(createdTicketDetail);
+        }
+
+
+        [HttpPut("Update/{id:guid}")]
+        public async Task<IActionResult> UpdateTicketDetail(Guid id, [FromBody] TicketDetailDto ticketDetailDto)
         {
             try
             {
-                var updateTicket = _ticketDetailService.UpdateTicketDetail(id, ticketDetailDto);
+                var updateTicket = _ticketDetailService.UpdateAsync(id, ticketDetailDto);
                 if (updateTicket == null)
                 {
                     throw new Exception("Nothing were found!");
@@ -71,15 +80,18 @@ namespace MovieManagement.Server.Controllers
         }
 
 
-        [HttpDelete("DeleteTicketDetail/{id:guid}")]
+        [HttpDelete("Delete/{id:guid}")]
         public async Task<IActionResult> DeleteTicketDetail(Guid id)
         {
-            var result = await _ticketDetailService.DeleteTicketDetail(id);
+            var result = await _ticketDetailService.DeleteAsync(id);
             if (!result)
             {
                 return NotFound();
             }
             return NoContent();
         }
+
+
+
     }
 }

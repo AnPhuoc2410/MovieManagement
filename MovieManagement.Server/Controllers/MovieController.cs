@@ -9,38 +9,62 @@ namespace MovieManagement.Server.Controllers
     public class MovieController : Controller
     {
         private readonly IMovieService _movieService;
+
+
         public MovieController(IMovieService movieService)
         {
             _movieService = movieService;
         }
+
+
         [HttpGet]
-        [Route("all")]
+        [Route("GetAll")]
         public async Task<ActionResult> GetAll()
         {
-            var movies = await _movieService.GetAllMoviesAsync();
+            var movies = await _movieService.GetAllAsync();
             return Ok(movies);
         }
+
+
+        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        {
+            var movies = await _movieService.GetPageAsync(page, pageSize);
+            return Ok(movies);
+        }
+
+
         [HttpGet]
-        [Route("{movieId:guid}")]
+        [Route("GetById/{movieId:guid}")]
         public async Task<ActionResult<MovieDto>> GetMovieById(Guid movieId)
         {
-            return await _movieService.GetMovieByIdAsync(movieId);
+            return await _movieService.GetAsync(movieId);
         }
+
+
         [HttpPost]
+        [Route("Create")]
         public async Task<ActionResult<MovieDto>> CreateMovie(Guid employeeId, [FromBody] MovieDto movieDto)
         {
-            return await _movieService.CreateMovieAsync(employeeId, movieDto);
+            return await _movieService.CreateAsync(employeeId, movieDto);
         }
+
+
         [HttpPut]
-        [Route("{movieId:guid}")]
+        [Route("Update/{movieId:guid}")]
         public async Task<ActionResult<MovieDto>> UpdateRoom(Guid movieId, [FromBody] MovieDto movieDto)
         {
-            return await _movieService.UpdateMovieAsync(movieId, movieDto);
+            return await _movieService.UpdateAsync(movieId, movieDto);
         }
+
+
         [HttpDelete]
+        [Route("Delete/{movieId:guid}")]
         public async Task<bool> DeleteRoom(Guid movieId)
         {
-            return await _movieService.DeleteMovieAsync(movieId);
+            return await _movieService.DeleteAsync(movieId);
         }
+
+
     }
 }

@@ -9,7 +9,6 @@ namespace MovieManagement.Server.Data
         ICategoryDetailRepository CategoryDetailRepository { get; }
         ICategoryRepository CategoryRepository { get; }
         IUserRepository UserRepository { get; }
-        //IMemberRepository MemberRepository { get; }
         IMovieRepository MovieRepository { get; }
         IPromotionRepository PromotionRepository { get; }
         IRoomRepository RoomRepository { get; }
@@ -17,6 +16,7 @@ namespace MovieManagement.Server.Data
         IShowtimeRepository ShowtimeRepository { get; }
         ITicketDetailRepository TicketDetailRepository { get; }
         ITicketTypeRepository TicketTypeRepository { get; }
+        ISeatTypeRepository SeatTypeRepository { get; }
 
         Task<int> CompleteAsync();
     }
