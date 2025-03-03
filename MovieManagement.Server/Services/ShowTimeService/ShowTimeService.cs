@@ -37,7 +37,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             }
         }
 
-        public async Task<bool> DeleteShowtime(Guid movieId, Guid roomId)
+        public async Task<bool> DeleteAsync(Guid movieId, Guid roomId)
         {
             try
             {
@@ -70,6 +70,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 throw new Exception("Couldn't access into database due to systems error.", ex);
             }
         }
+
+
         public async Task<IEnumerable<ShowTimeDto>> GetPageAsync(int page, int pageSize)
         {
             var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
@@ -119,5 +121,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 throw new ApplicationException("An error occurred while processing with database.", ex);
             }
         }
+
+   
     }
 }

@@ -30,7 +30,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var ListShowTime = await _showTimeService.GetAllShowtime();
+                var ListShowTime = await _showTimeService.GetAll();
                 var response = new ApiResponseServices<IEnumerable<ShowTimeDto>>
                 {
                     StatusCode = 200,
@@ -97,7 +97,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var createdShowTime = await _showTimeService.CreateShowTime(showTimeDto);
+                var createdShowTime = await _showTimeService.CreateAsync(showTimeDto);
                 return Ok(createdShowTime);
             }
             catch (BadRequestException ex)
@@ -156,7 +156,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var showTime = await _showTimeService.GetShowtime(movieId, roomId);
+                var showTime = await _showTimeService.GetByComposeId(movieId, roomId);
                 if (showTime == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -214,7 +214,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var updateShowTime = await _showTimeService.UpdateShowTime(movieId, roomId, showTimeDto);
+                var updateShowTime = await _showTimeService.UpdateAsync(movieId, roomId, showTimeDto);
                 if (updateShowTime == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -227,7 +227,7 @@ namespace MovieManagement.Server.Controllers
                 }
                 return Ok(updateShowTime);
             }
-            catch(BadRequestException ex)
+            catch (BadRequestException ex)
             {
                 var response = new ApiResponseServices<object>
                 {
@@ -262,14 +262,70 @@ namespace MovieManagement.Server.Controllers
             }
         }
         [HttpDelete("Delete/{movieId:guid}/{roomId:guid}")]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteShowTime(Guid movieId, Guid roomId)
         {
-            var result = await _showTimeService.DeleteAsync(movieId, roomId);
-            if (result)
+            try
             {
-                return Ok(result);
+                var result = await _showTimeService.DeleteAsync(movieId, roomId);
+                if (result)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 200,
+                        Message = "Show Time deleted successfully",
+                        IsSuccess = true
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Show Time not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
             }
-            return NotFound();
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while deleting show time",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
     }
 }
