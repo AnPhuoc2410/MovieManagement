@@ -80,15 +80,15 @@ namespace MovieManagement.Server.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("CategoryName")
                         .IsRequired()
                         .HasMaxLength(20)
                         .IsUnicode(true)
                         .HasColumnType("varchar(20)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CategoryId");
 
@@ -124,7 +124,7 @@ namespace MovieManagement.Server.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("MovieName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(true)
@@ -197,7 +197,7 @@ namespace MovieManagement.Server.Migrations
                     b.Property<int>("Column")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("RoomName")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 

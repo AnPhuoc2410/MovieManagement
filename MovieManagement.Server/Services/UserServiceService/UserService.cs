@@ -1,9 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Data;
+using System.Drawing;
+using System.Net;
 
 namespace MovieManagement.Server.Services.UserService
 {
@@ -20,84 +25,65 @@ namespace MovieManagement.Server.Services.UserService
         }
 
 
-        public async Task<UserDto> CreateAsync(UserDto user)
+        public async Task<UserDto> CreateUserAsync(UserDto user)
         {
-            User newUser = new User
-            {
-                UserName = user.UserName,
-                //Password = user.Password,
-                BirthDate = user.BirthDate,
-                Address = user.Address,
-                Avatar = user.Avatar,
-                Email = user.Email,
-                FullName = user.FullName,
-                Gender = user.Gender,
-                IDCard = user.IDCard,
-                JoinDate = DateTime.Now,
-                Role = user.Role,
-                PhoneNumber = user.PhoneNumber,
-                Status = user.Status,
-                Point = 0
-            };
-
+            var newUser = _mapper.Map<User>(user);
             // Hash the password
             var passwordHasher = new PasswordHasher<User>();
             newUser.Password = passwordHasher.HashPassword(newUser, user.Password);
 
-
-            return _mapper.Map<UserDto>(await _unitOfWork.UserRepository.CreateAsync(newUser));
+            var createdUser = await _unitOfWork.UserRepository.CreateAsync(newUser);
+            return _mapper.Map<UserDto>(createdUser);
 
         }
 
-        public Task<bool> DeleteAsync(Guid id)
+        public Task<bool> DeleteUserAsync(Guid id)
         {
             return _unitOfWork.UserRepository.DeleteAsync(id);
         }
 
-        public async Task<IEnumerable<UserDto>> GetAllAsync()
+        public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
         {
-            var employees = await _unitOfWork.UserRepository.GetAllAsync();
+            var users = await _unitOfWork.UserRepository.GetAllAsync();
             return _mapper.Map<List<UserDto>>(await _unitOfWork.UserRepository.GetAllAsync());
         }
 
-        public async Task<UserDto> GetByIdAsync(Guid id)
+        public async Task<UserDto> GetUserByIdAsync(Guid id)
         {
-            var employee = await _unitOfWork.UserRepository.GetByIdAsync(id);
-            if (employee == null)
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
+            if (user == null)
                 return null;
-            return _mapper.Map<UserDto>(employee);
+            return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<IEnumerable<UserDto>> GetPageAsync(int page, int pageSize)
+        public async Task<IEnumerable<UserDto>> GetUserPageAsync(int page, int pageSize)
         {
-            var employees = await _unitOfWork.UserRepository.GetPageAsync(page, pageSize);
-            return _mapper.Map<List<UserDto>>(employees);
+            var users = await _unitOfWork.UserRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<List<UserDto>>(users);
         }
 
-        public async Task<UserDto> UpdateAsync(Guid id, UserDto employee)
+        public async Task<UserDto> UpdateUserAsync(Guid id, UserDto user)
         {
-            var existingEmployee = await _unitOfWork.UserRepository.GetByIdAsync(id);
-            if (existingEmployee == null)
+            var existingUser = await _unitOfWork.UserRepository.GetByIdAsync(id);
+            if (existingUser == null)
             {
                 return null;
             }
 
-            existingEmployee.BirthDate = employee.BirthDate;
-            existingEmployee.Gender = employee.Gender;
-            existingEmployee.IDCard = employee.IDCard;
-            existingEmployee.Email = employee.Email;
-            existingEmployee.PhoneNumber = employee.PhoneNumber;
-            existingEmployee.Address = employee.Address;
-            existingEmployee.Status = employee.Status;
-            existingEmployee.Role = employee.Role;
-            existingEmployee.FullName = employee.FullName;
-            existingEmployee.Avatar = employee.Avatar;
+            existingUser.BirthDate = user.BirthDate;
+            existingUser.Address = user.Address; 
+            existingUser.Avatar = user.Avatar;
+            existingUser.Email = user.Email;
+            existingUser.FullName = user.FullName;
+            existingUser.Gender = user.Gender;
+            existingUser.IDCard = user.IDCard;
+            existingUser.Role = user.Role;
+            existingUser.JoinDate = user.JoinDate;
+            existingUser.PhoneNumber = user.PhoneNumber;
+            existingUser.Status = user.Status;
+            existingUser.Point = user.Status;
 
-            return _mapper.Map<UserDto>(await _unitOfWork.UserRepository.UpdateAsync(existingEmployee));
+            return _mapper.Map<UserDto>(await _unitOfWork.UserRepository.UpdateAsync(existingUser));
         }
-
-        
-
-
     }
 }

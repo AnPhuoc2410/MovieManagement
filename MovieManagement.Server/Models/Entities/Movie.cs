@@ -8,7 +8,7 @@ namespace MovieManagement.Server.Models.Entities
     {
         public Guid MovieId { get; set; }
 
-        public string Name { get; set; }
+        public string MovieName { get; set; }
 
         public string Image { get; set; }
 

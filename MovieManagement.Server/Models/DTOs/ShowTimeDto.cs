@@ -2,7 +2,7 @@
 
 namespace MovieManagement.Server.Models.DTOs
 {
-    public class ShowTimeDto
+    public class ShowtimeDto
     {
         public Guid MovieId { get; set; }
 

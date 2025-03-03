@@ -36,7 +36,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> Registration(UserDto userDto)
         {
 
-            var output = await _userService.CreateAsync(userDto);
+            var output = await _userService.CreateUserAsync(userDto);
 
             return Ok(output);
 
@@ -45,7 +45,7 @@ namespace MovieManagement.Server.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult> Login(String userName, String pass)
         {
-            var userList = await _userService.GetAllAsync();
+            var userList = await _userService.GetAllUsersAsync();
 
             var user = userList.FirstOrDefault(x => x.UserName == userName);
 
@@ -70,7 +70,7 @@ namespace MovieManagement.Server.Controllers
         [Route("GetAll")]
         public async Task<ActionResult> GetAll()
         {
-            return Ok(await _userService.GetAllAsync());
+            return Ok(await _userService.GetAllUsersAsync());
         }
 
         [HttpGet]
@@ -85,7 +85,7 @@ namespace MovieManagement.Server.Controllers
         [Route("RoomCreating")]
         public async Task<ActionResult> RoomCreating(RoomDto room, Guid SeatTypeId)
         {
-            _seatService.CreateByRoomAsync(room, SeatTypeId);
+            _seatService.CreateSeatsByRoom(room, SeatTypeId);
             return Ok("Every seat in the room created!");
         }
 

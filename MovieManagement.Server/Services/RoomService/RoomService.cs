@@ -14,45 +14,39 @@ namespace MovieManagement.Server.Services.RoomService
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<RoomDto>> GetAllAsync()
+        public async Task<IEnumerable<RoomDto>> GetAllRoomsAsync()
         {
             var rooms = await _unitOfWork.RoomRepository.GetAllAsync();
             return _mapper.Map<List<RoomDto>>(rooms);
         }
-        public async Task<IEnumerable<RoomDto>> GetPageAsync(int page, int pageSize)
+        public async Task<IEnumerable<RoomDto>> GetRoomPageAsync(int page, int pageSize)
         {
             var rooms = await _unitOfWork.RoomRepository.GetPageAsync(page, pageSize);
             return _mapper.Map<IEnumerable<RoomDto>>(rooms);
         }
-        public async Task<RoomDto> GetIdAsync(Guid roomId)
+        public async Task<RoomDto> GetRoomByIdAsync(Guid roomId)
         {
             var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
             return _mapper.Map<RoomDto>(room);
         }
-        public async Task<RoomDto> CreateAsync(RoomDto roomDto)
+        public async Task<RoomDto> CreateRoomAsync(RoomDto roomDto)
         {
-            var newRoom = new Room
-            {
-                Name = roomDto.Name,
-                Column = roomDto.Column,
-                Row = roomDto.Row,
-                Total = roomDto.Total
-            };
+            var newRoom = _mapper.Map<Room>(roomDto);
             var createdRoom = await _unitOfWork.RoomRepository.CreateAsync(newRoom);
             return _mapper.Map<RoomDto>(createdRoom);
         }
-        public async Task<RoomDto> UpdateAsync(Guid roomId, RoomDto roomDto)
+        public async Task<RoomDto> UpdateRoomAsync(Guid roomId, RoomDto roomDto)
         {
-            var updateRoom = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
-            updateRoom.Name = roomDto.Name;
-            updateRoom.Column = roomDto.Column;
-            updateRoom.Row = roomDto.Row;
-            updateRoom.Total = roomDto.Total;
-            var room = await _unitOfWork.RoomRepository.UpdateAsync(updateRoom);
-            return _mapper.Map<RoomDto>(room);
+            var existingRoom = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
+            existingRoom.RoomName = roomDto.RoomName;
+            existingRoom.Column = roomDto.Column;
+            existingRoom.Row = roomDto.Row;
+            existingRoom.Total = roomDto.Total;
+            var updatedRoom = await _unitOfWork.RoomRepository.UpdateAsync(existingRoom);
+            return _mapper.Map<RoomDto>(updatedRoom);
 
         }
-        public Task<bool> DeleteAsync(Guid roomId)
+        public Task<bool> DeleteRoomAsync(Guid roomId)
         {
             return _unitOfWork.RoomRepository.DeleteAsync(roomId);
         }

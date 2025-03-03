@@ -32,8 +32,8 @@ namespace MovieManagement.Server.Extensions
             CreateMap<TicketType, TicketTypeDto>();
             CreateMap<TicketTypeDto, TicketType>();
 
-            CreateMap<ShowTime, ShowTimeDto>();
-            CreateMap<ShowTimeDto, ShowTime>();
+            CreateMap<ShowTime, ShowtimeDto>();
+            CreateMap<ShowtimeDto, ShowTime>();
 
             CreateMap<Movie, MovieDto>();
             CreateMap<MovieDto, Movie>();

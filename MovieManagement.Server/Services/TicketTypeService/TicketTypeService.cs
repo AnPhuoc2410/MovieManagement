@@ -19,22 +19,15 @@ namespace MovieManagement.Server.Services.TicketTypeService
             _mapper = mapper;
         }
 
-        public async Task<TicketTypeDto> CreateTicketType(TicketTypeDto ticketType)
+        public async Task<TicketTypeDto> CreateTicketTypeAsync(TicketTypeDto ticketType)
         {
-            var newTicketType = new TicketType
-            {
-                Consumer = ticketType.Consumer,
-                DayOfWeek = ticketType.DayOfWeek, 
-                Hours = ticketType.Hours,
-                Price = ticketType.Price,
-                Version = ticketType.Version,
-            };
+            var newTicketType = _mapper.Map<TicketType>(ticketType);
 
             try
             {
-                var createdTicketType = _mapper.Map<TicketTypeDto>(await _unitOfWork.TicketTypeRepository.CreateAsync(newTicketType));
+                var createdTicketType = await _unitOfWork.TicketTypeRepository.CreateAsync(newTicketType);
 
-                return createdTicketType;
+                return _mapper.Map<TicketTypeDto>(createdTicketType);
 
             }
             catch (Exception ex)
@@ -43,10 +36,9 @@ namespace MovieManagement.Server.Services.TicketTypeService
                 throw new ApplicationException("An error occurred while processing into Database", ex);
             }
 
-
         }
 
-        public async Task<bool> DeleteTicketType(Guid ticketId)
+        public async Task<bool> DeleteTicketTypeAsync(Guid ticketId)
         {
             try
             {
@@ -65,38 +57,38 @@ namespace MovieManagement.Server.Services.TicketTypeService
             }
         }
 
-        public async Task<IEnumerable<TicketTypeDto>> GetAllTicketType()
+        public async Task<IEnumerable<TicketTypeDto>> GetAllTicketTypesAsync()
         {
-            var TicketTypes = _mapper.Map<List<TicketTypeDto>>(await _unitOfWork.TicketTypeRepository.GetAllAsync());
+            var ticketTypes = _mapper.Map<List<TicketTypeDto>>(await _unitOfWork.TicketTypeRepository.GetAllAsync());
 
-            if (TicketTypes.Count == 0)
+            if (ticketTypes.Count == 0)
             {
                 //Thrown exception here.
                 throw new NotFoundException("TicketType does not found!");
             }
-            return TicketTypes;
+            return ticketTypes;
             
         }
-        public async Task<IEnumerable<TicketTypeDto>> GetPageAsync(int page, int pageSize)
+        public async Task<IEnumerable<TicketTypeDto>> GetTicketTypePageAsync(int page, int pageSize)
         {
-            var tickets = await _unitOfWork.TicketTypeRepository.GetPageAsync(page, pageSize);
-            return _mapper.Map<IEnumerable<TicketTypeDto>>(tickets);
+            var ticketTypes = await _unitOfWork.TicketTypeRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<IEnumerable<TicketTypeDto>>(ticketTypes);
         }
-        public async Task<TicketTypeDto> GetTicketType(Guid ticketId)
+        public async Task<TicketTypeDto> GetTicketTypeByIdAsync(Guid ticketId)
         {
 
             try
             {
-                var ticket = _mapper.Map<TicketTypeDto>(await _unitOfWork.TicketTypeRepository.GetByIdAsync(ticketId));
+                var ticketType = _mapper.Map<TicketTypeDto>(await _unitOfWork.TicketTypeRepository.GetByIdAsync(ticketId));
 
                 //Checking existing if not return.
-                if (ticket == null)
+                if (ticketType == null)
                 {
                     //Thrown exception here.
                     throw new NotFoundException("TicketType does not found!");
                 }
 
-                return ticket;
+                return ticketType;
             }
             catch (Exception ex)
             {
@@ -105,7 +97,7 @@ namespace MovieManagement.Server.Services.TicketTypeService
             }
         }
 
-        public async Task<TicketTypeDto> UpdateTicketType(Guid ticketId, TicketTypeDto ticketType)
+        public async Task<TicketTypeDto> UpdateTicketTypeAsync(Guid ticketId, TicketTypeDto ticketType)
         {
             try
             {
@@ -129,9 +121,9 @@ namespace MovieManagement.Server.Services.TicketTypeService
                 existingTicketType.Version = ticketType.Version;
                 existingTicketType.Consumer = ticketType.Consumer;
 
-                var updateTicketType = _mapper.Map<TicketTypeDto>(await _unitOfWork.TicketTypeRepository.UpdateAsync(existingTicketType));
+                var updatedTicketType = _mapper.Map<TicketTypeDto>(await _unitOfWork.TicketTypeRepository.UpdateAsync(existingTicketType));
 
-                return updateTicketType;
+                return updatedTicketType;
             }
             catch (Exception ex)
             {

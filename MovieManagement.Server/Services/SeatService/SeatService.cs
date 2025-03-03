@@ -15,37 +15,30 @@ namespace MovieManagement.Server.Services.SeatService
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<SeatDto>> GetAllAsync()
+        public async Task<IEnumerable<SeatDto>> GetAllSeatsAsync()
         {
             var seats = await _unitOfWork.SeatRepository.GetAllAsync();
             return _mapper.Map<List<SeatDto>>(seats);
         }
-        public async Task<IEnumerable<SeatDto>> GetPageAsync(int page, int pageSize)
+        public async Task<IEnumerable<SeatDto>> GetSeatPageAsync(int page, int pageSize)
         {
             var seats = await _unitOfWork.SeatRepository.GetPageAsync(page, pageSize);
             return _mapper.Map<IEnumerable<SeatDto>>(seats);
         }
-        public async Task<SeatDto> GetByIdAsync(Guid seatId)
+        public async Task<SeatDto> GetSeatByIdAsync(Guid seatId)
         {
             var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
             return _mapper.Map<SeatDto>(seat);
         }
 
-        public async Task<SeatDto> CreateAsync(SeatDto seat)
+        public async Task<SeatDto> CreateSeatAsync(SeatDto seat)
         {
-            var newSeat = new Seat
-            {
-                AtRow = seat.AtRow,
-                AtColumn = seat.AtColumn,
-                RoomId = seat.RoomId,
-                SeatTypeId = seat.SeatTypeId,
-                IsActive = true
-            };
+            var newSeat = _mapper.Map<Seat>(seat);
             var createdSeat = await _unitOfWork.SeatRepository.CreateAsync(newSeat);
             return _mapper.Map<SeatDto>(createdSeat);
         }
 
-        public async Task<SeatDto> UpdateAsync(Guid seatId, SeatDto seat)
+        public async Task<SeatDto> UpdateSeatAsync(Guid seatId, SeatDto seat)
         {
             var newSeat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
 
@@ -59,14 +52,13 @@ namespace MovieManagement.Server.Services.SeatService
             return _mapper.Map<SeatDto>(updatedSeat);
         }
 
-        public async Task<bool> DeleteAsync(Guid seatId)
+        public async Task<bool> DeleteSeatAsync(Guid seatId)
         {
             return await _unitOfWork.SeatRepository.DeleteAsync(seatId);
         }
 
-        public async Task CreateByRoomAsync(RoomDto room, Guid SeatTypeId)
+        public async Task<bool> CreateSeatsByRoom(RoomDto room, Guid SeatTypeId)
         {
-
             for (int i = 0; i < room.Row; i++)
             {
                 for (int j = 0; j < room.Column; j++)
@@ -81,7 +73,7 @@ namespace MovieManagement.Server.Services.SeatService
                     });
                 }
             }
-
+            return true;
         }
 
         public static int LetterToNumber(char letter)

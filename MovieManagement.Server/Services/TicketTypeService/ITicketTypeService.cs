@@ -6,11 +6,11 @@ namespace MovieManagement.Server.Services.TicketTypeService
 {
     public interface ITicketTypeService
     {
-        Task<TicketTypeDto> CreateTicketType(TicketTypeDto ticketType);
-        Task<TicketTypeDto> GetTicketType(Guid ticketId);
-        Task<IEnumerable<TicketTypeDto>> GetPageAsync(int page, int pageSize);
-        Task<IEnumerable<TicketTypeDto>> GetAllTicketType();
-        Task<TicketTypeDto> UpdateTicketType( Guid ticketId, TicketTypeDto ticketType);
-        Task<bool> DeleteTicketType(Guid ticketId);
+        Task<TicketTypeDto> CreateTicketTypeAsync(TicketTypeDto ticketType);
+        Task<TicketTypeDto> GetTicketTypeByIdAsync(Guid ticketId);
+        Task<IEnumerable<TicketTypeDto>> GetTicketTypePageAsync(int page, int pageSize);
+        Task<IEnumerable<TicketTypeDto>> GetAllTicketTypesAsync();
+        Task<TicketTypeDto> UpdateTicketTypeAsync( Guid ticketId, TicketTypeDto ticketType);
+        Task<bool> DeleteTicketTypeAsync(Guid ticketId);
     }
 }

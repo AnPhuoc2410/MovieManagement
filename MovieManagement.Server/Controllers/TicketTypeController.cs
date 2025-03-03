@@ -29,12 +29,12 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
 
         [HttpGet]
-        [Route("GetAllTicketType")]
-        public async Task<ActionResult<ApiResponseServices<IEnumerable<TicketTypeDto>>>> GetAllTicketType()
+        [Route("all")]
+        public async Task<ActionResult<ApiResponseServices<IEnumerable<TicketTypeDto>>>> GetAllTicketTypesAsync()
         {
             try
             {
-                var ListTicketTypes = await _ticketTypeService.GetAllTicketType();
+                var ListTicketTypes = await _ticketTypeService.GetAllTicketTypesAsync();
 
                 var response = new ApiResponseServices<IEnumerable<TicketTypeDto>>
                 {
@@ -60,12 +60,11 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost]
-        [Route("CreateTicketType")]
-        public async Task<ActionResult<ApiResponseServices<TicketTypeDto>>> CreateTicketType(TicketTypeDto ticketTypeDto)
+        public async Task<ActionResult<ApiResponseServices<TicketTypeDto>>> CreateTicketTypeAsync(TicketTypeDto ticketTypeDto)
         {
             try
             {
-                var createdTicketType = await _ticketTypeService.CreateTicketType(ticketTypeDto);
+                var createdTicketType = await _ticketTypeService.CreateTicketTypeAsync(ticketTypeDto);
 
                 var response = new ApiResponseServices<TicketTypeDto>
                 {
@@ -85,11 +84,11 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<ApiResponseServices<TicketTypeDto>>> GetTicketType(Guid id)
+        public async Task<ActionResult<ApiResponseServices<TicketTypeDto>>> GetTicketTypeByIdAsync(Guid id)
         {
             try
             {
-                var ticket = await _ticketTypeService.GetTicketType(id);
+                var ticket = await _ticketTypeService.GetTicketTypeByIdAsync(id);
 
                 var response = new ApiResponseServices<TicketTypeDto>
                 {
@@ -108,17 +107,17 @@ namespace MovieManagement.Server.Controllers
             }
         }
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
-        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        public async Task<ActionResult> GetTicketTypePageAsync(int page, int pageSize)
         {
-            var tickets = await _ticketTypeService.GetPageAsync(page, pageSize);
+            var tickets = await _ticketTypeService.GetTicketTypePageAsync(page, pageSize);
             return Ok(tickets);
         }
-        [HttpPut("UpdateTicketType/{id:guid}")]
-        public async Task<ActionResult<ApiResponseServices<TicketTypeDto>>> UpdateTicketType(Guid id, TicketTypeDto ticketTypeDto)
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult<ApiResponseServices<TicketTypeDto>>> UpdateTicketTypeAsync(Guid id, TicketTypeDto ticketTypeDto)
         {
             try
             {
-                var updateTicket = await _ticketTypeService.UpdateTicketType(id, ticketTypeDto);
+                var updateTicket = await _ticketTypeService.UpdateTicketTypeAsync(id, ticketTypeDto);
 
                 var response = new ApiResponseServices<TicketTypeDto>
                 {

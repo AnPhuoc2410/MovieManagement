@@ -19,50 +19,50 @@ namespace MovieManagement.Server.Controllers
 
         [HttpGet]
         [Route("GetAll")]
-        public async Task<ActionResult> GetAll()
+        public async Task<IActionResult> GetAllMovieAsync()
         {
-            var movies = await _movieService.GetAllAsync();
+            var movies = await _movieService.GetAllMoviesAsync();
             return Ok(movies);
         }
 
 
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
-        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        public async Task<IActionResult> GetMoviePageAsync(int page, int pageSize)
         {
-            var movies = await _movieService.GetPageAsync(page, pageSize);
+            var movies = await _movieService.GetMoviePageAsync(page, pageSize);
             return Ok(movies);
         }
 
 
         [HttpGet]
         [Route("GetById/{movieId:guid}")]
-        public async Task<ActionResult<MovieDto>> GetMovieById(Guid movieId)
+        public async Task<ActionResult<MovieDto>> GetMovieByIdAsync(Guid movieId)
         {
-            return await _movieService.GetAsync(movieId);
+            return await _movieService.GetMovieByIdAsync(movieId);
         }
 
 
         [HttpPost]
         [Route("Create")]
-        public async Task<ActionResult<MovieDto>> CreateMovie(Guid employeeId, [FromBody] MovieDto movieDto)
+        public async Task<ActionResult<MovieDto>> CreateMovieAsync(Guid employeeId, [FromBody] MovieDto movieDto)
         {
-            return await _movieService.CreateAsync(employeeId, movieDto);
+            return await _movieService.CreateMovieAsync(employeeId, movieDto);
         }
 
 
         [HttpPut]
         [Route("Update/{movieId:guid}")]
-        public async Task<ActionResult<MovieDto>> UpdateRoom(Guid movieId, [FromBody] MovieDto movieDto)
+        public async Task<ActionResult<MovieDto>> UpdateRoomAsync(Guid movieId, [FromBody] MovieDto movieDto)
         {
-            return await _movieService.UpdateAsync(movieId, movieDto);
+            return await _movieService.UpdateMovieAsync(movieId, movieDto);
         }
 
 
         [HttpDelete]
         [Route("Delete/{movieId:guid}")]
-        public async Task<bool> DeleteRoom(Guid movieId)
+        public async Task<bool> DeleteRoomAsync(Guid movieId)
         {
-            return await _movieService.DeleteAsync(movieId);
+            return await _movieService.DeleteMovieAsync(movieId);
         }
 
 

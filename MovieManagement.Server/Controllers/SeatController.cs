@@ -19,53 +19,50 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet]
-        [Route("GetAll")]
-        public async Task<ActionResult> GetAllSeatsAsync()
+        [Route("all")]
+        public async Task<IActionResult> GetAllSeatsAsync()
         {
-            var seats = await _seatService.GetAllAsync();
+            var seats = await _seatService.GetAllSeatsAsync();
             return Ok(seats);
         }
 
 
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
-        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        public async Task<IActionResult> GetSeatPageAsync(int page, int pageSize)
         {
-            var seats = await _seatService.GetPageAsync(page, pageSize);
+            var seats = await _seatService.GetSeatPageAsync(page, pageSize);
             return Ok(seats);
         }
 
 
         [HttpGet]
-        [Route("GetById/{seatId:guid}")]
-        public async Task<SeatDto> GetSeatByIdAsync(Guid seatId)
+        [Route("{seatId:guid}")]
+        public async Task<ActionResult<SeatDto>> GetSeatByIdAsync(Guid seatId)
         {
-            return await _seatService.GetByIdAsync(seatId);
+            return await _seatService.GetSeatByIdAsync(seatId);
         }
 
 
         [HttpPost]
-        [Route("Create")]
-        public async Task<SeatDto> CreateSeatAsync([FromBody] SeatDto seatDto)
+        public async Task<ActionResult<SeatDto>> CreateSeatAsync([FromBody] SeatDto seatDto)
         {
-            return await _seatService.CreateAsync(seatDto);
+            return await _seatService.CreateSeatAsync(seatDto);
         }
 
 
         [HttpPut]
-        [Route("Update/{seatId:guid}")]
-        public async Task<SeatDto> UpdateSeatAsync(Guid seatId, [FromBody] SeatDto seatDto)
+        [Route("{seatId:guid}")]
+        public async Task<ActionResult<SeatDto>> UpdateSeatAsync(Guid seatId, [FromBody] SeatDto seatDto)
         {
-            return await _seatService.UpdateAsync(seatId, seatDto);
+            return await _seatService.UpdateSeatAsync(seatId, seatDto);
         }
 
 
         [HttpDelete]
-        [Route("Delete/{seatId:guid}")]
+        [Route("{seatId:guid}")]
         public async Task<bool> DeleteSeatAsync(Guid seatId)
         {
-            return await _seatService.DeleteAsync(seatId);
+            return await _seatService.DeleteSeatAsync(seatId);
         }
-
-
     }
 }

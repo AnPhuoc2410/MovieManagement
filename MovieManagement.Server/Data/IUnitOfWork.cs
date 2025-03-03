@@ -17,7 +17,6 @@ namespace MovieManagement.Server.Data
         ITicketDetailRepository TicketDetailRepository { get; }
         ITicketTypeRepository TicketTypeRepository { get; }
         ISeatTypeRepository SeatTypeRepository { get; }
-
         Task<int> CompleteAsync();
     }
 }

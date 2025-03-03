@@ -18,42 +18,37 @@ namespace MovieManagement.Server.Services.SeatTypeService
             _mapper = mapper;
         }
 
-        public async Task<SeatTypeDto> CreateAsync(SeatTypeDto seatType)
+        public async Task<SeatTypeDto> CreateSeatTypeAsync(SeatTypeDto seatType)
         {
-            SeatType newType = new SeatType
-            {
-                TypeName = seatType.TypeName,
-                Price = seatType.Price,
-                IsActive = seatType.IsActive
-            };
-            var createdOne = await _unitOfWork.SeatTypeRepository.CreateAsync(newType);
-            return _mapper.Map<SeatTypeDto>(createdOne);
+            var newSeatType = _mapper.Map<SeatType>(seatType);
+            var createdSeatType = await _unitOfWork.SeatTypeRepository.CreateAsync(newSeatType);
+            return _mapper.Map<SeatTypeDto>(createdSeatType);
         }
 
-        public async Task<bool> DeleteAsync(Guid SeatTypeId)
+        public async Task<bool> DeleteSeatTypeAsync(Guid seatTypeId)
         {
-            return await _unitOfWork.SeatTypeRepository.DeleteAsync(SeatTypeId);
+            return await _unitOfWork.SeatTypeRepository.DeleteAsync(seatTypeId);
         }
 
-        public async Task<IEnumerable<SeatTypeDto>> GetAllAsync()
+        public async Task<IEnumerable<SeatTypeDto>> GetAllSeatTypesAsync()
         {
-            var list = await _unitOfWork.SeatTypeRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<SeatTypeDto>>(list);
+            var seatTypes = await _unitOfWork.SeatTypeRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<SeatTypeDto>>(seatTypes);
         }
 
-        public async Task<SeatTypeDto> GetByIdAsync(Guid SeatTypeId)
+        public async Task<SeatTypeDto> GetSeatTypeByIdAsync(Guid SeatTypeId)
         {
             var seatType = await _unitOfWork.SeatTypeRepository.GetByIdAsync(SeatTypeId);
             return _mapper.Map<SeatTypeDto>(seatType);
         }
 
-        public async Task<IEnumerable<SeatTypeDto>> GetPageAsync(int page, int pageSize)
+        public async Task<IEnumerable<SeatTypeDto>> GetSeatTypePageAsync(int page, int pageSize)
         {
-            var list = await _unitOfWork.SeatTypeRepository.GetPageAsync(page, pageSize);
-            return _mapper.Map<IEnumerable<SeatTypeDto>>(list);
+            var seatTypes = await _unitOfWork.SeatTypeRepository.GetPageAsync(page, pageSize);
+            return _mapper.Map<IEnumerable<SeatTypeDto>>(seatTypes);
         }
 
-        public async Task<SeatTypeDto> UpdateAsync(Guid SeatTypeId, SeatTypeDto seatType)
+        public async Task<SeatTypeDto> UpdateSeatTypeAsync(Guid SeatTypeId, SeatTypeDto seatType)
         {
             var existingSeatType = await _unitOfWork.SeatTypeRepository.GetByIdAsync(SeatTypeId);
             if (existingSeatType == null)
@@ -63,7 +58,8 @@ namespace MovieManagement.Server.Services.SeatTypeService
             existingSeatType.TypeName = seatType.TypeName;
             existingSeatType.Price = seatType.Price;
             existingSeatType.IsActive = seatType.IsActive;
-            return _mapper.Map<SeatTypeDto>(await _unitOfWork.SeatTypeRepository.UpdateAsync(existingSeatType));
+            var updatedSeatType = await _unitOfWork.SeatTypeRepository.UpdateAsync(existingSeatType);
+            return _mapper.Map<SeatTypeDto>(updatedSeatType);
         }
     }
 }

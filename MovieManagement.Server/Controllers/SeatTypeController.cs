@@ -18,34 +18,33 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("GetAll")]
-        public async Task<ActionResult> GetAllSeatTypesAsync()
+        [Route("all")]
+        public async Task<IActionResult> GetAllSeatTypesAsync()
         {
-            var seatTypes = await _seatTypeService.GetAllAsync();
+            var seatTypes = await _seatTypeService.GetAllSeatTypesAsync();
             return Ok(seatTypes);
         }
 
         [HttpGet]
-        [Route("GetById/{seatTypeId}")]
-        public async Task<ActionResult> GetSeatTypeByIdAsync(Guid seatTypeId)
+        [Route("{seatTypeId}")]
+        public async Task<ActionResult<SeatTypeDto>> GetSeatTypeByIdAsync(Guid seatTypeId)
         {
-            var seatType = await _seatTypeService.GetByIdAsync(seatTypeId);
+            var seatType = await _seatTypeService.GetSeatTypeByIdAsync(seatTypeId);
             return Ok(seatType);
         }
 
         [HttpGet]
         [Route("page/{page:int}/pageSize/{pageSize:int}")]
-        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        public async Task<IActionResult> GetSeatTypePageAsync(int page, int pageSize)
         {
-            var seatTypes = await _seatTypeService.GetPageAsync(page, pageSize);
+            var seatTypes = await _seatTypeService.GetSeatTypePageAsync(page, pageSize);
             return Ok(seatTypes);
         }
 
         [HttpPost]
-        [Route("Create")]
-        public async Task<ActionResult> CreateSeatType([FromBody] SeatTypeDto seatTypeDto)
+        public async Task<ActionResult<SeatTypeDto>> CreateSeatTypeAsync([FromBody] SeatTypeDto seatTypeDto)
         {
-            var result = await _seatTypeService.CreateAsync(seatTypeDto);
+            var result = await _seatTypeService.CreateSeatTypeAsync(seatTypeDto);
             if (result != null)
             {
                 return Ok(result);
@@ -54,10 +53,10 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPut]
-        [Route("Update/{seatTypeId:guid}")]
-        public async Task<ActionResult> UpdateSeatType(Guid seatTypeId, [FromBody] SeatTypeDto seatTypeDto)
+        [Route("{seatTypeId:guid}")]
+        public async Task<ActionResult<SeatTypeDto>> UpdateSeatTypeAsync(Guid seatTypeId, [FromBody] SeatTypeDto seatTypeDto)
         {
-            var result = await _seatTypeService.UpdateAsync(seatTypeId, seatTypeDto);
+            var result = await _seatTypeService.UpdateSeatTypeAsync(seatTypeId, seatTypeDto);
             if (result != null)
             {
                 return Ok(result);
@@ -66,10 +65,10 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpDelete]
-        [Route("Delete/{seatTypeId:guid}")]
-        public async Task<ActionResult> DeleteSeatType(Guid seatTypeId)
+        [Route("{seatTypeId:guid}")]
+        public async Task<ActionResult<SeatTypeDto>> DeleteSeatTypeAsync(Guid seatTypeId)
         {
-            var result = await _seatTypeService.DeleteAsync(seatTypeId);
+            var result = await _seatTypeService.DeleteSeatTypeAsync(seatTypeId);
             if (result)
             {
                 return Ok();

@@ -12,7 +12,7 @@ namespace MovieManagement.Server.Models.Configurations
             builder.HasKey(x => x.RoomId);
             //builder.Property(x => x.RoomId).HasDefaultValueSql("NEWID()");
             builder.Property(x => x.RoomId).HasMaxLength(2);
-            builder.Property(x => x.Name).HasColumnType("varchar(50)");
+            builder.Property(x => x.RoomName).HasColumnType("varchar(50)");
         }
     }
 }

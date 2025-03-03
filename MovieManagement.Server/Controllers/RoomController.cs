@@ -18,52 +18,50 @@ namespace MovieManagement.Server.Controllers
         }
 
 
-        [HttpGet]
-        [Route("GetAll")]
-        public async Task<ActionResult> GetAll()
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllRoomAsync()
         {
-            var rooms = await _roomService.GetAllAsync();
+            var rooms = await _roomService.GetAllRoomsAsync();
             return Ok(rooms);
         }
 
 
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
-        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        public async Task<IActionResult> GetRoomPageAsync(int page, int pageSize)
         {
-            var rooms = await _roomService.GetPageAsync(page, pageSize);
+            var rooms = await _roomService.GetRoomPageAsync(page, pageSize);
             return Ok(rooms);
         }
 
 
         [HttpGet]
-        [Route("GetById/{roomId:guid}")]
-        public async Task<ActionResult<RoomDto>> GetRoomById(Guid roomId)
+        [Route("{roomId:guid}")]
+        public async Task<ActionResult<RoomDto>> GetRoomByIdAsync(Guid roomId)
         {
-            return await _roomService.GetIdAsync(roomId);
+            return await _roomService.GetRoomByIdAsync(roomId);
         }
 
 
         [HttpPost]
-        [Route("Create")]
-        public async Task<ActionResult<RoomDto>> CreateRoom([FromBody] RoomDto roomDto)
+        public async Task<ActionResult<RoomDto>> CreateRoomAsync([FromBody] RoomDto roomDto)
         {
-            return await _roomService.CreateAsync(roomDto);
+            return await _roomService.CreateRoomAsync(roomDto);
         }
 
 
         [HttpPut]
-        [Route("Update/{roomId:guid}")]
-        public async Task<ActionResult<RoomDto>> UpdateRoom(Guid roomId, [FromBody] RoomDto roomDto)
+        [Route("{roomId:guid}")]
+        public async Task<ActionResult<RoomDto>> UpdateRoomAsync(Guid roomId, [FromBody] RoomDto roomDto)
         {
-            return await _roomService.UpdateAsync(roomId, roomDto);
+            return await _roomService.UpdateRoomAsync(roomId, roomDto);
         }
 
 
         [HttpDelete]
-        [Route("Delete/{roomId:guid}")]
-        public async Task<bool> DeleteRoom(Guid roomId)
+        [Route("{roomId:guid}")]
+        public async Task<bool> DeleteRoomAsync(Guid roomId)
         {
-            return await _roomService.DeleteAsync(roomId);
+            return await _roomService.DeleteRoomAsync(roomId);
         }
 
 

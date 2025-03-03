@@ -18,51 +18,54 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet]
-        [Route("GetAll")]
-        public async Task<ActionResult> GetAllBills()
+        [Route("all")]
+        public async Task<IActionResult> GetAllBillsAsync()
         {
-            var bills = await _billService.GetAllAsync();
+            var bills = await _billService.GetAllBillsAsync();
             return Ok(bills);
         }
         [HttpGet("page/{page:int}/pagesize{pageSize:int}")]
-        public async Task<ActionResult> GetPageAsynce(int page, int pageSize)
+        public async Task<IActionResult> GetBillPageAsync(int page, int pageSize)
         {
-            var bills = await _billService.GetPageAsync(page, pageSize);
+            var bills = await _billService.GetBillPageAsync(page, pageSize);
             return Ok(bills);
         }
 
         [HttpGet]
-        [Route("GetById/{billId:guid}")]
-        public async Task<ActionResult<BillDto>> GetBillById(Guid billId)
+        [Route("{billId:guid}")]
+        public async Task<ActionResult<BillDto>> GetBillByIdAsync(Guid billId)
         {
-            var bill = await _billService.GetByIdAsync(billId);
+            var bill = await _billService.GetBillByIdAsync(billId);
             return bill;
         }
-
-
-        [HttpPost]
-        [Route("Create")]
-        public async Task<ActionResult<BillDto>> CreateBill(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, [FromBody] BillDto billDto)
+        [HttpGet("user/{userId:guid}")]
+        public async Task<IActionResult> GetPurchasedTicketsAsync(Guid userId)
         {
-            var @new = await _billService.CreateAsync(movieId, memberId, employeeId, promotionId, billDto);
+            var purchasedTickets = await _billService.GetPurchasedTicketsAsync(userId);
+            return Ok(purchasedTickets);
+        }
+        [HttpPost]
+        public async Task<ActionResult<BillDto>> CreateBillAsync(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, [FromBody] BillDto billDto)
+        {
+            var @new = await _billService.CreateBillAsync(movieId, memberId, employeeId, promotionId, billDto);
             return @new;
         }
 
 
         [HttpPut]
-        [Route("Update/{billId:guid}")]
-        public async Task<ActionResult<BillDto>> UpdateBill(Guid billId,[FromBody] BillDto billDto)
+        [Route("{billId:guid}")]
+        public async Task<ActionResult<BillDto>> UpdateBillAsync(Guid billId,[FromBody] BillDto billDto)
         {
-            var updated = await _billService.UpdateAsync(billId, billDto);
+            var updated = await _billService.UpdateBillAsync(billId, billDto);
             return updated;
         }
 
 
         [HttpDelete]
         [Route("Delete/{billId:guid}")]
-        public async Task<bool> DeleteBill(Guid billId)
+        public async Task<bool> DeleteBillAsync(Guid billId)
         {
-            bool deleted = await _billService.DeleteAsync(billId);
+            bool deleted = await _billService.DeleteBillAsync(billId);
             return deleted;
         }
 
