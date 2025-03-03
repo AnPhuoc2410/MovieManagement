@@ -17,7 +17,7 @@ import Home from "./pages/Home";
 import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
 import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
-import Ticket from "./pages/ticket/ShowTime";
+import Ticket from "./pages/ticket/DateMovie";
 import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
