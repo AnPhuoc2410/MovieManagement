@@ -14,6 +14,8 @@ import { Delete, Edit } from "@mui/icons-material";
 
 // Base interface for table data with string id
 export interface TableData {
+  MaNhanVien?: string;  // Make this optional
+  roomId?: string;      // Add this for rooms
   [key: string]: any;
 }
 
@@ -96,12 +98,18 @@ function ManagementTable<T extends TableData>({
       align={actionColumn.align}
     >
       {onEdit && (
-        <IconButton color="primary" onClick={() => onEdit(item.MaNhanVien)}>
+        <IconButton 
+          color="primary" 
+          onClick={() => onEdit(item.roomId || item.MaNhanVien || '')}
+        >
           <Edit />
         </IconButton>
       )}
       {onDelete && (
-        <IconButton color="secondary" onClick={() => onDelete(item.MaNhanVien)}>
+        <IconButton 
+          color="secondary" 
+          onClick={() => onDelete(item.roomId || item.MaNhanVien || '')}
+        >
           <Delete />
         </IconButton>
       )}
@@ -130,7 +138,9 @@ function ManagementTable<T extends TableData>({
         </TableHead>
         <TableBody>
           {data.map((item) => (
-            <TableRow key={item.MaNhanVien}>{renderRowCells(item)}</TableRow>
+            <TableRow key={item.roomId || item.MaNhanVien}>
+              {renderRowCells(item)}
+            </TableRow>
           ))}
         </TableBody>
       </Table>
