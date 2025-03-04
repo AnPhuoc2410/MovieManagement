@@ -8,7 +8,7 @@ import App from "./App.tsx";
 import "./index.scss";
 import i18n from "./constants/i18n.ts";
 import { I18nextProvider } from "react-i18next";
-import { worker } from './mocks/browser'
+import { worker } from "./mocks/browser";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,10 +20,13 @@ const queryClient = new QueryClient({
 });
 
 async function enableMocking() {
-  if (process.env.NODE_ENV === 'development') {
+  if (
+    process.env.NODE_ENV === "development" ||
+    process.env.NODE_ENV === "production"
+  ) {
     return worker.start({
-      onUnhandledRequest: 'bypass', // Don't warn about unhandled requests
-    })
+      onUnhandledRequest: "bypass", // Don't warn about unhandled requests
+    });
   }
 }
 
@@ -35,4 +38,4 @@ enableMocking().then(() => {
       </I18nextProvider>
     </QueryClientProvider>,
   );
-})
+});
