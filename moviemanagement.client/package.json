@@ -12,8 +12,7 @@
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
-    "format": "prettier --write .",
-    "prepare": "husky install"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@cloudinary/react": "^1.13.1",
@@ -72,7 +71,6 @@
     "eslint-plugin-react-refresh": "^0.4.9",
     "eslint-plugin-tailwindcss": "^3.17.4",
     "globals": "^15.9.0",
-    "husky": "^9.1.5",
     "lint-staged": "^15.2.2",
     "msw": "^2.7.3",
     "postcss": "^8.5.1",
