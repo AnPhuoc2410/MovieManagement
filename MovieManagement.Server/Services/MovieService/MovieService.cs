@@ -33,6 +33,8 @@ namespace MovieManagement.Server.Services.MovieService
         public async Task<MovieDto> CreateMovieAsync(Guid userId, MovieDto movieDto)
         {
             var newMovie = _mapper.Map<Movie>(movieDto);
+            newMovie.UserId = userId;
+            newMovie.MovieId = new Guid();
             var createdMovie = await _unitOfWork.MovieRepository.CreateAsync(newMovie);
             return _mapper.Map<MovieDto>(createdMovie);
         }
@@ -63,5 +65,6 @@ namespace MovieManagement.Server.Services.MovieService
         {
             return _unitOfWork.MovieRepository.DeleteAsync(movieId);
         }
+
     }
 }

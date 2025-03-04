@@ -59,6 +59,7 @@ namespace MovieManagement.Server.Services.SeatService
 
         public async Task<bool> CreateSeatsByRoom(RoomDto room, Guid SeatTypeId)
         {
+            var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
             for (int i = 0; i < room.Row; i++)
             {
                 for (int j = 0; j < room.Column; j++)
@@ -67,7 +68,7 @@ namespace MovieManagement.Server.Services.SeatService
                     {
                         AtRow = NumberToLetter(i).ToString(),
                         AtColumn = j + 1,
-                        RoomId = room.RoomId.Value,
+                        RoomId = roomId,
                         SeatTypeId = SeatTypeId,
                         IsActive = true
                     });

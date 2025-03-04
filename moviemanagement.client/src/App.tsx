@@ -23,7 +23,10 @@ import Payment from "./pages/ticket/Payment";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
 import Confirmation from "./pages/ticket/Confirmation";
-
+import QuanLyPhongChieu from "./pages/admin/QuanLyPhongChieu/QuanLyPhongChieu";
+import ChiTietPhongChieu from "./pages/admin/QuanLyPhongChieu/ChiTietPhongChieu";
+import QuanLyDatVe from "./pages/admin/QuanLyDatVe/QuanLyDatVe";
+import ChiTietDatVe from "./pages/admin/QuanLyDatVe/ChiTietDatVe";
 
 const theme = createTheme({
   components: {
@@ -77,6 +80,14 @@ const App = () => {
               />
               <Route path="ql-nhan-vien" element={<QuanLiNhanVien />} />
               <Route path="ql-thanh-vien" element={<QuanLiThanhVien />} />
+              <Route path="ql-phong-chieu">
+                <Route path="" element={<QuanLyPhongChieu />} />
+                <Route path=":roomId" element={<ChiTietPhongChieu />} />
+              </Route>
+              <Route path="ql-dat-ve">
+                <Route path="" element={<QuanLyDatVe />} />
+                <Route path=":bId" element={<ChiTietDatVe />} />
+              </Route>
             </Route>
           </Routes>
         </ThemeProvider>

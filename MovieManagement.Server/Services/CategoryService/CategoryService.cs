@@ -30,7 +30,7 @@ namespace MovieManagement.Server.Services.CategoryService
 
         public async Task<CategoryDto> GetCategoryByComposeIdAsync(Guid categoryId, Guid movieId)
         {
-            var category = await _unitOfWork.CategoryRepository.GetByComposeIdAsync(categoryId, movieId);
+            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId);
             return _mapper.Map<CategoryDto>(category);
         }
 
@@ -43,10 +43,11 @@ namespace MovieManagement.Server.Services.CategoryService
 
         public async Task<CategoryDto> UpdateCategoryAsync(Guid categoryId, Guid movieId, CategoryDto categoryDto)
         {
-            var existingCategory = await _unitOfWork.CategoryRepository.GetByComposeIdAsync(categoryId, movieId);
+            var existingCategory = await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId);
 
             existingCategory.MovieId = categoryDto.MovieId;
-            existingCategory.CategoryId = categoryDto.CategoryId;
+            existingCategory.Name = categoryDto.Name;
+            existingCategory.Description = categoryDto.Description;
 
             var updatedCategory = await _unitOfWork.CategoryRepository.UpdateAsync(existingCategory);
             return _mapper.Map<CategoryDto>(updatedCategory);
@@ -54,7 +55,7 @@ namespace MovieManagement.Server.Services.CategoryService
 
         public async Task<bool> DeleteCategoryComposeAsync(Guid categoryId, Guid movieId)
         {
-            return await _unitOfWork.CategoryRepository.DeleteComposeAsync(categoryId, movieId);
+            return await _unitOfWork.CategoryRepository.DeleteAsync(categoryId);
         }
     }
 }

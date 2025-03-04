@@ -10,11 +10,11 @@
 
         public DateTime StartTime { get; set; }
 
-        public Movie Movie { get; set; }
+        public virtual Movie Movie { get; set; }
 
-        public Room Room { get; set; }
+        public virtual Room Room { get; set; }
 
-        public List<TicketDetail> TicketDetails { get; set; } = new List<TicketDetail>();
+        public virtual ICollection<TicketDetail> TicketDetails { get; set; } = new List<TicketDetail>();
 
     }
 }

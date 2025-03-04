@@ -6,12 +6,12 @@ namespace MovieManagement.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CatogoryController : Controller
+    public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
 
 
-        public CatogoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
         }

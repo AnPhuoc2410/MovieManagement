@@ -15,8 +15,8 @@ namespace MovieManagement.Server.Models.Entities
 
         public int Total { get; set; }
 
-        public IEnumerable<Seat> Seats { get; set; } = new List<Seat>();
+        public virtual ICollection<Seat> Seats { get; set; } = new List<Seat>();
 
-        public IEnumerable<ShowTime> Showtimes { get; set; } = new List<ShowTime>();    
+        public virtual ICollection<ShowTime> Showtimes { get; set; } = new List<ShowTime>();    
     }
 }

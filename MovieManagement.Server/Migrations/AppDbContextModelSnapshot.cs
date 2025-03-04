@@ -26,7 +26,8 @@ namespace MovieManagement.Server.Migrations
                 {
                     b.Property<Guid>("BillId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric(10,2)");
@@ -60,17 +61,26 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Category", b =>
                 {
+                    b.Property<Guid>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("MovieId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("MovieId", "CategoryId");
+                    b.HasKey("CategoryId");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("MovieId");
 
-                    b.ToTable("CATEGORY", (string)null);
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.CategoryDetail", b =>
@@ -99,7 +109,8 @@ namespace MovieManagement.Server.Migrations
                 {
                     b.Property<Guid>("MovieId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Actors")
                         .IsRequired()
@@ -310,36 +321,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.HasIndex("ShowTimeId");
 
-                    b.HasIndex("TicketTypeId");
-
                     b.ToTable("TICKETDETAIL", (string)null);
-                });
-
-            modelBuilder.Entity("MovieManagement.Server.Models.Entities.TicketType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Consumer")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Hours")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18)
-                        .HasColumnType("decimal(18, 0)");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TICKETTYPE", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.User", b =>
@@ -425,19 +407,11 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Category", b =>
                 {
-                    b.HasOne("MovieManagement.Server.Models.Entities.CategoryDetail", "CategoryDetail")
-                        .WithMany("Categories")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MovieManagement.Server.Models.Entities.Movie", "Movie")
                         .WithMany("Categories")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CategoryDetail");
 
                     b.Navigation("Movie");
                 });
@@ -500,29 +474,16 @@ namespace MovieManagement.Server.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("MovieManagement.Server.Models.Entities.TicketType", "TicketType")
-                        .WithMany("TicketDetails")
-                        .HasForeignKey("TicketTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Bill");
 
                     b.Navigation("Seat");
 
                     b.Navigation("ShowTime");
-
-                    b.Navigation("TicketType");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Bill", b =>
                 {
                     b.Navigation("TicketDetails");
-                });
-
-            modelBuilder.Entity("MovieManagement.Server.Models.Entities.CategoryDetail", b =>
-                {
-                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Movie", b =>
@@ -555,11 +516,6 @@ namespace MovieManagement.Server.Migrations
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.ShowTime", b =>
-                {
-                    b.Navigation("TicketDetails");
-                });
-
-            modelBuilder.Entity("MovieManagement.Server.Models.Entities.TicketType", b =>
                 {
                     b.Navigation("TicketDetails");
                 });
