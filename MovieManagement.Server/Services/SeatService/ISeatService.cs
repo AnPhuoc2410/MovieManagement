@@ -9,7 +9,7 @@ namespace MovieManagement.Server.Services.SeatService
         public Task<IEnumerable<SeatDto>> GetAllSeatsAsync();
         public Task<IEnumerable<SeatDto>> GetSeatPageAsync(int page, int pageSize);
         public Task<SeatDto> GetSeatByIdAsync(Guid seatId);
-        public Task<bool> CreateSeatsByRoom(RoomDto room, Guid SeatTypeId);
+        public Task<bool> CreateSeatsByRoom(Guid roomId, Guid SeatTypeId);
         public Task<SeatDto> CreateSeatAsync(SeatDto seat);
         public Task<SeatDto> UpdateSeatAsync(Guid seatId, SeatDto seat);
         public Task<bool> DeleteSeatAsync(Guid seatId);

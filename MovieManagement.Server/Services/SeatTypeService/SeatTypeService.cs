@@ -21,6 +21,7 @@ namespace MovieManagement.Server.Services.SeatTypeService
         public async Task<SeatTypeDto> CreateSeatTypeAsync(SeatTypeDto seatType)
         {
             var newSeatType = _mapper.Map<SeatType>(seatType);
+            newSeatType.SeatTypeId = Guid.NewGuid();
             var createdSeatType = await _unitOfWork.SeatTypeRepository.CreateAsync(newSeatType);
             return _mapper.Map<SeatTypeDto>(createdSeatType);
         }

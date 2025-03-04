@@ -36,7 +36,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet("movie/{movieId:guid}/room/{roomId:guid}")]
-        public async Task<ActionResult<ShowtimeDto>> GetShowtimeByIdAsync(Guid movieId, Guid roomId)
+        public async Task<ActionResult<ShowTimeDto>> GetShowtimeByIdAsync(Guid movieId, Guid roomId)
         {
             var showTime = await _showTimeService.GetShowtimeByComposeIdAsync(movieId, roomId);
             if (showTime == null)
@@ -48,14 +48,15 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ShowtimeDto>> CreateShowtimeAsync([FromBody] ShowtimeDto showTimeDto)
+        public async Task<ActionResult<ShowTimeDto>> CreateShowtimeAsync([FromBody] ShowTimeDto showTimeDto)
         {
-            return await _showTimeService.CreateShowtimeAsync(showTimeDto);
+            var output = await _showTimeService.CreateShowtimeAsync(showTimeDto);
+            return output;
         }
 
 
         [HttpPut("movie/{movieId:guid}/room/{roomId:guid}")]
-        public async Task<ActionResult<ShowtimeDto>> UpdateShowtimeAsync(Guid movieId, Guid roomId, [FromBody] ShowtimeDto showTimeDto)
+        public async Task<ActionResult<ShowTimeDto>> UpdateShowtimeAsync(Guid movieId, Guid roomId, [FromBody] ShowTimeDto showTimeDto)
         {
             try
             {

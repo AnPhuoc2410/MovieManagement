@@ -34,6 +34,7 @@ namespace MovieManagement.Server.Services.SeatService
         public async Task<SeatDto> CreateSeatAsync(SeatDto seat)
         {
             var newSeat = _mapper.Map<Seat>(seat);
+            newSeat.SeatId = Guid.NewGuid();
             var createdSeat = await _unitOfWork.SeatRepository.CreateAsync(newSeat);
             return _mapper.Map<SeatDto>(createdSeat);
         }
@@ -57,7 +58,7 @@ namespace MovieManagement.Server.Services.SeatService
             return await _unitOfWork.SeatRepository.DeleteAsync(seatId);
         }
 
-        public async Task<bool> CreateSeatsByRoom(RoomDto room, Guid SeatTypeId)
+        public async Task<bool> CreateSeatsByRoom(Guid roomId, Guid SeatTypeId)
         {
             var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
             for (int i = 0; i < room.Row; i++)

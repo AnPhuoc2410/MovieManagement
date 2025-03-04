@@ -31,7 +31,7 @@ namespace MovieManagement.Server.Services.UserService
             // Hash the password
             var passwordHasher = new PasswordHasher<User>();
             newUser.Password = passwordHasher.HashPassword(newUser, user.Password);
-
+            newUser.UserId = Guid.NewGuid();
             var createdUser = await _unitOfWork.UserRepository.CreateAsync(newUser);
             return _mapper.Map<UserDto>(createdUser);
 

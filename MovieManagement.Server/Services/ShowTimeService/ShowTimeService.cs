@@ -17,11 +17,12 @@ namespace MovieManagement.Server.Services.ShowTimeService
             _mapper = mapper;
         }
 
-        public async Task<ShowtimeDto> CreateShowtimeAsync(ShowtimeDto showtime)
+        public async Task<ShowTimeDto> CreateShowtimeAsync(ShowTimeDto showtime)
         {
             var newShowtime = _mapper.Map<ShowTime>(showtime);
-            var createdShowtime = _unitOfWork.ShowtimeRepository.CreateAsync(newShowtime);
-            return _mapper.Map<ShowtimeDto>(createdShowtime);
+            newShowtime.ShowTimeId = Guid.NewGuid();
+            var createdShowtime = await _unitOfWork.ShowtimeRepository.CreateAsync(newShowtime);
+            return _mapper.Map<ShowTimeDto>(createdShowtime);
         }
 
         public async Task<bool> DeleteShowtimeAsync(Guid movieId, Guid roomId)
@@ -29,27 +30,27 @@ namespace MovieManagement.Server.Services.ShowTimeService
             return await _unitOfWork.ShowtimeRepository.DeleteComposeAsync(movieId, roomId);
         }
 
-        public async Task<IEnumerable<ShowtimeDto>> GetAllShowtimeAsync()
+        public async Task<IEnumerable<ShowTimeDto>> GetAllShowtimeAsync()
         {
             var showtimes = await _unitOfWork.ShowtimeRepository.GetAllAsync();
-            return _mapper.Map<List<ShowtimeDto>>(showtimes);
+            return _mapper.Map<List<ShowTimeDto>>(showtimes);
         }
-        public async Task<IEnumerable<ShowtimeDto>> GetShowtimePageAsync(int page, int pageSize)
+        public async Task<IEnumerable<ShowTimeDto>> GetShowtimePageAsync(int page, int pageSize)
         {
             var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
-            return _mapper.Map<IEnumerable<ShowtimeDto>>(showtimes);
+            return _mapper.Map<IEnumerable<ShowTimeDto>>(showtimes);
         }
-        public async Task<ShowtimeDto> GetShowtimeByComposeIdAsync(Guid movieId, Guid roomId)
+        public async Task<ShowTimeDto> GetShowtimeByComposeIdAsync(Guid movieId, Guid roomId)
         {
             var showtime = await _unitOfWork.ShowtimeRepository.GetByComposeIdAsync(movieId, roomId);
             //if(ticket == null)
             //{
             //    throw new Exception("Show time not found");
             //}
-            return _mapper.Map<ShowtimeDto>(showtime);  
+            return _mapper.Map<ShowTimeDto>(showtime);  
         }
 
-        public async Task<ShowtimeDto> UpdateShowtimeAsync(Guid movieId, Guid roomId, ShowtimeDto showtime)
+        public async Task<ShowTimeDto> UpdateShowtimeAsync(Guid movieId, Guid roomId, ShowTimeDto showtime)
         {
             var existingShowTime = await _unitOfWork.ShowtimeRepository.GetByComposeIdAsync(movieId, roomId);
             if (existingShowTime == null)
@@ -60,7 +61,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             existingShowTime.MovieId = showtime.MovieId;
             existingShowTime.StartTime = showtime.StartTime;
             var updatedShowTime = await _unitOfWork.ShowtimeRepository.UpdateAsync(existingShowTime);
-            return _mapper.Map<ShowtimeDto>(updatedShowTime);
+            return _mapper.Map<ShowTimeDto>(updatedShowTime);
         }
     }
 }

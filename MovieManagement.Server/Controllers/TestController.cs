@@ -49,7 +49,7 @@ namespace MovieManagement.Server.Controllers
 
 
             // Use PasswordHasher to verify the password
-            var passwordHasher = new PasswordHasher<User>();
+            var passwordHasher = new PasswordHasher<UserDto>();
 
             var result = passwordHasher.VerifyHashedPassword(user, user.Password, pass);
 
@@ -58,7 +58,7 @@ namespace MovieManagement.Server.Controllers
                 return Unauthorized("Invalid username/email or password");
             }
 
-            var token = _jwtService.GenerateToken(user.UserId, user.UserName, user.Role.ToString());
+            var token = _jwtService.GenerateToken(user.UserId.Value, user.UserName, user.Role.ToString());
 
             return Ok(new { message = "Login successful", token = token, user = user });
 
@@ -83,7 +83,7 @@ namespace MovieManagement.Server.Controllers
         [Route("RoomCreating")]
         public async Task<ActionResult> RoomCreating(Guid SeatTypeId, Guid roomId)
         {
-            _seatService.CreateSeatsByRoom(room, SeatTypeId);
+            _seatService.CreateSeatsByRoom(roomId, SeatTypeId);
             return Ok("Every seat in the room created!");
         }
 
@@ -355,7 +355,7 @@ namespace MovieManagement.Server.Controllers
         {
             var room = new Room
             {
-                Name = "Room 1",
+                RoomName = "Room 1",
                 Row = 4,
                 Column = 6,
             };
@@ -364,7 +364,7 @@ namespace MovieManagement.Server.Controllers
 
             room = new Room
             {
-                Name = "Room 2",
+                RoomName = "Room 2",
                 Row = 5,
                 Column = 7,
             };
@@ -373,7 +373,7 @@ namespace MovieManagement.Server.Controllers
 
             room = new Room
             {
-                Name = "Room 3",
+                RoomName = "Room 3",
                 Row = 6,
                 Column = 8,
             };
@@ -382,7 +382,7 @@ namespace MovieManagement.Server.Controllers
 
             room = new Room
             {
-                Name = "Room 4",
+                RoomName = "Room 4",
                 Row = 7,
                 Column = 9,
             };
@@ -391,7 +391,7 @@ namespace MovieManagement.Server.Controllers
 
             room = new Room
             {
-                Name = "Room 5",
+                RoomName = "Room 5",
                 Row = 8,
                 Column = 10,
             };
@@ -405,7 +405,7 @@ namespace MovieManagement.Server.Controllers
         {
             var movie = new Movie
             {
-                Name = "Movie 1",
+                MovieName = "Movie 1",
                 Content = "Movie 1",
                 Duration = 120,
                 FromDate = DateTime.Now,
@@ -418,7 +418,7 @@ namespace MovieManagement.Server.Controllers
 
             movie = new Movie
             {
-                Name = "Movie 2",
+                MovieName = "Movie 2",
                 Content = "Movie 2",
                 Duration = 120,
                 FromDate = DateTime.Now,
@@ -431,7 +431,7 @@ namespace MovieManagement.Server.Controllers
 
             movie = new Movie
             {
-                Name = "Movie 3",
+                MovieName = "Movie 3",
                 Content = "Movie 3",
                 Duration = 120,
                 FromDate = DateTime.Now,
@@ -444,7 +444,7 @@ namespace MovieManagement.Server.Controllers
 
             movie = new Movie
             {
-                Name = "Movie 4",
+                MovieName = "Movie 4",
                 Content = "Movie 4",
                 Duration = 120,
                 FromDate = DateTime.Now,
@@ -457,7 +457,7 @@ namespace MovieManagement.Server.Controllers
 
             movie = new Movie
             {
-                Name = "Movie 5",
+                MovieName = "Movie 5",
                 Content = "Movie 5",
                 Duration = 120,
                 FromDate = DateTime.Now,
@@ -470,7 +470,7 @@ namespace MovieManagement.Server.Controllers
 
             movie = new Movie
             {
-                Name = "Movie 6",
+                MovieName = "Movie 6",
                 Content = "Movie 6",
                 Duration = 120,
                 FromDate = DateTime.Now,

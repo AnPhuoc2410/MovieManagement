@@ -32,6 +32,7 @@ namespace MovieManagement.Server.Services.RoomService
         public async Task<RoomDto> CreateRoomAsync(RoomDto roomDto)
         {
             var newRoom = _mapper.Map<Room>(roomDto);
+            newRoom.RoomId = Guid.NewGuid();
             var createdRoom = await _unitOfWork.RoomRepository.CreateAsync(newRoom);
             return _mapper.Map<RoomDto>(createdRoom);
         }

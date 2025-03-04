@@ -44,11 +44,11 @@ namespace MovieManagement.Server.Controllers
             var purchasedTickets = await _billService.GetPurchasedTicketsAsync(userId);
             return Ok(purchasedTickets);
         }
-        [HttpPost]
-        public async Task<ActionResult<BillDto>> CreateBillAsync(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, [FromBody] BillDto billDto)
+        [HttpPost("user/{userId:guid}")]
+        public async Task<ActionResult<BillDto>> CreateBillAsync(Guid userId, [FromBody] BillDto billDto)
         {
-            var @new = await _billService.CreateBillAsync(movieId, memberId, employeeId, promotionId, billDto);
-            return @new;
+            var createdBill = await _billService.CreateBillAsync(userId, billDto);
+            return createdBill;
         }
 
 

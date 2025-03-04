@@ -37,6 +37,7 @@ namespace MovieManagement.Server.Services.CategoryService
         public async Task<CategoryDto> CreateCategoryAsync(CategoryDto categoryDto)
         {
             var newCategory = _mapper.Map<Category>(categoryDto);
+            newCategory.CategoryId = Guid.NewGuid();
             var createdCategory = await _unitOfWork.CategoryRepository.CreateAsync(newCategory);
             return _mapper.Map<CategoryDto>(createdCategory);
         }

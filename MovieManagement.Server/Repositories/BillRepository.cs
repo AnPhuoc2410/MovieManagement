@@ -37,8 +37,6 @@ namespace MovieManagement.Server.Repositories
             return await _context.Bills
                 .Where(b => b.UserId == userId)
                 .Include(b => b.TicketDetails)
-                    .ThenInclude(td => td.TicketType)
-                .Include(b => b.TicketDetails)
                     .ThenInclude(td => td.ShowTime)
                         .ThenInclude(st => st.Room)
                 .Include(b => b.TicketDetails)
@@ -51,7 +49,6 @@ namespace MovieManagement.Server.Repositories
                     StartDay = td.ShowTime.StartTime.ToShortTimeString(),
                     Showtime = td.ShowTime.StartTime.ToShortTimeString(),
                     RoomName = td.ShowTime.Room.RoomName,
-                    Price = td.TicketType.Price,
                     Status = b.Status
                 }))
                 .ToListAsync();

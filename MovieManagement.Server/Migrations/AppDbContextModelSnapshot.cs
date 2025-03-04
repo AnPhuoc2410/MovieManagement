@@ -38,7 +38,7 @@ namespace MovieManagement.Server.Migrations
                     b.Property<decimal>("Point")
                         .HasColumnType("numeric(10,2)");
 
-                    b.Property<Guid>("PromotionId")
+                    b.Property<Guid?>("PromotionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
@@ -83,31 +83,9 @@ namespace MovieManagement.Server.Migrations
                     b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("MovieManagement.Server.Models.Entities.CategoryDetail", b =>
-                {
-                    b.Property<Guid>("CategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .IsUnicode(true)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CategoryId");
-
-                    b.ToTable("CATEGORYDETAIL", (string)null);
-                });
-
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Movie", b =>
                 {
-                    b.Property<Guid>("MovieId")
+                    b.Property<Guid?>("MovieId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
@@ -279,7 +257,7 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.ShowTime", b =>
                 {
-                    b.Property<Guid>("ShowTimeId")
+                    b.Property<Guid?>("ShowTimeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -310,9 +288,6 @@ namespace MovieManagement.Server.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ShowTimeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TicketTypeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("BillId", "SeatId", "ShowTimeId");
@@ -390,9 +365,7 @@ namespace MovieManagement.Server.Migrations
                 {
                     b.HasOne("MovieManagement.Server.Models.Entities.Promotion", "Promotion")
                         .WithMany("Bills")
-                        .HasForeignKey("PromotionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PromotionId");
 
                     b.HasOne("MovieManagement.Server.Models.Entities.User", "User")
                         .WithMany("Bills")

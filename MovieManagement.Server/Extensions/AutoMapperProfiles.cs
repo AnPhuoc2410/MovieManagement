@@ -21,7 +21,7 @@ namespace MovieManagement.Server.Extensions
             CreateMap<RoomDto, Room>();
 
             CreateMap<Bill, BillDto>();
-            CreateMap<BillDto, BillDto>();
+            CreateMap<BillDto, Bill>();
 
             CreateMap<SeatType, SeatTypeDto>();
             CreateMap<SeatTypeDto, SeatType>();
