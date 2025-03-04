@@ -1,21 +1,20 @@
-import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "react-query";
-import { fetchRoomDetail } from "../../../apis/mock.apis";
-import LoadingSpinner from "../../../components/LoadingSpinner";
+import EventSeatIcon from "@mui/icons-material/EventSeat";
+import ScreenshotMonitorIcon from "@mui/icons-material/ScreenshotMonitor";
+import TheaterIcon from "@mui/icons-material/TheaterComedy";
 import {
   Box,
+  Button,
   Card,
   Chip,
-  Typography,
-  Grid,
   Divider,
-  Button,
+  Grid,
+  Typography,
 } from "@mui/material";
-import ManagementPageLayout from "../../../layouts/ManagementPageLayout";
-import TheaterIcon from "@mui/icons-material/TheaterComedy";
-import ScreenshotMonitorIcon from "@mui/icons-material/ScreenshotMonitor";
-import EventSeatIcon from "@mui/icons-material/EventSeat";
+import { useQuery } from "react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import { fetchRoomDetail } from "../../../apis/mock.apis";
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import ManagementPageLayout from "../../../layouts/ManagementLayout";
 
 const ChiTietPhongChieu = () => {
   const navigate = useNavigate();

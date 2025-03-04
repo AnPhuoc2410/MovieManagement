@@ -1,15 +1,15 @@
-import type {} from "@mui/x-date-pickers/themeAugmentation";
 import type {} from "@mui/x-charts/themeAugmentation";
 import type {} from "@mui/x-data-grid-pro/themeAugmentation";
+import type {} from "@mui/x-date-pickers/themeAugmentation";
 
-import { alpha } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
 import Stack from "@mui/material/Stack";
-import AppTheme from "../shared-theme/AppTheme";
-import SideMenu from "../components/mui/SideMenu";
-import AppNavbar from "../components/mui/AppNavbar";
-import Header from "../components/mui/Header";
+import { alpha } from "@mui/material/styles";
+import AppNavbar from "../../components/mui/AppNavbar";
+import Header from "../../components/mui/Header";
+import SideMenu from "../../components/mui/SideMenu";
+import AppTheme from "../../shared-theme/AppTheme";
 
 interface ManagementPageLayoutProps {
   children: React.ReactNode;
