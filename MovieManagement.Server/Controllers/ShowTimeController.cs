@@ -147,7 +147,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet("{movieId:guid}/{roomId:guid}")]
-        [ProducesResponseType(typeof(ApiResponseServices<PromotionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
@@ -205,7 +205,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPut("UpdateShowTime/{id:guid}")]
-        [ProducesResponseType(typeof(ApiResponseServices<PromotionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
@@ -262,7 +262,7 @@ namespace MovieManagement.Server.Controllers
             }
         }
         [HttpDelete("Delete/{movieId:guid}/{roomId:guid}")]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]

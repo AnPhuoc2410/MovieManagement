@@ -285,7 +285,7 @@ namespace MovieManagement.Server.Controllers
                         Message = "Bill not found",
                         IsSuccess = false
                     };
-                    return NotFound(updated);
+                    return NotFound(response);
                 }
             return Ok(updated);
             }
@@ -345,7 +345,7 @@ namespace MovieManagement.Server.Controllers
                         Message = "Bill not found",
                         IsSuccess = false
                     };
-                    return NotFound(deleted);
+                    return NotFound(response);
                 }
                 return Ok(deleted);
             }

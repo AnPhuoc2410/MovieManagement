@@ -64,19 +64,18 @@ namespace MovieManagement.Server.Services.SeatService
             return await _unitOfWork.SeatRepository.DeleteAsync(seatId);
         }
 
-        public async Task CreateByRoomAsync(Guid SeatTypeId, Guid roomId)
+        public async Task CreateByRoomAsync(Guid SeatTypeId, RoomDto roomDto)
         {
-            var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
 
-            for (int i = 0; i < room.Row; i++)
+            for (int i = 0; i < roomDto.Row; i++)
             {
-                for (int j = 0; j < room.Column; j++)
+                for (int j = 0; j < roomDto.Column; j++)
                 {
                     _unitOfWork.SeatRepository.Create(new Seat
                     {
                         AtRow = NumberToLetter(i).ToString(),
                         AtColumn = j + 1,
-                        RoomId = roomId,
+                        RoomId = roomDto.RoomId.Value,
                         SeatTypeId = SeatTypeId,
                         IsActive = true
                     });
