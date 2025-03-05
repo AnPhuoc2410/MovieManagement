@@ -10,5 +10,8 @@ namespace MovieManagement.Server.Services.MovieService
         Task<MovieDto> CreateAsync(Guid employeeId, MovieDto movieDto);
         Task<MovieDto> UpdateAsync(Guid movieId, MovieDto movieDto);
         Task<bool> DeleteAsync(Guid movieId);
+        Task<IEnumerable<MovieDto>> GetMoviesNowShowing(int page, int pageSize);
+        Task<IEnumerable<MovieDto>> GetMoviesUpComing(int page, int pageSize);
+        Task<IEnumerable<MovieDto>> GetMoviesByNameRelative(string name, int page, int pageSize);
     }
 }

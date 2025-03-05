@@ -2,6 +2,7 @@
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using System.Drawing.Printing;
 
 namespace MovieManagement.Server.Services.MovieService
 {
@@ -77,6 +78,24 @@ namespace MovieManagement.Server.Services.MovieService
         public Task<bool> DeleteAsync(Guid movieId)
         {
             return _unitOfWork.MovieRepository.DeleteAsync(movieId);
+        }
+
+        public async Task<IEnumerable<MovieDto>> GetMoviesNowShowing(int page, int pageSize)
+        {
+            var moviesNowShowing = await _unitOfWork.MovieRepository.GetMoviesNowShowing(page, pageSize);
+            return _mapper.Map<IEnumerable<MovieDto>>(moviesNowShowing);
+        }
+
+        public async Task<IEnumerable<MovieDto>> GetMoviesUpComing(int page, int pageSize)
+        {
+            var moviesUpComing = await _unitOfWork.MovieRepository.GetMoviesUpComing(page, pageSize);
+            return _mapper.Map<IEnumerable<MovieDto>>(moviesUpComing);
+        }
+
+        public async Task<IEnumerable<MovieDto>> GetMoviesByNameRelative(string name, int page, int pageSize)
+        {
+            var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelative(name, page, pageSize);
+            return _mapper.Map<IEnumerable<MovieDto>>(movies);
         }
     }
 }
