@@ -1,35 +1,21 @@
 import {
   Box,
-  Button,
-  Container,
-  Typography,
   Card,
   CardContent,
-  RadioGroup,
+  Container,
   FormControlLabel,
   Radio,
+  RadioGroup,
+  Typography,
 } from "@mui/material";
+import { useState } from "react";
+import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router";
-import { UserBase } from "../../../types/users.type";
 import { getBookingDetail } from "../../../apis/mock.apis";
 import LoadingSpinner from "../../../components/LoadingSpinner";
-import { useQuery } from "react-query";
-import { useState } from "react";
+import { XacNhanDatVe } from "./ChiTietDatVe";
 
-export type XacNhanDatVe = {
-  mName: string;
-  monitor: string;
-  datePremiere: string;
-  timePremiere: string;
-  seat: string[]; // Explicitly define as string array
-  price: string[];
-  total: number;
-  changeTicket: number[];
-  DiemThanhVien: number;
-  MovieBanner: string;
-} & Pick<UserBase, "MaThanhVien" | "CMND" | "HoTen" | "SoDienThoai">;
-
-const ChiTietDatVe = () => {
+const ThongTinNhanVe = () => {
   const { bId } = useParams();
   const navigate = useNavigate();
   const [selectedChangeTicket, setSelectedChangeTicket] = useState(0);
@@ -67,7 +53,7 @@ const ChiTietDatVe = () => {
   return (
     <Container>
       <Typography variant="h3" align="center" gutterBottom sx={{ mt: 2 }}>
-        Xác nhận đặt vé
+        Thông tin nhận vé
       </Typography>
 
       <Card sx={{ display: "flex", marginBottom: 2 }}>
@@ -99,26 +85,6 @@ const ChiTietDatVe = () => {
                 ))
               : "Không có thông tin giá"}
           </Typography>
-          <Typography variant="h6">
-            Tổng cộng: {bookingDataDetail.total}đ
-          </Typography>
-        </CardContent>
-      </Card>
-
-      <Card sx={{ marginBottom: 2 }}>
-        <CardContent>
-          <Typography variant="h5" gutterBottom>
-            Thông tin thành viên
-          </Typography>
-          <Typography>
-            Mã thành viên: {bookingDataDetail.MaThanhVien}
-          </Typography>
-          <Typography>CMND: {bookingDataDetail.CMND}</Typography>
-          <Typography>Họ tên: {bookingDataDetail.HoTen}</Typography>
-          <Typography>
-            Điểm thành viên: {bookingDataDetail.DiemThanhVien}
-          </Typography>
-
           <Box
             sx={{
               display: "flex",
@@ -151,26 +117,30 @@ const ChiTietDatVe = () => {
                 : null}
             </RadioGroup>
           </Box>
+          Diem Doi Ve
+          <Typography variant="h6">
+            Tổng cộng: {bookingDataDetail.total}đ
+          </Typography>
+        </CardContent>
+      </Card>
+
+      <Card sx={{ marginBottom: 2 }}>
+        <CardContent>
+          <Typography variant="h5" gutterBottom>
+            Thông tin thành viên
+          </Typography>
+          <Typography>
+            Mã thành viên: {bookingDataDetail.MaThanhVien}
+          </Typography>
+          <Typography>CMND: {bookingDataDetail.CMND}</Typography>
+          <Typography>Họ tên: {bookingDataDetail.HoTen}</Typography>
           <Typography>
             Số điện thoại: {bookingDataDetail.SoDienThoai}
           </Typography>
         </CardContent>
       </Card>
-
-      <Box display="flex" justifyContent="center">
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          onClick={() => {
-            navigate("/admin/ql-dat-ve/thong-tin-nhan-ve/" + bId);
-          }}
-        >
-          Xác nhận đặt vé
-        </Button>
-      </Box>
     </Container>
   );
 };
 
-export default ChiTietDatVe;
+export default ThongTinNhanVe;

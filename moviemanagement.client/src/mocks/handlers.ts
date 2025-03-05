@@ -1,5 +1,6 @@
 import { HttpHandler } from "msw";
 import {
+  handleGetBookingDetail,
   handleGetNhanVien,
   handleGetRoom,
   handleGetRoomDetail,
@@ -13,4 +14,5 @@ export const handlers: HttpHandler[] = [
   handleGetRoom(),
   handleGetRoomDetail("1"),
   handleLogin(),
+  handleGetBookingDetail("BV00001"),
 ];

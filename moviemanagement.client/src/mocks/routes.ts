@@ -2,6 +2,7 @@ import { http, HttpResponse } from "msw";
 import { Room } from "../types/room.types";
 import { Employee } from "../pages/admin/QuanLyNhanVien/BangNhanVien";
 import { LoginRequest } from "../types/auth.types";
+import { XacNhanDatVe } from "../pages/admin/QuanLyDatVe/ChiTietDatVe";
 
 export const handleLogin = () => {
   return http.post("/api/login", async ({ request }) => {
@@ -169,5 +170,27 @@ export const handleGetRoomDetail = (roomId: string) => {
       default:
         return HttpResponse.error();
     }
+  });
+};
+
+export const handleGetBookingDetail = (bookingId: string) => {
+  return http.get(`/api/booking/${bookingId}`, () => {
+    return HttpResponse.json<XacNhanDatVe>({
+      mName: "Đại chiến giữa những vì sao",
+      monitor: "Scrn02",
+      datePremiere: "25-01-2017",
+      timePremiere: "08-20",
+      seat: ["B8", "B9", "B10", "C10"],
+      price: ["B8: 45000đ", "B8: 45000đ", "B8: 45000đ"],
+      total: 180000,
+      MaThanhVien: "TV0000012",
+      CMND: "191816354",
+      HoTen: "Nguyễn Văn A",
+      DiemThanhVien: 1200,
+      changeTicket: [0, 1, 2],
+      SoDienThoai: "0901234567",
+      MovieBanner:
+        "https://images.unsplash.com/photo-1578632749014-ca77efd052eb?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    });
   });
 };

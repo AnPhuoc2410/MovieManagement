@@ -26,6 +26,7 @@ import AdminTheme from "./shared-theme/AdminTheme";
 import Confirmation from "./pages/ticket/Confirmation";
 import { Toaster } from "react-hot-toast";
 import Movies from "./pages/admin/QuanLyPhim";
+import ThongTinNhanVe from "./pages/admin/QuanLyDatVe/ThongTinNhanVe";
 
 const theme = createTheme({
   components: {
@@ -84,6 +85,7 @@ const App = () => {
           <Route path="ql-dat-ve">
             <Route path="" element={<QuanLyDatVe />} />
             <Route path=":bId" element={<ChiTietDatVe />} />
+            <Route path="thong-tin-nhan-ve/:bId" element={<ThongTinNhanVe />} />
           </Route>
         </Route>
       </Routes>

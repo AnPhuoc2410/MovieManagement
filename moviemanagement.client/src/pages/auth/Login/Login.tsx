@@ -180,20 +180,26 @@ export const Login = () => {
           </Box>
 
           <Box sx={{ mt: 3, textAlign: "center" }}>
-            <Typography variant="body2" color="text.secondary">
-              Quick access user detail?{" "}
-            </Typography>
             <Button
-              sx={{
-                color: "white",
-                backgroundColor: "red",
-              }}
+              variant="contained"
+              color="warning"
               onClick={() => {
                 navigate("/users/profile/1");
               }}
-              Click
-              here
-            ></Button>
+            >
+              User Detail
+            </Button>
+          </Box>
+          <Box sx={{ mt: 3, textAlign: "center" }}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => {
+                navigate("/admin/thong-ke");
+              }}
+            >
+              Quick Admin
+            </Button>
           </Box>
         </form>
       </Paper>

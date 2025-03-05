@@ -3,6 +3,7 @@ import { Employee } from "../pages/admin/QuanLyNhanVien/BangNhanVien";
 import { ThanhVien } from "../pages/admin/QuanLyThanhVien/BangThanhVien";
 import { Room } from "../types/room.types";
 import { LoginResponse } from "../types/auth.types";
+import { XacNhanDatVe } from "../pages/admin/QuanLyDatVe/ChiTietDatVe";
 
 export const fetchThanhVien = async (): Promise<ThanhVien[]> => {
   const response = await axios.get<ThanhVien[]>("/api/thanh-vien");
@@ -29,5 +30,12 @@ export const login = async (
   password: string,
 ): Promise<LoginResponse> => {
   const response = await axios.post("/api/login", { username, password });
+  return response.data;
+};
+
+export const getBookingDetail = async (
+  bookingId: string,
+): Promise<XacNhanDatVe> => {
+  const response = await axios.get<XacNhanDatVe>(`/api/booking/${bookingId}`);
   return response.data;
 };
