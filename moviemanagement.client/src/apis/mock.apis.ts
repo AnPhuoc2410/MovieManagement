@@ -39,3 +39,8 @@ export const getBookingDetail = async (
   const response = await axios.get<XacNhanDatVe>(`/api/booking/${bookingId}`);
   return response.data;
 };
+
+export const getFilmList = async () => {
+  const response = await axios.get("/api/films");
+  return response.data;
+};
