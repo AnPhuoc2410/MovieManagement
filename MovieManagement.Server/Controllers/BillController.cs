@@ -4,6 +4,7 @@ using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.BillService;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MovieManagement.Server.Controllers
 {
@@ -21,7 +22,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpGet]
         [Route("GetAll")]
-        [ProducesResponseType(typeof(ApiResponseServices<TicketTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
@@ -86,6 +87,11 @@ namespace MovieManagement.Server.Controllers
             }
         }
         [HttpGet("page/{page:int}/pagesize{pageSize:int}")]
+        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GetPageAsync(int page, int pageSize)
         {
             try
@@ -140,6 +146,11 @@ namespace MovieManagement.Server.Controllers
 
         [HttpGet]
         [Route("GetById/{billId:guid}")]
+        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<BillDto>> GetBillById(Guid billId)
         {
             try
@@ -195,6 +206,11 @@ namespace MovieManagement.Server.Controllers
 
         [HttpPost]
         [Route("Create")]
+        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<BillDto>> CreateBill(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, [FromBody] BillDto billDto)
         {
             try
@@ -251,6 +267,11 @@ namespace MovieManagement.Server.Controllers
 
         [HttpPut]
         [Route("Update/{billId:guid}")]
+        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<BillDto>> UpdateBill(Guid billId, [FromBody] BillDto billDto)
         {
             try
@@ -306,12 +327,61 @@ namespace MovieManagement.Server.Controllers
 
         [HttpDelete]
         [Route("Delete/{billId:guid}")]
-        public async Task<bool> DeleteBill(Guid billId)
+        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteBill(Guid billId)
         {
-            bool deleted = await _billService.DeleteAsync(billId);
-            return deleted;
+            try
+            {
+                bool deleted = await _billService.DeleteAsync(billId);
+                if (!deleted)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Bill not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(deleted);
+                }
+                return Ok(deleted);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating bill",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
-
-
     }
 }

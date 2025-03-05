@@ -83,31 +83,9 @@ namespace MovieManagement.Server.Migrations
                     b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("MovieManagement.Server.Models.Entities.CategoryDetail", b =>
-                {
-                    b.Property<Guid>("CategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .IsUnicode(true)
-                        .HasColumnType("varchar(20)");
-
-                    b.HasKey("CategoryId");
-
-                    b.ToTable("CATEGORYDETAIL", (string)null);
-                });
-
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Movie", b =>
                 {
-                    b.Property<Guid>("MovieId")
+                    b.Property<Guid?>("MovieId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
@@ -280,7 +258,7 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.ShowTime", b =>
                 {
-                    b.Property<Guid>("ShowTimeId")
+                    b.Property<Guid?>("ShowTimeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -311,9 +289,6 @@ namespace MovieManagement.Server.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ShowTimeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TicketTypeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("BillId", "SeatId", "ShowTimeId");
