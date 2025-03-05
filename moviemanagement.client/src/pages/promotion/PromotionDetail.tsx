@@ -54,7 +54,14 @@ const PromotionDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <Box sx={{ backgroundColor: "#0B0D1A", color: "white", minHeight: "100vh", p: 4 }}>
+      <Box
+        sx={{
+          backgroundColor: "#0B0D1A",
+          color: "white",
+          minHeight: "100vh",
+          p: 4,
+        }}
+      >
         <Header />
         <Typography variant="h6" align="center">
           Đang tải...
@@ -66,12 +73,23 @@ const PromotionDetail: React.FC = () => {
 
   if (error || !promotion) {
     return (
-      <Box sx={{ backgroundColor: "#0B0D1A", color: "white", minHeight: "100vh", p: 4 }}>
+      <Box
+        sx={{
+          backgroundColor: "#0B0D1A",
+          color: "white",
+          minHeight: "100vh",
+          p: 4,
+        }}
+      >
         <Header />
         <Typography variant="h6" align="center">
           {error || "Không tìm thấy khuyến mãi."}
         </Typography>
-        <Button onClick={() => navigate("/promotions")} variant="contained" sx={{ mt: 2 }}>
+        <Button
+          onClick={() => navigate("/promotions")}
+          variant="contained"
+          sx={{ mt: 2 }}
+        >
           Quay lại
         </Button>
         <Footer />
@@ -83,11 +101,16 @@ const PromotionDetail: React.FC = () => {
     <Box sx={{ backgroundColor: "#0B0D1A", color: "white" }}>
       <Header />
       <Container maxWidth="md" sx={{ mt: 10, mb: 7, py: 6 }}>
-        <Card sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}>
+        <Card
+          sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}
+        >
           {/* Left Side - Image Section */}
           <CardMedia
             component="img"
-            image={promotion.image || "https://thumbs.dreamstime.com/b/page-not-found-error-hand-drawn-ghost-doodle-vector-illustration-internet-connection-trouble-concept-105206287.jpg"}
+            image={
+              promotion.image ||
+              "https://thumbs.dreamstime.com/b/page-not-found-error-hand-drawn-ghost-doodle-vector-illustration-internet-connection-trouble-concept-105206287.jpg"
+            }
             alt={promotion.promotionName}
             sx={{
               width: { xs: "100%", md: "50%" },
@@ -109,14 +132,19 @@ const PromotionDetail: React.FC = () => {
               {promotion.promotionName}
             </Typography>
             <Typography variant="subtitle2" gutterBottom>
-              Thời gian: {dayjs(promotion.fromDate).format("DD/MM/YYYY")} - {dayjs(promotion.toDate).format("DD/MM/YYYY")}
+              Thời gian: {dayjs(promotion.fromDate).format("DD/MM/YYYY")} -{" "}
+              {dayjs(promotion.toDate).format("DD/MM/YYYY")}
             </Typography>
             <Box
               sx={{ typography: "body1", mt: 1 }}
               className="quill-content"
               dangerouslySetInnerHTML={{ __html: promotion.content }}
             />
-            <Button variant="contained" color="secondary" sx={{ mt: 2, alignSelf: "start" }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ mt: 2, alignSelf: "start" }}
+            >
               Đặt Vé Ngay
             </Button>
           </CardContent>

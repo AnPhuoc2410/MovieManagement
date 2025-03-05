@@ -32,40 +32,37 @@ namespace MovieManagement.Server.Services.CategoryService
         }
 
 
-        public async Task<CategoryDto> GetByComposeIdAsync(Guid categoryId, Guid movieId)
+        public async Task<CategoryDto> GetByIdAsync(Guid categoryId)
         {
-            var category = await _unitOfWork.CategoryRepository.GetByComposeIdAsync(categoryId, movieId);
+            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId);
             return _mapper.Map<CategoryDto>(category);
         }
 
 
         public async Task<CategoryDto> CreateAsync(CategoryDto categoryDto)
         {
-            var newCategory = new Category
-            {
-                CategoryId = categoryDto.CategoryId,
-                MovieId = categoryDto.MovieId
-            };
-            var createdCategory = await _unitOfWork.CategoryRepository.CreateAsync(newCategory);
+            categoryDto.CategoryId = null;   
+            var createdCategory = await _unitOfWork.CategoryRepository.CreateAsync(_mapper.Map<Category>(categoryDto));
             return _mapper.Map<CategoryDto>(createdCategory);
         }
 
 
-        public async Task<CategoryDto> UpdateAsync(Guid categoryId, Guid movieId, CategoryDto categoryDto)
+        public async Task<CategoryDto> UpdateAsync(Guid categoryId, CategoryDto categoryDto)
         {
-            var existingCategory = await _unitOfWork.CategoryRepository.GetByComposeIdAsync(categoryId, movieId);
+            var existingCategory = await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId);
 
             existingCategory.MovieId = categoryDto.MovieId;
-            existingCategory.CategoryId = categoryDto.CategoryId;
+            existingCategory.Name = categoryDto.Name;
+            existingCategory.Description = categoryDto.Description;
 
             var updatedCategory = await _unitOfWork.CategoryRepository.UpdateAsync(existingCategory);
             return _mapper.Map<CategoryDto>(updatedCategory);
         }
 
 
-        public async Task<bool> DeleteComposeAsync(Guid categoryId, Guid movieId)
+        public async Task<bool> DeleteAsync(Guid categoryId)
         {
-            return await _unitOfWork.CategoryRepository.DeleteComposeAsync(categoryId, movieId);
+            return await _unitOfWork.CategoryRepository.DeleteAsync(categoryId);
         }
 
 

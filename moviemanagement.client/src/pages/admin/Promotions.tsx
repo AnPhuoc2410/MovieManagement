@@ -1,6 +1,6 @@
-import * as React from "react";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   Box,
   Button,
@@ -10,15 +10,14 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  TextField,
   Stack,
+  TextField,
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { useForm, Controller } from "react-hook-form";
 import { alpha } from "@mui/material/styles";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import AppNavbar from "../../components/mui/AppNavbar";
@@ -27,10 +26,10 @@ import SideMenu from "../../components/mui/SideMenu";
 
 import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUploadWidget";
 
-import AppTheme from "../../shared-theme/AppTheme";
-import TextEdit from "../../components/admin/TextEdit";
 import dayjs from "dayjs";
-import { ENV } from "../../components/cloudinary/CloudinaryImage";
+import TextEdit from "../../components/admin/TextEdit";
+import { ENV } from "../../env/env.config";
+import AppTheme from "../../shared-theme/AppTheme";
 
 interface Promotion {
   promotionId: string;
@@ -87,8 +86,7 @@ export default function Promotions({
   };
 
   const handleSetPublicId = (publicId: string) => {
-    var cloud = ENV.CLOUDINARY_CLOUD_NAME;
-    const imageUrl = `https://res.cloudinary.com/${cloud}/image/upload/${publicId}`;
+    const imageUrl = `https://res.cloudinary.com/${ENV.CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;
     setUploadedImage(imageUrl);
     setValue("image", imageUrl);
   };

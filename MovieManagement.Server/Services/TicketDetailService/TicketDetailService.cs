@@ -22,8 +22,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             var newTicketDetail = new TicketDetail()
             {
                 BillId = ticketDetail.BillId,
-                SeatId = ticketDetail.SeatId,
-                TicketTypeId = ticketDetail.TicketTypeId
+                SeatId = ticketDetail.SeatId
             };
 
             var createdTicketDetail = await _unitOfWork.TicketDetailRepository.CreateAsync(newTicketDetail);

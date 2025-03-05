@@ -40,9 +40,17 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
   const { t } = useTranslation();
 
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: "rgb(47, 39, 39)", padding: 1 }}>
-      <Toolbar sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        
+    <AppBar
+      position="fixed"
+      sx={{ backgroundColor: "rgb(47, 39, 39)", padding: 1 }}
+    >
+      <Toolbar
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         {/* Logo */}
         <Box
           component="a"
@@ -71,7 +79,9 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
             maxWidth: "75%",
             "& .MuiStepLabel-label": { color: "gray" },
             "& .MuiStepLabel-label.Mui-active": { color: "white !important" },
-            "& .MuiStepLabel-label.Mui-completed": { color: "white !important" },
+            "& .MuiStepLabel-label.Mui-completed": {
+              color: "white !important",
+            },
           }}
         >
           {steps.map((step, index) => (
@@ -88,13 +98,12 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
             </Step>
           ))}
         </Stepper>
-          <IconButton color="inherit" onClick={() => navigate("/auth")}>
-            <AccountCircleIcon />
-            <Typography>{t("login")}</Typography>
-          </IconButton>
+        <IconButton color="inherit" onClick={() => navigate("/auth")}>
+          <AccountCircleIcon />
+          <Typography>{t("login")}</Typography>
+        </IconButton>
 
-          <LanguageSelector />
-
+        <LanguageSelector />
       </Toolbar>
     </AppBar>
   );

@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { Box, Button, CssBaseline, TextField, Stack } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
+import { Box, Button, CssBaseline, Stack, TextField } from "@mui/material";
 import { alpha } from "@mui/material/styles";
-import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Layout Components
+import TextEdit from "../../components/admin/TextEdit";
 import AppNavbar from "../../components/mui/AppNavbar";
 import SideMenu from "../../components/mui/SideMenu";
-import TextEdit from "../../components/admin/TextEdit";
 
 // Import Cloudinary Upload Widget component
 import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUploadWidget";
 
 // Theme & Customizations
-import AppTheme from "../../shared-theme/AppTheme";
 import dayjs from "dayjs";
-import { ENV } from "../../components/cloudinary/CloudinaryImage";
+import { ENV } from "../../env/env.config";
+import AppTheme from "../../shared-theme/AppTheme";
 
 interface Promotion {
   promotionId: string;
@@ -68,8 +68,7 @@ export default function PromotionDetail() {
   );
 
   const handleSetPublicId = (publicId: string) => {
-    var cloud = ENV.CLOUDINARY_CLOUD_NAME;
-    const imageUrl = `https://res.cloudinary.com/${cloud}/image/upload/${publicId}`;
+    const imageUrl = `https://res.cloudinary.com/${ENV.CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;
     setUploadedImage(imageUrl);
     setValue("image", imageUrl);
   };
@@ -226,8 +225,9 @@ export default function PromotionDetail() {
                   rules={{ required: "Nhập chi tiết" }}
                   render={({ field }) => (
                     <TextEdit
+                      error={"Error"}
                       value={field.value}
-                      onChange={(val) => field.onChange(val)}
+                      onChange={(val: string) => field.onChange(val)}
                     />
                   )}
                 />

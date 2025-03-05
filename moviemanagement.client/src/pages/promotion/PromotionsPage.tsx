@@ -61,7 +61,9 @@ const PromotionsPage: React.FC = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <Box sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}>
+    <Box
+      sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
+    >
       <Header />
       <Container sx={{ mt: 10, p: 4 }}>
         <Typography variant="h4" sx={{ textAlign: "center", mb: 4, fontWeight: "bold" }}>
