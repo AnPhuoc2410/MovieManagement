@@ -170,7 +170,8 @@ namespace MovieManagement.Server.Migrations
                 {
                     b.Property<Guid>("PromotionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Content")
                         .IsRequired()

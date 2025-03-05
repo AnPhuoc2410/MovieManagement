@@ -95,6 +95,7 @@ namespace MovieManagement.Server
                     policy => policy.WithOrigins(
                     "https://localhost:3000",
                     "http://localhost:3000",
+                    "https://localhost:7119",
                     "https://eigaa.vercel.app")
                         .AllowAnyMethod()
                         .AllowAnyHeader());
