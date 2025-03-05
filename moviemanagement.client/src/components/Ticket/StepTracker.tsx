@@ -25,10 +25,10 @@ import { useTranslation } from "react-i18next";
 import LanguageSelector from "../common/LanguageSelector";
 
 const steps = [
-  { label: "Select Showtime", icon: <MovieIcon /> },
-  { label: "Choose Seats", icon: <EventSeatIcon /> },
-  { label: "Payment", icon: <PaymentIcon /> },
-  { label: "Confirmation", icon: <CheckCircleIcon /> },
+  { label: "Chọn Suất Chiếu", icon: <MovieIcon /> },
+  { label: "Chọn Ghế", icon: <EventSeatIcon /> },
+  { label: "Thanh Toán", icon: <PaymentIcon /> },
+  { label: "Thanh Công", icon: <CheckCircleIcon /> },
 ];
 
 interface StepTrackerProps {

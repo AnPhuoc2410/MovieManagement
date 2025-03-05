@@ -32,8 +32,7 @@ namespace MovieManagement.Server.Services.PromotionService
             newPromotion.PromotionId = Guid.NewGuid();
 
             // CreateAsync the promotion and return the created entity
-            var createdPromotion = await _unitOfWork.PromotionRepository.CreateAsync(newPromotion);
-            return _mapper.Map<PromotionDto>(createdPromotion);
+            return _mapper.Map<PromotionDto>(await _unitOfWork.PromotionRepository.CreateAsync(newPromotion));
         }
 
         public async Task<PromotionDto> GetByIdAsync(Guid id)

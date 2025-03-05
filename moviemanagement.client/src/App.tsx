@@ -6,6 +6,7 @@ import Movies from "./pages/admin/Movies";
 import PromotionDetailManagement from "./pages/admin/PromotionDetail";
 import PromotionManagement from "./pages/admin/Promotions";
 import BuyTicket from "./pages/admin/QuanLyBanVe/SoldTicket";
+import Promotion from "./pages/promotion/PromotionsPage";
 import ChiTietDatVe from "./pages/admin/QuanLyDatVe/ChiTietDatVe";
 import QuanLyDatVe from "./pages/admin/QuanLyDatVe/QuanLyDatVe";
 import QuanLiNhanVien from "./pages/admin/QuanLyNhanVien";
@@ -18,13 +19,13 @@ import Home from "./pages/Home";
 import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
 import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
-import Promotion from "./pages/promotion/PromotionsPage";
-import Confirmation from "./pages/ticket/Confirmation";
+import Ticket from "./pages/ticket/DateMovie";
 import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
-import Ticket from "./pages/ticket/ShowTime";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
+import Confirmation from "./pages/ticket/Confirmation";
+
 
 const theme = createTheme({
   components: {
