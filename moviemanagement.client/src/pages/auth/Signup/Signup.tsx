@@ -56,9 +56,9 @@ export const Signup = () => {
   const [activeStep, setActiveStep] = useState(0);
 
   const steps = [
-    "Account Details",
-    "Personal Information",
-    "Contact Information",
+    "Chi tiết tài khoản",
+    "Thông tin cá nhân",
+    "Thông tin liên hệ",
   ];
 
   const handleClickShowPassword = () => {
@@ -145,7 +145,7 @@ export const Signup = () => {
           align="center"
           sx={{ mb: 4, fontWeight: 600 }}
         >
-          Register Account
+          Đăng ký tài khoản
         </Typography>
 
         <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
@@ -163,7 +163,7 @@ export const Signup = () => {
                 fullWidth
                 id="username"
                 name="username"
-                label="Username"
+                label="Tài khoản"
                 value={formik.values.username}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -184,7 +184,7 @@ export const Signup = () => {
                 fullWidth
                 id="password"
                 name="password"
-                label="Password"
+                label="Mật khẩu"
                 type={showPassword ? "text" : "password"}
                 value={formik.values.password}
                 onChange={formik.handleChange}
@@ -374,7 +374,7 @@ export const Signup = () => {
               sx={{ mr: 1 }}
               disabled={activeStep === 0}
             >
-              Previous step
+              Quay lại
             </Button>
             <Box>
               {activeStep === steps.length - 1 ? (
@@ -423,7 +423,7 @@ export const Signup = () => {
                     },
                   }}
                 >
-                  Next step
+                  Tiếp tục
                 </Button>
               )}
             </Box>
@@ -431,9 +431,9 @@ export const Signup = () => {
 
           <Box sx={{ mt: 4, textAlign: "center" }}>
             <Typography variant="body2" color="text.secondary">
-              Already a member?{" "}
+              Đã có tài khoản?{" "}
               <Link href="/auth/login" underline="hover">
-                Login here
+                Đăng nhập ngay
               </Link>
             </Typography>
           </Box>

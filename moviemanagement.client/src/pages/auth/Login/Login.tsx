@@ -1,18 +1,20 @@
-import React, { useState } from "react";
+import { Lock, Person, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
-  Button,
-  TextField,
   Box,
-  Typography,
-  InputAdornment,
+  Button,
   IconButton,
-  Paper,
+  InputAdornment,
   Link,
+  Paper,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
-import * as yup from "yup";
-import { Visibility, VisibilityOff, Person, Lock } from "@mui/icons-material";
+import { useState } from "react";
 import { useNavigate } from "react-router";
+import * as yup from "yup";
+import { login } from "../../../apis/mock.apis";
+import toast, { Toaster } from "react-hot-toast";
 
 const validationSchema = yup.object({
   username: yup.string().required("Username is required"),
@@ -21,6 +23,8 @@ const validationSchema = yup.object({
     .min(8, "Password should be of minimum 8 characters length")
     .required("Password is required"),
 });
+
+const notify = () => toast("Here is your toast.");
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,13 +41,23 @@ export const Login = () => {
       password: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setLoading(true);
-      // Simulate API call
-      setTimeout(() => {
-        setLoading(false);
-        navigate("/admin/thong-ke");
-      }, 1000);
+      const response = await login(values.username, values.password);
+      console.log(response);
+
+      if (response.is_success) {
+        toast.success("Login successful! Redirecting...");
+        setTimeout(() => {
+          setLoading(false);
+          navigate("/admin/thong-ke");
+        }, 1000);
+      } else {
+        toast.error(response.message);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+      }
     },
   });
 
@@ -73,7 +87,7 @@ export const Login = () => {
           align="center"
           sx={{ mb: 3, fontWeight: 600 }}
         >
-          Login
+          Đăng nhập
         </Typography>
 
         <form onSubmit={formik.handleSubmit}>
@@ -81,7 +95,7 @@ export const Login = () => {
             fullWidth
             id="username"
             name="username"
-            label="Username"
+            label="Tài khoản"
             value={formik.values.username}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -101,7 +115,7 @@ export const Login = () => {
             fullWidth
             id="password"
             name="password"
-            label="Password"
+            label="Mật khẩu"
             type={showPassword ? "text" : "password"}
             value={formik.values.password}
             onChange={formik.handleChange}
@@ -131,7 +145,7 @@ export const Login = () => {
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
             <Link href="#" underline="hover" sx={{ fontSize: "0.875rem" }}>
-              Forgot password?
+              Quên mật khẩu?
             </Link>
           </Box>
 
@@ -158,9 +172,9 @@ export const Login = () => {
 
           <Box sx={{ mt: 3, textAlign: "center" }}>
             <Typography variant="body2" color="text.secondary">
-              Do not have account?{" "}
+              Chưa có tài khoản?{" "}
               <Link href="/auth/signup" underline="hover">
-                Sign up here
+                Đăng ký ngay
               </Link>
             </Typography>
           </Box>

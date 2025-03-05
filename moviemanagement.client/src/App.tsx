@@ -25,7 +25,7 @@ import Payment from "./pages/ticket/Payment";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
 import Confirmation from "./pages/ticket/Confirmation";
-
+import { Toaster } from "react-hot-toast";
 
 const theme = createTheme({
   components: {
@@ -87,6 +87,7 @@ const App = () => {
           </Route>
         </Route>
       </Routes>
+      <Toaster />
     </ThemeProvider>
   );
 };
