@@ -29,7 +29,7 @@ namespace MovieManagement.Server.Services.BillService
             var bill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
             return _mapper.Map<BillDto>(bill);
         }
-        public async Task<BillDto> CreateAsync(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, BillDto billDto)
+        public async Task<BillDto> CreateAsync(Guid userId, BillDto billDto)
         {
             var newBill = new Bill
             {
@@ -37,8 +37,8 @@ namespace MovieManagement.Server.Services.BillService
                 Point = billDto.Point,
                 TotalTicket = billDto.TotalTicket,
                 Amount = billDto.Amount,
-                UserId = billDto.UserId,
-                PromotionId = promotionId,
+                UserId = userId,
+                PromotionId = billDto.PromotionId,
                 Status = billDto.Status,
             };
             var bill = await _unitOfWork.BillRepository.CreateAsync(newBill);

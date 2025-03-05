@@ -42,9 +42,9 @@ namespace MovieManagement.Server.Controllers
 
         [HttpPost]
         [Route("Create")]
-        public async Task<ActionResult<BillDto>> CreateBill(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, [FromBody] BillDto billDto)
+        public async Task<ActionResult<BillDto>> CreateBill(Guid userId, [FromBody] BillDto billDto)
         {
-            var @new = await _billService.CreateAsync(movieId, memberId, employeeId, promotionId, billDto);
+            var @new = await _billService.CreateAsync(userId, billDto);
             return @new;
         }
 
