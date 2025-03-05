@@ -19,24 +19,18 @@ namespace MovieManagement.Server.Services.PromotionService
 
         public async Task<PromotionDto> CreateAsync(PromotionDto promotionDto)
         {
-            var newPromotion = new Promotion
-            {
-                PromotionName = promotionDto.PromotionName,
-                Image = promotionDto.Image,
-                FromDate = promotionDto.FromDate,
-                ToDate = promotionDto.ToDate,
-                Discount = promotionDto.Discount,
-                Content = promotionDto.Content
-            };
-            try
-            {
-                var createdPromotion = _mapper.Map<PromotionDto>(await _unitOfWork.PromotionRepository.CreateAsync(newPromotion));
-                return createdPromotion;
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("An error occurred while processing into Database", ex);
-            }
+            //var newPromotion = new Promotion
+            //{
+            //    PromotionName = promotionDto.PromotionName,
+            //    Image = promotionDto.Image,
+            //    FromDate = promotionDto.FromDate,
+            //    ToDate = promotionDto.ToDate,
+            //    Discount = promotionDto.Discount,
+            //    Content = promotionDto.Content
+            //};
+
+            var newPromotion = _mapper.Map<Promotion>(promotionDto);
+            newPromotion.PromotionId = Guid.NewGuid();
 
             // CreateAsync the promotion and return the created entity
         }

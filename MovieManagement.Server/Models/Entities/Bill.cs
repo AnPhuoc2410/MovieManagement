@@ -23,10 +23,10 @@ namespace MovieManagement.Server.Models.Entities
 
         public int Status { get; set; } // 0: Hủy đặt vé; 1: Chờ nhận vé; 2: Đã nhận vé
 
-        public IEnumerable<TicketDetail> TicketDetails { get; set; } = new List<TicketDetail>(); // Quan hệ 1-N với TicketDetail
+        public virtual ICollection<TicketDetail> TicketDetails { get; set; } = new List<TicketDetail>(); // Quan hệ 1-N với TicketDetail
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
-        public Promotion Promotion { get; set; }
+        public virtual Promotion Promotion { get; set; }
     }
 }

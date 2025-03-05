@@ -10,5 +10,8 @@ namespace MovieManagement.Server.Services.MovieService
         Task<MovieDto> UpdateMovieAsync(Guid movieId, MovieDto movieDto);
         Task<bool> DeleteMovieAsync(Guid movieId);
         Task<IEnumerable<MovieDto>> GetPageAsync(int page, int pageSize);
+        Task<IEnumerable<MovieDto>> GetMoviesNowShowing(int page, int pageSize);
+        Task<IEnumerable<MovieDto>> GetMoviesUpComing(int page, int pageSize);
+        Task<IEnumerable<MovieDto>> GetMoviesByNameRelative(string name, int page, int pageSize);
     }
 }

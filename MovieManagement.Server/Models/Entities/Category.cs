@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieManagement.Server.Models.Entities
@@ -6,14 +7,16 @@ namespace MovieManagement.Server.Models.Entities
 
     public class Category
     {
+        public Guid CategoryId { get; set; }
 
         public Guid MovieId { get; set; }
 
-        public Guid CategoryId { get; set; }
+        public string Name { get; set; }
 
-        public Movie Movie { get; set; }
+        public string Description { get; set; }
 
-        public CategoryDetail CategoryDetail { get; set; }
+        public virtual Movie Movie { get; set; }
+
 
     }
 }

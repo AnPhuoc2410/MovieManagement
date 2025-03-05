@@ -19,6 +19,11 @@ namespace MovieManagement.Server
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
@@ -90,6 +95,7 @@ namespace MovieManagement.Server
                     policy => policy.WithOrigins(
                     "https://localhost:3000",
                     "http://localhost:3000",
+                    "https://localhost:7119",
                     "https://eigaa.vercel.app")
                         .AllowAnyMethod()
                         .AllowAnyHeader());

@@ -19,7 +19,6 @@ export interface ThanhVien extends TableData {
   GioiTinh?: "Male" | "Female";
 }
 
-
 const MemberTable: React.FC<{
   employees: ThanhVien[];
   onEdit: (id: string) => void;

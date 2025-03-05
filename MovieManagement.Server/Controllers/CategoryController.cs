@@ -6,12 +6,12 @@ namespace MovieManagement.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CatogoryController : Controller
+    public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
 
 
-        public CatogoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
         }
@@ -33,10 +33,10 @@ namespace MovieManagement.Server.Controllers
         }
 
 
-        [HttpGet("/{categoryId:guid}/{movieId:guid}")]
-        public async Task<ActionResult<CategoryDto>> GetCategoryById(Guid categoryId, Guid movieId)
+        [HttpGet("/{categoryId:guid}")]
+        public async Task<ActionResult<bool>> GetCategoryById(Guid categoryId)
         {
-            var category = await _categoryService.GetByComposeIdAsync(categoryId, movieId);
+            var category = await _categoryService.DeleteAsync(categoryId);
             return category;
         }
 
@@ -51,19 +51,19 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPut]
-        [Route("Update/{categoryId:guid}/{movieId:guid}")]
-        public async Task<ActionResult<CategoryDto>> UpdateCategoryAsync(Guid categoryId, Guid movieId, [FromBody] CategoryDto categoryDto)
+        [Route("Update/{categoryId:guid}")]
+        public async Task<ActionResult<CategoryDto>> UpdateCategoryAsync(Guid categoryId, [FromBody] CategoryDto categoryDto)
         {
-            var updatedCategory = await _categoryService.UpdateAsync(categoryId, movieId, categoryDto);
+            var updatedCategory = await _categoryService.UpdateAsync(categoryId, categoryDto);
             return Ok(updatedCategory);
         }
 
 
         [HttpDelete]
-        [Route("Delete/{categoryId:guid}/{movieId:guid}")]
-        public async Task<bool> DeleteCategoryAsync(Guid categoryId, Guid movieId)
+        [Route("Delete/{categoryId:guid}")]
+        public async Task<bool> DeleteCategoryAsync(Guid categoryId)
         {
-            var deleteCategory = await _categoryService.DeleteComposeAsync(categoryId, movieId);
+            var deleteCategory = await _categoryService.DeleteAsync(categoryId);
             return deleteCategory;
         }
 
