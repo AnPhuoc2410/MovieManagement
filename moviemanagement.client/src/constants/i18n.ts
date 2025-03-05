@@ -7,14 +7,14 @@ import TRANSLATION_JP from "../locales/jp/translation.json";
 
 const resources = {
   en: {
-    translation: TRANSLATION_EN.translation
+    translation: TRANSLATION_EN.translation,
   },
   vi: {
-    translation: TRANSLATION_VI.translation
+    translation: TRANSLATION_VI.translation,
   },
   jp: {
-    translation: TRANSLATION_JP.translation
-  }
+    translation: TRANSLATION_JP.translation,
+  },
 };
 
 i18n

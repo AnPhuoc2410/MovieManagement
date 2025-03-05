@@ -1,42 +1,25 @@
+import * as React from "react";
+import type {} from "@mui/x-date-pickers/themeAugmentation";
 import type {} from "@mui/x-charts/themeAugmentation";
 import type {} from "@mui/x-data-grid-pro/themeAugmentation";
-import type {} from "@mui/x-date-pickers/themeAugmentation";
 
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import Stack from "@mui/material/Stack";
 import { alpha } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import AppTheme from "../../../shared-theme/AppTheme";
+import SideMenu from "../../../components/mui/SideMenu";
+import AppNavbar from "../../../components/mui/AppNavbar";
+import Header from "../../../components/mui/Header";
 
 // Components
-import AppNavbar from "../../components/mui/AppNavbar";
-import Header from "../../components/mui/Header";
-import MainGrid from "../../components/mui/MainGrid";
-import SideMenu from "../../components/mui/SideMenu";
-
-// Theme & Customizations
-import AppTheme from "../../shared-theme/AppTheme";
-import {
-  chartsCustomizations,
-  dataGridCustomizations,
-  datePickersCustomizations,
-} from "../../theme/customizations";
-
-const xThemeComponents = {
-  ...chartsCustomizations,
-  ...dataGridCustomizations,
-  ...datePickersCustomizations,
-};
-
-export default function Dashboard({
+const Movies: React.FC = ({
   disableCustomTheme = false,
 }: {
   disableCustomTheme?: boolean;
-}) {
+}) => {
   return (
-    <AppTheme
-      disableCustomTheme={disableCustomTheme}
-      themeComponents={xThemeComponents}
-    >
+    <AppTheme disableCustomTheme={disableCustomTheme}>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: "flex", height: "100vh" }}>
         <SideMenu />
@@ -56,11 +39,13 @@ export default function Dashboard({
           >
             <Stack spacing={2} alignItems="center">
               <Header />
-              <MainGrid />
+              {/* <MainGrid /> */}
             </Stack>
           </Box>
         </Box>
       </Box>
     </AppTheme>
   );
-}
+};
+
+export default Movies;

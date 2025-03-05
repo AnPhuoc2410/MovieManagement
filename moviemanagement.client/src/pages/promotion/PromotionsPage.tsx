@@ -39,7 +39,7 @@ const PromotionsPage: React.FC = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `https://localhost:7119/api/Promotions/page/${page}/pageSize/${pageSize}`
+          `https://localhost:7119/api/Promotions/page/${page}/pageSize/${pageSize}`,
         );
         if (response.data.length === 0 && page > 0) {
           alert("Không có trang nào nữa!");
@@ -57,7 +57,6 @@ const PromotionsPage: React.FC = () => {
     fetchPromotions();
   }, [page]);
 
-
   if (loading) return <LoadingSpinner />;
 
   return (
@@ -66,14 +65,23 @@ const PromotionsPage: React.FC = () => {
     >
       <Header />
       <Container sx={{ mt: 10, p: 4 }}>
-        <Typography variant="h4" sx={{ textAlign: "center", mb: 4, fontWeight: "bold" }}>
+        <Typography
+          variant="h4"
+          sx={{ textAlign: "center", mb: 4, fontWeight: "bold" }}
+        >
           {t("promotions")}
         </Typography>
 
         {promotions.length === 0 ? (
           <Typography
             variant="h6"
-            sx={{ textAlign: "center", m: 4, p: 4, border: 2, color: "Highlight" }}
+            sx={{
+              textAlign: "center",
+              m: 4,
+              p: 4,
+              border: 2,
+              color: "Highlight",
+            }}
           >
             Hiện không có khuyến mãi nào.
           </Typography>
@@ -89,7 +97,12 @@ const PromotionsPage: React.FC = () => {
                 flexDirection={index % 2 === 0 ? "row" : "row-reverse"}
               >
                 {/* Image Section */}
-                <Grid item xs={12} md={6} sx={{ display: "flex", justifyContent: "center" }}>
+                <Grid
+                  item
+                  xs={12}
+                  md={6}
+                  sx={{ display: "flex", justifyContent: "center" }}
+                >
                   <Box
                     sx={{
                       height: 300,
@@ -137,7 +150,9 @@ const PromotionsPage: React.FC = () => {
                       <Button
                         variant="contained"
                         sx={{ bgcolor: "yellow", color: "black", mt: 2 }}
-                        onClick={() => navigate(`/promotions/${promotion.promotionId}`)}
+                        onClick={() =>
+                          navigate(`/promotions/${promotion.promotionId}`)
+                        }
                       >
                         Đặt Vé Ngay
                       </Button>

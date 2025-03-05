@@ -1,10 +1,9 @@
 import { createTheme, ThemeProvider } from "@mui/material";
 import { Route, Routes } from "react-router";
 import ScrollToTop from "./components/common/ScrollToTop";
-import Dashboard from "./pages/admin/Dashboard";
-import Movies from "./pages/admin/Movies";
-import PromotionDetailManagement from "./pages/admin/PromotionDetail";
-import PromotionManagement from "./pages/admin/Promotions";
+import Dashboard from "./components/shared/Dashboard";
+import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
+import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import BuyTicket from "./pages/admin/QuanLyBanVe/SoldTicket";
 import Promotion from "./pages/promotion/PromotionsPage";
 import ChiTietDatVe from "./pages/admin/QuanLyDatVe/ChiTietDatVe";
@@ -26,6 +25,7 @@ import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
 import Confirmation from "./pages/ticket/Confirmation";
 import { Toaster } from "react-hot-toast";
+import Movies from "./pages/admin/QuanLyPhim";
 
 const theme = createTheme({
   components: {
@@ -66,15 +66,15 @@ const App = () => {
           <Route path="up-coming" element={<UpComingMoviesPage />} />
         </Route>
 
-        <Route path="/admin" element={<AdminTheme />}>
+        <Route path="/admin">
+          <Route path="" element={<AdminTheme />} />
           <Route path="thong-ke" element={<Dashboard />} />
-          <Route path="khuyen-mai" element={<PromotionManagement />} />
+          <Route path="khuyen-mai">
+            <Route path="" element={<PromotionManagement />} />
+            <Route path=":id" element={<PromotionDetailManagement />} />
+          </Route>
           <Route path="phim" element={<Movies />} />
           <Route path="ban-ve" element={<BuyTicket />} />
-          <Route
-            path="khuyen-mai/:id"
-            element={<PromotionDetailManagement />}
-          />
           <Route path="ql-nhan-vien" element={<QuanLiNhanVien />} />
           <Route path="ql-thanh-vien" element={<QuanLiThanhVien />} />
           <Route path="ql-phong-chieu">

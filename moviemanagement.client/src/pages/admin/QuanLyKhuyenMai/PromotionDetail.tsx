@@ -6,17 +6,17 @@ import { Controller, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
 // Layout Components
-import TextEdit from "../../components/admin/TextEdit";
-import AppNavbar from "../../components/mui/AppNavbar";
-import SideMenu from "../../components/mui/SideMenu";
+import TextEdit from "../../../components/admin/TextEdit";
+import AppNavbar from "../../../components/mui/AppNavbar";
+import SideMenu from "../../../components/mui/SideMenu";
 
 // Import Cloudinary Upload Widget component
-import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUploadWidget";
+import CloudinaryUploadWidget from "../../../components/cloudinary/CloudinaryUploadWidget";
 
 // Theme & Customizations
 import dayjs from "dayjs";
-import { ENV } from "../../env/env.config";
-import AppTheme from "../../shared-theme/AppTheme";
+import { ENV } from "../../../env/env.config";
+import AppTheme from "../../../shared-theme/AppTheme";
 
 interface Promotion {
   promotionId: string;

@@ -5,9 +5,9 @@ import { LoginRequest } from "../types/auth.types";
 
 export const handleLogin = () => {
   return http.post("/api/login", async ({ request }) => {
-    const body = await request.json() as LoginRequest;
+    const body = (await request.json()) as LoginRequest;
     const { username, password } = body;
-    
+
     if (username === "hoangdz1604@gmail.com" && password === "12345678") {
       return HttpResponse.json({
         message: "Login successfully",

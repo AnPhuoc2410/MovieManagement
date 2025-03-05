@@ -20,16 +20,16 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import AppNavbar from "../../components/mui/AppNavbar";
-import Header from "../../components/mui/Header";
-import SideMenu from "../../components/mui/SideMenu";
+import AppNavbar from "../../../components/mui/AppNavbar";
+import Header from "../../../components/mui/Header";
+import SideMenu from "../../../components/mui/SideMenu";
 
-import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUploadWidget";
+import CloudinaryUploadWidget from "../../../components/cloudinary/CloudinaryUploadWidget";
 
 import dayjs from "dayjs";
-import TextEdit from "../../components/admin/TextEdit";
-import { ENV } from "../../env/env.config";
-import AppTheme from "../../shared-theme/AppTheme";
+import TextEdit from "../../../components/admin/TextEdit";
+import { ENV } from "../../../env/env.config";
+import AppTheme from "../../../shared-theme/AppTheme";
 
 interface Promotion {
   promotionId: string;
