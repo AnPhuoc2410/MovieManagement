@@ -9,9 +9,9 @@
 
         public decimal Price { get; set; }
 
-        public IEnumerable<Seat> Seats { get; set; } = new List<Seat>();
-
         public bool IsActive { get; set; }
+
+        public virtual ICollection<Seat> Seats { get; set; } = new List<Seat>();
 
     }
 }

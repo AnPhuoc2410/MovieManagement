@@ -38,6 +38,6 @@ namespace MovieManagement.Server.Models.Entities
         public decimal Point { get; set; }
 
         // Quan hệ 1-N với HoaDonBanVe
-        public IEnumerable<Bill> Bills { get; set; } = new List<Bill>();
+        public virtual ICollection<Bill> Bills { get; set; } = new List<Bill>();
     }
 }

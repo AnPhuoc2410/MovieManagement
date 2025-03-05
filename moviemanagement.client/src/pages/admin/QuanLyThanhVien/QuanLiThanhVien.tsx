@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { fetchThanhVien } from "../../../apis/mock.apis";
-import ManagementPageLayout from "../../../layouts/ManagementPageLayout";
+import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import MemberTable, { ThanhVien } from "./BangThanhVien";
 import ChinhSuaThanhVien from "./ChinhSuaThanhVien";
 

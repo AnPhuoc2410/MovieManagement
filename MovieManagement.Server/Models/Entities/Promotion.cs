@@ -21,7 +21,7 @@ namespace MovieManagement.Server.Models.Entities
 
         public string Content { get; set; }
 
-        public IEnumerable<Bill> Bills { get; set; } = new List<Bill>();
+        public virtual ICollection<Bill> Bills { get; set; } = new List<Bill>();
 
     }
 }

@@ -33,23 +33,26 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<MovieDto> CreateAsync(Guid employeeId, MovieDto movieDto)
         {
-            var newMovie = new Movie
-            {
-                Name = movieDto.Name,
-                Image = movieDto.Image,
-                PostDate = movieDto.PostDate,
-                FromDate = movieDto.FromDate,
-                ToDate = movieDto.ToDate,
-                Actors = movieDto.Actors,
-                Director = movieDto.Director,
-                Rating = movieDto.Rating,
-                Duration = movieDto.Duration,
-                Version = movieDto.Version,
-                Trailer = movieDto.Trailer,
-                Content = movieDto.Content,
-                UserId = employeeId,
-            };
-            var movie = await _unitOfWork.MovieRepository.CreateAsync(newMovie);
+            //var newMovie = new Movie
+            //{
+            //    Name = movieDto.Name,
+            //    Image = movieDto.Image,
+            //    PostDate = movieDto.PostDate,
+            //    FromDate = movieDto.FromDate,
+            //    ToDate = movieDto.ToDate,
+            //    Actors = movieDto.Actors,
+            //    Director = movieDto.Director,
+            //    Rating = movieDto.Rating,
+            //    Duration = movieDto.Duration,
+            //    Version = movieDto.Version,
+            //    Trailer = movieDto.Trailer,
+            //    Content = movieDto.Content,
+            //    UserId = employeeId,
+            //};
+
+            movieDto.UserId = employeeId;
+            movieDto.MovieId = null;
+            var movie = await _unitOfWork.MovieRepository.CreateAsync(_mapper.Map<Movie>(movieDto));
             return _mapper.Map<MovieDto>(movie);
         }
 
@@ -97,5 +100,6 @@ namespace MovieManagement.Server.Services.MovieService
             var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelative(name, page, pageSize);
             return _mapper.Map<IEnumerable<MovieDto>>(movies);
         }
+        
     }
 }

@@ -22,9 +22,6 @@ namespace MovieManagement.Server.Models.Configurations
                 .WithMany(x => x.TicketDetails)
                 .HasForeignKey(x => x.ShowTimeId)
                 .OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(x => x.TicketType)
-                .WithMany(x => x.TicketDetails)
-                .HasForeignKey(x => x.TicketTypeId);
         }
     }
 }

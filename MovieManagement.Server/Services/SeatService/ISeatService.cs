@@ -13,7 +13,7 @@ namespace MovieManagement.Server.Services.SeatService
         public Task<SeatDto> UpdateAsync(Guid seatId, SeatDto seat);
         public Task<bool> DeleteAsync(Guid seatId);
 
-        public Task CreateByRoomAsync(RoomDto room, Guid SeatTypeId);
+        public Task CreateByRoomAsync(Guid SeatTypeId, Guid roomId);
 
     }
 }

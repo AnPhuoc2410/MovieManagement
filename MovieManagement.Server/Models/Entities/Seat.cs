@@ -17,10 +17,10 @@ namespace MovieManagement.Server.Models.Entities
 
         public bool IsActive { get; set; }
 
-        public Room Room { get; set; }
+        public virtual Room Room { get; set; }
 
-        public SeatType SeatType { get; set; }
+        public virtual SeatType SeatType { get; set; }
 
-        public List<TicketDetail> TicketDetail { get; set; } = new List<TicketDetail>();
+        public virtual ICollection<TicketDetail> TicketDetail { get; set; } = new List<TicketDetail>();
     }
 }

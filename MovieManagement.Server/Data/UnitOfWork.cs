@@ -8,8 +8,6 @@ namespace MovieManagement.Server.Data
 
         public IBillRepository BillRepository { get; private set; }
 
-        public ICategoryDetailRepository CategoryDetailRepository { get; private set; }
-
         public ICategoryRepository CategoryRepository { get; private set; }
 
         public IUserRepository UserRepository { get; private set; }
@@ -26,15 +24,12 @@ namespace MovieManagement.Server.Data
 
         public ITicketDetailRepository TicketDetailRepository { get; private set; }
 
-        public ITicketTypeRepository TicketTypeRepository { get; private set; }
-
         public ISeatTypeRepository SeatTypeRepository { get; private set; }
 
-        public UnitOfWork(AppDbContext context, IBillRepository billRepository, ICategoryDetailRepository categoryDetailRepository, ICategoryRepository categoryRepository, IUserRepository userRepository,  IMovieRepository movieRepository, IPromotionRepository promotionRepository, IRoomRepository roomRepository, ISeatRepository seatRepository, IShowtimeRepository showtimeRepository, ITicketDetailRepository ticketDetailRepository, ITicketTypeRepository ticketTypeRepository, ISeatTypeRepository seatTypeRepository)
+        public UnitOfWork(AppDbContext context, IBillRepository billRepository, ICategoryRepository categoryRepository, IUserRepository userRepository,  IMovieRepository movieRepository, IPromotionRepository promotionRepository, IRoomRepository roomRepository, ISeatRepository seatRepository, IShowtimeRepository showtimeRepository, ITicketDetailRepository ticketDetailRepository, ISeatTypeRepository seatTypeRepository)
         {
             _context = context;
             BillRepository = billRepository;
-            CategoryDetailRepository = categoryDetailRepository;
             CategoryRepository = categoryRepository;
             UserRepository = userRepository;
             MovieRepository = movieRepository;
@@ -43,7 +38,6 @@ namespace MovieManagement.Server.Data
             SeatRepository = seatRepository;
             ShowtimeRepository = showtimeRepository;
             TicketDetailRepository = ticketDetailRepository;
-            TicketTypeRepository = ticketTypeRepository;
             SeatTypeRepository = seatTypeRepository;
         }
 
