@@ -1,14 +1,18 @@
 import { createTheme, ThemeProvider } from "@mui/material";
 import { Route, Routes } from "react-router";
 import ScrollToTop from "./components/common/ScrollToTop";
+import { ToasterWithMax } from "./components/common/ToasterWithMax";
 import Dashboard from "./components/shared/Dashboard";
-import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
-import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import BuyTicket from "./pages/admin/QuanLyBanVe/SoldTicket";
-import Promotion from "./pages/promotion/PromotionsPage";
 import ChiTietDatVe from "./pages/admin/QuanLyDatVe/ChiTietDatVe";
 import QuanLyDatVe from "./pages/admin/QuanLyDatVe/QuanLyDatVe";
+import ThongTinNhanVe from "./pages/admin/QuanLyDatVe/ThongTinNhanVe";
+import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
+import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import QuanLiNhanVien from "./pages/admin/QuanLyNhanVien";
+import ChinhSuaPhim from "./pages/admin/QuanLyPhim/ChinhSuaPhim";
+import QuanLyPhim from "./pages/admin/QuanLyPhim/QuanLyPhim";
+import ThemPhim from "./pages/admin/QuanLyPhim/ThemPhim";
 import ChiTietPhongChieu from "./pages/admin/QuanLyPhongChieu/ChiTietPhongChieu";
 import QuanLyPhongChieu from "./pages/admin/QuanLyPhongChieu/QuanLyPhongChieu";
 import QuanLiThanhVien from "./pages/admin/QuanLyThanhVien/QuanLiThanhVien";
@@ -18,17 +22,13 @@ import Home from "./pages/Home";
 import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
 import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
+import Promotion from "./pages/promotion/PromotionsPage";
+import Confirmation from "./pages/ticket/Confirmation";
 import Ticket from "./pages/ticket/DateMovie";
 import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
-import Confirmation from "./pages/ticket/Confirmation";
-import { Toaster } from "react-hot-toast";
-import ThongTinNhanVe from "./pages/admin/QuanLyDatVe/ThongTinNhanVe";
-import QuanLyPhim from "./pages/admin/QuanLyPhim/QuanLyPhim";
-import ThemPhim from "./pages/admin/QuanLyPhim/ThemPhim";
-import ChinhSuaPhim from "./pages/admin/QuanLyPhim/ChinhSuaPhim";
 
 const theme = createTheme({
   components: {
