@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Services.RoomService;
 
 namespace MovieManagement.Server.Controllers
@@ -66,6 +67,12 @@ namespace MovieManagement.Server.Controllers
             return await _roomService.DeleteAsync(roomId);
         }
 
+        [HttpGet]
+        [Route("GetRoomInfo/{roomId:guid}")]
+        public async Task<ActionResult<RoomResponseModel>> GetRoomInfo(Guid roomId)
+        {
+            return await _roomService.GetRoomInfo(roomId);
+        }
 
     }
 }

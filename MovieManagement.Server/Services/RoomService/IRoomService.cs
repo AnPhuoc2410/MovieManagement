@@ -1,5 +1,6 @@
 ﻿using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Services.RoomService
 {
@@ -12,6 +13,7 @@ namespace MovieManagement.Server.Services.RoomService
         Task<RoomDto> CreateAsync(RoomDto room);
         Task<RoomDto> UpdateAsync(Guid roomId, RoomDto room);
         Task<bool> DeleteAsync(Guid roomId);
+        public Task<RoomResponseModel> GetRoomInfo(Guid roomId);
 
     }
 }

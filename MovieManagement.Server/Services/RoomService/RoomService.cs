@@ -2,6 +2,7 @@
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Services.RoomService
 {
@@ -52,9 +53,20 @@ namespace MovieManagement.Server.Services.RoomService
             return _mapper.Map<RoomDto>(room);
 
         }
-        public Task<bool> DeleteAsync(Guid roomId)
+        public async Task<bool> DeleteAsync(Guid roomId)
         {
-            return _unitOfWork.RoomRepository.DeleteAsync(roomId);
+            return await _unitOfWork.RoomRepository.DeleteAsync(roomId);
         }
+
+        public async Task<RoomResponseModel> GetRoomInfo(Guid roomId)
+        {
+            var room = await _unitOfWork.RoomRepository.GetRoomInfo(roomId);
+
+            var response = _mapper.Map<RoomResponseModel>(room);
+
+            return response;
+
+        }
+
     }
 }
