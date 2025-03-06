@@ -23,9 +23,9 @@ const Membership: React.FC = () => {
       <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
         <ScrollFloat
           animationDuration={1}
-          ease='back.inOut(2)'
-          scrollStart='center bottom+=50%'
-          scrollEnd='bottom bottom-=40%'
+          ease="back.inOut(2)"
+          scrollStart="center bottom+=50%"
+          scrollEnd="bottom bottom-=40%"
           stagger={0.07}
         >
           {t("membership")}

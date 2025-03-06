@@ -199,13 +199,12 @@ const ListMovies: React.FC = () => {
       {/* Now Showing Section */}
       <MovieSlider
         movies={nowShowingMovies}
-        title=
-        {
+        title={
           <ScrollFloat
             animationDuration={1}
-            ease='back.inOut(2)'
-            scrollStart='center bottom+=50%'
-            scrollEnd='bottom bottom-=40%'
+            ease="back.inOut(2)"
+            scrollStart="center bottom+=50%"
+            scrollEnd="bottom bottom-=40%"
             stagger={0.07}
           >
             {t("now_showing")}
@@ -217,13 +216,12 @@ const ListMovies: React.FC = () => {
       {/* Upcoming Movies Section */}
       <MovieSlider
         movies={upcomingMovies}
-        title=
-        {
+        title={
           <ScrollFloat
             animationDuration={1}
-            ease='back.inOut(2)'
-            scrollStart='center bottom+=50%'
-            scrollEnd='bottom bottom-=40%'
+            ease="back.inOut(2)"
+            scrollStart="center bottom+=50%"
+            scrollEnd="bottom bottom-=40%"
             stagger={0.08}
           >
             {t("upcoming")}
