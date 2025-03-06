@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using System.Drawing.Printing;
 
 namespace MovieManagement.Server.Services.MovieService
 {
@@ -16,21 +18,37 @@ namespace MovieManagement.Server.Services.MovieService
         }
         public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
         {
-            var movies = await _unitOfWork.MovieRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<MovieDto>>(movies);
+            var movies = _mapper.Map<List<MovieDto>>(await _unitOfWork.MovieRepository.GetAllAsync());
+            if (movies.Count == 0)
+            {
+                throw new NotFoundException("Movie does not found");
+            }
+            return movies;
         }
-        public async Task<IEnumerable<MovieDto>> GetMoviePageAsync(int page, int pageSize)
+        public async Task<IEnumerable<MovieDto>> GetPageAsync(int page, int pageSize)
         {
             var movies = await _unitOfWork.MovieRepository.GetPageAsync(page, pageSize);
             return _mapper.Map<IEnumerable<MovieDto>>(movies);
         }
         public async Task<MovieDto> GetMovieByIdAsync(Guid movieId)
         {
-            var movie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
-            return _mapper.Map<MovieDto>(movie);
+            try
+            {
+                var movies = _mapper.Map<MovieDto>(await _unitOfWork.MovieRepository.GetByIdAsync(movieId));
+                if(movies == null)
+                {
+                    throw new NotFoundException("Movie does not found");
+                }
+                return movies;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
 
-        public async Task<MovieDto> CreateMovieAsync(Guid userId, MovieDto movieDto)
+        public async Task<MovieDto> CreateMovieAsync(Guid employeeId, MovieDto movieDto)
         {
             var newMovie = _mapper.Map<Movie>(movieDto);
             newMovie.UserId = userId;
@@ -66,5 +84,23 @@ namespace MovieManagement.Server.Services.MovieService
             return _unitOfWork.MovieRepository.DeleteAsync(movieId);
         }
 
+        public async Task<IEnumerable<MovieDto>> GetMoviesNowShowing(int page, int pageSize)
+        {
+            var moviesNowShowing = await _unitOfWork.MovieRepository.GetMoviesNowShowing(page, pageSize);
+            return _mapper.Map<IEnumerable<MovieDto>>(moviesNowShowing);
+        }
+
+        public async Task<IEnumerable<MovieDto>> GetMoviesUpComing(int page, int pageSize)
+        {
+            var moviesUpComing = await _unitOfWork.MovieRepository.GetMoviesUpComing(page, pageSize);
+            return _mapper.Map<IEnumerable<MovieDto>>(moviesUpComing);
+        }
+
+        public async Task<IEnumerable<MovieDto>> GetMoviesByNameRelative(string name, int page, int pageSize)
+        {
+            var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelative(name, page, pageSize);
+            return _mapper.Map<IEnumerable<MovieDto>>(movies);
+        }
+        
     }
 }

@@ -25,17 +25,30 @@ namespace MovieManagement.Server.Services.ShowTimeService
             return _mapper.Map<ShowTimeDto>(createdShowtime);
         }
 
-        public async Task<bool> DeleteShowtimeAsync(Guid movieId, Guid roomId)
+        public async Task<bool> DeleteAsync(Guid movieId, Guid roomId)
         {
             return await _unitOfWork.ShowtimeRepository.DeleteComposeAsync(movieId, roomId);
         }
 
         public async Task<IEnumerable<ShowTimeDto>> GetAllShowtimeAsync()
         {
-            var showtimes = await _unitOfWork.ShowtimeRepository.GetAllAsync();
-            return _mapper.Map<List<ShowTimeDto>>(showtimes);
+            try
+            {
+                var showtimes = _mapper.Map<List<ShowTimeDto>>(await _unitOfWork.ShowtimeRepository.GetAllAsync());
+                if (showtimes.Count == 0)
+                {
+                    throw new NotFoundException("ShowTime does not found!");
+                }
+                return showtimes;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
-        public async Task<IEnumerable<ShowTimeDto>> GetShowtimePageAsync(int page, int pageSize)
+
+
+        public async Task<IEnumerable<ShowTimeDto>> GetPageAsync(int page, int pageSize)
         {
             var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
             return _mapper.Map<IEnumerable<ShowTimeDto>>(showtimes);
@@ -63,5 +76,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var updatedShowTime = await _unitOfWork.ShowtimeRepository.UpdateAsync(existingShowTime);
             return _mapper.Map<ShowTimeDto>(updatedShowTime);
         }
+
+   
     }
 }

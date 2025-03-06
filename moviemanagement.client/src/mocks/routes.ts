@@ -103,3 +103,36 @@ export const handleGetRoom = () => {
     ]);
   });
 };
+
+export const handleGetRoomDetail = (roomId: string) => {
+  return http.get(`/api/phong-chieu/${roomId}`, () => {
+    switch (roomId) {
+      case "1":
+        return HttpResponse.json<Room>({
+          roomId: "1",
+          name: "Room 1",
+          row: 5,
+          column: 10,
+          total: 50,
+        });
+      case "2":
+        return HttpResponse.json<Room>({
+          roomId: "2",
+          name: "Room 2",
+          row: 6,
+          column: 12,
+          total: 72,
+        });
+      case "3":
+        return HttpResponse.json<Room>({
+          roomId: "3",
+          name: "Room 3",
+          row: 7,
+          column: 14,
+          total: 98,
+        });
+      default:
+        return HttpResponse.error();
+    }
+  });
+};

@@ -4,7 +4,7 @@ import type {} from "@mui/x-date-pickers/themeAugmentation";
 import { useQuery } from "react-query";
 import { fetchRoom } from "../../../apis/mock.apis";
 import LoadingSpinner from "../../../components/LoadingSpinner";
-import ManagementPageLayout from "../../../layouts/ManagementPageLayout";
+import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import { Room } from "../../../types/room.types";
 import RoomTable from "./BangRoom";
 

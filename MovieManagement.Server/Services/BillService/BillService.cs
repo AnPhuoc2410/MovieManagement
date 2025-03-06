@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 
@@ -16,27 +17,63 @@ namespace MovieManagement.Server.Services.BillService
         }
         public async Task<IEnumerable<BillDto>> GetAllBillsAsync()
         {
-            var bills = await _unitOfWork.BillRepository.GetAllAsync();
-            return _mapper.Map<List<BillDto>>(bills);
+            try
+            {
+                var bills = _mapper.Map<List<BillDto>>(await _unitOfWork.BillRepository.GetAllAsync());
+                if (bills.Count == 0)
+                {
+                    throw new NotFoundException("Movie does not found!");
+                }
+                return bills;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
-        public async Task<IEnumerable<BillDto>> GetBillPageAsync(int page, int sizePage)
+        public async Task<IEnumerable<BillDto>> GetPageAsync(int page, int sizePage)
         {
             var bills = await _unitOfWork.BillRepository.GetPageAsync(page, sizePage);
             return _mapper.Map<List<BillDto>>(bills);
         }
         public async Task<BillDto> GetBillByIdAsync(Guid billId)
         {
-            var bill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
-            return _mapper.Map<BillDto>(bill);
+            try
+            {
+                var bill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.GetByIdAsync(billId));
+                if (bill == null)
+                {
+                    throw new NotFoundException("Bill not found");
+                }
+                return bill;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
         public async Task<BillDto> CreateBillAsync(Guid userId, BillDto billDto)
         {
-            billDto.BillId = Guid.NewGuid();
-            billDto.UserId = userId;
-            var newBill = _mapper.Map<Bill>(billDto);
-            newBill.PromotionId = null;
-            var createdBill = await _unitOfWork.BillRepository.CreateAsync(newBill);
-            return _mapper.Map<BillDto>(createdBill);
+            var newBill = new Bill
+            {
+                CreatedDate = billDto.CreatedDate,
+                Point = billDto.Point,
+                TotalTicket = billDto.TotalTicket,
+                Amount = billDto.Amount,
+                UserId = billDto.UserId,
+                PromotionId = promotionId,
+                Status = billDto.Status,
+            };
+            try
+            {
+                var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateAsync(newBill));
+                return createdBill;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while processing into Database", ex);
+            }
+        
         }
         public async Task<BillDto> UpdateBillAsync(Guid billId, BillDto billDto)
         {
@@ -55,11 +92,19 @@ namespace MovieManagement.Server.Services.BillService
         }
         public async Task<bool> DeleteBillAsync(Guid billId)
         {
-            return await _unitOfWork.BillRepository.DeleteAsync(billId);
-        }
-        public async Task<IEnumerable<PurchasedTicketDto>> GetPurchasedTicketsAsync(Guid userId)
-        {
-            return await _unitOfWork.BillRepository.GetPurchasedTickets(userId);
+            try
+            {
+                var bill = _unitOfWork.BillRepository.GetByIdAsync(billId);
+                if (bill == null)
+                {
+                    throw new NotFoundException("Bill does not found!");
+                }
+                return await _unitOfWork.BillRepository.DeleteAsync(billId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
     }
 }

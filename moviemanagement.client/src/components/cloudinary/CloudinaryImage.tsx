@@ -1,18 +1,14 @@
-import React from "react";
-import { Cloudinary } from "@cloudinary/url-gen";
 import { AdvancedImage } from "@cloudinary/react";
+import { Cloudinary } from "@cloudinary/url-gen";
 import { auto } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
+import React from "react";
+import { ENV } from "../../env/env.config";
 
 interface CloudinaryImageProps {
   imageUrl: string;
   hd?: boolean; // Pass true to get HD image
 }
-
-export const ENV = {
-  CLOUDINARY_CLOUD_NAME:
-    (import.meta.env.VITE_CLOUND_NAME as string) ?? "Not found",
-};
 
 const cld = new Cloudinary({
   cloud: {
@@ -34,11 +30,6 @@ const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
   hd = false,
 }) => {
   const publicId = extractPublicId(imageUrl);
-
-  if (!ENV.CLOUDINARY_CLOUD_NAME)
-    throw new Error("Cloudinary cloud name is not found");
-
-  console.log(`Env ne ${ENV.CLOUDINARY_CLOUD_NAME}`);
 
   let img = cld.image(publicId).format("auto").quality("auto");
 
