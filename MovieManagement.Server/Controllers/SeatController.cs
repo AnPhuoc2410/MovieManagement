@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.SeatService;
 
 namespace MovieManagement.Server.Controllers
@@ -17,52 +19,360 @@ namespace MovieManagement.Server.Controllers
             _seatService = seatService;
         }
 
-
         [HttpGet]
         [Route("all")]
+        [ProducesResponseType(typeof(ApiResponseServices<SeatDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllSeatsAsync()
         {
-            var seats = await _seatService.GetAllSeatsAsync();
-            return Ok(seats);
+            try
+            {
+                var seats = await _seatService.GetAllSeatAsync();
+                if (seats == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Rooms not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(seats);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving movie",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
-
 
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        [ProducesResponseType(typeof(ApiResponseServices<SeatDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetSeatPageAsync(int page, int pageSize)
         {
-            var seats = await _seatService.GetSeatPageAsync(page, pageSize);
-            return Ok(seats);
+            try
+            {
+                var seats = await _seatService.GetSeatPageAsync(page, pageSize);
+                if (seats == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Rooms not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(seats);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving movie",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
-
 
         [HttpGet]
         [Route("{seatId:guid}")]
-        public async Task<ActionResult<SeatDto>> GetSeatByIdAsync(Guid seatId)
+        [ProducesResponseType(typeof(ApiResponseServices<SeatDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> GetSeatByIdAsync(Guid seatId)
         {
-            return await _seatService.GetSeatByIdAsync(seatId);
+            try
+            {
+                var seat = await _seatService.GetSeatByIdAsync(seatId);
+                if (seat == null)
+                {
+                    return NotFound(new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Seat not found",
+                        IsSuccess = false
+                    });
+                }
+                return Ok(new ApiResponseServices<SeatDto>
+                {
+                    StatusCode = 200,
+                    Message = "Seat retrieved successfully",
+                    IsSuccess = true,
+                    Data = seat
+                });
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving movie",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
-
 
         [HttpPost]
-        public async Task<ActionResult<SeatDto>> CreateSeatAsync([FromBody] SeatDto seatDto)
+        [ProducesResponseType(typeof(ApiResponseServices<SeatDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> CreateSeatAsync([FromBody] SeatDto seatDto)
         {
-            return await _seatService.CreateSeatAsync(seatDto);
+            try
+            {
+                var newSeat = await _seatService.CreateSeatAsync(seatDto);
+                if (newSeat == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Category not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(newSeat);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving movie",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
-
 
         [HttpPut]
         [Route("{seatId:guid}")]
-        public async Task<ActionResult<SeatDto>> UpdateSeatAsync(Guid seatId, [FromBody] SeatDto seatDto)
+        [ProducesResponseType(typeof(ApiResponseServices<SeatDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> UpdateSeatAsync(Guid seatId, [FromBody] SeatDto seatDto)
         {
-            return await _seatService.UpdateSeatAsync(seatId, seatDto);
+            try
+            {
+                var updatedSeat = await _seatService.UpdateSeatAsync(seatId, seatDto);
+                if (updatedSeat == null)
+                {
+                    return NotFound(new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Seat not found",
+                        IsSuccess = false
+                    });
+                }
+                return Ok(updatedSeat);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving movie",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
-
 
         [HttpDelete]
         [Route("{seatId:guid}")]
-        public async Task<bool> DeleteSeatAsync(Guid seatId)
+        [ProducesResponseType(typeof(ApiResponseServices<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteSeatAsync(Guid seatId)
         {
-            return await _seatService.DeleteSeatAsync(seatId);
+            try
+            {
+                var isDeleted = await _seatService.DeleteSeatAsync(seatId);
+                if (!isDeleted)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Bill not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(isDeleted);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving movie",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
     }
 }

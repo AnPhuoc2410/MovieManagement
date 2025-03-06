@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.PromotionService;
 
 namespace MovieManagement.Server.Controllers
@@ -17,64 +19,352 @@ namespace MovieManagement.Server.Controllers
             _promotionService = promotionService;
         }
 
-        [HttpGet]
-        [Route("all")]
+        [HttpGet("all")]
+        [ProducesResponseType(typeof(ApiResponseServices<PromotionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllPromotionsAsync()
         {
-            var promotions = await _promotionService.GetAllPromotionsAsync();
-            return Ok(promotions);
+            try
+            {
+                var promotions = await _promotionService.GetAllPromotionsAsync();
+                if (promotions == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Promotion not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(promotions);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving promotions",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
-
 
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        [ProducesResponseType(typeof(ApiResponseServices<PromotionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetPagePromotionAsync(int page, int pageSize)
         {
-            var promotions = await _promotionService.GetPromotionPageAsync(page, pageSize);
-            return Ok(promotions);
+            try
+            {
+                var promotions = await _promotionService.GetPromotionPageAsync(page, pageSize);
+                if (promotions == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Promotion not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(promotions);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving promotion pages",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
-
 
         [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(ApiResponseServices<PromotionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PromotionDto>> GetPromotionByIdAsync(Guid id)
         {
-            var promotion = await _promotionService.GetPromotionByIdAsync(id);
-            if (promotion == null)
+            try
             {
-                return NotFound();
+                var promotion = await _promotionService.GetPromotionByIdAsync(id);
+                if (promotion == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Promotion not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(promotion);
             }
-            return promotion;
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving promotion",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
-
 
         [HttpPost]
+        [ProducesResponseType(typeof(ApiResponseServices<PromotionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PromotionDto>> CreatePromotionAsync([FromBody] PromotionDto promotionDto)
         {
-            var @new = await _promotionService.CreatePromotionAsync(promotionDto);
-            return @new;
+            try
+            {
+                var newPromotion = await _promotionService.CreatePromotionAsync(promotionDto);
+                if (newPromotion == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Promotion not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(newPromotion);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while creating promotion",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
-
         [HttpPut("{id:guid}")]
+        [ProducesResponseType(typeof(ApiResponseServices<PromotionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PromotionDto>> UpdatePromotionAsync(Guid id, [FromBody] PromotionDto promotionDto)
         {
             try
             {
                 var updatedPromotion = await _promotionService.UpdatePromotionAsync(id, promotionDto);
+                if (updatedPromotion == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Promotion not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
                 return Ok(updatedPromotion);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating promotion",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
 
-
         [HttpDelete("{id:guid}")]
-        public async Task<bool> DeletePromotionAsync(Guid id)
+        [ProducesResponseType(typeof(ApiResponseServices<PromotionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeletePromotionAsync(Guid id)
         {
-            var result = await _promotionService.DeletePromotionAsync(id);
-            return result;
+            try
+            {
+                var isDeleted = await _promotionService.DeletePromotionAsync(id);
+                if (!isDeleted)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Bill not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(isDeleted);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while deleting promotion",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
-
     }
 }

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 
@@ -9,47 +11,111 @@ namespace MovieManagement.Server.Services.RoomService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+
         public RoomService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+
         public async Task<IEnumerable<RoomDto>> GetAllRoomsAsync()
         {
-            var rooms = await _unitOfWork.RoomRepository.GetAllAsync();
-            return _mapper.Map<List<RoomDto>>(rooms);
+            try
+            {
+                var rooms = await _unitOfWork.RoomRepository.GetAllAsync();
+                if (rooms == null || !rooms.Any())
+                    throw new NotFoundException("Rooms not found!");
+
+                return _mapper.Map<List<RoomDto>>(rooms);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access database due to system error.", ex);
+            }
         }
+
         public async Task<IEnumerable<RoomDto>> GetRoomPageAsync(int page, int pageSize)
         {
-            var rooms = await _unitOfWork.RoomRepository.GetPageAsync(page, pageSize);
-            return _mapper.Map<IEnumerable<RoomDto>>(rooms);
+            try
+            {
+                var rooms = await _unitOfWork.RoomRepository.GetPageAsync(page, pageSize);
+                if (rooms == null || !rooms.Any())
+                    throw new NotFoundException("Rooms not found!");
+
+                return _mapper.Map<IEnumerable<RoomDto>>(rooms);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access database due to system error.", ex);
+            }
         }
+
         public async Task<RoomDto> GetRoomByIdAsync(Guid roomId)
         {
-            var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
-            return _mapper.Map<RoomDto>(room);
+            try
+            {
+                var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
+                if (room == null)
+                    throw new NotFoundException("Room not found!");
+
+                return _mapper.Map<RoomDto>(room);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access database due to system error.", ex);
+            }
         }
+
         public async Task<RoomDto> CreateRoomAsync(RoomDto roomDto)
         {
-            var newRoom = _mapper.Map<Room>(roomDto);
-            newRoom.RoomId = Guid.NewGuid();
-            var createdRoom = await _unitOfWork.RoomRepository.CreateAsync(newRoom);
-            return _mapper.Map<RoomDto>(createdRoom);
+            try
+            {
+                var newRoom = _mapper.Map<Room>(roomDto);
+                newRoom.RoomId = Guid.NewGuid();
+
+                var createdRoom = await _unitOfWork.RoomRepository.CreateAsync(newRoom);
+                if (createdRoom == null)
+                    throw new Exception("Failed to create room.");
+
+                return _mapper.Map<RoomDto>(createdRoom);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while processing into Database", ex);
+            }
         }
+
         public async Task<RoomDto> UpdateRoomAsync(Guid roomId, RoomDto roomDto)
         {
-            var existingRoom = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
-            existingRoom.RoomName = roomDto.RoomName;
-            existingRoom.Column = roomDto.Column;
-            existingRoom.Row = roomDto.Row;
-            existingRoom.Total = roomDto.Total;
-            var updatedRoom = await _unitOfWork.RoomRepository.UpdateAsync(existingRoom);
-            return _mapper.Map<RoomDto>(updatedRoom);
-
+            try
+            {
+                var existingRoom = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
+                if (existingRoom == null)
+                    throw new NotFoundException("Room not found!");
+                var updatedRoom = await _unitOfWork.RoomRepository.UpdateAsync(_mapper.Map<Room>(roomDto));
+                if (updatedRoom == null)
+                    throw new DbUpdateException("Fail to create room.");
+                return _mapper.Map<RoomDto>(updatedRoom);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access database due to system error.", ex);
+            }
         }
-        public Task<bool> DeleteRoomAsync(Guid roomId)
+
+        public async Task<bool> DeleteRoomAsync(Guid roomId)
         {
-            return _unitOfWork.RoomRepository.DeleteAsync(roomId);
+            try
+            {
+                var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
+                if (room == null)
+                    throw new NotFoundException("Room not found!");
+                return await _unitOfWork.RoomRepository.DeleteAsync(roomId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access database due to system error.", ex);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
+using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.MovieService;
 
@@ -20,7 +21,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet]
-        [Route("GetAll")]
+        [Route("all")]
         [ProducesResponseType(typeof(ApiResponseServices<MovieDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
@@ -31,15 +32,17 @@ namespace MovieManagement.Server.Controllers
             try
             {
                 var movies = await _movieService.GetAllMoviesAsync();
-                var response = new ApiResponseServices<IEnumerable<MovieDto>>
+                if (movies == null)
                 {
-                    StatusCode = 200,
-                    Message = "Movie retrived successfully",
-                    IsSuccess = true,
-                    Data = movies
-                };
+                    var response = new ApiResponseServices<IEnumerable<BillDto>>
+                    {
+                        StatusCode = 200,
+                        Message = "Bill retrieved successfully",
+                        IsSuccess = true,
+                    };
+                    return NotFound(response);
+                }
                 return Ok(movies);
-
             }
             catch (BadRequestException ex)
             {
@@ -98,7 +101,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var movies = await _movieService.GetMoviePageAsync(page, pageSize);
+                var movies = await _movieService.GetPageAsync(page, pageSize);
                 if(movies == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -144,13 +147,10 @@ namespace MovieManagement.Server.Controllers
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
-
-
         }
 
-
         [HttpGet]
-        [Route("GetById/{movieId:guid}")]
+        [Route("{movieId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<MovieDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
@@ -168,6 +168,7 @@ namespace MovieManagement.Server.Controllers
                         StatusCode = 404,
                         Message = "Movie not found",
                         IsSuccess = false,
+                        Data = movie
                     };
                     return NotFound(response);
                 }
@@ -267,18 +268,120 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet("GetMoviesUpComing/page/{page:int}/pageSize/{pageSize:int}")]
+        [ProducesResponseType(typeof(ApiResponseServices<MovieDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GetMoviesUpComing(int page, int pageSize)
         {
-            var movies = await _movieService.GetMoviesUpComing(page, pageSize);
-            return Ok(movies);
+            try
+            {
+                var movies = await _movieService.GetMoviesUpComing(page, pageSize);
+                if (movies == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Movie not found",
+                        IsSuccess = false,
+                    };
+                    return NotFound(response);
+                }
+                return Ok(movies);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving movie",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
         [HttpGet]
         [Route("SearchMoviesByNameRelative/{searchValue}")]
+        [ProducesResponseType(typeof(ApiResponseServices<MovieDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GetMoviesByNameRelative(string searchValue, int page, int pageSize)
         {
-            var movies = await _movieService.GetMoviesByNameRelative(searchValue, page, pageSize);
-            return Ok(movies);
+            try
+            {
+                var movies = await _movieService.GetMoviesByNameRelative(searchValue, page, pageSize);
+                if (movies == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Movie not found",
+                        IsSuccess = false,
+                    };
+                    return NotFound(response);
+                }
+                return Ok(movies);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving movie",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
         [HttpPost]
@@ -287,12 +390,21 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        [Route("Create")]
         public async Task<ActionResult<MovieDto>> CreateMovie(Guid employeeId, [FromBody] MovieDto movieDto)
         {
             try
             {
                 var createdMovie = await _movieService.CreateMovieAsync(employeeId, movieDto);
+                if(createdMovie == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Movie not found",
+                        IsSuccess = false,
+                    };
+                    return NotFound(response);
+                }
                 return Ok(createdMovie);
             }
             catch (BadRequestException ex)
@@ -343,7 +455,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPut]
-        [Route("Update/{movieId:guid}")]
+        [Route("{movieId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<MovieDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
@@ -403,10 +515,62 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpDelete]
+        [ProducesResponseType(typeof(ApiResponseServices<MovieDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         [Route("{movieId:guid}")]
-        public async Task<bool> DeleteRoomAsync(Guid movieId)
+        public async Task<IActionResult> DeleteRoomAsync(Guid movieId)
         {
-            return await _movieService.DeleteMovieAsync(movieId);
+            try
+            {
+                var isDeleted = await _movieService.DeleteMovieAsync(movieId);
+                if (!isDeleted)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Bill not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(isDeleted);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating category",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
     }
 }

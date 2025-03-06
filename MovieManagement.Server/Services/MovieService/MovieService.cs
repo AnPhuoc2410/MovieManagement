@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
@@ -18,17 +19,35 @@ namespace MovieManagement.Server.Services.MovieService
         }
         public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
         {
-            var movies = _mapper.Map<List<MovieDto>>(await _unitOfWork.MovieRepository.GetAllAsync());
-            if (movies.Count == 0)
+            try
             {
-                throw new NotFoundException("Movie does not found");
+                var movies = _mapper.Map<List<MovieDto>>(await _unitOfWork.MovieRepository.GetAllAsync());
+                if (movies.Count == 0)
+                {
+                    throw new NotFoundException("Movies do not found!");
+                }
+                return movies;
             }
-            return movies;
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
         public async Task<IEnumerable<MovieDto>> GetPageAsync(int page, int pageSize)
         {
-            var movies = await _unitOfWork.MovieRepository.GetPageAsync(page, pageSize);
-            return _mapper.Map<IEnumerable<MovieDto>>(movies);
+            try
+            {
+                var movies = await _unitOfWork.MovieRepository.GetPageAsync(page, pageSize);
+                if (movies.Count == 0)
+                {
+                    throw new NotFoundException("Movie pages do not found!");
+                }
+                return _mapper.Map<IEnumerable<MovieDto>>(movies);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
         public async Task<MovieDto> GetMovieByIdAsync(Guid movieId)
         {
@@ -37,7 +56,7 @@ namespace MovieManagement.Server.Services.MovieService
                 var movies = _mapper.Map<MovieDto>(await _unitOfWork.MovieRepository.GetByIdAsync(movieId));
                 if(movies == null)
                 {
-                    throw new NotFoundException("Movie does not found");
+                    throw new NotFoundException("Movie does not found!");
                 }
                 return movies;
             }
@@ -48,58 +67,100 @@ namespace MovieManagement.Server.Services.MovieService
             }
         }
 
-        public async Task<MovieDto> CreateMovieAsync(Guid employeeId, MovieDto movieDto)
+        public async Task<MovieDto> CreateMovieAsync(Guid userId, MovieDto movieDto)
         {
-            var newMovie = _mapper.Map<Movie>(movieDto);
-            newMovie.UserId = userId;
-            newMovie.MovieId = Guid.NewGuid();
-            var createdMovie = await _unitOfWork.MovieRepository.CreateAsync(newMovie);
-            return _mapper.Map<MovieDto>(createdMovie);
+            try
+            {
+                movieDto.UserId = userId;
+                movieDto.MovieId = Guid.NewGuid();
+                var createdMovie = await _unitOfWork.MovieRepository.CreateAsync(_mapper.Map<Movie>(movieDto));
+                if (createdMovie == null)
+                    throw new NotFoundException("Movie cannot found!");
+                return _mapper.Map<MovieDto>(createdMovie);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while processing into Database", ex);
+            }
         }
 
         public async Task<MovieDto> UpdateMovieAsync(Guid movieId, MovieDto movieDto)
         {
-            var existingMovie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
-
-            existingMovie.MovieName = movieDto.MovieName;
-            existingMovie.Image = movieDto.Image;
-            existingMovie.PostDate = movieDto.PostDate;
-            existingMovie.FromDate = movieDto.FromDate;
-            existingMovie.ToDate = movieDto.ToDate;
-            existingMovie.Actors = movieDto.Actors;
-            existingMovie.Director = movieDto.Director;
-            existingMovie.Rating = movieDto.Rating;
-            existingMovie.Duration = movieDto.Duration;
-            existingMovie.Version = movieDto.Version;
-            existingMovie.Trailer = movieDto.Trailer;
-            existingMovie.Content = movieDto.Content;
-            existingMovie.UserId = movieDto.UserId;
-
-            var updatedMovie = await _unitOfWork.MovieRepository.UpdateAsync(existingMovie);
-            return _mapper.Map<MovieDto>(updatedMovie);
+            try
+            {
+                var existingMovie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
+                if(existingMovie == null)
+                {
+                    throw new NotFoundException("Movie cannot found!");
+                }
+                var updatedMovie = await _unitOfWork.MovieRepository.UpdateAsync(_mapper.Map<Movie>(movieDto));
+                if (updatedMovie == null)
+                    throw new DbUpdateException("Movie cannot update!");
+                return _mapper.Map<MovieDto>(updatedMovie);
+            }
+            catch (Exception ex) {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
 
-        public Task<bool> DeleteMovieAsync(Guid movieId)
+        public async Task<bool> DeleteMovieAsync(Guid movieId)
         {
-            return _unitOfWork.MovieRepository.DeleteAsync(movieId);
+            try
+            {
+                var existingMovie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
+                if (existingMovie == null)
+                    throw new NotFoundException("Bill cannot found!");
+                return await _unitOfWork.MovieRepository.DeleteAsync(movieId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
 
         public async Task<IEnumerable<MovieDto>> GetMoviesNowShowing(int page, int pageSize)
         {
-            var moviesNowShowing = await _unitOfWork.MovieRepository.GetMoviesNowShowing(page, pageSize);
-            return _mapper.Map<IEnumerable<MovieDto>>(moviesNowShowing);
+            try
+            {
+                var moviesNowShowing = await _unitOfWork.MovieRepository.GetMoviesNowShowing(page, pageSize);
+                if (moviesNowShowing == null)
+                    throw new NotFoundException("Movie now showing cannot found!");
+                return _mapper.Map<IEnumerable<MovieDto>>(moviesNowShowing);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
 
         public async Task<IEnumerable<MovieDto>> GetMoviesUpComing(int page, int pageSize)
         {
-            var moviesUpComing = await _unitOfWork.MovieRepository.GetMoviesUpComing(page, pageSize);
-            return _mapper.Map<IEnumerable<MovieDto>>(moviesUpComing);
+            try
+            {
+                var moviesUpComing = await _unitOfWork.MovieRepository.GetMoviesUpComing(page, pageSize);
+                if (moviesUpComing == null)
+                    throw new NotFoundException("Movie up coming cannot found!");
+                return _mapper.Map<IEnumerable<MovieDto>>(moviesUpComing);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
 
         public async Task<IEnumerable<MovieDto>> GetMoviesByNameRelative(string name, int page, int pageSize)
         {
-            var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelative(name, page, pageSize);
-            return _mapper.Map<IEnumerable<MovieDto>>(movies);
+            try
+            {
+                var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelative(name, page, pageSize);
+                if (movies == null)
+                    throw new NotFoundException("Movie cannot found!");
+                return _mapper.Map<IEnumerable<MovieDto>>(movies);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
         
     }

@@ -10,18 +10,17 @@ namespace MovieManagement.Server.Controllers
 {
     [Route("api/[Controller]")]
     [ApiController]
-    public class BillController : Controller//
+    public class BillController : Controller
     {
         private readonly IBillService _billService;
 
         public BillController(IBillService billService)
-        {   
+        {
             _billService = billService;
         }
 
 
-        [HttpGet]
-        [Route("GetAll")]
+        [HttpGet("all")]
         [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
@@ -31,14 +30,18 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var bills = await _billService.GetAllAsync();
-                var response = new ApiResponseServices<IEnumerable<BillDto>>
+                var bills = await _billService.GetAllBillsAsync();
+                if (bills == null)
                 {
-                    StatusCode = 200,
-                    Message = "Bill retrieved successfully",
-                    IsSuccess = true,
-                    Data = bills
-                };
+                    var response = new ApiResponseServices<IEnumerable<BillDto>>
+                    {
+                        StatusCode = 200,
+                        Message = "Bill retrieved successfully",
+                        IsSuccess = true,
+                        Data = bills
+                    };
+                    return NotFound(response);
+                }
                 return Ok(bills);
             }
             catch (BadRequestException ex)
@@ -92,7 +95,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        public async Task<ActionResult> GetBillPages(int page, int pageSize)
         {
             try
             {
@@ -145,7 +148,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("GetById/{billId:guid}")]
+        [Route("{billId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
@@ -162,9 +165,9 @@ namespace MovieManagement.Server.Controllers
                     {
                         StatusCode = 404,
                         Message = "Bill not found",
-                        IsSuccess = false
+                        IsSuccess = false,
                     };
-                    return NotFound(bill);
+                    return NotFound(response);
                 }
                 return Ok(bill);
             }
@@ -203,20 +206,86 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
-
-        [HttpPost]
-        [Route("Create")]
+        [HttpGet("user/{userId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BillDto>> CreateBill(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, [FromBody] BillDto billDto)
+        public async Task<IActionResult> GetPurchasedTickets(Guid userId)
         {
             try
             {
-            var @new = await _billService.CreateBillAsync(movieId, memberId, employeeId, promotionId, billDto);
-                return Ok(@new);
+                var purchasedTickets = await _billService.GetPurchasedTicketsAsync(userId);
+                if (purchasedTickets == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 400,
+                        Message = "Bad request from client side",
+                        IsSuccess = false,
+                    };
+                    return NotFound(response);
+                }
+                return Ok(purchasedTickets);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (NotFoundException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 404,
+                    Message = "Bill not found",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return NotFound(response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while creating Bill",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<BillDto>> CreateBill(Guid userId, [FromBody] BillDto billDto)
+        {
+            try
+            {
+                var newBill = await _billService.CreateBillAsync(userId, billDto);
+                if (newBill == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 400,
+                        Message = "Bad request from client side",
+                        IsSuccess = false,
+                    };
+                    return NotFound(response);
+                }
+                return Ok(newBill);
             }
             catch (BadRequestException ex)
             {
@@ -266,7 +335,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPut]
-        [Route("Update/{billId:guid}")]
+        [Route("{billId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
@@ -276,8 +345,8 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-            var updated = await _billService.UpdateBillAsync(billId, billDto);
-                if( updated == null)
+                var updated = await _billService.UpdateBillAsync(billId, billDto);
+                if (updated == null)
                 {
                     var response = new ApiResponseServices<object>
                     {
@@ -287,7 +356,7 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
-            return Ok(updated);
+                return Ok(updated);
             }
             catch (BadRequestException ex)
             {
@@ -326,7 +395,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpDelete]
-        [Route("Delete/{billId:guid}")]
+        [Route("{billId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
@@ -336,8 +405,8 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                bool deleted = await _billService.DeleteBillAsync(billId);
-                if (!deleted)
+                bool isDeleted = await _billService.DeleteBillAsync(billId);
+                if (!isDeleted)
                 {
                     var response = new ApiResponseServices<object>
                     {
@@ -347,7 +416,7 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
-                return Ok(deleted);
+                return Ok(isDeleted);
             }
             catch (BadRequestException ex)
             {

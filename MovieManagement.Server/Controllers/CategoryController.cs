@@ -21,13 +21,13 @@ namespace MovieManagement.Server.Controllers
         }
 
 
-        [HttpGet("GetAll")]
+        [HttpGet("all")]
         [ProducesResponseType(typeof(ApiResponseServices<CategoryDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllCategories()
         {
             try
             {
@@ -37,7 +37,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Categories not found",
+                        Message = "Category not found",
                         IsSuccess = false
                     };
                     return NotFound();
@@ -86,7 +86,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetCategoryPageAsync(int page, int pageSize)
+        public async Task<IActionResult> GetCategoryPages(int page, int pageSize)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Categories not found",
+                        Message = "Category not found",
                         IsSuccess = false
                     };
                     return NotFound();
@@ -138,17 +138,17 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
-        [HttpGet("/{categoryId:guid}")]
+        [HttpGet("movie/{movieId:guid}/category/{categoryId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<CategoryDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<Category>> GetCategoryById(Guid categoryId)
+        public async Task<ActionResult<Category>> GetCategoryById(Guid categoryId, Guid movieId)
         {
             try
             {
-                var category = await _categoryService.GetCategoryByComposeIdAsync(categoryId);
+                var category = await _categoryService.GetCategoryByComposeIdAsync(categoryId, movieId);
                 if(category == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -157,7 +157,7 @@ namespace MovieManagement.Server.Controllers
                         Message = "Category not found",
                         IsSuccess = false
                     };
-                    return NotFound();
+                    return NotFound(response);
                 }
                 return Ok(category);
             }
@@ -204,7 +204,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<CategoryDto>> CreateCategoryAsync([FromBody] CategoryDto categoryDto)
+        public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CategoryDto categoryDto)
         {
             try
             {
@@ -258,17 +258,17 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPut]
-        [Route("Update/{categoryId:guid}")]
+        [Route("{categoryId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<CategoryDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<CategoryDto>> UpdateCategoryAsync(Guid categoryId, [FromBody] CategoryDto categoryDto)
+        public async Task<ActionResult<CategoryDto>> UpdateCategory(Guid categoryId, Guid movieId, [FromBody] CategoryDto categoryDto)
         {
             try
             {
-                var updatedCategory = await _categoryService.UpdateCategoryAsync(categoryId, categoryDto);
+                var updatedCategory = await _categoryService.UpdateCategoryAsync(categoryId, movieId, categoryDto);
                 if (updatedCategory == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -324,12 +324,12 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteCategoryAsync(Guid categoryId)
+        public async Task<IActionResult> DeleteCategory(Guid categoryId, Guid movieId)
         {
             try
             {
-                var deleteCategory = await _categoryService.DeleteCategoryComposeAsync(categoryId);
-                if (!deleteCategory)
+                var isDeleted = await _categoryService.DeleteCategoryComposeAsync(categoryId, movieId);
+                if (!isDeleted)
                 {
                     var response = new ApiResponseServices<object>
                     {
@@ -337,9 +337,9 @@ namespace MovieManagement.Server.Controllers
                         Message = "Category not found",
                         IsSuccess = false
                     };
-                    return NotFound(deleteCategory);
+                    return NotFound(response);
                 }
-                return Ok(deleteCategory);
+                return Ok(isDeleted);
             }
             catch (BadRequestException ex)
             {

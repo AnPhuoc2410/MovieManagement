@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
@@ -33,7 +34,7 @@ namespace MovieManagement.Server.Services.PromotionService
                 var bill = _mapper.Map<PromotionDto>(await _unitOfWork.PromotionRepository.GetByIdAsync(id));
                 if (bill == null)
                 {
-                    throw new NotFoundException("Bill does not found");
+                    throw new NotFoundException("Bill does not found!");
                 }
                 return bill;
             }
@@ -73,16 +74,10 @@ namespace MovieManagement.Server.Services.PromotionService
                 {
                     throw new Exception("Promotion not found.");
                 }
-                // Update the fields
-                existingPromotion.PromotionName = promotionDto.PromotionName;
-                existingPromotion.Image = promotionDto.Image;
-                existingPromotion.FromDate = promotionDto.FromDate;
-                existingPromotion.ToDate = promotionDto.ToDate;
-                existingPromotion.Discount = promotionDto.Discount;
-                existingPromotion.Content = promotionDto.Content;
-
                 // Update the promotion in the repository and return the updated entity
-                var updatedPromotion = await _unitOfWork.PromotionRepository.UpdateAsync(existingPromotion);
+                var updatedPromotion = await _unitOfWork.PromotionRepository.UpdateAsync(_mapper.Map<Promotion>(promotionDto));
+                if (updatedPromotion == null)
+                    throw new DbUpdateException("Fail to create promotion.");
                 return _mapper.Map<PromotionDto>(updatedPromotion);
             }
             catch (Exception ex)
@@ -93,15 +88,32 @@ namespace MovieManagement.Server.Services.PromotionService
 
         public async Task<bool> DeletePromotionAsync(Guid id)
         {
+            try
             // Delete the promotion using the repository
-            var result = await _unitOfWork.PromotionRepository.DeleteAsync(id);
-            return result;
+            {
+                if (await _unitOfWork.PromotionRepository.GetByIdAsync(id) == null)
+                    throw new NotFoundException("Category cannot found!");
+                return await _unitOfWork.PromotionRepository.DeleteAsync(id);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
 
         public async Task<IEnumerable<PromotionDto>> GetPromotionPageAsync(int page, int pageSize)
         {
-            var promotions = await _unitOfWork.PromotionRepository.GetPageAsync(page, pageSize);
-            return _mapper.Map<IEnumerable<PromotionDto>>(promotions);
+            try
+            {
+                var promotions = await _unitOfWork.PromotionRepository.GetPageAsync(page, pageSize);
+                if (promotions == null)
+                    throw new NotFoundException("Promotion cannot found!");
+                return _mapper.Map<IEnumerable<PromotionDto>>(promotions);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
     }
 }

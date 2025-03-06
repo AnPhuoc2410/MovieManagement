@@ -24,7 +24,8 @@ namespace MovieManagement.Server.Services.CategoryService
             try
             {
                 var categories = await _unitOfWork.CategoryRepository.GetAllAsync();
-                if (categories.Count == 0) throw new NotFoundException("Category does not found!");
+                if (categories.Count == 0) 
+                    throw new NotFoundException("Category does not found!");
                 return _mapper.Map<List<CategoryDto>>(categories);
             }
             catch (Exception ex)
@@ -38,7 +39,8 @@ namespace MovieManagement.Server.Services.CategoryService
             try
             {
                 var categories = await _unitOfWork.CategoryRepository.GetPageAsync(page, pageSize);
-                if (categories.Count == 0) throw new NotFoundException("Category does not found!");
+                if (categories.Count == 0) 
+                    throw new NotFoundException("Category does not found!");
                 return _mapper.Map<List<CategoryDto>>(categories);
             }
             catch (Exception ex)
@@ -54,7 +56,7 @@ namespace MovieManagement.Server.Services.CategoryService
                 var category = _mapper.Map<CategoryDto>(await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId));
                 if (category == null)
                 {
-                    throw new NotFoundException("Category does not found!");
+                    throw new NotFoundException("Category cannot found!");
                 }
                 return category;
             }
@@ -70,7 +72,8 @@ namespace MovieManagement.Server.Services.CategoryService
             {
                 categoryDto.CategoryId = null;
                 var createdCategory = await _unitOfWork.CategoryRepository.CreateAsync(_mapper.Map<Category>(categoryDto));
-                if (createdCategory == null) throw new DbUpdateException("Cannot create new category!");
+                if (createdCategory == null)
+                    throw new Exception("Failed to create bill.");
                 return _mapper.Map<CategoryDto>(createdCategory);
             }
             catch (Exception ex)
@@ -84,7 +87,8 @@ namespace MovieManagement.Server.Services.CategoryService
             try
             {
                 var existingCategory = _mapper.Map<Category>(categoryDto);
-                if (existingCategory == null) throw new NotFoundException($"{categoryId} - Category is not exist!");
+                if (existingCategory == null) 
+                    throw new NotFoundException("Catogory cannot found!");
                 return _mapper.Map<CategoryDto>(await _unitOfWork.CategoryRepository.UpdateAsync(existingCategory));
             }
             catch (Exception ex)
@@ -98,9 +102,7 @@ namespace MovieManagement.Server.Services.CategoryService
             try
             {
                 if (await _unitOfWork.BillRepository.GetByIdAsync(categoryId) == null)
-                {
-                    throw new NotFoundException($"{categoryId} - Category is not exist!");
-                };
+                    throw new NotFoundException("Category cannot found!");
                 return await _unitOfWork.CategoryRepository.DeleteAsync(categoryId);
             }
             catch (Exception ex)
@@ -108,7 +110,5 @@ namespace MovieManagement.Server.Services.CategoryService
                 throw new Exception("Couldn't access into database due to systems error.", ex);
             }
         }
-
-
     }
 }
