@@ -17,7 +17,7 @@ namespace MovieManagement.Server.Repositories
         public async Task<List<Movie>> GetMoviesNowShowing(int page, int pageSize)
         {
             return await _context.Movies
-                .Where(m => m.FromDate <= DateTime.Now && m.ToDate >= DateTime.Now)
+                .Where(m => m.FromDate <= DateTime.Now && m.ToDate >= DateTime.Now && m.IsDeleted == false)
                 .Skip(page * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -26,7 +26,7 @@ namespace MovieManagement.Server.Repositories
         public async Task<List<Movie>> GetMoviesUpComing(int page, int pageSize)
         {
             return await _context.Movies
-                .Where(m => m.FromDate > DateTime.Now)
+                .Where(m => m.FromDate > DateTime.Now && m.IsDeleted == false)
                 .Skip(page * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -35,20 +35,35 @@ namespace MovieManagement.Server.Repositories
         public async Task<List<Movie>> GetMoviesByNameRelative(string name, int page, int pageSize)
         {
             return await _context.Movies
-                .Where(m => m.Name.ToLower().Contains(name.ToLower()))
+                .Where(m => m.Name.ToLower().Contains(name.ToLower()) && m.IsDeleted == false)
                 .Skip(page * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
         }
 
-        public Task<List<Movie>> GetMoviesByCategory(Guid categoryId, int page, int pageSize)
+        //public Task<List<Movie>> GetMoviesByCategory(Guid categoryId, int page, int pageSize)
+        //{
+        //    var query = from m in _context.Movies
+        //                join mc in _context.MovieCategories on m.MovieId equals mc.MovieId
+        //                where mc.CategoryId == categoryId && m.IsDeleted == false
+        //                select m;
+        //    return query.Skip(page * pageSize).Take(pageSize).ToListAsync();
+        //}
+
+        public Task<List<Movie>> GetPage(int page, int pageSize)
         {
-            throw new NotImplementedException();
+            return _context.Movies
+                .Where(m => m.IsDeleted == false)
+                .Skip(page * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
 
-        public Task<List<Movie>> GetMoviesByCategory(Guid categoryId)
+        public Task<Movie?> GetMovieById(Guid movieId)
         {
-            throw new NotImplementedException();
+            return _context.Movies
+                .Where(m => m.MovieId == movieId && m.IsDeleted == false)
+                .FirstOrDefaultAsync();
         }
     }
 }

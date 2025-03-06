@@ -23,7 +23,7 @@ namespace MovieManagement.Server.Models.Configurations
             builder.Property(x => x.Rating).HasColumnType("nvarchar(30)");
             builder.Property(x => x.Trailer).HasColumnType("varchar(50)");
             builder.Property(x => x.Content).HasColumnType("nvarchar(500)");
-            
+            builder.Property(x => x.IsDeleted).HasColumnType("bit");
 
 
         }

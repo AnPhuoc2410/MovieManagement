@@ -21,14 +21,14 @@ namespace MovieManagement.Server.Services.MovieService
             var movies = await _unitOfWork.MovieRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<MovieDto>>(movies);
         }
-        public async Task<IEnumerable<MovieDto>> GetPageAsync(int page, int pageSize)
+        public async Task<IEnumerable<MoviePreview>> GetPageAsync(int page, int pageSize)
         {
-            var movies = await _unitOfWork.MovieRepository.GetPageAsync(page, pageSize);
-            return _mapper.Map<IEnumerable<MovieDto>>(movies);
+            var movies = await _unitOfWork.MovieRepository.GetPage(page, pageSize);
+            return _mapper.Map<IEnumerable<MoviePreview>>(movies);
         }
         public async Task<MovieDto> GetAsync(Guid movieId)
         {
-            var movie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
+            var movie = await _unitOfWork.MovieRepository.GetMovieById(movieId);
             return _mapper.Map<MovieDto>(movie);
         }
 
@@ -88,7 +88,10 @@ namespace MovieManagement.Server.Services.MovieService
             var updateMovieCategories = _unitOfWork.MovieCategoryRepository.GetMovieCategoriesByMovieId(updateMovie.MovieId);
 
             if (updateMovieCategories.Count > 0)
-                updateMovieCategories.ForEach(async x => await _unitOfWork.MovieCategoryRepository.DeleteAsync(x));
+                foreach (var x in updateMovieCategories)
+                {
+                    await _unitOfWork.MovieCategoryRepository.DeleteAsync(x);
+                }
 
             var updatedMovie = await _unitOfWork.MovieRepository.UpdateAsync(updateMovie);
 
@@ -113,23 +116,28 @@ namespace MovieManagement.Server.Services.MovieService
             return _unitOfWork.MovieRepository.DeleteAsync(movieId);
         }
 
-        public async Task<IEnumerable<MovieDto>> GetMoviesNowShowing(int page, int pageSize)
+        public async Task<IEnumerable<MoviePreview>> GetMoviesNowShowing(int page, int pageSize)
         {
             var moviesNowShowing = await _unitOfWork.MovieRepository.GetMoviesNowShowing(page, pageSize);
-            return _mapper.Map<IEnumerable<MovieDto>>(moviesNowShowing);
+            return _mapper.Map<IEnumerable<MoviePreview>>(moviesNowShowing);
         }
 
-        public async Task<IEnumerable<MovieDto>> GetMoviesUpComing(int page, int pageSize)
+        public async Task<IEnumerable<MoviePreview>> GetMoviesUpComing(int page, int pageSize)
         {
             var moviesUpComing = await _unitOfWork.MovieRepository.GetMoviesUpComing(page, pageSize);
-            return _mapper.Map<IEnumerable<MovieDto>>(moviesUpComing);
+            return _mapper.Map<IEnumerable<MoviePreview>>(moviesUpComing);
         }
 
-        public async Task<IEnumerable<MovieDto>> GetMoviesByNameRelative(string name, int page, int pageSize)
+        public async Task<IEnumerable<MoviePreview>> GetMoviesByNameRelative(string name, int page, int pageSize)
         {
             var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelative(name, page, pageSize);
-            return _mapper.Map<IEnumerable<MovieDto>>(movies);
+            return _mapper.Map<IEnumerable<MoviePreview>>(movies);
         }
-        
+
+        //public async Task<IEnumerable<MovieDto>> GetMoviesByCategory(Guid categoryId, int page, int pageSize)
+        //{
+        //    var movies = await _unitOfWork.MovieRepository.GetMoviesByCategory(categoryId, page, pageSize);
+        //    return _mapper.Map<IEnumerable<MovieDto>>(movies);
+        //}
     }
 }
