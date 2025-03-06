@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Grid,
@@ -10,6 +10,8 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import toast, { useToasterStore } from "react-hot-toast";
+
 
 export interface TicketType {
   id: string;
@@ -24,27 +26,28 @@ interface TicketPriceProps {
   sx?: SxProps<Theme>;
 }
 
+
 const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
   // Sample ticket data
   const initialTickets: TicketType[] = [
     {
-      id: "adult_single",
-      name: "Người Lớn",
+      id: "seat_normal",
+      name: "Ghế Đơn",
       type: "Đơn",
       price: 70000,
       quantity: 0,
     },
     {
-      id: "student_senior_single",
-      name: "HSSV - Người Cao Tuổi",
-      type: "Đơn",
-      price: 45000,
+      id: "seat_double",
+      name: "Ghế Đôi",
+      type: "Đôi",
+      price: 140000,
       quantity: 0,
     },
     {
-      id: "adult_double",
-      name: "Người Lớn",
-      type: "Đôi",
+      id: "seat_vip",
+      name: "Ghế VIP",
+      type: "VIP",
       price: 145000,
       quantity: 0,
     },
@@ -52,14 +55,33 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
 
   const [tickets, setTickets] = useState<TicketType[]>(initialTickets);
 
+  const { toasts } = useToasterStore();
+  const TOAST_LIMIT = 3
+  
+  useEffect(() => {
+    toasts
+      .filter((t) => t.visible) 
+      .filter((_, i) => i >= TOAST_LIMIT) 
+      .forEach((t) => toast.dismiss(t.id));
+  }, [toasts]);
+  
+
   const increment = (id: string) => {
-    setTickets((prevTickets) =>
-      prevTickets.map((ticket) =>
-        ticket.id === id
-          ? { ...ticket, quantity: ticket.quantity + 1 }
-          : ticket,
-      ),
-    );
+    setTickets((prevTickets) => {
+      const selectedTicket = prevTickets.find((ticket) => ticket.id === id);
+      if (!selectedTicket) return prevTickets;
+      const isOtherTypeSelected = prevTickets.some(
+        (t) => t.type !== selectedTicket.type && t.quantity > 0
+      );
+
+      if (isOtherTypeSelected) {
+        toast.error("Chỉ chọn 1 loại vé cùng loại!");
+        return prevTickets;
+      }
+      return prevTickets.map((ticket) =>
+        ticket.id === id ? { ...ticket, quantity: ticket.quantity + 1 } : ticket
+      );
+    });
   };
 
   const decrement = (id: string) => {
@@ -110,7 +132,6 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
                 gap: 1,
               }}
             >
-              {/* Ticket Name */}
               <Typography
                 variant="h6"
                 sx={{
@@ -121,7 +142,6 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
                 {ticket.name}
               </Typography>
 
-              {/* Ticket Type (gold color) */}
               <Typography
                 variant="body1"
                 sx={{
@@ -132,7 +152,6 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
                 {ticket.type}
               </Typography>
 
-              {/* Ticket Price */}
               <Typography
                 variant="body2"
                 sx={{
@@ -146,42 +165,44 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
                 })}
               </Typography>
 
-              {/* Quantity Controls */}
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  mt: 2,
+                  justifyContent: "space-evenly",
+                  width: "120px",
+                  border: "2px solid #A0AEC0",
+                  borderRadius: "8px",
+                  backgroundColor: "#A0AEC0",
+                  px: 1,
                 }}
               >
                 <IconButton
                   onClick={() => decrement(ticket.id)}
-                  disabled={ticket.quantity === 0}
-                  sx={{ color: "white" }}
+                  sx={{ color: "black" }} // Change icon color for contrast
                 >
                   <RemoveIcon />
                 </IconButton>
 
                 <Typography
                   variant="body1"
-                  sx={{ mx: 2, minWidth: "20px", textAlign: "center" }}
+                  sx={{ mx: 1, textAlign: "center", minWidth: "20px", color: "black" }}
                 >
                   {ticket.quantity}
                 </Typography>
-
                 <IconButton
                   onClick={() => increment(ticket.id)}
-                  sx={{ color: "white" }}
+                  sx={{ color: "black" }}
                 >
                   <AddIcon />
                 </IconButton>
               </Box>
+
             </Box>
           </Grid>
         ))}
       </Grid>
 
-      {/* Next Button (optional) */}
       {onNext && (
         <Box sx={{ mt: 4, textAlign: "center" }}>
           <Button variant="contained" color="primary" onClick={handleNext}>

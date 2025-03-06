@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import CloudinaryImage from "../../components/cloudinary/CloudinaryImage";
 import { useTranslation } from "react-i18next";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import toast from "react-hot-toast";
 
 interface Promotion {
   promotionId: string;
@@ -42,7 +43,7 @@ const PromotionsPage: React.FC = () => {
           `https://localhost:7119/api/Promotions/page/${page}/pageSize/${pageSize}`,
         );
         if (response.data.length === 0 && page > 0) {
-          alert("Không có trang nào nữa!");
+          toast.error("Không còn trang tiếp theo");
           setPage(page - 1);
         } else {
           setPromotions(response.data);
