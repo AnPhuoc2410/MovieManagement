@@ -98,7 +98,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var movies = await _movieService.GetPageAsync(page, pageSize);
+                var movies = await _movieService.GetMoviePageAsync(page, pageSize);
                 if(movies == null)
                 {
                     var response = new ApiResponseServices<object>

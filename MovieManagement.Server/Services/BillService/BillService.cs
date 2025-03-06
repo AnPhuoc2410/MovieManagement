@@ -31,7 +31,7 @@ namespace MovieManagement.Server.Services.BillService
                 throw new Exception("Couldn't access into database due to systems error.", ex);
             }
         }
-        public async Task<IEnumerable<BillDto>> GetPageAsync(int page, int sizePage)
+        public async Task<IEnumerable<BillDto>> GetBillPageAsync(int page, int sizePage)
         {
             var bills = await _unitOfWork.BillRepository.GetPageAsync(page, sizePage);
             return _mapper.Map<List<BillDto>>(bills);
@@ -105,6 +105,10 @@ namespace MovieManagement.Server.Services.BillService
             {
                 throw new Exception("Couldn't access into database due to systems error.", ex);
             }
+        }
+        public Task<IEnumerable<PurchasedTicketDto>> GetPurchasedTicketsAsync(Guid userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

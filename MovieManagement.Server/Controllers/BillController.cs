@@ -96,7 +96,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var bills = await _billService.GetPageAsync(page, pageSize);
+                var bills = await _billService.GetBillPageAsync(page, pageSize);
                 if (bills == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -155,7 +155,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var bill = await _billService.GetByIdAsync(billId);
+                var bill = await _billService.GetBillByIdAsync(billId);
                 if (bill == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -215,7 +215,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-            var @new = await _billService.CreateAsync(movieId, memberId, employeeId, promotionId, billDto);
+            var @new = await _billService.CreateBillAsync(movieId, memberId, employeeId, promotionId, billDto);
                 return Ok(@new);
             }
             catch (BadRequestException ex)
@@ -276,7 +276,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-            var updated = await _billService.UpdateAsync(billId, billDto);
+            var updated = await _billService.UpdateBillAsync(billId, billDto);
                 if( updated == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -336,7 +336,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                bool deleted = await _billService.DeleteAsync(billId);
+                bool deleted = await _billService.DeleteBillAsync(billId);
                 if (!deleted)
                 {
                     var response = new ApiResponseServices<object>

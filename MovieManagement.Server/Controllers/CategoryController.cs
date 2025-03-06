@@ -31,7 +31,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var categories = await _categoryService.GetAllAsync();
+                var categories = await _categoryService.GetAllCategoriesAsync();
                 if (categories == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -90,7 +90,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var categories = await _categoryService.GetPageAsync(page, pageSize);
+                var categories = await _categoryService.GetCategoryPageAsync(page, pageSize);
                 if (categories == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -148,7 +148,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var category = await _categoryService.GetByIdAsync(categoryId);
+                var category = await _categoryService.GetCategoryByComposeIdAsync(categoryId);
                 if(category == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -208,7 +208,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var newCategory = await _categoryService.CreateAsync(categoryDto);
+                var newCategory = await _categoryService.CreateCategoryAsync(categoryDto);
                 if(newCategory == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -268,7 +268,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var updatedCategory = await _categoryService.UpdateAsync(categoryId, categoryDto);
+                var updatedCategory = await _categoryService.UpdateCategoryAsync(categoryId, categoryDto);
                 if (updatedCategory == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -328,7 +328,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var deleteCategory = await _categoryService.DeleteAsync(categoryId);
+                var deleteCategory = await _categoryService.DeleteCategoryComposeAsync(categoryId);
                 if (!deleteCategory)
                 {
                     var response = new ApiResponseServices<object>
