@@ -62,7 +62,7 @@ namespace MovieManagement.Server.Services.MovieService
             {
                 var newMovie = _mapper.Map<Movie>(movieDto);
                 newMovie.UserId = employeeId;
-
+                newMovie.MovieId = Guid.NewGuid();
                 var createdMovie = _mapper.Map<MovieDto>(await _unitOfWork.MovieRepository.CreateAsync(newMovie));
                 return createdMovie;
             }
