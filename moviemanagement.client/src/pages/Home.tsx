@@ -21,6 +21,7 @@ import Promotions from "../components/home/Event";
 import Membership from "../components/home/Membership";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
+import Aurora from "../components/shared/Aurora";
 
 const slides = [
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",
@@ -48,9 +49,11 @@ const Homepage: React.FC = () => {
   }, []);
 
   return (
+
     <Box
       sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
     >
+
       {/* Preview Modal */}
       <Modal
         open={openModal}
@@ -104,11 +107,14 @@ const Homepage: React.FC = () => {
 
       {/* Header */}
       <Header />
-
-      {/* Main Content */}
-      {/* Swiper Slider */}
-      <Container sx={{ mt: 4 }}>
-        <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pt: 10, mb: 3 }}>
+      <Aurora
+        colorStops={["#3A29FF", "#FF94B4", "#FF3232"]}
+        blend={0.5}
+        amplitude={1.0}
+        speed={2.5}
+      />
+      <Container>
+        <Box sx={{ backgroundColor: "#0B0D1A", color: "white", mb: 3 }}>
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={50}
@@ -117,7 +123,7 @@ const Homepage: React.FC = () => {
             pagination={{ clickable: true }}
             autoplay={{ delay: 3000 }}
             loop={true}
-            style={{ width: "100%", height: "auto" }}
+            style={{ width: "100%", height: "auto"}}
           >
             {slides.map((slide, index) => (
               <SwiperSlide key={index}>

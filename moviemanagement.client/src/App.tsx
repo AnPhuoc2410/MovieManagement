@@ -30,6 +30,7 @@ import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
+import SplashCursor from "./components/shared/SplashCursor";
 
 const theme = createTheme({
   components: {
@@ -56,6 +57,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <ScrollToTop />
+      <SplashCursor />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/auth">
