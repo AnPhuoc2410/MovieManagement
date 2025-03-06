@@ -21,7 +21,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpGet]
         [Route("GetAll")]
-        [ProducesResponseType(typeof(ApiResponseServices<TicketTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
@@ -199,7 +199,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-            var @new = await _billService.CreateAsync(movieId, memberId, employeeId, promotionId, billDto);
+            var @new = await _billService.CreateAsync(userId, billDto);
                 return Ok(@new);
             }
             catch (BadRequestException ex)

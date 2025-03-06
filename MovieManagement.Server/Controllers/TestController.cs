@@ -96,7 +96,7 @@ namespace MovieManagement.Server.Controllers
         [Route("RoomCreating")]
         public async Task<ActionResult> RoomCreating(Guid SeatTypeId, Guid roomId)
         {
-            _seatService.CreateByRoomAsync(roomId, SeatTypeId);
+            await _seatService.CreateByRoomAsync(SeatTypeId, roomId);
             return Ok("Every seat in the room created!");
         }
 

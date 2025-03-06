@@ -23,9 +23,10 @@ namespace MovieManagement.Server.Services.PromotionService
             {
                 
                 var newPromotion = _mapper.Map<Promotion>(promotionDto);
-                newPromotion.promotionId = new Guid();
+                newPromotion.PromotionId = new Guid();
                 var createdPromotion = _mapper.Map<PromotionDto>(await _unitOfWork.PromotionRepository.CreateAsync(newPromotion));
                 return createdPromotion;
+
             }
             catch (Exception ex)
             {
@@ -58,12 +59,16 @@ namespace MovieManagement.Server.Services.PromotionService
             try
             {
 
-                var promotion = _mapper.Map<List<PromotionDto>>(await _unitOfWork.ShowtimeRepository.GetAllAsync());
+                var promotion = _mapper.Map<List<PromotionDto>>(await _unitOfWork.PromotionRepository.GetAllAsync());
                 if (promotion.Count == 0)
                 {
                     throw new NotFoundException("Promotion does not found!");
                 }
                 return promotion;
+            }
+            catch (NotFoundException ex)
+            {
+                throw new NotFoundException("Promotion does not found!");
             }
             catch (Exception ex)
             {
@@ -87,7 +92,10 @@ namespace MovieManagement.Server.Services.PromotionService
 
                 // Update the promotion in the repository and return the updated entity
                 var updatedPromotion = await _unitOfWork.PromotionRepository.UpdateAsync(existingPromotion);
+
                 return _mapper.Map<PromotionDto>(updatedPromotion);
+
+
             }
             catch (Exception ex)
             {

@@ -15,6 +15,9 @@ namespace MovieManagement.Server.Services.MovieService
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+
+
+
         public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
         {
             var movies = _mapper.Map<List<MovieDto>>(await _unitOfWork.MovieRepository.GetAllAsync());
@@ -24,11 +27,15 @@ namespace MovieManagement.Server.Services.MovieService
             }
             return movies;
         }
+
+
         public async Task<IEnumerable<MovieDto>> GetPageAsync(int page, int pageSize)
         {
             var movies = await _unitOfWork.MovieRepository.GetPageAsync(page, pageSize);
             return _mapper.Map<IEnumerable<MovieDto>>(movies);
         }
+
+
         public async Task<MovieDto> GetMovieByIdAsync(Guid movieId)
         {
             try
@@ -47,10 +54,15 @@ namespace MovieManagement.Server.Services.MovieService
             }
         }
 
+
+
         public async Task<MovieDto> CreateMovieAsync(Guid employeeId, MovieDto movieDto)
         {
             try
             {
+                var newMovie = _mapper.Map<Movie>(movieDto);
+                newMovie.UserId = employeeId;
+
                 var createdMovie = _mapper.Map<MovieDto>(await _unitOfWork.MovieRepository.CreateAsync(newMovie));
                 return createdMovie;
             }
@@ -59,6 +71,9 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new ApplicationException("An error occured while processing into database", ex);
             }
         }
+
+
+
 
         public async Task<MovieDto> UpdateMovieAsync(Guid movieId, MovieDto movieDto)
         {
@@ -82,10 +97,16 @@ namespace MovieManagement.Server.Services.MovieService
             return _mapper.Map<MovieDto>(updatedMovie);
         }
 
+
+
+
         public Task<bool> DeleteMovieAsync(Guid movieId)
         {
             return _unitOfWork.MovieRepository.DeleteAsync(movieId);
         }
+
+
+
 
     }
 }

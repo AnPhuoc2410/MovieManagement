@@ -67,22 +67,28 @@ namespace MovieManagement.Server.Services.SeatService
         public async Task CreateByRoomAsync(Guid SeatTypeId, Guid roomId)
         {
             var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
+            if (room == null)
+            {
+                throw new ArgumentException("Room not found", nameof(roomId));
+            }
 
             for (int i = 0; i < room.Row; i++)
             {
                 for (int j = 0; j < room.Column; j++)
                 {
-                    _unitOfWork.SeatRepository.Create(new Seat
+                    var newSeat = new Seat
                     {
                         AtRow = NumberToLetter(i).ToString(),
                         AtColumn = j + 1,
                         RoomId = roomId,
                         SeatTypeId = SeatTypeId,
                         IsActive = true
-                    });
+                    };
+                    await _unitOfWork.SeatRepository.CreateAsync(newSeat);
                 }
             }
 
+            await _unitOfWork.CompleteAsync();
         }
 
         public static int LetterToNumber(char letter)
