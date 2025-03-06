@@ -12,7 +12,6 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import toast from "react-hot-toast";
 
-
 export interface TicketType {
   id: string;
   name: string;
@@ -25,7 +24,6 @@ interface TicketPriceProps {
   onNext?: (selectedTickets: TicketType[]) => void;
   sx?: SxProps<Theme>;
 }
-
 
 const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
   // Sample ticket data
@@ -54,14 +52,13 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
   ];
 
   const [tickets, setTickets] = useState<TicketType[]>(initialTickets);
-  
 
   const increment = (id: string) => {
     setTickets((prevTickets) => {
       const selectedTicket = prevTickets.find((ticket) => ticket.id === id);
       if (!selectedTicket) return prevTickets;
       const isOtherTypeSelected = prevTickets.some(
-        (t) => t.type !== selectedTicket.type && t.quantity > 0
+        (t) => t.type !== selectedTicket.type && t.quantity > 0,
       );
 
       if (isOtherTypeSelected) {
@@ -69,7 +66,9 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
         return prevTickets;
       }
       return prevTickets.map((ticket) =>
-        ticket.id === id ? { ...ticket, quantity: ticket.quantity + 1 } : ticket
+        ticket.id === id
+          ? { ...ticket, quantity: ticket.quantity + 1 }
+          : ticket,
       );
     });
   };
@@ -176,7 +175,12 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
 
                 <Typography
                   variant="body1"
-                  sx={{ mx: 1, textAlign: "center", minWidth: "20px", color: "black" }}
+                  sx={{
+                    mx: 1,
+                    textAlign: "center",
+                    minWidth: "20px",
+                    color: "black",
+                  }}
                 >
                   {ticket.quantity}
                 </Typography>
@@ -187,7 +191,6 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
                   <AddIcon />
                 </IconButton>
               </Box>
-
             </Box>
           </Grid>
         ))}

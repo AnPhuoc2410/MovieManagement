@@ -120,7 +120,9 @@ export default function Promotions({
       const payload = {
         ...data,
         promotionId: data.promotionId || null,
-        image: data.image?.trim() || "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1741245144/p9qsbq4xr82adzxsushl.png"
+        image:
+          data.image?.trim() ||
+          "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1741245144/p9qsbq4xr82adzxsushl.png",
       };
 
       // Create new promotion
@@ -137,7 +139,6 @@ export default function Promotions({
       toast.error(`Lỗi tạo khuyến mãi: ${error}`);
     }
   };
-
 
   const handleDelete = async (promotionId: string) => {
     try {
@@ -361,7 +362,8 @@ export default function Promotions({
                 defaultValue=""
                 rules={{
                   required: "Nhập chi tiết",
-                  validate: (value) => value.trim() !== "" || "Chi tiết không được để trống",
+                  validate: (value) =>
+                    value.trim() !== "" || "Chi tiết không được để trống",
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <TextEdit

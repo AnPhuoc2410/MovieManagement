@@ -45,9 +45,9 @@ const Header: React.FC = () => {
         >
           <Box
             component="img"
-            src="https://png.pngtree.com/png-clipart/20230103/original/pngtree-vietnam-flag-transparent-watercolor-painted-brush-png-image_8863886.png"
+            src="/favicon/apple-touch-icon.png"
             alt="Eiga Logo"
-            sx={{ height: 40 }}
+            sx={{ height: 50 }}
           />
         </Box>
 

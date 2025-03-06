@@ -224,8 +224,12 @@ export default function PromotionDetail() {
                   rules={{
                     required: "Nhập chi tiết",
                     validate: (value) => {
-                      const strippedValue = value.replace(/<p><br><\/p>/g, "").trim();
-                      return strippedValue !== "" || "Chi tiết không được để trống";
+                      const strippedValue = value
+                        .replace(/<p><br><\/p>/g, "")
+                        .trim();
+                      return (
+                        strippedValue !== "" || "Chi tiết không được để trống"
+                      );
                     },
                   }}
                   render={({ field, fieldState: { error } }) => (
