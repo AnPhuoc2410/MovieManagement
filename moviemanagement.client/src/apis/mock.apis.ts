@@ -40,6 +40,11 @@ export const login = async (
   return response.data;
 };
 
+export const logout = async (): Promise<ApiResponse<null>> => {
+  const response = await axios.post("/api/auth/logout");
+  return response.data;
+};
+
 export const getBookingDetail = async (
   bookingId: string,
 ): Promise<XacNhanDatVe> => {

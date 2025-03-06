@@ -1,8 +1,6 @@
-import { UserLoginResponse } from "./users.type";
-
 export type AuthLoginData = Pick<
-  UserLoginResponse,
-  "token" | "roles" | "id" | "username" | "status"
+  TokenResponse,
+  "access_token" | "token_type" | "expires" | "is_mobile"
 >;
 
 export type LoginRequest = {
@@ -10,19 +8,29 @@ export type LoginRequest = {
   password: string;
 };
 
-type TokenResponse = {
+export type TokenResponse = {
   id: number;
   access_token: string;
-  refresh_token: string;
   token_type: string;
   expires: string;
-  expires_refresh_token: string;
   is_mobile: boolean;
 };
 
 export type LoginResponse = {
   message: string;
-  data: TokenResponse;
+  data: {
+    token: TokenResponse;
+  };
+  status_code: number;
+  is_success: boolean;
+};
+
+export type LogoutRequest = {
+  token: string;
+};
+
+export type LogoutResponse = {
+  message: string;
   status_code: number;
   is_success: boolean;
 };

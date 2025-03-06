@@ -1,5 +1,6 @@
 import { createTheme, ThemeProvider } from "@mui/material";
-import { Route, Routes } from "react-router";
+import { useEffect } from "react";
+import { Route, Routes, useLocation } from "react-router";
 import ScrollToTop from "./components/common/ScrollToTop";
 import { ToasterWithMax } from "./components/common/ToasterWithMax";
 import Dashboard from "./components/shared/Dashboard";
@@ -46,6 +47,12 @@ const theme = createTheme({
 });
 
 const App = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to the top on route change
+  }, [location]);
+
   return (
     <ThemeProvider theme={theme}>
       <ScrollToTop />
