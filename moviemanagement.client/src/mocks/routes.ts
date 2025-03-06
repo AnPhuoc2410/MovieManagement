@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { Room } from "../types/room.types";
 import { Employee } from "../pages/admin/QuanLyNhanVien/BangNhanVien";
-import { LoginRequest } from "../types/auth.types";
+import { LoginRequest, SignupRequest } from "../types/auth.types";
 import { XacNhanDatVe } from "../pages/admin/QuanLyDatVe/ChiTietDatVe";
 
 export const handleLogin = () => {
@@ -9,7 +9,10 @@ export const handleLogin = () => {
     const body = (await request.json()) as LoginRequest;
     const { username, password } = body;
 
-    if (username === "hoangdz1604@gmail.com" && password === "12345678") {
+    if (
+      (username === "hoangdz1604@gmail.com" && password === "12345678") ||
+      (username === "admin" && password === "admin")
+    ) {
       return HttpResponse.json({
         message: "Login successfully",
         data: {
@@ -35,6 +38,44 @@ export const handleLogin = () => {
         reason: "Bad credentials",
       });
     }
+  });
+};
+
+export const handleSignup = () => {
+  return http.post("/api/signup", async ({ request }) => {
+    const body = (await request.json()) as SignupRequest;
+    const {
+      username,
+      password,
+      fullname,
+      dob,
+      gender,
+      cmnd,
+      email,
+      address,
+      phone,
+    } = body;
+
+    // Simulate an existing user check (replace with actual database checks in production)
+    if (
+      username === "hoangdz1604@gmail.com" ||
+      email === "hoangdz1604@gmail.com"
+    ) {
+      return HttpResponse.json({
+        message: "Username or email already exists",
+        status_code: 400,
+        is_success: false,
+        data: null, // Data is null, per the SignupResponse type
+      });
+    }
+
+    // Fake success response
+    return HttpResponse.json({
+      message: "Signup successful",
+      status_code: 200,
+      is_success: true,
+      data: null, // Data is null, per the SignupResponse type
+    });
   });
 };
 

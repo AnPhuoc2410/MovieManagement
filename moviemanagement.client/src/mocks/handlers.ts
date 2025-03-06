@@ -6,6 +6,7 @@ import {
   handleGetRoomDetail,
   handleGetThanhVien,
   handleLogin,
+  handleSignup,
 } from "./routes";
 
 export const handlers: HttpHandler[] = [
@@ -14,5 +15,6 @@ export const handlers: HttpHandler[] = [
   handleGetRoom(),
   handleGetRoomDetail("1"),
   handleLogin(),
+  handleSignup(),
   handleGetBookingDetail("BV00001"),
 ];

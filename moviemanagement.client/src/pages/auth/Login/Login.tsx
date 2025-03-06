@@ -17,11 +17,22 @@ import * as yup from "yup";
 import { login } from "../../../apis/mock.apis";
 
 const validationSchema = yup.object({
-  username: yup.string().required("Username is required"),
+  username: yup.string().required("Tài khoản không được để trống"),
   password: yup
     .string()
-    .min(8, "Password should be of minimum 8 characters length")
-    .required("Password is required"),
+    .test(
+      "is-valid-password",
+      "Mật khẩu phải có ít nhất 8 ký tự",
+      (value, context) => {
+        // Bypass validation for admin/admin in development
+        if (context.parent.username === "admin" && value === "admin") {
+          return true;
+        }
+        // Apply normal validation rules
+        return value !== undefined && value.length >= 8;
+      },
+    )
+    .required("Mật khẩu không được để trống"),
 });
 
 export const Login = () => {
