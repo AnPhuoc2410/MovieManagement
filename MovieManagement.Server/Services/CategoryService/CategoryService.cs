@@ -52,7 +52,6 @@ namespace MovieManagement.Server.Services.CategoryService
             var existingCategory = await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId);
 
             existingCategory.Name = categoryDto.Name;
-            existingCategory.Description = categoryDto.Description;
 
             var updatedCategory = await _unitOfWork.CategoryRepository.UpdateAsync(existingCategory);
             return _mapper.Map<CategoryDto>(updatedCategory);

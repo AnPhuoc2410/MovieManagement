@@ -15,7 +15,6 @@ namespace MovieManagement.Server.Models.Configurations
             builder.Property(x => x.Name).IsRequired();
             builder.Property(x => x.Name).HasMaxLength(50);
             builder.Property(x => x.Name).IsUnicode(true);
-            builder.Property(x => x.Description).HasColumnType("nvarchar(500)"); 
             //builder.HasOne(x => x.Movie)
             //    .WithMany(x => x.Categories)
             //    .HasForeignKey(x => x.MovieId);

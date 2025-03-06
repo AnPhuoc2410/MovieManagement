@@ -7,8 +7,8 @@ namespace MovieManagement.Server.Services.MovieService
         Task<IEnumerable<MovieDto>> GetAllAsync();
         Task<IEnumerable<MoviePreview>> GetPageAsync(int page, int pageSize);
         Task<MovieDto> GetAsync(Guid movieId);
-        Task<MovieDto> CreateAsync(Guid employeeId, MovieDto movieDto);
-        Task<MovieDto> UpdateAsync(Guid movieId, MovieDto movieDto);
+        Task<MovieDto> CreateAsync(Guid employeeId, MovieRequest movieDto);
+        Task<MovieDto> UpdateAsync(Guid movieId, MovieRequest movieDto);
         Task<bool> DeleteAsync(Guid movieId);
         Task<IEnumerable<MoviePreview>> GetMoviesNowShowing(int page, int pageSize);
         Task<IEnumerable<MoviePreview>> GetMoviesUpComing(int page, int pageSize);

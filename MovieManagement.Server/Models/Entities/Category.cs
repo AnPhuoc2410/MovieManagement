@@ -11,8 +11,6 @@ namespace MovieManagement.Server.Models.Entities
 
         public string Name { get; set; }
 
-        public string Description { get; set; }
-
         public virtual ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
 
     }

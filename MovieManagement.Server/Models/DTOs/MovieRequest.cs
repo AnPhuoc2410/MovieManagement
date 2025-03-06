@@ -1,11 +1,7 @@
-﻿using MovieManagement.Server.Models.Entities;
-
-namespace MovieManagement.Server.Models.DTOs
+﻿namespace MovieManagement.Server.Models.DTOs
 {
-    public class MovieDto
+    public class MovieRequest
     {
-        public Guid? MovieId { get; set; }
-
         public string Name { get; set; }
 
         public string Image { get; set; }
@@ -32,6 +28,6 @@ namespace MovieManagement.Server.Models.DTOs
 
         public Guid UserId { get; set; }
 
-        public ICollection<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
+        public ICollection<Guid> CategoriesIds { get; set; } = new List<Guid>();
     }
 }

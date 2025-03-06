@@ -38,6 +38,8 @@ namespace MovieManagement.Server.Extensions
             CreateMap<Movie, MoviePreview>();
             CreateMap<MoviePreview, Movie>();
 
+            CreateMap<MovieRequest, Movie>();
+
             CreateMap<Category, CategoryDto>();
             CreateMap<CategoryDto, Category>();
 

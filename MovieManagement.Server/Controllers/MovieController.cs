@@ -65,17 +65,17 @@ namespace MovieManagement.Server.Controllers
 
         [HttpPost]
         [Route("Create")]
-        public async Task<ActionResult<MovieDto>> CreateMovie(Guid employeeId, [FromBody] MovieDto movieDto)
+        public async Task<ActionResult<MovieDto>> CreateMovie(Guid employeeId, [FromBody] MovieRequest movieRequest)
         {
-            return await _movieService.CreateAsync(employeeId, movieDto);
+            return await _movieService.CreateAsync(employeeId, movieRequest);
         }
 
 
         [HttpPut]
         [Route("Update/{movieId:guid}")]
-        public async Task<ActionResult<MovieDto>> UpdateMovie(Guid movieId, [FromBody] MovieDto movieDto)
+        public async Task<ActionResult<MovieDto>> UpdateMovie(Guid movieId, [FromBody] MovieRequest movieRequest)
         {
-            return await _movieService.UpdateAsync(movieId, movieDto);
+            return await _movieService.UpdateAsync(movieId, movieRequest);
         }
 
 
