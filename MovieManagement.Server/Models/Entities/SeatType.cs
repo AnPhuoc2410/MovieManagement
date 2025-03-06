@@ -1,4 +1,6 @@
-﻿namespace MovieManagement.Server.Models.Entities
+﻿using Newtonsoft.Json;
+
+namespace MovieManagement.Server.Models.Entities
 {
     public class SeatType
     {
@@ -11,6 +13,7 @@
 
         public bool IsActive { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Seat> Seats { get; set; } = new List<Seat>();
 
     }

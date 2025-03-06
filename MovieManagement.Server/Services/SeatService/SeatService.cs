@@ -64,25 +64,45 @@ namespace MovieManagement.Server.Services.SeatService
             return await _unitOfWork.SeatRepository.DeleteAsync(seatId);
         }
 
-        public async Task CreateByRoomAsync(Guid SeatTypeId, Guid roomId)
+        public async Task<bool> CreateByRoomIdAsync(Guid roomId, Guid SeatTypeId)
         {
             var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
+
+            if (room == null)
+            {
+                throw new ArgumentException("Room not found", nameof(roomId));
+            }
+
+            var seatType = await _unitOfWork.SeatTypeRepository.GetByIdAsync(SeatTypeId);
+            if (seatType == null)
+            {
+                throw new ArgumentException("SeatType not found", nameof(SeatTypeId));
+            }
+
+            var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
+            if (seats.Any())
+            {
+                throw new ArgumentException("Seats already created", nameof(roomId));
+            }
 
             for (int i = 0; i < room.Row; i++)
             {
                 for (int j = 0; j < room.Column; j++)
                 {
-                    _unitOfWork.SeatRepository.Create(new Seat
+                    var newSeat = new Seat
                     {
                         AtRow = NumberToLetter(i).ToString(),
                         AtColumn = j + 1,
                         RoomId = roomId,
                         SeatTypeId = SeatTypeId,
                         IsActive = true
-                    });
+                    };
+                    await _unitOfWork.SeatRepository.CreateAsync(newSeat);
                 }
             }
 
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
         public static int LetterToNumber(char letter)

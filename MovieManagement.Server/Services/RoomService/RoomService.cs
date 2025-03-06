@@ -36,7 +36,7 @@ namespace MovieManagement.Server.Services.RoomService
                 Name = roomDto.Name,
                 Column = roomDto.Column,
                 Row = roomDto.Row,
-                Total = roomDto.Total
+                Total = roomDto.Row * roomDto.Column
             };
             var createdRoom = await _unitOfWork.RoomRepository.CreateAsync(newRoom);
             return _mapper.Map<RoomDto>(createdRoom);

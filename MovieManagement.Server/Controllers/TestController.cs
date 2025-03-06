@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
@@ -21,13 +22,15 @@ namespace MovieManagement.Server.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtService _jwtService;
         private readonly ISeatService _seatService;
+        private readonly AppDbContext _context;
 
-        public TestController(IUserService userService, IUnitOfWork unitOfWork, IJwtService jwtService, ISeatService seatService)
+        public TestController(IUserService userService, IUnitOfWork unitOfWork, IJwtService jwtService, ISeatService seatService, AppDbContext context)
         {
             _userService = userService;
             _unitOfWork = unitOfWork;
             _jwtService = jwtService;
             _seatService = seatService;
+            _context = context;
         }
 
         [HttpPost("Registration")]
@@ -72,19 +75,21 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllTest")]
+        public async Task<IActionResult> GetAllTest(Guid id)
+        {
+
+            var output = _context.Rooms.Include(x => x.Seats).ThenInclude(x => x.SeatType).FirstOrDefault(x => x.RoomId == id);
+
+            return Ok(output);
+        }
+
+        [HttpGet]
         [Route("TestAdmin")]
         [Authorize(Policy = "Admin")]
         public async Task<ActionResult> GetHello()
         {
             return Ok("Hello chat!");
-        }
-
-        [HttpPost]
-        [Route("RoomCreating")]
-        public async Task<ActionResult> RoomCreating(Guid SeatTypeId, Guid roomId)
-        {
-            _seatService.CreateByRoomAsync(roomId, SeatTypeId);
-            return Ok("Every seat in the room created!");
         }
 
 
