@@ -1,3 +1,4 @@
+import { TableData } from "../components/shared/ManagementTable";
 import { Category } from "./category.types";
 import { ShowTime } from "./showtime.types";
 
@@ -15,7 +16,21 @@ export type Movie = {
   version: number; // int in C#
   trailer: string;
   content: string;
-  userId: string; // Guid in C#
+  userId?: string; // Guid in C#
   categories: Category[]; // ICollection in C# (as an array)
   showtimes: ShowTime[]; // ICollection in C# (as an array)
 };
+
+export type QuanLyPhimType = Pick<
+  Movie,
+  "movieId" | "name" | "postDate" | "director" | "duration" | "version"
+>;
+
+export interface QuanLyPhimColumn extends TableData {
+  movieId: string;
+  name: string;
+  postDate: Date;
+  director: string;
+  duration: number;
+  version: number;
+}

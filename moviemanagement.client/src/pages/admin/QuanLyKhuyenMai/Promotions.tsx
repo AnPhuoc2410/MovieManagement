@@ -30,6 +30,7 @@ import dayjs from "dayjs";
 import TextEdit from "../../../components/admin/TextEdit";
 import { ENV } from "../../../env/env.config";
 import AppTheme from "../../../shared-theme/AppTheme";
+import toast from "react-hot-toast";
 
 interface Promotion {
   promotionId: string;
@@ -118,19 +119,24 @@ export default function Promotions({
     try {
       const payload = {
         ...data,
-        promotionId: data.promotionId ? data.promotionId : null,
+        promotionId: data.promotionId || null,
+        image:
+          data.image?.trim() ||
+          "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1741245144/p9qsbq4xr82adzxsushl.png",
       };
+
       // Create new promotion
       const response = await axios.post(
         "https://localhost:7119/api/Promotions/CreateAsync",
         payload,
         { headers: { "Content-Type": "application/json" } },
       );
-      setPromotions([...promotions, response.data]);
 
+      setPromotions([...promotions, response.data]);
       handleClose();
+      toast.success("Tạo Khuyến Mãi Thành Công");
     } catch (error) {
-      console.error("Error posting promotion:", error);
+      toast.error(`Lỗi tạo khuyến mãi: ${error}`);
     }
   };
 
@@ -143,8 +149,9 @@ export default function Promotions({
         },
       );
       setPromotions(promotions.filter((p) => p.promotionId !== promotionId));
+      toast.success("Đã Xóa Khuyến Mãi");
     } catch (error) {
-      console.error("Error deleting promotion:", error);
+      toast.error(`Lỗi xóa khuyến mãi: ${error}`);
     }
   };
 
@@ -353,7 +360,11 @@ export default function Promotions({
                 name="content"
                 control={control}
                 defaultValue=""
-                rules={{ required: "Nhập chi tiết" }}
+                rules={{
+                  required: "Nhập chi tiết",
+                  validate: (value) =>
+                    value.trim() !== "" || "Chi tiết không được để trống",
+                }}
                 render={({ field, fieldState: { error } }) => (
                   <TextEdit
                     value={field.value}

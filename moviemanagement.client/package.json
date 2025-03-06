@@ -34,6 +34,7 @@
     "dotenv": "^16.4.7",
     "formik": "^2.4.6",
     "framer-motion": "^12.4.2",
+    "gsap": "^3.12.7",
     "i18next": "^24.2.2",
     "i18next-browser-languagedetector": "^8.0.4",
     "moviemanagement.client": "file:",

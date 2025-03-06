@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -9,6 +9,8 @@ import "./ListMovies.css";
 import "../../index.scss";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import Scroll from "quill/blots/scroll";
+import ScrollFloat from "../shared/ScrollFloat";
 
 const nowShowingMovies = [
   {
@@ -108,7 +110,7 @@ const MovieSlider = ({
   navigateTo,
 }: {
   movies: any[];
-  title: string;
+  title: ReactNode;
   navigateTo: string;
 }) => {
   const navigate = useNavigate();
@@ -197,14 +199,36 @@ const ListMovies: React.FC = () => {
       {/* Now Showing Section */}
       <MovieSlider
         movies={nowShowingMovies}
-        title={t("now_showing")}
+        title=
+        {
+          <ScrollFloat
+            animationDuration={1}
+            ease='back.inOut(2)'
+            scrollStart='center bottom+=50%'
+            scrollEnd='bottom bottom-=40%'
+            stagger={0.07}
+          >
+            {t("now_showing")}
+          </ScrollFloat>
+        }
         navigateTo="/movies/now-showing"
       />
 
       {/* Upcoming Movies Section */}
       <MovieSlider
         movies={upcomingMovies}
-        title={t("upcoming")}
+        title=
+        {
+          <ScrollFloat
+            animationDuration={1}
+            ease='back.inOut(2)'
+            scrollStart='center bottom+=50%'
+            scrollEnd='bottom bottom-=40%'
+            stagger={0.08}
+          >
+            {t("upcoming")}
+          </ScrollFloat>
+        }
         navigateTo="/movies/up-coming"
       />
     </Box>

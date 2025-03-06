@@ -1,6 +1,6 @@
 export type Category = {
   categoryId: string; // Guid in C#
-  movieId: string;
+  movieId?: string;
   name: string;
-  description: string;
+  description?: string;
 };

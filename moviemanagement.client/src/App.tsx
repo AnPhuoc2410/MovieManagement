@@ -1,14 +1,19 @@
 import { createTheme, ThemeProvider } from "@mui/material";
-import { Route, Routes } from "react-router";
+import { useEffect } from "react";
+import { Route, Routes, useLocation } from "react-router";
 import ScrollToTop from "./components/common/ScrollToTop";
+import { ToasterWithMax } from "./components/common/ToasterWithMax";
 import Dashboard from "./components/shared/Dashboard";
-import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
-import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import BuyTicket from "./pages/admin/QuanLyBanVe/SoldTicket";
-import Promotion from "./pages/promotion/PromotionsPage";
 import ChiTietDatVe from "./pages/admin/QuanLyDatVe/ChiTietDatVe";
 import QuanLyDatVe from "./pages/admin/QuanLyDatVe/QuanLyDatVe";
+import ThongTinNhanVe from "./pages/admin/QuanLyDatVe/ThongTinNhanVe";
+import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
+import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import QuanLiNhanVien from "./pages/admin/QuanLyNhanVien";
+import ChinhSuaPhim from "./pages/admin/QuanLyPhim/ChinhSuaPhim";
+import QuanLyPhim from "./pages/admin/QuanLyPhim/QuanLyPhim";
+import ThemPhim from "./pages/admin/QuanLyPhim/ThemPhim";
 import ChiTietPhongChieu from "./pages/admin/QuanLyPhongChieu/ChiTietPhongChieu";
 import QuanLyPhongChieu from "./pages/admin/QuanLyPhongChieu/QuanLyPhongChieu";
 import QuanLiThanhVien from "./pages/admin/QuanLyThanhVien/QuanLiThanhVien";
@@ -18,15 +23,13 @@ import Home from "./pages/Home";
 import NowShowingMoviesPage from "./pages/movie/NowShowingMoviesPage";
 import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
+import Promotion from "./pages/promotion/PromotionsPage";
+import Confirmation from "./pages/ticket/Confirmation";
 import Ticket from "./pages/ticket/DateMovie";
 import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
-import Confirmation from "./pages/ticket/Confirmation";
-import { Toaster } from "react-hot-toast";
-import Movies from "./pages/admin/QuanLyPhim";
-import ThongTinNhanVe from "./pages/admin/QuanLyDatVe/ThongTinNhanVe";
 
 const theme = createTheme({
   components: {
@@ -44,6 +47,12 @@ const theme = createTheme({
 });
 
 const App = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to the top on route change
+  }, [location]);
+
   return (
     <ThemeProvider theme={theme}>
       <ScrollToTop />
@@ -74,7 +83,11 @@ const App = () => {
             <Route path="" element={<PromotionManagement />} />
             <Route path=":id" element={<PromotionDetailManagement />} />
           </Route>
-          <Route path="phim" element={<Movies />} />
+          <Route path="ql-phim">
+            <Route path="" element={<QuanLyPhim />} />
+            <Route path=":id" element={<ChinhSuaPhim />} />
+            <Route path="them-phim" element={<ThemPhim />} />
+          </Route>
           <Route path="ban-ve" element={<BuyTicket />} />
           <Route path="ql-nhan-vien" element={<QuanLiNhanVien />} />
           <Route path="ql-thanh-vien" element={<QuanLiThanhVien />} />
@@ -89,7 +102,7 @@ const App = () => {
           </Route>
         </Route>
       </Routes>
-      <Toaster />
+      <ToasterWithMax position="top-center" max={3} />
     </ThemeProvider>
   );
 };

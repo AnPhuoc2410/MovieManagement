@@ -15,19 +15,32 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import * as yup from "yup";
 import { login } from "../../../apis/mock.apis";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const validationSchema = yup.object({
-  username: yup.string().required("Username is required"),
+  username: yup.string().required("Tài khoản không được để trống"),
   password: yup
     .string()
-    .min(8, "Password should be of minimum 8 characters length")
-    .required("Password is required"),
+    .test(
+      "is-valid-password",
+      "Mật khẩu phải có ít nhất 8 ký tự",
+      (value, context) => {
+        // Bypass validation for admin/admin in development
+        if (context.parent.username === "admin" && value === "admin") {
+          return true;
+        }
+        // Apply normal validation rules
+        return value !== undefined && value.length >= 8;
+      },
+    )
+    .required("Mật khẩu không được để trống"),
 });
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { authLogin } = useAuth();
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -40,32 +53,37 @@ export const Login = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      setLoading(true); // Set loading state
-      const toastId = toast.loading("Logging in..."); // Show loading toast
+      setLoading(true);
+      const toastId = toast.loading("Đang đăng nhập...");
 
       try {
         const response = await login(values.username, values.password);
-
-        // First dismiss the loading toast regardless of response
         toast.dismiss(toastId);
 
         if (response.is_success) {
-          // Show success toast and redirect
-          toast.success("Login successful! Redirecting...");
-          // Only redirect after success
+          // Extract token data from the nested structure
+          const tokenData = response.data.token;
+
+          authLogin({
+            access_token: tokenData.access_token,
+            token_type: tokenData.token_type,
+            expires: tokenData.expires,
+            is_mobile: tokenData.is_mobile,
+          });
+
+          toast.success("Đăng nhập thành công! Đang chuyển hướng...");
           setTimeout(() => {
             navigate("/admin/thong-ke");
           }, 1000);
         } else {
-          // Show error toast with the response message
           toast.error(response.message);
         }
       } catch (error) {
-        // Dismiss loading toast and show error
         toast.dismiss(toastId);
         toast.error("An unexpected error occurred.");
+        console.error("Login error:", error);
       } finally {
-        setLoading(false); // Always stop the loading state
+        setLoading(false);
       }
     },
   });

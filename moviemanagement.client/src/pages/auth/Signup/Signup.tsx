@@ -31,29 +31,33 @@ import {
 import { useFormik } from "formik";
 import { useState } from "react";
 import * as yup from "yup";
+import { signUp } from "../../../apis/mock.apis";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 const validationSchema = yup.object({
-  username: yup.string().required("Username is required"),
+  username: yup.string().required("Tài khoản không được để trống"),
   password: yup
     .string()
-    .min(8, "Password should be of minimum 8 characters length")
-    .required("Password is required"),
-  fullname: yup.string().required("Full name is required"),
-  dob: yup.date().required("Birth date is required"),
-  gender: yup.string().required("Gender is required"),
-  cmnd: yup.string().required("CMND is required"),
+    .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+    .required("Mật khẩu không được để trống"),
+  fullname: yup.string().required("Full name không được để trống"),
+  dob: yup.date().required("Ngày sinh không được để trống"),
+  gender: yup.string().required("Giới tính không được để trống"),
+  cmnd: yup.string().required("CMND không được để trống"),
   email: yup
     .string()
-    .email("Enter a valid email")
-    .required("Email is required"),
-  address: yup.string().required("Address is required"),
-  phone: yup.string().required("Phone number is required"),
+    .email("Email không hợp lệ")
+    .required("Email không được để trống"),
+  address: yup.string().required("Địa chỉ không được để trống"),
+  phone: yup.string().required("Số điện thoại không được để trống"),
 });
 
 export const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
+  const navigate = useNavigate();
 
   const steps = [
     "Chi tiết tài khoản",
@@ -86,13 +90,29 @@ export const Signup = () => {
       phone: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setLoading(true);
-      // Simulate API call
-      setTimeout(() => {
+      const toastId = toast.loading("Đang xác thực người dùng...");
+
+      try {
+        const response = await signUp(values);
+
+        toast.dismiss(toastId);
+
+        if (response.is_success) {
+          toast.success("Đăng ký tài khoản thành công!");
+          setTimeout(() => {
+            navigate("/auth/login");
+          }, 1000);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.dismiss(toastId);
+        toast.error("Đã xảy ra lỗi không mong muốn.");
+      } finally {
         setLoading(false);
-        alert(JSON.stringify(values, null, 2));
-      }, 1000);
+      }
     },
   });
 
