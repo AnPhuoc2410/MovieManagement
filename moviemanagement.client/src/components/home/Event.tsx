@@ -7,6 +7,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import ScrollFloat from "../shared/ScrollFloat";
 
 const promotions = [
   {
@@ -34,7 +35,14 @@ const Promotions: React.FC = () => {
   return (
     <Container sx={{ mt: 4, textAlign: "center", padding: 5 }}>
       <Typography variant="h4" fontWeight="bold" color="white" sx={{ mb: 2 }}>
-        {t("promotions")}
+        <ScrollFloat
+          animationDuration={1}
+          ease='back.inOut(2)'
+          scrollStart='center bottom+=50%'
+          scrollEnd='bottom bottom-=40%'
+          stagger={0.07}
+        > {t("promotions")}
+        </ScrollFloat>
       </Typography>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}

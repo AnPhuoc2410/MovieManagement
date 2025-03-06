@@ -1,6 +1,8 @@
 import { Box, Button, Typography } from "@mui/material";
+import Scroll from "quill/blots/scroll";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import ScrollFloat from "../shared/ScrollFloat";
 
 const Membership: React.FC = () => {
   const { t } = useTranslation();
@@ -19,7 +21,15 @@ const Membership: React.FC = () => {
       }}
     >
       <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
-        {t("membership")}
+        <ScrollFloat
+          animationDuration={1}
+          ease='back.inOut(2)'
+          scrollStart='center bottom+=50%'
+          scrollEnd='bottom bottom-=40%'
+          stagger={0.07}
+        >
+          {t("membership")}
+        </ScrollFloat>
       </Typography>
 
       <Box
