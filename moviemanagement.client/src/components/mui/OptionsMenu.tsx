@@ -11,6 +11,7 @@ import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import MenuButton from "./MenuButton";
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
 const MenuItem = styled(MuiMenuItem)({
   margin: "2px 0",
@@ -72,7 +73,10 @@ export default function OptionsMenu() {
         >
           <ListItemText
             onClick={() => {
-              navigate("/");
+              toast.success("Đăng xuất thành công", { removeDelay: 2500 });
+              setTimeout(() => {
+                navigate("/");
+              }, 3000);
             }}
           >
             Logout

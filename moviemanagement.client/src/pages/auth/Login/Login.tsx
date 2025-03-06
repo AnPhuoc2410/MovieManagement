@@ -11,10 +11,10 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import * as yup from "yup";
 import { login } from "../../../apis/mock.apis";
-import toast, { Toaster } from "react-hot-toast";
 
 const validationSchema = yup.object({
   username: yup.string().required("Username is required"),
@@ -23,8 +23,6 @@ const validationSchema = yup.object({
     .min(8, "Password should be of minimum 8 characters length")
     .required("Password is required"),
 });
-
-const notify = () => toast("Here is your toast.");
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -42,21 +40,32 @@ export const Login = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      setLoading(true);
-      const response = await login(values.username, values.password);
-      console.log(response);
+      setLoading(true); // Set loading state
+      const toastId = toast.loading("Logging in..."); // Show loading toast
 
-      if (response.is_success) {
-        toast.success("Login successful! Redirecting...");
-        setTimeout(() => {
-          setLoading(false);
-          navigate("/admin/thong-ke");
-        }, 1000);
-      } else {
-        toast.error(response.message);
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
+      try {
+        const response = await login(values.username, values.password);
+
+        // First dismiss the loading toast regardless of response
+        toast.dismiss(toastId);
+
+        if (response.is_success) {
+          // Show success toast and redirect
+          toast.success("Login successful! Redirecting...");
+          // Only redirect after success
+          setTimeout(() => {
+            navigate("/admin/thong-ke");
+          }, 1000);
+        } else {
+          // Show error toast with the response message
+          toast.error(response.message);
+        }
+      } catch (error) {
+        // Dismiss loading toast and show error
+        toast.dismiss(toastId);
+        toast.error("An unexpected error occurred.");
+      } finally {
+        setLoading(false); // Always stop the loading state
       }
     },
   });
