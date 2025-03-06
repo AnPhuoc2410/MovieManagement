@@ -83,28 +83,6 @@ namespace MovieManagement.Server.Migrations
                     b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("MovieManagement.Server.Models.Entities.CategoryDetail", b =>
-                {
-                    b.Property<Guid>("CategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .IsUnicode(true)
-                        .HasColumnType("varchar(20)");
-
-                    b.HasKey("CategoryId");
-
-                    b.ToTable("CATEGORYDETAIL", (string)null);
-                });
-
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Movie", b =>
                 {
                     b.Property<Guid>("MovieId")
@@ -133,7 +111,7 @@ namespace MovieManagement.Server.Migrations
                     b.Property<string>("Image")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -313,9 +291,6 @@ namespace MovieManagement.Server.Migrations
                     b.Property<Guid>("ShowTimeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("TicketTypeId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("BillId", "SeatId", "ShowTimeId");
 
                     b.HasIndex("SeatId");
@@ -334,29 +309,29 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Avatar")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
                     b.Property<string>("IDCard")
                         .IsRequired()
-                        .HasColumnType("varchar(15)");
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<DateTime>("JoinDate")
                         .HasColumnType("datetime2");
@@ -367,7 +342,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("varchar(11)");
+                        .HasColumnType("nvarchar(11)");
 
                     b.Property<decimal>("Point")
                         .HasColumnType("decimal(18,2)");
@@ -380,7 +355,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("Varchar(20)");
+                        .HasColumnType("nVarchar(20)");
 
                     b.HasKey("UserId");
 

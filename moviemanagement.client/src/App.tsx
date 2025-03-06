@@ -95,7 +95,7 @@ const App = () => {
           </Route>
         </Route>
       </Routes>
-      <Toaster />
+      <ToasterWithMax position="top-center" max={3} />
     </ThemeProvider>
   );
 };
