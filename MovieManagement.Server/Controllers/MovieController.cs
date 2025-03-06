@@ -198,6 +198,27 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
+        [HttpGet("GetMoviesNowShowing/page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetMoviesNowShowing(int page, int pageSize)
+        {
+            var movies = await _movieService.GetMoviesNowShowing(page, pageSize);
+            return Ok(movies);
+        }
+
+        [HttpGet("GetMoviesUpComing/page/{page:int}/pageSize/{pageSize:int}")]
+        public async Task<ActionResult> GetMoviesUpComing(int page, int pageSize)
+        {
+            var movies = await _movieService.GetMoviesUpComing(page, pageSize);
+            return Ok(movies);
+        }
+
+        [HttpGet]
+        [Route("SearchMoviesByNameRelative/{searchValue}")]
+        public async Task<ActionResult> GetMoviesByNameRelative(string searchValue, int page, int pageSize)
+        {
+            var movies = await _movieService.GetMoviesByNameRelative(searchValue, page, pageSize);
+            return Ok(movies);
+        }
 
         [HttpPost]
         [Route("Create")]
@@ -316,7 +337,5 @@ namespace MovieManagement.Server.Controllers
         {
             return await _movieService.DeleteMovieAsync(movieId);
         }
-
-
     }
 }

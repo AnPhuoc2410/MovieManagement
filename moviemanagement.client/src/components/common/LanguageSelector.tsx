@@ -1,8 +1,6 @@
-import React, { useState } from "react";
-import { Select, MenuItem, Box, Typography, ListItemIcon } from "@mui/material";
+import { Box, ListItemIcon, MenuItem, Select, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import i18n from "../../constants/i18n";
-import { VietnamFlag, UsaFlag, JapanFlag } from "../../data/CustomIcons";
+import { JapanFlag, UsaFlag, VietnamFlag } from "../../data/CustomIcons";
 
 const languages: { [key: string]: { name: string; icon: JSX.Element } } = {
   vi: { name: "Tiếng Việt", icon: <VietnamFlag /> },

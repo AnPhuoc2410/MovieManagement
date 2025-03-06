@@ -33,7 +33,7 @@ namespace MovieManagement.Server.Services.PromotionService
                 throw new ApplicationException("An error occurred while processing into Database", ex);
             }
 
-            // CreateAsync the promotion and return the created entity
+            
         }
 
         public async Task<PromotionDto> GetByIdAsync(Guid id)
