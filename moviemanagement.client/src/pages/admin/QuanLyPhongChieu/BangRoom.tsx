@@ -35,7 +35,7 @@ const RoomTable: React.FC<{
   const handleEditClick = (roomId: string) => {
     console.log("Handling click for roomId:", roomId);
     console.log("Available rooms:", rooms);
-    
+
     if (roomId) {
       navigate(`/admin/ql-phong-chieu/${roomId}`);
     } else {

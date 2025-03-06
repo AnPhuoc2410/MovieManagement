@@ -9,9 +9,9 @@ namespace MovieManagement.Server.Models.Configurations
         {
             builder.ToTable("PROMOTION");
             builder.HasKey(x => x.PromotionId);
-            //builder.Property(x => x.PromotionId).HasDefaultValueSql("NEWID()");
+            builder.Property(x => x.PromotionId).HasDefaultValueSql("NEWID()");
             builder.Property(x => x.Image).HasColumnType("text");
-            builder.Property(x => x.Content).HasColumnType("varchar(500)");
+            builder.Property(x => x.Content).HasColumnType("nvarchar(500)");
             builder.HasMany(x => x.Bills)
                 .WithOne(x => x.Promotion)
                 .HasForeignKey(x => x.PromotionId);

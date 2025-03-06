@@ -1,22 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { Box, Button, CssBaseline, TextField, Stack } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
+import { Box, Button, CssBaseline, Stack, TextField } from "@mui/material";
 import { alpha } from "@mui/material/styles";
-import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
 
-// Layout Components
-import AppNavbar from "../../components/mui/AppNavbar";
-import SideMenu from "../../components/mui/SideMenu";
-import TextEdit from "../../components/admin/TextEdit";
+import TextEdit from "../../../components/admin/TextEdit";
+import AppNavbar from "../../../components/mui/AppNavbar";
+import SideMenu from "../../../components/mui/SideMenu";
 
-// Import Cloudinary Upload Widget component
-import CloudinaryUploadWidget from "../../components/cloudinary/CloudinaryUploadWidget";
+import CloudinaryUploadWidget from "../../../components/cloudinary/CloudinaryUploadWidget";
 
-// Theme & Customizations
-import AppTheme from "../../shared-theme/AppTheme";
 import dayjs from "dayjs";
-import { ENV } from "../../components/cloudinary/CloudinaryImage";
+import { ENV } from "../../../env/env.config";
+import AppTheme from "../../../shared-theme/AppTheme";
+import toast from "react-hot-toast";
 
 interface Promotion {
   promotionId: string;
@@ -31,7 +29,6 @@ interface Promotion {
 export default function PromotionDetail() {
   const location = useLocation();
   const navigate = useNavigate();
-  // Expect the promotion details to be passed via location state.
   const promotion: Promotion | undefined = location.state?.promotion;
 
   useEffect(() => {
@@ -68,8 +65,7 @@ export default function PromotionDetail() {
   );
 
   const handleSetPublicId = (publicId: string) => {
-    var cloud = ENV.CLOUDINARY_CLOUD_NAME;
-    const imageUrl = `https://res.cloudinary.com/${cloud}/image/upload/${publicId}`;
+    const imageUrl = `https://res.cloudinary.com/${ENV.CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;
     setUploadedImage(imageUrl);
     setValue("image", imageUrl);
   };
@@ -83,8 +79,8 @@ export default function PromotionDetail() {
         toDate: dayjs(data.toDate).toISOString(),
       };
 
-      const response = await axios.put(
-        `https://localhost:7119/api/Promotions/UpdatePromotion/${data.promotionId}`,
+      await axios.put(
+        `https://localhost:7119/api/Promotions/Update/${data.promotionId}`,
         payload,
         {
           headers: {
@@ -92,10 +88,12 @@ export default function PromotionDetail() {
           },
         },
       );
-      console.log("Promotion updated:", response.data);
-      navigate("/admin/khuyen-mai");
+      toast.success("Cập nhật khuyến mãi thành công", { removeDelay: 3000 });
+      setTimeout(() => {
+        navigate("/admin/khuyen-mai");
+      }, 3000);
     } catch (error) {
-      console.error("Error updating promotion:", error);
+      toast.error(`Lỗi khi cập nhật khuyến mãi: ${error}`);
     }
   };
 
@@ -223,15 +221,25 @@ export default function PromotionDetail() {
                   name="content"
                   control={control}
                   defaultValue=""
-                  rules={{ required: "Nhập chi tiết" }}
-                  render={({ field }) => (
+                  rules={{
+                    required: "Nhập chi tiết",
+                    validate: (value) => {
+                      const strippedValue = value
+                        .replace(/<p><br><\/p>/g, "")
+                        .trim();
+                      return (
+                        strippedValue !== "" || "Chi tiết không được để trống"
+                      );
+                    },
+                  }}
+                  render={({ field, fieldState: { error } }) => (
                     <TextEdit
                       value={field.value}
                       onChange={(val) => field.onChange(val)}
+                      error={error?.message}
                     />
                   )}
                 />
-
                 {/* Cloudinary Upload Section */}
                 <Box sx={{ my: 2 }}>
                   <CloudinaryUploadWidget
@@ -248,7 +256,6 @@ export default function PromotionDetail() {
                     </Box>
                   )}
                 </Box>
-
                 <Button type="submit" variant="contained">
                   Cập Nhật Khuyến Mãi
                 </Button>

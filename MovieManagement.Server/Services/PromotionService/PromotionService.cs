@@ -23,7 +23,7 @@ namespace MovieManagement.Server.Services.PromotionService
             {
                 
                 var newPromotion = _mapper.Map<Promotion>(promotionDto);
-                newPromotion.PromotionId = new Guid();
+                newPromotion.PromotionId = Guid.NewGuid();
                 var createdPromotion = _mapper.Map<PromotionDto>(await _unitOfWork.PromotionRepository.CreateAsync(newPromotion));
                 return createdPromotion;
 
@@ -33,7 +33,7 @@ namespace MovieManagement.Server.Services.PromotionService
                 throw new ApplicationException("An error occurred while processing into Database", ex);
             }
 
-            // CreateAsync the promotion and return the created entity
+            
         }
 
         public async Task<PromotionDto> GetByIdAsync(Guid id)

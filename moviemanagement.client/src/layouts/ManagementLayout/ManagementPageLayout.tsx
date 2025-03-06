@@ -1,24 +1,24 @@
-import * as React from "react";
-import type {} from "@mui/x-date-pickers/themeAugmentation";
 import type {} from "@mui/x-charts/themeAugmentation";
 import type {} from "@mui/x-data-grid-pro/themeAugmentation";
+import type {} from "@mui/x-date-pickers/themeAugmentation";
 
-import { alpha } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
 import Stack from "@mui/material/Stack";
-
-// Components
+import { alpha } from "@mui/material/styles";
 import AppNavbar from "../../components/mui/AppNavbar";
 import Header from "../../components/mui/Header";
 import SideMenu from "../../components/mui/SideMenu";
-
-// Theme & Customizations
 import AppTheme from "../../shared-theme/AppTheme";
-const Movies: React.FC = ({
-  disableCustomTheme = false,
-}: {
+
+interface ManagementPageLayoutProps {
+  children: React.ReactNode;
   disableCustomTheme?: boolean;
+}
+
+const ManagementPageLayout: React.FC<ManagementPageLayoutProps> = ({
+  children,
+  disableCustomTheme = false,
 }) => {
   return (
     <AppTheme disableCustomTheme={disableCustomTheme}>
@@ -41,7 +41,8 @@ const Movies: React.FC = ({
           >
             <Stack spacing={2} alignItems="center">
               <Header />
-              {/* <MainGrid /> */}
+
+              {children}
             </Stack>
           </Box>
         </Box>
@@ -50,4 +51,4 @@ const Movies: React.FC = ({
   );
 };
 
-export default Movies;
+export default ManagementPageLayout;

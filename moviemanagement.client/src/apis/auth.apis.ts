@@ -3,6 +3,7 @@ import { LoginDTO, UserRegisterDTO } from "../types/users.type";
 import { DYNAMIC_API_URL } from "../constants/endPoints";
 import { handleAxiosError } from "../utils/errors.utils";
 import { ERROR_MESSAGE } from "../constants/message";
+import { LogoutResponse } from "../types/auth.types";
 
 export const login = async (payload: LoginDTO) => {
   try {
@@ -47,22 +48,16 @@ export const register = async (payload: UserRegisterDTO) => {
   }
 };
 
-export const doLogout = async (token: string) => {
-  try {
-    const response = await axios.post(
-      `${DYNAMIC_API_URL}/users/logout`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // Pass token in Authorization header
-        },
+export const doLogout = async (token: string): Promise<LogoutResponse> => {
+  const response = await axios.post(
+    `/api/auth/logout`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`, // Pass token in Authorization header
       },
-    );
+    },
+  );
 
-    if (response.status === 200) {
-      console.log("Logout successful.");
-    }
-  } catch (error) {
-    console.error("Error during logout:", error);
-  }
+  return response.data;
 };

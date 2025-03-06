@@ -5,8 +5,10 @@ import {
   MenuItem,
   Select,
   Typography,
+  Modal,
+  IconButton,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -18,6 +20,7 @@ import ListMovies from "../components/home/ListMovies";
 import Promotions from "../components/home/Event";
 import Membership from "../components/home/Membership";
 import { useNavigate } from "react-router-dom";
+import CloseIcon from "@mui/icons-material/Close";
 
 const slides = [
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",
@@ -29,44 +32,109 @@ const slides = [
 
 const Homepage: React.FC = () => {
   const navigate = useNavigate();
+  const [openModal, setOpenModal] = useState(true);
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentBannerIndex((prev) => (prev + 1) % slides.length);
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <Box
       sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
     >
+      {/* Preview Modal */}
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="movie-preview-modal"
+        aria-describedby="movie-banner-preview"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "80%",
+            maxWidth: "1000px",
+            bgcolor: "rgba(0, 0, 0, 0.9)",
+            boxShadow: 24,
+            outline: "none",
+            borderRadius: 2,
+          }}
+        >
+          <IconButton
+            onClick={handleCloseModal}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: "white",
+              bgcolor: "rgba(0, 0, 0, 0.5)",
+              "&:hover": {
+                bgcolor: "rgba(131, 75, 255, 0.7)",
+              },
+              zIndex: 1,
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <img
+            src={slides[currentBannerIndex]}
+            alt="Movie Banner"
+            style={{
+              width: "100%",
+              height: "auto",
+              maxHeight: "80vh",
+              objectFit: "cover",
+              borderRadius: "8px",
+            }}
+          />
+        </Box>
+      </Modal>
+
       {/* Header */}
       <Header />
-      {/* Swiper Slider */}
-      <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pt: 10 }}>
-        <Swiper
-          modules={[Navigation, Pagination, Autoplay]}
-          spaceBetween={50}
-          slidesPerView={1}
-          navigation
-          pagination={{ clickable: true }}
-          autoplay={{ delay: 3000 }}
-          loop={true}
-          style={{ width: "100%", height: "auto" }}
-        >
-          {slides.map((slide, index) => (
-            <SwiperSlide key={index}>
-              <img
-                src={slide}
-                alt={`Slide ${index + 1}`}
-                style={{
-                  width: "100%",
-                  maxHeight: "400px",
-                  objectFit: "initial",
-                  borderRadius: "10px",
-                }}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </Box>
 
       {/* Main Content */}
+      {/* Swiper Slider */}
       <Container sx={{ mt: 4 }}>
+        <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pt: 10, mb: 3 }}>
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay]}
+            spaceBetween={50}
+            slidesPerView={1}
+            navigation
+            pagination={{ clickable: true }}
+            autoplay={{ delay: 3000 }}
+            loop={true}
+            style={{ width: "100%", height: "auto" }}
+          >
+            {slides.map((slide, index) => (
+              <SwiperSlide key={index}>
+                <img
+                  src={slide}
+                  alt={`Slide ${index + 1}`}
+                  style={{
+                    width: "100%",
+                    maxHeight: "400px",
+                    objectFit: "initial",
+                    borderRadius: "10px",
+                  }}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </Box>
         <Box
           sx={{
             textAlign: "center",
@@ -124,7 +192,7 @@ const Homepage: React.FC = () => {
       {/* Membership */}
       <Membership />
       {/* Footer */}
-      
+
       <Footer />
     </Box>
   );

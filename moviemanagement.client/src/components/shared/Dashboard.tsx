@@ -1,27 +1,42 @@
-import type {} from "@mui/x-date-pickers/themeAugmentation";
 import type {} from "@mui/x-charts/themeAugmentation";
 import type {} from "@mui/x-data-grid-pro/themeAugmentation";
+import type {} from "@mui/x-date-pickers/themeAugmentation";
 
-import { alpha } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
 import Stack from "@mui/material/Stack";
-import AppTheme from "../shared-theme/AppTheme";
-import SideMenu from "../components/mui/SideMenu";
-import AppNavbar from "../components/mui/AppNavbar";
-import Header from "../components/mui/Header";
+import { alpha } from "@mui/material/styles";
 
-interface ManagementPageLayoutProps {
-  children: React.ReactNode;
-  disableCustomTheme?: boolean;
-}
+// Components
+import AppNavbar from "../mui/AppNavbar";
+import Header from "../mui/Header";
+import MainGrid from "../mui/MainGrid";
+import SideMenu from "../mui/SideMenu";
 
-const ManagementPageLayout: React.FC<ManagementPageLayoutProps> = ({
-  children,
+// Theme & Customizations
+import AppTheme from "../../shared-theme/AppTheme";
+import {
+  chartsCustomizations,
+  dataGridCustomizations,
+  datePickersCustomizations,
+} from "../../theme/customizations";
+
+const xThemeComponents = {
+  ...chartsCustomizations,
+  ...dataGridCustomizations,
+  ...datePickersCustomizations,
+};
+
+export default function Dashboard({
   disableCustomTheme = false,
-}) => {
+}: {
+  disableCustomTheme?: boolean;
+}) {
   return (
-    <AppTheme disableCustomTheme={disableCustomTheme}>
+    <AppTheme
+      disableCustomTheme={disableCustomTheme}
+      themeComponents={xThemeComponents}
+    >
       <CssBaseline enableColorScheme />
       <Box sx={{ display: "flex", height: "100vh" }}>
         <SideMenu />
@@ -41,14 +56,11 @@ const ManagementPageLayout: React.FC<ManagementPageLayoutProps> = ({
           >
             <Stack spacing={2} alignItems="center">
               <Header />
-
-              {children}
+              <MainGrid />
             </Stack>
           </Box>
         </Box>
       </Box>
     </AppTheme>
   );
-};
-
-export default ManagementPageLayout;
+}
