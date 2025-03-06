@@ -1,19 +1,13 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthLoginData } from "../types/auth.types";
-import { UserLoginResponse, UserStatus } from "../types/users.type";
-import {
-  eraseCookie,
-  getCookie,
-  parseRoles,
-  setCookie,
-} from "../utils/cookieUtils";
 import { doLogout } from "../apis/auth.apis";
+import { AuthLoginData } from "../types/auth.types";
+import { eraseCookie, getCookie, setCookie } from "../utils/cookieUtils";
 
 interface AuthContextType {
   isLoggedIn: boolean;
   user: AuthLoginData | null;
-  authLogin: (userData: Partial<UserLoginResponse>) => void;
+  authLogin: (userData: AuthLoginData) => void;
   authLogout: () => void;
   getToken: () => string | null;
 }
@@ -28,46 +22,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = getCookie("access_token");
-    if (token) {
-      const roles = parseRoles(getCookie("user_roles") || "[]");
-      const id = getCookie("user_id");
-      const username = getCookie("username");
-      const status = getCookie("status");
+    const access_token = getCookie("access_token");
+    if (access_token) {
+      const access_token = getCookie("access_token") || "";
+      const token_type = getCookie("token_type") || "";
+      const expires = getCookie("expires") || "";
+      const is_mobile = getCookie("is_mobile") === "true";
 
       setIsLoggedIn(true);
       setUser({
-        token,
-        roles: roles.length ? roles : [],
-        id: id ? parseInt(id, 10) : 0,
-        username: username || "",
-        status: (status as UserStatus) || "UNVERIFIED",
+        access_token,
+        token_type,
+        expires,
+        is_mobile,
       });
     }
   }, []);
 
-  const authLogin = (userData: Partial<UserLoginResponse>) => {
-    if (!userData.token || !userData.roles) {
+  const authLogin = (userData: AuthLoginData) => {
+    if (!userData) {
       console.error("Invalid login data");
       return;
     }
 
+    // Set login state
     setIsLoggedIn(true);
+
+    // Create authData with token details
     const authData: AuthLoginData = {
-      token: userData.token,
-      roles: userData.roles,
-      id: userData.id || 0,
-      username: userData.username || "",
-      status: userData.status || "UNVERIFIED",
+      access_token: userData.access_token,
+      token_type: userData.token_type,
+      expires: userData.expires,
+      is_mobile: userData.is_mobile,
     };
+
+    // Set user data in the state
     setUser(authData);
-    setCookie("access_token", userData.token, 1); // Set to expire in 1 day
-    setCookie("user_roles", JSON.stringify(userData.roles), 1);
-    if (userData.id) setCookie("user_id", userData.id.toString(), 1);
-    if (userData.username) setCookie("username", userData.username, 1);
-    if (userData.refresh_token)
-      setCookie("refresh_token", userData.refresh_token, 7); // Set refresh token to expire in 7 days
-    if (userData.status) setCookie("status", userData.status, 1);
+
+    // Set cookies for necessary tokens and user data
+    setCookie("access_token", userData.access_token, 1); // Set to expire in 1 day
   };
 
   const authLogout = async () => {
@@ -78,11 +71,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsLoggedIn(false);
     setUser(null);
     eraseCookie("access_token");
-    eraseCookie("user_roles");
-    eraseCookie("user_id");
-    eraseCookie("username");
-    eraseCookie("refresh_token");
-    eraseCookie("status");
+    eraseCookie("token_type");
+    eraseCookie("expires");
+    eraseCookie("is_mobile");
     navigate("/");
   };
 

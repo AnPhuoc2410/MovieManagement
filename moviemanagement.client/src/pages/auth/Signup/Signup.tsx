@@ -31,34 +31,38 @@ import {
 import { useFormik } from "formik";
 import { useState } from "react";
 import * as yup from "yup";
+import { signUp } from "../../../apis/mock.apis";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 const validationSchema = yup.object({
-  username: yup.string().required("Username is required"),
+  username: yup.string().required("Tài khoản không được để trống"),
   password: yup
     .string()
-    .min(8, "Password should be of minimum 8 characters length")
-    .required("Password is required"),
-  fullname: yup.string().required("Full name is required"),
-  dob: yup.date().required("Birth date is required"),
-  gender: yup.string().required("Gender is required"),
-  cmnd: yup.string().required("CMND is required"),
+    .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+    .required("Mật khẩu không được để trống"),
+  fullname: yup.string().required("Full name không được để trống"),
+  dob: yup.date().required("Ngày sinh không được để trống"),
+  gender: yup.string().required("Giới tính không được để trống"),
+  cmnd: yup.string().required("CMND không được để trống"),
   email: yup
     .string()
-    .email("Enter a valid email")
-    .required("Email is required"),
-  address: yup.string().required("Address is required"),
-  phone: yup.string().required("Phone number is required"),
+    .email("Email không hợp lệ")
+    .required("Email không được để trống"),
+  address: yup.string().required("Địa chỉ không được để trống"),
+  phone: yup.string().required("Số điện thoại không được để trống"),
 });
 
 export const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
+  const navigate = useNavigate();
 
   const steps = [
-    "Account Details",
-    "Personal Information",
-    "Contact Information",
+    "Chi tiết tài khoản",
+    "Thông tin cá nhân",
+    "Thông tin liên hệ",
   ];
 
   const handleClickShowPassword = () => {
@@ -86,13 +90,29 @@ export const Signup = () => {
       phone: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setLoading(true);
-      // Simulate API call
-      setTimeout(() => {
+      const toastId = toast.loading("Đang xác thực người dùng...");
+
+      try {
+        const response = await signUp(values);
+
+        toast.dismiss(toastId);
+
+        if (response.is_success) {
+          toast.success("Đăng ký tài khoản thành công!");
+          setTimeout(() => {
+            navigate("/auth/login");
+          }, 1000);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.dismiss(toastId);
+        toast.error("Đã xảy ra lỗi không mong muốn.");
+      } finally {
         setLoading(false);
-        alert(JSON.stringify(values, null, 2));
-      }, 1000);
+      }
     },
   });
 
@@ -145,7 +165,7 @@ export const Signup = () => {
           align="center"
           sx={{ mb: 4, fontWeight: 600 }}
         >
-          Register Account
+          Đăng ký tài khoản
         </Typography>
 
         <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
@@ -163,7 +183,7 @@ export const Signup = () => {
                 fullWidth
                 id="username"
                 name="username"
-                label="Username"
+                label="Tài khoản"
                 value={formik.values.username}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -184,7 +204,7 @@ export const Signup = () => {
                 fullWidth
                 id="password"
                 name="password"
-                label="Password"
+                label="Mật khẩu"
                 type={showPassword ? "text" : "password"}
                 value={formik.values.password}
                 onChange={formik.handleChange}
@@ -374,7 +394,7 @@ export const Signup = () => {
               sx={{ mr: 1 }}
               disabled={activeStep === 0}
             >
-              Previous step
+              Quay lại
             </Button>
             <Box>
               {activeStep === steps.length - 1 ? (
@@ -423,7 +443,7 @@ export const Signup = () => {
                     },
                   }}
                 >
-                  Next step
+                  Tiếp tục
                 </Button>
               )}
             </Box>
@@ -431,9 +451,9 @@ export const Signup = () => {
 
           <Box sx={{ mt: 4, textAlign: "center" }}>
             <Typography variant="body2" color="text.secondary">
-              Already a member?{" "}
+              Đã có tài khoản?{" "}
               <Link href="/auth/login" underline="hover">
-                Login here
+                Đăng nhập ngay
               </Link>
             </Typography>
           </Box>

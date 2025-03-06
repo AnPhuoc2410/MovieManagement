@@ -5,6 +5,10 @@ declare module "i18next" {
   // Kế thừa (thêm vào type)
   interface CustomTypeOptions {
     defaultNS: typeof defaultNS;
-    resources: (typeof resources)["vi"];
+    resources: {
+      vi: typeof resources.vi;
+      en: typeof resources.en;
+      jp: typeof resources.jp;
+    };
   }
 }

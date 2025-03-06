@@ -8,6 +8,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import MenuContent from "./MenuContent";
 import OptionsMenu from "./OptionsMenu";
+import { useNavigate } from "react-router";
 
 const drawerWidth = 240;
 
@@ -23,6 +24,8 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export default function SideMenu() {
+  const navigate = useNavigate();
+
   return (
     <Drawer
       variant="permanent"
@@ -37,15 +40,24 @@ export default function SideMenu() {
         sx={{
           display: "flex",
           mt: "calc(var(--template-frame-height, 0px) + 4px)",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 2,
           p: 1.5,
         }}
       >
         <Box
           component="img"
-          src="https://png.pngtree.com/png-clipart/20230103/original/pngtree-vietnam-flag-transparent-watercolor-painted-brush-png-image_8863886.png"
+          src="/favicon/apple-touch-icon.png"
           alt="Eiga Logo"
-          sx={{ height: 50 }}
+          sx={{ height: 50, cursor: "pointer" }}
+          onClick={() =>
+            setTimeout(() => {
+              navigate("/");
+            }, 1000)
+          }
         />
+        <Typography variant="h6">Eiga Management</Typography>
       </Box>
       <Divider />
       <Box

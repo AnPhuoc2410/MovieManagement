@@ -87,7 +87,6 @@ const QuanLyDatVe: React.FC = ({
           >
             <Stack spacing={2} alignItems="center">
               <Header />
-              return (
               <Box sx={{ p: 4 }}>
                 <Typography variant="h4" gutterBottom>
                   Quản lý đặt vé

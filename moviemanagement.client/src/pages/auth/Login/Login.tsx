@@ -1,31 +1,46 @@
-import React, { useState } from "react";
+import { Lock, Person, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
-  Button,
-  TextField,
   Box,
-  Typography,
-  InputAdornment,
+  Button,
   IconButton,
-  Paper,
+  InputAdornment,
   Link,
+  Paper,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
-import * as yup from "yup";
-import { Visibility, VisibilityOff, Person, Lock } from "@mui/icons-material";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
+import * as yup from "yup";
+import { login } from "../../../apis/mock.apis";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const validationSchema = yup.object({
-  username: yup.string().required("Username is required"),
+  username: yup.string().required("Tài khoản không được để trống"),
   password: yup
     .string()
-    .min(8, "Password should be of minimum 8 characters length")
-    .required("Password is required"),
+    .test(
+      "is-valid-password",
+      "Mật khẩu phải có ít nhất 8 ký tự",
+      (value, context) => {
+        // Bypass validation for admin/admin in development
+        if (context.parent.username === "admin" && value === "admin") {
+          return true;
+        }
+        // Apply normal validation rules
+        return value !== undefined && value.length >= 8;
+      },
+    )
+    .required("Mật khẩu không được để trống"),
 });
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { authLogin } = useAuth();
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -37,13 +52,39 @@ export const Login = () => {
       password: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setLoading(true);
-      // Simulate API call
-      setTimeout(() => {
+      const toastId = toast.loading("Đang đăng nhập...");
+
+      try {
+        const response = await login(values.username, values.password);
+        toast.dismiss(toastId);
+
+        if (response.is_success) {
+          // Extract token data from the nested structure
+          const tokenData = response.data.token;
+
+          authLogin({
+            access_token: tokenData.access_token,
+            token_type: tokenData.token_type,
+            expires: tokenData.expires,
+            is_mobile: tokenData.is_mobile,
+          });
+
+          toast.success("Đăng nhập thành công! Đang chuyển hướng...");
+          setTimeout(() => {
+            navigate("/admin/thong-ke");
+          }, 1000);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.dismiss(toastId);
+        toast.error("An unexpected error occurred.");
+        console.error("Login error:", error);
+      } finally {
         setLoading(false);
-        navigate("/admin/thong-ke");
-      }, 1000);
+      }
     },
   });
 
@@ -73,7 +114,7 @@ export const Login = () => {
           align="center"
           sx={{ mb: 3, fontWeight: 600 }}
         >
-          Login
+          Đăng nhập
         </Typography>
 
         <form onSubmit={formik.handleSubmit}>
@@ -81,7 +122,7 @@ export const Login = () => {
             fullWidth
             id="username"
             name="username"
-            label="Username"
+            label="Tài khoản"
             value={formik.values.username}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -101,7 +142,7 @@ export const Login = () => {
             fullWidth
             id="password"
             name="password"
-            label="Password"
+            label="Mật khẩu"
             type={showPassword ? "text" : "password"}
             value={formik.values.password}
             onChange={formik.handleChange}
@@ -131,7 +172,7 @@ export const Login = () => {
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
             <Link href="#" underline="hover" sx={{ fontSize: "0.875rem" }}>
-              Forgot password?
+              Quên mật khẩu?
             </Link>
           </Box>
 
@@ -158,28 +199,34 @@ export const Login = () => {
 
           <Box sx={{ mt: 3, textAlign: "center" }}>
             <Typography variant="body2" color="text.secondary">
-              Do not have account?{" "}
+              Chưa có tài khoản?{" "}
               <Link href="/auth/signup" underline="hover">
-                Sign up here
+                Đăng ký ngay
               </Link>
             </Typography>
           </Box>
 
           <Box sx={{ mt: 3, textAlign: "center" }}>
-            <Typography variant="body2" color="text.secondary">
-              Quick access user detail?{" "}
-            </Typography>
             <Button
-              sx={{
-                color: "white",
-                backgroundColor: "red",
-              }}
+              variant="contained"
+              color="warning"
               onClick={() => {
                 navigate("/users/profile/1");
               }}
-              Click
-              here
-            ></Button>
+            >
+              User Detail
+            </Button>
+          </Box>
+          <Box sx={{ mt: 3, textAlign: "center" }}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => {
+                navigate("/admin/thong-ke");
+              }}
+            >
+              Quick Admin
+            </Button>
           </Box>
         </form>
       </Paper>

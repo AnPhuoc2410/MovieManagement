@@ -2,6 +2,8 @@ name: CD for Movie-Management
 on:
   push:
     branches: ["master", "deployment"]
+    paths:
+      - 'moviemanagement.client/**'
 
 jobs:
   build-and-deploy:
