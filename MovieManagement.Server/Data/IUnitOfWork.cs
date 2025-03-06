@@ -9,6 +9,7 @@ namespace MovieManagement.Server.Data
         ICategoryRepository CategoryRepository { get; }
         IUserRepository UserRepository { get; }
         IMovieRepository MovieRepository { get; }
+        IMovieCategoryRepository MovieCategoryRepository { get; }
         IPromotionRepository PromotionRepository { get; }
         IRoomRepository RoomRepository { get; }
         ISeatRepository SeatRepository { get; }

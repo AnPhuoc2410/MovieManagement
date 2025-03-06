@@ -2,6 +2,7 @@
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Repositories;
 using System.Drawing.Printing;
 
 namespace MovieManagement.Server.Services.MovieService
@@ -53,7 +54,18 @@ namespace MovieManagement.Server.Services.MovieService
             movieDto.UserId = employeeId;
             movieDto.MovieId = null;
             var movie = await _unitOfWork.MovieRepository.CreateAsync(_mapper.Map<Movie>(movieDto));
-            return _mapper.Map<MovieDto>(movie);
+            movieDto.CategoriesIds.ToList().ForEach(x =>
+            {
+                var movieCategory = new MovieCategory
+                {
+                    MovieId = movie.MovieId,
+                    CategoryId = x
+                };
+                _unitOfWork.MovieCategoryRepository.Create(movieCategory);
+            });
+            var response = _mapper.Map<MovieDto>(movie);
+            response.CategoriesIds = movieDto.CategoriesIds;
+            return response;
         }
 
         public async Task<MovieDto> UpdateAsync(Guid movieId, MovieDto movieDto)
@@ -73,9 +85,27 @@ namespace MovieManagement.Server.Services.MovieService
             updateMovie.Trailer = movieDto.Trailer;
             updateMovie.Content = movieDto.Content;
             updateMovie.UserId = movieDto.UserId;
+            var updateMovieCategories = _unitOfWork.MovieCategoryRepository.GetMovieCategoriesByMovieId(updateMovie.MovieId);
+
+            if (updateMovieCategories.Count > 0)
+                updateMovieCategories.ForEach(async x => await _unitOfWork.MovieCategoryRepository.DeleteAsync(x));
 
             var updatedMovie = await _unitOfWork.MovieRepository.UpdateAsync(updateMovie);
-            return _mapper.Map<MovieDto>(updatedMovie);
+
+            movieDto.CategoriesIds.ToList().ForEach(x =>
+            {
+                var movieCategory = new MovieCategory
+                {
+                    MovieId = updateMovie.MovieId,
+                    CategoryId = x
+                };
+                _unitOfWork.MovieCategoryRepository.CreateAsync(movieCategory);
+            });
+
+            //return _mapper.Map<MovieDto>(updatedMovie);
+            var response = _mapper.Map<MovieDto>(updatedMovie);
+            response.CategoriesIds = movieDto.CategoriesIds;
+            return response;
         }
 
         public Task<bool> DeleteAsync(Guid movieId)

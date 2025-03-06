@@ -58,5 +58,7 @@
 
         Task<bool> DeleteComposeAsync(Guid id, Guid id2);
         bool DeleteCompose(Guid id, Guid id2);
+
+        public T GetById(Guid id);
     }
 }

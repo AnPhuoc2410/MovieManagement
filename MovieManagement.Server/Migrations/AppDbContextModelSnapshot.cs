@@ -63,46 +63,22 @@ namespace MovieManagement.Server.Migrations
                 {
                     b.Property<Guid>("CategoryId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("MovieId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CategoryId");
-
-                    b.HasIndex("MovieId");
-
-                    b.ToTable("Category");
-                });
-
-            modelBuilder.Entity("MovieManagement.Server.Models.Entities.CategoryDetail", b =>
-                {
-                    b.Property<Guid>("CategoryId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(20)
+                        .HasMaxLength(50)
                         .IsUnicode(true)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("CATEGORYDETAIL", (string)null);
+                    b.ToTable("CATEGORY", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Movie", b =>
@@ -114,15 +90,15 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Actors")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("varchar(500)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Director")
                         .IsRequired()
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<int>("Duration")
                         .HasColumnType("int");
@@ -139,14 +115,14 @@ namespace MovieManagement.Server.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(true)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("PostDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Rating")
                         .IsRequired()
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<DateTime>("ToDate")
                         .HasColumnType("datetime2");
@@ -164,6 +140,21 @@ namespace MovieManagement.Server.Migrations
                     b.HasKey("MovieId");
 
                     b.ToTable("MOVIE", (string)null);
+                });
+
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.MovieCategory", b =>
+                {
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CategoryId", "MovieId");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("MOVIECATEGORY", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Promotion", b =>
@@ -261,7 +252,8 @@ namespace MovieManagement.Server.Migrations
                 {
                     b.Property<Guid>("SeatTypeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -275,7 +267,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.HasKey("SeatTypeId");
 
-                    b.ToTable("SeatType");
+                    b.ToTable("SEATTYPE", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.ShowTime", b =>
@@ -311,9 +303,6 @@ namespace MovieManagement.Server.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ShowTimeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TicketTypeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("BillId", "SeatId", "ShowTimeId");
@@ -406,13 +395,21 @@ namespace MovieManagement.Server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MovieManagement.Server.Models.Entities.Category", b =>
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.MovieCategory", b =>
                 {
+                    b.HasOne("MovieManagement.Server.Models.Entities.Category", "Category")
+                        .WithMany("MovieCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MovieManagement.Server.Models.Entities.Movie", "Movie")
-                        .WithMany("Categories")
+                        .WithMany("MovieCategories")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Category");
 
                     b.Navigation("Movie");
                 });
@@ -487,9 +484,14 @@ namespace MovieManagement.Server.Migrations
                     b.Navigation("TicketDetails");
                 });
 
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.Category", b =>
+                {
+                    b.Navigation("MovieCategories");
+                });
+
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Movie", b =>
                 {
-                    b.Navigation("Categories");
+                    b.Navigation("MovieCategories");
 
                     b.Navigation("Showtimes");
                 });

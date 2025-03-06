@@ -51,7 +51,6 @@ namespace MovieManagement.Server.Services.CategoryService
         {
             var existingCategory = await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId);
 
-            existingCategory.MovieId = categoryDto.MovieId;
             existingCategory.Name = categoryDto.Name;
             existingCategory.Description = categoryDto.Description;
 

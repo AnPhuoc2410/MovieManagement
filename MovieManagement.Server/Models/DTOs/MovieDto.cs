@@ -1,4 +1,6 @@
-﻿namespace MovieManagement.Server.Models.DTOs
+﻿using MovieManagement.Server.Models.Entities;
+
+namespace MovieManagement.Server.Models.DTOs
 {
     public class MovieDto
     {
@@ -29,5 +31,7 @@
         public string Content { get; set; }
 
         public Guid UserId { get; set; }
+
+        public ICollection<Guid> CategoriesIds { get; set; } = new List<Guid>();
     }
 }
