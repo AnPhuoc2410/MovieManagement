@@ -83,7 +83,7 @@ namespace MovieManagement.Server.Controllers
         [Route("Delete/{movieId:guid}")]
         public async Task<bool> DeleteMovie(Guid movieId)
         {
-            return await _movieService.DeleteAsync(movieId);
+            return await _movieService.SetMovieDeleted(movieId) != null;
         }
     }
 }

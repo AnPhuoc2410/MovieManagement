@@ -18,5 +18,6 @@ namespace MovieManagement.Server.Repositories.IRepositories
         Task<List<Movie>> GetMoviesUpComing(int page, int pageSize);
         Task<List<Movie>> GetMoviesByNameRelative(string name, int page, int pageSize);
         //Task<List<Movie>> GetMoviesByCategory(Guid categoryId, int page, int pageSize);
+        Task<Movie> SetMovieDeleted(Guid movieId);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories.IRepositories;
@@ -64,6 +65,17 @@ namespace MovieManagement.Server.Repositories
             return _context.Movies
                 .Where(m => m.MovieId == movieId && m.IsDeleted == false)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<Movie?> SetMovieDeleted(Guid movieId)
+        {
+            var movie = _context.Movies.Find(movieId);
+            if (movie == null)
+                throw new NotFoundException("Movie not found!");
+
+            movie.IsDeleted = true;
+            await _context.SaveChangesAsync();
+            return movie;
         }
     }
 }

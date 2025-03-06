@@ -134,6 +134,12 @@ namespace MovieManagement.Server.Services.MovieService
             return _mapper.Map<IEnumerable<MoviePreview>>(movies);
         }
 
+        public async Task<MovieDto> SetMovieDeleted(Guid movieId)
+        {
+            var movie = await _unitOfWork.MovieRepository.SetMovieDeleted(movieId);
+            return _mapper.Map<MovieDto>(movie);
+        }
+
         //public async Task<IEnumerable<MovieDto>> GetMoviesByCategory(Guid categoryId, int page, int pageSize)
         //{
         //    var movies = await _unitOfWork.MovieRepository.GetMoviesByCategory(categoryId, page, pageSize);
