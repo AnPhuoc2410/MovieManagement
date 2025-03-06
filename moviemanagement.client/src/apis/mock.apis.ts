@@ -1,14 +1,16 @@
 import axios from "axios";
+import { XacNhanDatVe } from "../pages/admin/QuanLyDatVe/ChiTietDatVe";
 import { Employee } from "../pages/admin/QuanLyNhanVien/BangNhanVien";
 import { ThanhVien } from "../pages/admin/QuanLyThanhVien/BangThanhVien";
-import { Room } from "../types/room.types";
 import {
   LoginResponse,
   SignupRequest,
   SignupResponse,
 } from "../types/auth.types";
-import { XacNhanDatVe } from "../pages/admin/QuanLyDatVe/ChiTietDatVe";
+import { Movie, QuanLyPhimType } from "../types/movie.types";
+import { Room } from "../types/room.types";
 import { ApiResponse } from "./api.config";
+import { Category } from "../types/category.types";
 
 export const fetchThanhVien = async (): Promise<ThanhVien[]> => {
   const response = await axios.get<ThanhVien[]>("/api/thanh-vien");
@@ -61,7 +63,19 @@ export const signUp = async (
   }
 };
 
-export const getFilmList = async () => {
-  const response = await axios.get("/api/films");
+export const getFilmList = async (query: string): Promise<QuanLyPhimType[]> => {
+  const response = await axios.get<QuanLyPhimType[]>(
+    `/api/films?query=${query}`,
+  );
+  return response.data;
+};
+
+export const getFilmDetail = async (id: string): Promise<Movie> => {
+  const response = await axios.get<Movie>(`/api/films/${id}`);
+  return response.data;
+};
+
+export const getCategoryList = async (): Promise<Category[]> => {
+  const response = await axios.get<Category[]>("/api/categories");
   return response.data;
 };

@@ -49,7 +49,7 @@ const mainListItems = [
   {
     text: "Quản lý Phim",
     icon: <MovieCreationRoundedIcon />,
-    path: "/admin/phim",
+    path: "/admin/ql-phim",
   },
   {
     text: "Quản lý Khuyến mãi",
@@ -59,9 +59,9 @@ const mainListItems = [
 ];
 
 const secondaryListItems = [
-  { text: "Settings", icon: <SettingsRoundedIcon />, path: "#" },
-  { text: "About", icon: <InfoRoundedIcon />, path: "#" },
-  { text: "Feedback", icon: <HelpRoundedIcon />, path: "#" },
+  { text: "Cài đặt", icon: <SettingsRoundedIcon />, path: "#" },
+  { text: "Góp ý", icon: <HelpRoundedIcon />, path: "#" },
+  { text: "Về chúng tôi", icon: <InfoRoundedIcon />, path: "#" },
 ];
 
 export default function MenuContent() {

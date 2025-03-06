@@ -25,8 +25,10 @@ import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
 import Confirmation from "./pages/ticket/Confirmation";
 import { Toaster } from "react-hot-toast";
-import Movies from "./pages/admin/QuanLyPhim";
 import ThongTinNhanVe from "./pages/admin/QuanLyDatVe/ThongTinNhanVe";
+import QuanLyPhim from "./pages/admin/QuanLyPhim/QuanLyPhim";
+import ThemPhim from "./pages/admin/QuanLyPhim/ThemPhim";
+import ChinhSuaPhim from "./pages/admin/QuanLyPhim/ChinhSuaPhim";
 
 const theme = createTheme({
   components: {
@@ -74,7 +76,11 @@ const App = () => {
             <Route path="" element={<PromotionManagement />} />
             <Route path=":id" element={<PromotionDetailManagement />} />
           </Route>
-          <Route path="phim" element={<Movies />} />
+          <Route path="ql-phim">
+            <Route path="" element={<QuanLyPhim />} />
+            <Route path=":id" element={<ChinhSuaPhim />} />
+            <Route path="them-phim" element={<ThemPhim />} />
+          </Route>
           <Route path="ban-ve" element={<BuyTicket />} />
           <Route path="ql-nhan-vien" element={<QuanLiNhanVien />} />
           <Route path="ql-thanh-vien" element={<QuanLiThanhVien />} />

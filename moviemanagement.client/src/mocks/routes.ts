@@ -1,8 +1,10 @@
 import { http, HttpResponse } from "msw";
-import { Room } from "../types/room.types";
+import { XacNhanDatVe } from "../pages/admin/QuanLyDatVe/ChiTietDatVe";
 import { Employee } from "../pages/admin/QuanLyNhanVien/BangNhanVien";
 import { LoginRequest, SignupRequest } from "../types/auth.types";
-import { XacNhanDatVe } from "../pages/admin/QuanLyDatVe/ChiTietDatVe";
+import { Movie, QuanLyPhimType } from "../types/movie.types";
+import { Room } from "../types/room.types";
+import { Category } from "../types/category.types";
 
 export const handleLogin = () => {
   return http.post("/api/login", async ({ request }) => {
@@ -233,5 +235,189 @@ export const handleGetBookingDetail = (bookingId: string) => {
       MovieBanner:
         "https://images.unsplash.com/photo-1578632749014-ca77efd052eb?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     });
+  });
+};
+
+export const handleGetFilmList = (query: string) => {
+  return http.get(`/api/films?query=${query}`, () => {
+    switch (query) {
+      case "all":
+        return HttpResponse.json<QuanLyPhimType[]>([
+          {
+            movieId: "1",
+            name: "SCANDAL",
+            postDate: new Date("2021-12-01"),
+            director: "Shusuke Kaneko",
+            duration: 221,
+            version: 2,
+          },
+          {
+            movieId: "2",
+            name: "Spider man",
+            postDate: new Date("2021-12-01"),
+            director: "Shusuke Kaneko",
+            duration: 213,
+            version: 2,
+          },
+        ]);
+
+      default:
+        return HttpResponse.error();
+    }
+  });
+};
+
+export const handleGetFilmDetail = (id: string) => {
+  return http.get(`/api/films/${id}`, () => {
+    switch (id) {
+      case "1":
+        return HttpResponse.json<Movie>({
+          movieId: "1",
+          name: "SCANDAL",
+          image: "https://via.placeholder.com/150",
+          postDate: new Date("2021-12-01"),
+          fromDate: new Date("2021-12-01"),
+          toDate: new Date("2021-12-01"),
+          actors: "Shusuke Kaneko",
+          director: "Shusuke Kaneko",
+          rating: "5",
+          duration: 221,
+          version: 2,
+          trailer: "https://www.youtube.com/watch?v=1",
+          content: "A great movie",
+          categories: [
+            {
+              categoryId: "1",
+              name: "Action",
+              description: "Hehehehe",
+            },
+            {
+              categoryId: "2",
+              name: "Action",
+              description: "Hehehehe",
+            },
+            {
+              categoryId: "3",
+              name: "Action",
+              description: "Hehehehe",
+            },
+          ],
+          showtimes: [
+            {
+              showTimeId: "1",
+              movieId: "1",
+              roomId: "1",
+              startTime: new Date("2021-12-01"),
+            },
+          ],
+        });
+
+      case "2":
+        return HttpResponse.json<Movie>({
+          movieId: "2",
+          name: "Spider man",
+          image: "https://via.placeholder.com/150",
+          postDate: new Date("2021-12-01"),
+          fromDate: new Date("2021-12-01"),
+          toDate: new Date("2021-12-01"),
+          actors: "Shusuke Kaneko",
+          director: "Shusuke Kaneko",
+          rating: "5",
+          duration: 221,
+          version: 2,
+          trailer: "https://www.youtube.com/watch?v=1",
+          content: "A great movie",
+          categories: [
+            {
+              categoryId: "1",
+              name: "Action",
+              description: "Hehehehe",
+            },
+            {
+              categoryId: "2",
+              name: "Action",
+              description: "Hehehehe",
+            },
+            {
+              categoryId: "3",
+              name: "Action",
+              description: "Hehehehe",
+            },
+          ],
+          showtimes: [
+            {
+              showTimeId: "1",
+              movieId: "1",
+              roomId: "1",
+              startTime: new Date("2021-12-01"),
+            },
+          ],
+        });
+      default:
+        return HttpResponse.error();
+    }
+  });
+};
+
+export const handleGetCategoryList = () => {
+  return http.get("/api/categories", () => {
+    return HttpResponse.json<Category[]>([
+      {
+        categoryId: "1",
+        name: "Hành động",
+      },
+      {
+        categoryId: "2",
+        name: "Viễn tưởng",
+      },
+      {
+        categoryId: "3",
+        name: "Hoạt hình",
+      },
+      {
+        categoryId: "4",
+        name: "Võ thuật",
+      },
+      {
+        categoryId: "5",
+        name: "Hài hước",
+      },
+      {
+        categoryId: "6",
+        name: "Chiến tranh",
+      },
+      {
+        categoryId: "7",
+        name: "Kinh dị",
+      },
+      {
+        categoryId: "8",
+        name: "Kinh điển",
+      },
+      {
+        categoryId: "9",
+        name: "Lãng mạn",
+      },
+      {
+        categoryId: "10",
+        name: "Kiếm hiệp",
+      },
+      {
+        categoryId: "11",
+        name: "Phiêu lưu",
+      },
+      {
+        categoryId: "12",
+        name: "Tâm lý",
+      },
+      {
+        categoryId: "13",
+        name: "Tình cảm",
+      },
+      {
+        categoryId: "14",
+        name: "Âm nhạc",
+      },
+    ]);
   });
 };
