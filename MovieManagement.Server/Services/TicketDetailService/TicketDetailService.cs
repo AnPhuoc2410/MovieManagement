@@ -56,7 +56,6 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             }
             existingTicketDetail.BillId = ticketDetail.BillId;
             existingTicketDetail.SeatId = ticketDetail.SeatId;
-            existingTicketDetail.SeatId = ticketDetail.SeatId;
 
             var updatedTicketDetail = await _unitOfWork.TicketDetailRepository.UpdateAsync(existingTicketDetail);
             return _mapper.Map<TicketDetailDto>(updatedTicketDetail);
