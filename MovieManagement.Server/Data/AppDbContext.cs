@@ -12,6 +12,7 @@ namespace MovieManagement.Server.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<User> Employees { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<Bill> Bills { get; set; }
         public DbSet<TicketDetail> TicketDetails { get; set; }
