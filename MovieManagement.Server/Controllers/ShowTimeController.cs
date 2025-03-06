@@ -127,11 +127,22 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<object>
                 {
                     StatusCode = 404,
-                    Message = "Show time not found",
+                    Message = "Unable to create this Show Time",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
                 return NotFound(response);
+            }
+            catch (ApplicationException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Show Time is conflicted with other",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -146,17 +157,17 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
-        [HttpGet("{movieId:guid}/{roomId:guid}")]
+        [HttpGet("{showTimeId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ShowTimeDto>> GetShowTime(Guid movieId, Guid roomId)
+        public async Task<ActionResult<ShowTimeDto>> GetShowTime(Guid showTimeId)
         {
             try
             {
-                var showTime = await _showTimeService.GetByComposeId(movieId, roomId);
+                var showTime = await _showTimeService.GetByIdAsync(showTimeId);
                 if (showTime == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -210,11 +221,11 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateShowTime(Guid movieId, Guid roomId, ShowTimeDto showTimeDto)
+        public async Task<IActionResult> UpdateShowTime(Guid showTimeId, ShowTimeDto showTimeDto)
         {
             try
             {
-                var updateShowTime = await _showTimeService.UpdateAsync(movieId, roomId, showTimeDto);
+                var updateShowTime = await _showTimeService.UpdateAsync(showTimeId, showTimeDto);
                 if (updateShowTime == null)
                 {
                     var response = new ApiResponseServices<object>
@@ -261,17 +272,17 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-        [HttpDelete("Delete/{movieId:guid}/{roomId:guid}")]
+        [HttpDelete("Delete/{showTimeId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteShowTime(Guid movieId, Guid roomId)
+        public async Task<IActionResult> DeleteShowTime(Guid showTimeId)
         {
             try
             {
-                var result = await _showTimeService.DeleteAsync(movieId, roomId);
+                var result = await _showTimeService.DeleteAsync(showTimeId);
                 if (result)
                 {
                     var response = new ApiResponseServices<object>
@@ -327,5 +338,59 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
+        [HttpGet]
+        public async Task<ActionResult> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                var showTime = await _showTimeService.GetShowTimeFromDateToDate(movieId, fromDate, toDate);
+                if (showTime == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Show Time not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(showTime);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving show time",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
     }
 }

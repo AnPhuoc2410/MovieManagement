@@ -92,14 +92,6 @@ namespace MovieManagement.Server.Controllers
             return Ok("Hello chat!");
         }
 
-        [HttpPost]
-        [Route("RoomCreating")]
-        public async Task<ActionResult> RoomCreating(Guid SeatTypeId, Guid roomId)
-        {
-            await _seatService.CreateByRoomAsync(SeatTypeId, roomId);
-            return Ok("Every seat in the room created!");
-        }
-
 
         [HttpPost]
         [Route("DataSample")]
