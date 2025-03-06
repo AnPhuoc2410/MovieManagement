@@ -7,7 +7,7 @@ namespace MovieManagement.Server.Controllers
 {
     [Route("api/[Controller]")]
     [ApiController]
-    public class BillController : Controller
+    public class BillController : Controller//
     {
         private readonly IBillService _billService;
 
