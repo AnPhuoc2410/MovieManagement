@@ -339,7 +339,7 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("GetShowTimeByDates")]
         public async Task<ActionResult> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate)
         {
             try

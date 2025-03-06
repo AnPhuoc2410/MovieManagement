@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Data.SqlClient;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
@@ -46,8 +47,14 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 if ((newShowTime.StartTime < st.EndTime && newShowTime.EndTime > st.StartTime) ||
                     (newShowTime.EndTime > st.StartTime && newShowTime.StartTime < st.EndTime))
                 {
-                    throw new ApplicationException("Unable to create due to other StartTime and EndTime");
+                    throw new ApplicationException("Unable to create due to other StartTime and EndTime.");
                 }
+            }
+
+            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(newShowTime.StartTime);
+            if (!checkStartTime)
+            {
+                throw new ApplicationException("Unable to create due to other StartTime.");
             }
 
             var createdShowTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.CreateAsync(newShowTime));
@@ -85,9 +92,9 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 }
                 return showtimes;
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
+                throw new ApplicationException("Couldn't access into database due to systems error.", ex);
             }
         }
 

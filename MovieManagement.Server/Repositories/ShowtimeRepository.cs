@@ -15,6 +15,15 @@ namespace MovieManagement.Server.Repositories
             _context = context;
         }
 
+        public Task<bool> CheckStartTimeAsync(DateTime startTime)
+        {
+            if (_context.Showtimes.Any(st => st.StartTime == startTime))
+            {
+                return Task.FromResult(false);
+            }
+            return Task.FromResult(true);
+        }
+
         public async Task<List<ShowTime>> GetShowTimeByRoomIdAsync(Guid roomId)
         {
             var showTimes = await _context.Showtimes
