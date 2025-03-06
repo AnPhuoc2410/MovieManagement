@@ -11,6 +11,7 @@ import { Movie, QuanLyPhimType } from "../types/movie.types";
 import { Room } from "../types/room.types";
 import { ApiResponse } from "./api.config";
 import { Category } from "../types/category.types";
+import { UpdatePasswordDTO } from "../types/users.type";
 
 export const fetchThanhVien = async (): Promise<ThanhVien[]> => {
   const response = await axios.get<ThanhVien[]>("/api/thanh-vien");
@@ -82,5 +83,12 @@ export const getFilmDetail = async (id: string): Promise<Movie> => {
 
 export const getCategoryList = async (): Promise<Category[]> => {
   const response = await axios.get<Category[]>("/api/categories");
+  return response.data;
+};
+
+export const updateUserPassword = async (
+  newPassword: UpdatePasswordDTO,
+): Promise<ApiResponse<null>> => {
+  const response = await axios.put("/api/auth/update-password", newPassword);
   return response.data;
 };

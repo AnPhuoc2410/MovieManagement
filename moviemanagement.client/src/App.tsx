@@ -31,6 +31,8 @@ import Payment from "./pages/ticket/Payment";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
 import SplashCursor from "./components/shared/SplashCursor";
+import ForgotPassword from "./pages/auth/ForgotPassword/ForgotPassword";
+import PageTransition from "./components/shared/PageTransition";
 
 const theme = createTheme({
   components: {
@@ -61,8 +63,31 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/auth">
-          <Route path="login" element={<LoginForm />} />
-          <Route path="signup" element={<SignupForm />} />
+          <Route
+            path="login"
+            element={
+              <PageTransition>
+                <LoginForm />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="signup"
+            element={
+              <PageTransition>
+                <SignupForm />
+              </PageTransition>
+            }
+          />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+          {/* <Route
+            path="/otp-verification"
+            element={
+              <PageTransition>
+                <OtpVerification />
+              </PageTransition>
+            }
+          /> */}
         </Route>
         <Route path="/promotions" element={<Promotion />} />
         <Route path="/promotions/:id" element={<PromotionDetail />} />
