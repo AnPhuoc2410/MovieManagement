@@ -24,7 +24,7 @@ import Payment from "./pages/ticket/Payment";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
 import Confirmation from "./pages/ticket/Confirmation";
-import { Toaster } from "react-hot-toast";
+import { ToasterWithMax } from "./components/common/ToasterWithMax";
 import Movies from "./pages/admin/QuanLyPhim";
 import ThongTinNhanVe from "./pages/admin/QuanLyDatVe/ThongTinNhanVe";
 
@@ -89,7 +89,7 @@ const App = () => {
           </Route>
         </Route>
       </Routes>
-      <Toaster />
+      <ToasterWithMax position="top-center" max={3} />
     </ThemeProvider>
   );
 };

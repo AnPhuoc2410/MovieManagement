@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Grid,
@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import toast, { useToasterStore } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 
 export interface TicketType {
@@ -54,16 +54,6 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
   ];
 
   const [tickets, setTickets] = useState<TicketType[]>(initialTickets);
-
-  const { toasts } = useToasterStore();
-  const TOAST_LIMIT = 3
-  
-  useEffect(() => {
-    toasts
-      .filter((t) => t.visible) 
-      .filter((_, i) => i >= TOAST_LIMIT) 
-      .forEach((t) => toast.dismiss(t.id));
-  }, [toasts]);
   
 
   const increment = (id: string) => {
