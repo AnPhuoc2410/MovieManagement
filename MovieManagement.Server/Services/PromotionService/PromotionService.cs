@@ -20,11 +20,29 @@ namespace MovieManagement.Server.Services.PromotionService
 
         public async Task<PromotionDto> CreatePromotionAsync(PromotionDto promotionDto)
         {
+<<<<<<< HEAD
             var newPromotion = _mapper.Map<Promotion>(promotionDto);
             newPromotion.PromotionId = Guid.NewGuid();
             return _mapper.Map<PromotionDto>(_unitOfWork.PromotionRepository.CreateAsync(newPromotion));
 
-            // CreateAsync the promotion and return the created entity
+            // CreateShowtimeAsync the promotion and return the created entity
+=======
+            try
+            {
+                
+                var newPromotion = _mapper.Map<Promotion>(promotionDto);
+                newPromotion.PromotionId = Guid.NewGuid();
+                var createdPromotion = _mapper.Map<PromotionDto>(await _unitOfWork.PromotionRepository.CreateAsync(newPromotion));
+                return createdPromotion;
+
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while processing into Database", ex);
+            }
+
+            
+>>>>>>> origin/brainrot
         }
 
         public async Task<PromotionDto> GetPromotionByIdAsync(Guid id)
@@ -50,8 +68,13 @@ namespace MovieManagement.Server.Services.PromotionService
             try
             {
 
+<<<<<<< HEAD
                 var promotion = _mapper.Map<List<PromotionDto>>(await _unitOfWork.ShowtimeRepository.GetAllAsync());
                 if (promotion == null)
+=======
+                var promotion = _mapper.Map<List<PromotionDto>>(await _unitOfWork.PromotionRepository.GetAllAsync());
+                if (promotion.Count == 0)
+>>>>>>> origin/brainrot
                 {
                     throw new NotFoundException("Promotion does not found!");
                 }
@@ -78,10 +101,19 @@ namespace MovieManagement.Server.Services.PromotionService
                 {
                     throw new Exception("Promotion not found.");
                 }
+<<<<<<< HEAD
                 // Update the promotion in the repository and return the updated entity
                 var updatedPromotion = await _unitOfWork.PromotionRepository.UpdateAsync(_mapper.Map<Promotion>(promotionDto));
                 if (updatedPromotion == null)
                     throw new DbUpdateException("Fail to create promotion.");
+=======
+                
+                existingPromotion = _mapper.Map(promotionDto, existingPromotion);
+
+                // Update the promotion in the repository and return the updated entity
+                var updatedPromotion = await _unitOfWork.PromotionRepository.UpdateAsync(existingPromotion);
+
+>>>>>>> origin/brainrot
                 return _mapper.Map<PromotionDto>(updatedPromotion);
 
 
@@ -90,6 +122,11 @@ namespace MovieManagement.Server.Services.PromotionService
             {
                 throw new ApplicationException("An error occurred while processing with database.", ex);
             }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/brainrot
         }
 
         public async Task<bool> DeletePromotionAsync(Guid id)

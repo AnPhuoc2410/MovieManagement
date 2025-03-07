@@ -68,7 +68,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("GetAll")]
+        [Route("GetAllShowtime")]
         public async Task<ActionResult> GetAll()
         {
             return Ok(await _userService.GetAllUsersAsync());
@@ -92,6 +92,17 @@ namespace MovieManagement.Server.Controllers
             return Ok("Hello chat!");
         }
 
+<<<<<<< HEAD
+        [HttpPost]
+        [Route("RoomCreating")]
+        public async Task<ActionResult> RoomCreating(Guid SeatTypeId, RoomDto roomDto)
+        {
+            _seatService.CreateByRoomAsync(SeatTypeId, roomDto);
+            return Ok("Every seat in the room created!");
+        }
+
+=======
+>>>>>>> origin/brainrot
 
         [HttpPost]
         [Route("DataSample")]

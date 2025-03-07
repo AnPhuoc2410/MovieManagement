@@ -10,17 +10,17 @@ namespace MovieManagement.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ShowtimeController : ControllerBase
+    public class ShowTimeController : ControllerBase
     {
         private readonly IShowTimeService _showTimeService;
 
-        public ShowtimeController(IShowTimeService showTimeService)
+        public ShowTimeController(IShowTimeService showTimeService)
         {
             _showTimeService = showTimeService;
         }
 
         [HttpGet]
-        [Route("all")]
+        [Route("GetAllShowTime")]
         [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
@@ -30,18 +30,15 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var ListShowTime = await _showTimeService.GetAllShowtimeAsync();
-                if (ListShowTime == null)
+                var ListShowTime = await _showTimeService.GetAllShowtime();
+                var response = new ApiResponseServices<IEnumerable<ShowTimeDto>>
                 {
-                    var response = new ApiResponseServices<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Showtime not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(ListShowTime);
+                    StatusCode = 200,
+                    Message = "Show Time retrieved successfully",
+                    IsSuccess = true,
+                    Data = ListShowTime
+                };
+                return Ok(response);
             }
             catch (BadRequestException ex)
             {
@@ -89,8 +86,8 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
-
         [HttpPost]
+        [Route("CreateShowTime")]
         [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
@@ -101,16 +98,6 @@ namespace MovieManagement.Server.Controllers
             try
             {
                 var createdShowTime = await _showTimeService.CreateShowtimeAsync(showTimeDto);
-                if (createdShowTime == null)
-                {
-                    var response = new ApiResponseServices<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Showtime not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
                 return Ok(createdShowTime);
             }
             catch (BadRequestException ex)
@@ -135,6 +122,28 @@ namespace MovieManagement.Server.Controllers
                 };
                 return StatusCode(StatusCodes.Status401Unauthorized, response);
             }
+            catch (NotFoundException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 404,
+                    Message = "Unable to create this Show Time",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return NotFound(response);
+            }
+            catch (ApplicationException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Show Time is conflicted with other",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
             catch (Exception ex)
             {
                 var response = new ApiResponseServices<object>
@@ -148,7 +157,7 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
-        [HttpGet("{movieId:guid}/{roomId:guid}")]
+        [HttpGet("{showTimeId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
@@ -158,13 +167,13 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var showTime = await _showTimeService.GetShowtimeByComposeIdAsync(movieId, roomId);
+                var showTime = await _showTimeService.GetShowtimeByIdAsync(showTimeId);
                 if (showTime == null)
                 {
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Showtime not found",
+                        Message = "Show Time not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -206,7 +215,7 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
-        [HttpPut("{id:guid}")]
+        [HttpPut("UpdateShowTime/{id:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
@@ -216,13 +225,13 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var updateShowTime = await _showTimeService.UpdateShowtimeAsync(movieId, roomId, showTimeDto);
+                var updateShowTime = await _showTimeService.UpdateShowtimeAsync(showTimeId, showTimeDto);
                 if (updateShowTime == null)
                 {
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Showtime not found",
+                        Message = "Show Time not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -263,7 +272,7 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-        [HttpDelete("{movieId:guid}/{roomId:guid}")]
+        [HttpDelete("Delete/{showTimeId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
@@ -273,18 +282,27 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var isDeleted = await _showTimeService.DeleteShowtimeAsync(movieId, roomId);
-                if (!isDeleted)
+                var result = await _showTimeService.DeleteShowtimeAsync(showTimeId);
+                if (result)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 200,
+                        Message = "Show Time deleted successfully",
+                        IsSuccess = true
+                    };
+                    return Ok(response);
+                }
+                else
                 {
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Showtime not found",
+                        Message = "Show Time not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
                 }
-                return Ok(isDeleted);
             }
             catch (BadRequestException ex)
             {
