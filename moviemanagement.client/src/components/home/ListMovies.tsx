@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -11,98 +11,9 @@ import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import Scroll from "quill/blots/scroll";
 import ScrollFloat from "../shared/ScrollFloat";
-
-const nowShowingMovies = [
-  {
-    title: "Kimi wo Aishita Hitori no Boku e (T16)",
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx139311-5iHY459iwQ46.jpg",
-  },
-  {
-    title: "Boku ga Aishita Subete no Kimi e (T16)",
-    image:
-      "https://screenbox.in/wp-content/uploads/2023/06/cropped-sgechfsdhgxcfghvcbgcdgsbu-jpeg.webp",
-  },
-  {
-    title: "Tenki No Ko (T16)",
-    image:
-      "https://www.wheninmanila.com/wp-content/uploads/2019/06/D7rQ8bGX4AYrtLJ.jpeg",
-  },
-  {
-    title: "Kimi no Na wa (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP._rW1f9vUm1sm5uVtobKvYQHaK3?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Suzume no Tojimari (T16)",
-    image: "https://www.posterhub.com.sg/images/detailed/134/80_1A_1B.jpg",
-  },
-  {
-    title: "Spirited Away (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP.uK0O7q8JA30sKMuwOrAsdQHaLN?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Pokemon Collection 22 (T16)",
-    image: "https://i.ebayimg.com/images/g/la0AAOSwGKJf8y5s/s-l1600.jpg",
-  },
-  {
-    title: "Captain America: Brave New World (T18)",
-    image:
-      "https://www.bhdstar.vn/wp-content/uploads/2025/02/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-2.jpg",
-  },
-  {
-    title: "Minecraft: The Movie (T16)",
-    image:
-      "https://www.bhdstar.vn/wp-content/uploads/2025/02/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-22.jpg",
-  },
-];
-
-const upcomingMovies = [
-  {
-    title: "Suzume no Tojimari (T16)",
-    image: "https://www.posterhub.com.sg/images/detailed/134/80_1A_1B.jpg",
-  },
-  {
-    title: "Spirited Away (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP.uK0O7q8JA30sKMuwOrAsdQHaLN?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Captain America: Brave New World (T18)",
-    image:
-      "https://d2oi1rqwb0pj00.cloudfront.net/challenge/nio_1739276625112_100.webp",
-  },
-  {
-    title: "Pokemon Heros The Movie (T16)",
-    image:
-      "https://th.bing.com/th/id/R.3689c865e31936ceee7588a094638911?rik=fXjX%2ferUrFzFRA&pid=ImgRaw&r=0",
-  },
-  {
-    title: "Kimi wo Aishita Hitori no Boku e (T16)",
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx139311-5iHY459iwQ46.jpg",
-  },
-  {
-    title: "Boku ga Aishita Subete no Kimi e (T16)",
-    image:
-      "https://screenbox.in/wp-content/uploads/2023/06/cropped-sgechfsdhgxcfghvcbgcdgsbu-jpeg.webp",
-  },
-  {
-    title: "Tenki No Ko (T16)",
-    image:
-      "https://www.wheninmanila.com/wp-content/uploads/2019/06/D7rQ8bGX4AYrtLJ.jpeg",
-  },
-  {
-    title: "Kimi no Na wa (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP._rW1f9vUm1sm5uVtobKvYQHaK3?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Suzume no Tojimari (T16)",
-    image: "https://www.posterhub.com.sg/images/detailed/134/80_1A_1B.jpg",
-  },
-];
+import LoadingSpinner from "../LoadingSpinner";
+import toast from "react-hot-toast";
+import api from "../../apis/axios.config";
 
 const MovieSlider = ({
   movies,
@@ -134,13 +45,9 @@ const MovieSlider = ({
         {movies.map((movie, index) => (
           <SwiperSlide key={index}>
             <Box className="movie-card">
-              <img
-                src={movie.image}
-                alt={movie.title}
-                className="movie-image"
-              />
+              <img src={movie.image} alt={movie.name} className="movie-image" />
               <Typography variant="h6" className="movie-title">
-                {movie.title}
+                {movie.name}
               </Typography>
               <Button
                 variant="contained"
@@ -194,6 +101,50 @@ const MovieSlider = ({
 
 const ListMovies: React.FC = () => {
   const { t } = useTranslation();
+  const [nowShowingMovies, setNowShowingMovies] = useState<any[]>([]);
+  const [upcomingMovies, setUpcomingMovies] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const page = 0;
+  const pageSize = 6;
+
+  const fetchNowShowingMovies = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get(
+        `Movie/GetMoviesNowShowing/page/${page}/pageSize/${pageSize}`,
+      );
+      console.log("Now showing movies:", response.data);
+      setNowShowingMovies(response.data);
+    } catch (error) {
+      console.error("Error fetching now showing movies:", error);
+      toast.error("Failed to fetch now showing movies");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUpcomingMovies = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get(
+        `Movie/GetMoviesUpcoming/page/${page}/pageSize/${pageSize}`,
+      );
+      console.log("Upcoming movies:", response.data);
+      setUpcomingMovies(response.data);
+    } catch (error) {
+      console.error("Error fetching upcoming movies:", error);
+      toast.error("Failed to fetch upcoming movies");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNowShowingMovies();
+    fetchUpcomingMovies();
+  }, []);
+
+  if (loading) return <LoadingSpinner />;
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", color: "white" }}>
       {/* Now Showing Section */}
