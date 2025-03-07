@@ -86,7 +86,10 @@ namespace MovieManagement.Server.Services.SeatService
                 var existingSeat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
                 if (existingSeat == null)
                     throw new NotFoundException("Seat not found!");
-                var updatedSeat = await _unitOfWork.SeatRepository.UpdateAsync(_mapper.Map<Seat>(seatDto));
+
+                _mapper.Map(seatDto, existingSeat);
+
+                var updatedSeat = await _unitOfWork.SeatRepository.UpdateAsync(existingSeat);
                 if (updatedSeat == null)
                     throw new DbUpdateException("Fail to update seat.");
                 return _mapper.Map<SeatDto>(updatedSeat);

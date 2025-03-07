@@ -93,7 +93,10 @@ namespace MovieManagement.Server.Services.RoomService
                 var existingRoom = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
                 if (existingRoom == null)
                     throw new NotFoundException("Room not found!");
-                var updatedRoom = await _unitOfWork.RoomRepository.UpdateAsync(_mapper.Map<Room>(roomDto));
+
+                _mapper.Map(roomDto, existingRoom);
+
+                var updatedRoom = await _unitOfWork.RoomRepository.UpdateAsync(existingRoom);
                 if (updatedRoom == null)
                     throw new DbUpdateException("Fail to create room.");
                 return _mapper.Map<RoomDto>(updatedRoom);

@@ -111,7 +111,7 @@ namespace MovieManagement.Server.Migrations
                     b.Property<string>("Image")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("MovieName")
                         .IsRequired()
@@ -216,7 +216,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("RoomName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int>("Row")
                         .HasColumnType("int");
@@ -288,6 +288,9 @@ namespace MovieManagement.Server.Migrations
                     b.Property<Guid?>("ShowTimeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("MovieId")
                         .HasColumnType("uniqueidentifier");

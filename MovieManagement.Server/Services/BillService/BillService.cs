@@ -81,7 +81,9 @@ namespace MovieManagement.Server.Services.BillService
                 var existingBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
                 if (existingBill == null)
                     throw new NotFoundException("Bill cannot found!");
-                var updatedBill = await _unitOfWork.BillRepository.UpdateAsync(_mapper.Map<Bill>(billDto));
+
+                _mapper.Map(billDto, existingBill);
+                var updatedBill = await _unitOfWork.BillRepository.UpdateAsync(existingBill);
                 if (updatedBill == null)
                     throw new DbUpdateException("Bill cannot update!");
                 return _mapper.Map<BillDto>(updatedBill);

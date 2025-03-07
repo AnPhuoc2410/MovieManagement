@@ -93,10 +93,11 @@ namespace MovieManagement.Server.Services.MovieService
             {
                 var existingMovie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
                 if(existingMovie == null)
-                {
                     throw new NotFoundException("Movie cannot found!");
-                }
-                var updatedMovie = await _unitOfWork.MovieRepository.UpdateAsync(_mapper.Map<Movie>(movieDto));
+
+                _mapper.Map(movieDto, existingMovie);
+
+                var updatedMovie = await _unitOfWork.MovieRepository.UpdateAsync(existingMovie);
                 if (updatedMovie == null)
                     throw new DbUpdateException("Movie cannot update!");
                 return _mapper.Map<MovieDto>(updatedMovie);
