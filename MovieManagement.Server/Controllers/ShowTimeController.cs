@@ -98,7 +98,15 @@ namespace MovieManagement.Server.Controllers
             try
             {
                 var createdShowTime = await _showTimeService.CreateShowtimeAsync(showTimeDto);
-                return Ok(createdShowTime);
+
+                var response = new ApiResponseServices<ShowTimeDto>
+                {
+                    StatusCode = 200,
+                    Message = "Show Time created successfully",
+                    IsSuccess = true,
+                    Data = createdShowTime
+                };
+                return Ok(response);
             }
             catch (BadRequestException ex)
             {
@@ -272,6 +280,7 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+        
         [HttpDelete("Delete/{showTimeId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
@@ -340,21 +349,25 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet("GetShowTimeByDates")]
+        [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate)
         {
             try
             {
                 var showTime = await _showTimeService.GetShowTimeFromDateToDate(movieId, fromDate, toDate);
-                if (showTime == null)
+
+                var response = new ApiResponseServices<Dictionary<DateTime, List<ShowTimeDto>>>
                 {
-                    var response = new ApiResponseServices<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Show Time not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
+                    StatusCode = 200,
+                    Message = "Show Time retrieved successfully",
+                    IsSuccess = true,
+                    Data = showTime
+                };
+
                 return Ok(showTime);
             }
             catch (BadRequestException ex)
@@ -367,6 +380,17 @@ namespace MovieManagement.Server.Controllers
                     Reason = ex.Message
                 };
                 return BadRequest(response);
+            }
+            catch (NotFoundException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 404,
+                    Message = "Show Time not found",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return NotFound(response);
             }
             catch (UnauthorizedAccessException ex)
             {

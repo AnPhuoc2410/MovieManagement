@@ -148,13 +148,14 @@ namespace MovieManagement.Server.Services.SeatService
                         AtColumn = j + 1,
                         RoomId = roomId,
                         SeatTypeId = SeatTypeId,
-                        IsActive = true
+                        IsActive = true,
+                        SeatId = Guid.NewGuid()
                     };
                     await _unitOfWork.SeatRepository.CreateAsync(newSeat);
                 }
             }
 
-            isCompleted = await _unitOfWork.CompleteAsync() > 0;
+            isCompleted = await _unitOfWork.CompleteAsync() == 0;
             return isCompleted;
         }
 

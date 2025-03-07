@@ -370,7 +370,35 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-    
-        
+
+        [HttpPost]
+        [Route("CreateByRoomId")]
+        public async Task<ActionResult<ApiResponseServices<bool>>> CreateByRoomId(Guid roomId, Guid seatTypeId)
+        {
+            var response = new ApiResponseServices<bool>();
+            try
+            {
+                var isCompleted = await _seatService.CreateByRoomIdAsync(roomId, seatTypeId);
+
+                response.IsSuccess = isCompleted;
+                response.StatusCode = StatusCodes.Status200OK;
+                response.Reason = "Successfully";
+                response.Message = "Seat created successfully";
+                response.Data = isCompleted;
+
+                return Ok(response);
+            }
+            catch (ArgumentException ex)
+            {
+                response.StatusCode = StatusCodes.Status404NotFound;
+                response.IsSuccess = false;
+                response.Reason = ex.Message;
+                response.Message = "Seat not created";
+
+                return NotFound(response);
+            }
+        }
+
+
     }
 }

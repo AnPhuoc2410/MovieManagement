@@ -57,11 +57,11 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 throw new ApplicationException("Unable to create due to other StartTime.");
             }
 
-            var createdShowTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.CreateAsync(newShowTime));
+            var createdShowTime = await _unitOfWork.ShowtimeRepository.CreateAsync(newShowTime);
 
 
 
-            return createdShowTime;
+            return _mapper.Map<ShowTimeDto>(createdShowTime);
         }
 
         public async Task<bool> DeleteShowtimeAsync(Guid showTimeId)
@@ -156,7 +156,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 var showTimes = await _unitOfWork.ShowtimeRepository.GetShowTimeFromDateToDate(movieId, fromDate, toDate);
                 if (showTimes == null)
                 {
-                    throw new NotFoundException("ShowTime does not found!");
+                    throw new NotFoundException("Invalid input");
                 }
                 var dictionary = showTimes.GroupBy(st => st.StartTime.Date)
                     .ToDictionary(g => g.Key, g => _mapper.Map<List<ShowTimeDto>>(g.ToList()));
