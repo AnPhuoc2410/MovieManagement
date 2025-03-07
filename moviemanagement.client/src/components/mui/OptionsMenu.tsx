@@ -11,6 +11,8 @@ import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import MenuButton from "./MenuButton";
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
+import { useAuth } from "../../contexts/AuthContext";
 
 const MenuItem = styled(MuiMenuItem)({
   margin: "2px 0",
@@ -18,6 +20,7 @@ const MenuItem = styled(MuiMenuItem)({
 
 export default function OptionsMenu() {
   const navigate = useNavigate();
+  const { authLogout } = useAuth();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -26,6 +29,15 @@ export default function OptionsMenu() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleLogout = async () => {
+    await authLogout();
+    toast.success("Đăng xuất thành công", { removeDelay: 2500 });
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
+  };
+
   return (
     <React.Fragment>
       <MenuButton
@@ -55,11 +67,11 @@ export default function OptionsMenu() {
           },
         }}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>My account</MenuItem>
+        <MenuItem onClick={handleClose}>Hồ sơ</MenuItem>
+        <MenuItem onClick={handleClose}>Tài khoản của tôi</MenuItem>
         <Divider />
-        <MenuItem onClick={handleClose}>Add another account</MenuItem>
-        <MenuItem onClick={handleClose}>Settings</MenuItem>
+        <MenuItem onClick={handleClose}>Thêm tài khoản mới</MenuItem>
+        <MenuItem onClick={handleClose}>Cài đặt</MenuItem>
         <Divider />
         <MenuItem
           onClick={handleClose}
@@ -70,13 +82,7 @@ export default function OptionsMenu() {
             },
           }}
         >
-          <ListItemText
-            onClick={() => {
-              navigate("/");
-            }}
-          >
-            Logout
-          </ListItemText>
+          <ListItemText onClick={handleLogout}>Đăng xuất</ListItemText>
           <ListItemIcon>
             <LogoutRoundedIcon fontSize="small" />
           </ListItemIcon>

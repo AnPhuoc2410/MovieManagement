@@ -57,6 +57,10 @@ namespace MovieManagement.Server.Services.PromotionService
                 }
                 return promotion;
             }
+            catch (NotFoundException ex)
+            {
+                throw new NotFoundException("Promotion does not found!");
+            }
             catch (Exception ex)
             {
                 throw new Exception("Couldn't access into database due to systems error.", ex);
@@ -79,6 +83,8 @@ namespace MovieManagement.Server.Services.PromotionService
                 if (updatedPromotion == null)
                     throw new DbUpdateException("Fail to create promotion.");
                 return _mapper.Map<PromotionDto>(updatedPromotion);
+
+
             }
             catch (Exception ex)
             {

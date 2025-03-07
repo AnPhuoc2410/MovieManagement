@@ -27,7 +27,12 @@ namespace MovieManagement.Server.Services.ShowTimeService
             {
                 throw new ApplicationException("An error occurred while processing into the database.", ex);
             }
-        }
+
+            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(newShowTime.StartTime);
+            if (!checkStartTime)
+            {
+                throw new ApplicationException("Unable to create due to other StartTime.");
+            }
 
         public async Task<bool> DeleteShowtimeAsync(Guid movieId, Guid roomId)
         {

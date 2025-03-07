@@ -17,6 +17,9 @@ namespace MovieManagement.Server.Services.MovieService
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+
+
+
         public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
         {
             try

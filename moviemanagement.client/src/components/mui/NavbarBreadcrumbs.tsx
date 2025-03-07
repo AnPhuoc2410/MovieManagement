@@ -62,7 +62,7 @@ export default function NavbarBreadcrumbs() {
       {breadcrumbs.map((label, index) => (
         <Typography
           key={index}
-          variant="body1"
+          variant="h4"
           sx={
             index === breadcrumbs.length - 1
               ? { color: "text.primary", fontWeight: 600 }

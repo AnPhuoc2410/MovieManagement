@@ -4,6 +4,7 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Services.RoomService
 {
@@ -117,5 +118,6 @@ namespace MovieManagement.Server.Services.RoomService
                 throw new Exception("Couldn't access database due to system error.", ex);
             }
         }
+
     }
 }

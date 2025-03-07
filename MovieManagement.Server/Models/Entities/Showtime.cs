@@ -10,6 +10,8 @@
 
         public DateTime StartTime { get; set; }
 
+        public DateTime EndTime { get; set; }
+
         public virtual Movie Movie { get; set; }
 
         public virtual Room Room { get; set; }

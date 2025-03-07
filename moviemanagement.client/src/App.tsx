@@ -1,14 +1,19 @@
 import { createTheme, ThemeProvider } from "@mui/material";
-import { Route, Routes } from "react-router";
+import { useEffect } from "react";
+import { Route, Routes, useLocation } from "react-router";
 import ScrollToTop from "./components/common/ScrollToTop";
-import Dashboard from "./pages/admin/Dashboard";
-import Movies from "./pages/admin/Movies";
-import PromotionDetailManagement from "./pages/admin/PromotionDetail";
-import PromotionManagement from "./pages/admin/Promotions";
+import { ToasterWithMax } from "./components/common/ToasterWithMax";
+import Dashboard from "./components/shared/Dashboard";
 import BuyTicket from "./pages/admin/QuanLyBanVe/SoldTicket";
 import ChiTietDatVe from "./pages/admin/QuanLyDatVe/ChiTietDatVe";
 import QuanLyDatVe from "./pages/admin/QuanLyDatVe/QuanLyDatVe";
+import ThongTinNhanVe from "./pages/admin/QuanLyDatVe/ThongTinNhanVe";
+import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
+import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import QuanLiNhanVien from "./pages/admin/QuanLyNhanVien";
+import ChinhSuaPhim from "./pages/admin/QuanLyPhim/ChinhSuaPhim";
+import QuanLyPhim from "./pages/admin/QuanLyPhim/QuanLyPhim";
+import ThemPhim from "./pages/admin/QuanLyPhim/ThemPhim";
 import ChiTietPhongChieu from "./pages/admin/QuanLyPhongChieu/ChiTietPhongChieu";
 import QuanLyPhongChieu from "./pages/admin/QuanLyPhongChieu/QuanLyPhongChieu";
 import QuanLiThanhVien from "./pages/admin/QuanLyThanhVien/QuanLiThanhVien";
@@ -20,9 +25,9 @@ import UpComingMoviesPage from "./pages/movie/UpComingMoviesPage";
 import PromotionDetail from "./pages/promotion/PromotionDetail";
 import Promotion from "./pages/promotion/PromotionsPage";
 import Confirmation from "./pages/ticket/Confirmation";
+import Ticket from "./pages/ticket/DateMovie";
 import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
-import Ticket from "./pages/ticket/ShowTime";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
 
@@ -42,6 +47,12 @@ const theme = createTheme({
 });
 
 const App = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to the top on route change
+  }, [location]);
+
   return (
     <ThemeProvider theme={theme}>
       <ScrollToTop />
@@ -65,15 +76,19 @@ const App = () => {
           <Route path="up-coming" element={<UpComingMoviesPage />} />
         </Route>
 
-        <Route path="/admin" element={<AdminTheme />}>
+        <Route path="/admin">
+          <Route path="" element={<AdminTheme />} />
           <Route path="thong-ke" element={<Dashboard />} />
-          <Route path="khuyen-mai" element={<PromotionManagement />} />
-          <Route path="phim" element={<Movies />} />
+          <Route path="khuyen-mai">
+            <Route path="" element={<PromotionManagement />} />
+            <Route path=":id" element={<PromotionDetailManagement />} />
+          </Route>
+          <Route path="ql-phim">
+            <Route path="" element={<QuanLyPhim />} />
+            <Route path=":id" element={<ChinhSuaPhim />} />
+            <Route path="them-phim" element={<ThemPhim />} />
+          </Route>
           <Route path="ban-ve" element={<BuyTicket />} />
-          <Route
-            path="khuyen-mai/:id"
-            element={<PromotionDetailManagement />}
-          />
           <Route path="ql-nhan-vien" element={<QuanLiNhanVien />} />
           <Route path="ql-thanh-vien" element={<QuanLiThanhVien />} />
           <Route path="ql-phong-chieu">
@@ -83,9 +98,11 @@ const App = () => {
           <Route path="ql-dat-ve">
             <Route path="" element={<QuanLyDatVe />} />
             <Route path=":bId" element={<ChiTietDatVe />} />
+            <Route path="thong-tin-nhan-ve/:bId" element={<ThongTinNhanVe />} />
           </Route>
         </Route>
       </Routes>
+      <ToasterWithMax position="top-center" max={3} />
     </ThemeProvider>
   );
 };

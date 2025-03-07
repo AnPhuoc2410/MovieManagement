@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
+import WeekendIcon from "@mui/icons-material/Weekend";
 
 // Define rows (A-F) and columns (1-7)
 const rows = ["A", "B", "C", "D", "E", "F"];
@@ -26,7 +27,6 @@ const Seat: React.FC<SeatProps> = ({ selectedSeats, setSelectedSeats }) => {
 
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pb: 4 }}>
-      {/* 1) Upward Arc Screen at the top */}
       <Box sx={{ textAlign: "center", mb: 2 }}>
         <Box
           sx={{
@@ -77,7 +77,7 @@ const Seat: React.FC<SeatProps> = ({ selectedSeats, setSelectedSeats }) => {
         {/* Seat Grid on the Right */}
         <Box sx={{ maxWidth: 600 }}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {rows.map((row) => (
+            {rows.map((row, rowIndex) => (
               <Box
                 key={row}
                 sx={{
@@ -141,7 +141,11 @@ const Seat: React.FC<SeatProps> = ({ selectedSeats, setSelectedSeats }) => {
                           alignItems: "center",
                         }}
                       >
-                        <EventSeatIcon sx={{ color: iconColor }} />
+                        {rowIndex === rows.length - 1 ? (
+                          <WeekendIcon sx={{ color: iconColor }} />
+                        ) : (
+                          <EventSeatIcon sx={{ color: iconColor }} />
+                        )}
                         <Typography variant="body2" align="center">
                           {seatLabel}
                         </Typography>

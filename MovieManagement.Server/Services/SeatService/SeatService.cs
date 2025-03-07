@@ -120,14 +120,15 @@ namespace MovieManagement.Server.Services.SeatService
             {
                 for (int j = 0; j < roomDto.Column; j++)
                 {
-                    _unitOfWork.SeatRepository.Create(new Seat
+                    var newSeat = new Seat
                     {
                         AtRow = NumberToLetter(i).ToString(),
                         AtColumn = j + 1,
                         RoomId = roomDto.RoomId.Value,
                         SeatTypeId = SeatTypeId,
                         IsActive = true
-                    });
+                    };
+                    await _unitOfWork.SeatRepository.CreateAsync(newSeat);
                 }
             }
         }
