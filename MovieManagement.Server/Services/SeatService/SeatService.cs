@@ -22,7 +22,7 @@ namespace MovieManagement.Server.Services.SeatService
             try
             {
                 var seats = await _unitOfWork.SeatRepository.GetAllAsync();
-                if (seats.Count == 0)
+                if (seats == null)
                     throw new NotFoundException("Seats not found!");
                 return _mapper.Map<List<SeatDto>>(seats);
             }
@@ -37,7 +37,7 @@ namespace MovieManagement.Server.Services.SeatService
             try
             {
                 var seats = await _unitOfWork.SeatRepository.GetPageAsync(page, pageSize);
-                if (seats.Count == 0)
+                if (seats == null)
                     throw new NotFoundException("Seats not found!");
                 return _mapper.Map<List<SeatDto>>(seats);
             }

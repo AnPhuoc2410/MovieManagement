@@ -39,7 +39,7 @@ namespace MovieManagement.Server.Services.RoomService
             try
             {
                 var rooms = await _unitOfWork.RoomRepository.GetPageAsync(page, pageSize);
-                if (rooms == null || !rooms.Any())
+                if (rooms == null)
                     throw new NotFoundException("Rooms not found!");
 
                 return _mapper.Map<IEnumerable<RoomDto>>(rooms);

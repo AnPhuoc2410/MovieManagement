@@ -50,7 +50,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             try
             {
                 var showtimes = await _unitOfWork.ShowtimeRepository.GetAllAsync();
-                if (showtimes.Count == 0)
+                if (showtimes == null)
                     throw new NotFoundException("ShowTime does not found!");
                 return _mapper.Map<List<ShowTimeDto>>(showtimes);
             }
@@ -65,7 +65,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             try
             {
                 var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
-                if (showtimes.Count == 0)
+                if (showtimes == null)
                     throw new NotFoundException("ShowTime does not found!");
                 return _mapper.Map<List<ShowTimeDto>>(showtimes);
             }

@@ -22,7 +22,7 @@ namespace MovieManagement.Server.Services.MovieService
             try
             {
                 var movies = _mapper.Map<List<MovieDto>>(await _unitOfWork.MovieRepository.GetAllAsync());
-                if (movies.Count == 0)
+                if (movies == null)
                 {
                     throw new NotFoundException("Movies do not found!");
                 }
@@ -38,7 +38,7 @@ namespace MovieManagement.Server.Services.MovieService
             try
             {
                 var movies = await _unitOfWork.MovieRepository.GetPageAsync(page, pageSize);
-                if (movies.Count == 0)
+                if (movies == null)
                 {
                     throw new NotFoundException("Movie pages do not found!");
                 }

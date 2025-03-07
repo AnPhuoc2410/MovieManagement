@@ -22,7 +22,7 @@ namespace MovieManagement.Server.Services.BillService
             try
             {
                 var bills = _mapper.Map<List<BillDto>>(await _unitOfWork.BillRepository.GetAllAsync());
-                if (bills.Count == 0)
+                if (bills == null)
                 {
                     throw new NotFoundException("Movie does not found!");
                 }
@@ -58,10 +58,15 @@ namespace MovieManagement.Server.Services.BillService
         {
             try
             {
+                //Checking user is existing
                 billDto.UserId = userId;
+                if (_unitOfWork.UserRepository.GetByIdAsync(userId) == null)
+                    throw new NotFoundException("User cannot found!");
+
+                //Calculator ticket total
                 var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateAsync(_mapper.Map<Bill>(billDto)));
                 if (createdBill == null)
-                    throw new NotFoundException("Failed to create bill.");
+                    throw new Exception("Failed to create bill.");
                 return createdBill;
             }
             catch (Exception ex)

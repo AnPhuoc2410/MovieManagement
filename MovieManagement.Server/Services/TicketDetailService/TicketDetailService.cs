@@ -57,7 +57,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             try
             {
                 var showtimes = await _unitOfWork.ShowtimeRepository.GetAllAsync();
-                if (showtimes.Count == 0)
+                if (showtimes == null)
                     throw new NotFoundException("ShowTime does not found!");
                 return _mapper.Map<List<ShowTimeDto>>(showtimes);
             }
@@ -72,7 +72,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             try
             {
                 var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
-                if (showtimes.Count == 0)
+                if (showtimes == null)
                     throw new NotFoundException("ShowTime does not found!");
                 return _mapper.Map<List<ShowTimeDto>>(showtimes);
             }
@@ -157,7 +157,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             try
             {
                 var ticketDetails = await _unitOfWork.TicketDetailRepository.GetPageAsync(page, pageSize);
-                if (ticketDetails.Count == 0)
+                if (ticketDetails == null)
                     throw new NotFoundException("Ticket details not found!");
                 return _mapper.Map<List<TicketDetailDto>>(ticketDetails);
             }
@@ -172,7 +172,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             try
             {
                 var ticketDetails = await _unitOfWork.TicketDetailRepository.GetAllAsync();
-                if (ticketDetails.Count == 0)
+                if (ticketDetails == null)
                     throw new NotFoundException("No ticket details found!");
                 return _mapper.Map<List<TicketDetailDto>>(ticketDetails);
             }

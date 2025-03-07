@@ -24,7 +24,7 @@ namespace MovieManagement.Server.Services.CategoryService
             try
             {
                 var categories = await _unitOfWork.CategoryRepository.GetAllAsync();
-                if (categories.Count == 0) 
+                if (categories == null) 
                     throw new NotFoundException("Category does not found!");
                 return _mapper.Map<List<CategoryDto>>(categories);
             }
@@ -39,7 +39,7 @@ namespace MovieManagement.Server.Services.CategoryService
             try
             {
                 var categories = await _unitOfWork.CategoryRepository.GetPageAsync(page, pageSize);
-                if (categories.Count == 0) 
+                if (categories == null) 
                     throw new NotFoundException("Category does not found!");
                 return _mapper.Map<List<CategoryDto>>(categories);
             }

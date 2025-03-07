@@ -51,7 +51,7 @@ namespace MovieManagement.Server.Services.SeatTypeService
             try
             {
                 var seatTypes = await _unitOfWork.SeatTypeRepository.GetAllAsync();
-                if (seatTypes.Count == 0)
+                if (seatTypes == null)
                     throw new NotFoundException("SeatTypes not found!");
                 return _mapper.Map<List<SeatTypeDto>>(seatTypes);
             }
@@ -81,7 +81,7 @@ namespace MovieManagement.Server.Services.SeatTypeService
             try
             {
                 var seatTypes = await _unitOfWork.SeatTypeRepository.GetPageAsync(page, pageSize);
-                if (seatTypes.Count == 0)
+                if (seatTypes == null)
                     throw new NotFoundException("SeatTypes not found!");
                 return _mapper.Map<List<SeatTypeDto>>(seatTypes);
             }
