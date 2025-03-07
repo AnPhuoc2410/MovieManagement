@@ -33,7 +33,15 @@ const Promotions: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <Container sx={{ mt: 4, textAlign: "center", padding: 5 }}>
+    <Container
+      sx={{
+        mt: 4,
+        textAlign: "left",
+        padding: 5,
+        marginTop: 10,
+        marginBottom: 10,
+      }}
+    >
       <Typography variant="h4" fontWeight="bold" color="white" sx={{ mb: 2 }}>
         <ScrollFloat
           animationDuration={1}
@@ -67,42 +75,51 @@ const Promotions: React.FC = () => {
           </SwiperSlide>
         ))}
       </Swiper>
-      <Button
-        onClick={() => {
-          navigate("/promotions");
-        }}
-        variant="contained"
+      <Box
         sx={{
-          mt: 2,
-          position: "relative",
-          overflow: "hidden",
-          bgcolor: "transparent",
-          border: "2px solid yellow",
-          color: "yellow",
-          transition: "color 0.5s ease-in-out",
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
-            transform: "translateX(-100%)",
-            transition: "transform 0.5s ease-in-out",
-            zIndex: 0,
-          },
-          "&:hover": {
-            color: "white",
-          },
-          "&:hover::before": {
-            transform: "translateX(0)",
-          },
-          "& span": {
-            position: "relative",
-            zIndex: 1,
-          },
+          display: "flex",
+          justifyContent: "center",
+          gap: 4,
+          flexWrap: "wrap",
         }}
       >
-        <span>{t("list_promotions")}</span>
-      </Button>
+        <Button
+          onClick={() => {
+            navigate("/promotions");
+          }}
+          variant="contained"
+          sx={{
+            mt: 2,
+            position: "relative",
+            overflow: "hidden",
+            bgcolor: "transparent",
+            border: "2px solid yellow",
+            color: "yellow",
+            transition: "color 0.5s ease-in-out",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+              transform: "translateX(-100%)",
+              transition: "transform 0.5s ease-in-out",
+              zIndex: 0,
+            },
+            "&:hover": {
+              color: "white",
+            },
+            "&:hover::before": {
+              transform: "translateX(0)",
+            },
+            "& span": {
+              position: "relative",
+              zIndex: 1,
+            },
+          }}
+        >
+          <span>{t("list_promotions")}</span>
+        </Button>
+      </Box>
     </Container>
   );
 };

@@ -14,6 +14,7 @@ import React from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "../common/LanguageSelector";
+import LocalActivityOutlinedIcon from "@mui/icons-material/LocalActivityOutlined";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -21,12 +22,21 @@ const Header: React.FC = () => {
 
   return (
     <AppBar
-      position="fixed"
-      sx={{ backgroundColor: "rgb(47, 39, 39)", padding: 1 }}
+      position="absolute"
+      sx={{
+        backgroundColor: "transparent",
+        padding: 1,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 1000,
+      }}
     >
       <Toolbar
         sx={{
+          position: "sticky",
           display: "flex",
+          minWidth: "1200px",
           justifyContent: "space-between",
           alignItems: "center",
         }}
@@ -108,6 +118,7 @@ const Header: React.FC = () => {
                 zIndex: 1,
               },
             }}
+            startIcon={<LocalActivityOutlinedIcon />}
           >
             <span>{t("book_ticket")}</span>
           </Button>

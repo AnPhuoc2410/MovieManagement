@@ -22,6 +22,7 @@ import Membership from "../components/home/Membership";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import Aurora from "../components/shared/Aurora";
+import ScrollToTop from "../components/common/ScrollToTop";
 
 const slides = [
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",
@@ -49,11 +50,9 @@ const Homepage: React.FC = () => {
   }, []);
 
   return (
-
     <Box
       sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
     >
-
       {/* Preview Modal */}
       <Modal
         open={openModal}
@@ -123,7 +122,7 @@ const Homepage: React.FC = () => {
             pagination={{ clickable: true }}
             autoplay={{ delay: 3000 }}
             loop={true}
-            style={{ width: "100%", height: "auto"}}
+            style={{ width: "100%", height: "auto" }}
           >
             {slides.map((slide, index) => (
               <SwiperSlide key={index}>
@@ -141,63 +140,13 @@ const Homepage: React.FC = () => {
             ))}
           </Swiper>
         </Box>
-        <Box
-          sx={{
-            textAlign: "center",
-            backgroundColor: "#1A1C2A",
-            padding: 2,
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="h5" fontWeight="bold">
-            ĐẶT VÉ NHANH
-          </Typography>
-          <Box
-            sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}
-          >
-            <Select
-              variant="outlined"
-              displayEmpty
-              size="small"
-              sx={{ backgroundColor: "white" }}
-            >
-              <MenuItem disabled>1. Chọn Rạp</MenuItem>
-            </Select>
-            <Select
-              variant="outlined"
-              displayEmpty
-              size="small"
-              sx={{ backgroundColor: "white" }}
-            >
-              <MenuItem disabled>2. Chọn Phim</MenuItem>
-            </Select>
-            <Select
-              variant="outlined"
-              displayEmpty
-              size="small"
-              sx={{ backgroundColor: "white" }}
-            >
-              <MenuItem disabled>3. Chọn Ngày</MenuItem>
-            </Select>
-            <Select
-              variant="outlined"
-              displayEmpty
-              size="small"
-              sx={{ backgroundColor: "white" }}
-            >
-              <MenuItem disabled>4. Chọn Suất</MenuItem>
-            </Select>
-            <Button variant="contained" color="secondary">
-              ĐẶT NGAY
-            </Button>
-          </Box>
-        </Box>
         <ListMovies />
         <Promotions />
       </Container>
       {/* Membership */}
       <Membership />
       {/* Footer */}
+      <ScrollToTop />
 
       <Footer />
     </Box>

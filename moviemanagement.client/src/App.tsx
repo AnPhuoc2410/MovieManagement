@@ -1,7 +1,6 @@
 import { createTheme, ThemeProvider } from "@mui/material";
 import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router";
-import ScrollToTop from "./components/common/ScrollToTop";
 import { ToasterWithMax } from "./components/common/ToasterWithMax";
 import Dashboard from "./components/shared/Dashboard";
 import BuyTicket from "./pages/admin/QuanLyBanVe/SoldTicket";
@@ -58,7 +57,6 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <ScrollToTop />
       <SplashCursor />
       <Routes>
         <Route path="/" element={<Home />} />

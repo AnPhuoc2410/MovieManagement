@@ -1,16 +1,15 @@
-import React, { ReactNode } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import React, { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import "./ListMovies.css";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import "../../index.scss";
-import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
-import Scroll from "quill/blots/scroll";
 import ScrollFloat from "../shared/ScrollFloat";
+import "./ListMovies.css";
 
 const nowShowingMovies = [
   {
@@ -117,7 +116,7 @@ const MovieSlider = ({
   const { t } = useTranslation();
 
   return (
-    <Container sx={{ mt: 4, textAlign: "center" }}>
+    <Container sx={{ mt: 0, textAlign: "center" }}>
       <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
         {title}
       </Typography>
