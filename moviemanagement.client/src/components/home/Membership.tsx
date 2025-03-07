@@ -10,12 +10,12 @@ const Membership: React.FC = () => {
     <Box
       sx={{
         backgroundImage:
-          "url('https://i.pinimg.com/736x/49/f9/6e/49f96e0d81fcaf0224b434a51d6ff7de.jpg')",
+          "url('https://cinestar.com.vn/_next/image/?url=%2Fassets%2Fimages%2Fbg-cfriends.webp&w=1920&q=75')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         color: "white",
         textAlign: "center",
-        padding: 4,
+        padding: 20,
         width: "100%",
         position: "relative",
       }}
@@ -44,11 +44,10 @@ const Membership: React.FC = () => {
         {/* Friend Card */}
         <Box
           sx={{
-            backgroundColor: "#1A1C2A",
             padding: 3,
             borderRadius: 2,
-            textAlign: "center",
-            maxWidth: 320,
+            textAlign: "left",
+            maxWidth: 500,
           }}
         >
           <img
@@ -56,13 +55,22 @@ const Membership: React.FC = () => {
             alt="Friend"
             style={{ width: "100%", borderRadius: 8 }}
           />
-          <Typography variant="h6" fontWeight="bold" sx={{ mt: 2 }}>
+          <Typography variant="h4" fontWeight="bold" sx={{ mt: 2 }}>
             THÀNH VIÊN FRIEND
           </Typography>
           <Typography variant="body2" sx={{ opacity: 0.8 }}>
             Thẻ Friend nhiều ưu đãi cho thành viên mới
           </Typography>
-          <Button variant="contained" color="warning" sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            color="warning"
+            sx={{
+              backgroundColor: "yellow",
+              color: "black",
+              width: "200px",
+              mt: 2,
+            }}
+          >
             TÌM HIỂU NGAY
           </Button>
         </Box>
@@ -70,11 +78,10 @@ const Membership: React.FC = () => {
         {/* VIP Card */}
         <Box
           sx={{
-            backgroundColor: "#1A1C2A",
             padding: 3,
             borderRadius: 2,
-            textAlign: "center",
-            maxWidth: 320,
+            textAlign: "left",
+            maxWidth: 500,
           }}
         >
           <img
@@ -82,13 +89,21 @@ const Membership: React.FC = () => {
             alt="VIP"
             style={{ width: "100%", borderRadius: 8 }}
           />
-          <Typography variant="h6" fontWeight="bold" sx={{ mt: 2 }}>
+          <Typography variant="h4" fontWeight="bold" sx={{ mt: 2 }}>
             THÀNH VIÊN VIP
           </Typography>
           <Typography variant="body2" sx={{ opacity: 0.8 }}>
             Thẻ VIP mang đến sự ưu đãi độc quyền
           </Typography>
-          <Button variant="contained" color="warning" sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "yellow",
+              color: "black",
+              width: "200px",
+              mt: 2,
+            }}
+          >
             TÌM HIỂU NGAY
           </Button>
         </Box>

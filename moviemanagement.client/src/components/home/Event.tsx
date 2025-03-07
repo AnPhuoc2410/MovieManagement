@@ -94,7 +94,10 @@ const Promotions: React.FC = () => {
             overflow: "hidden",
             bgcolor: "transparent",
             border: "2px solid yellow",
-            color: "yellow",
+            backgroundColor: "yellow",
+            color: "black",
+            fontWeight: "bold",
+            width: "250px",
             transition: "color 0.5s ease-in-out",
             "&::before": {
               content: '""',

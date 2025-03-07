@@ -1,28 +1,33 @@
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Box,
   Button,
   Container,
-  MenuItem,
-  Select,
-  Typography,
-  Modal,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  SelectChangeEvent,
+  Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import Header from "../components/home/Header";
-import Footer from "../components/home/Footer";
-import ListMovies from "../components/home/ListMovies";
-import Promotions from "../components/home/Event";
-import Membership from "../components/home/Membership";
-import { useNavigate } from "react-router-dom";
-import CloseIcon from "@mui/icons-material/Close";
-import Aurora from "../components/shared/Aurora";
 import ScrollToTop from "../components/common/ScrollToTop";
+import Promotions from "../components/home/Event";
+import Footer from "../components/home/Footer";
+import Header from "../components/home/Header";
+import ListMovies from "../components/home/ListMovies";
+import Membership from "../components/home/Membership";
+import Aurora from "../components/shared/Aurora";
+import { useTranslation } from "react-i18next";
+import QuickBookingComponent from "../components/home/QuickBookingComponent";
 
 const slides = [
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",
@@ -35,23 +40,28 @@ const slides = [
 const Homepage: React.FC = () => {
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(true);
-  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const { t } = useTranslation();
+  const [age, setAge] = useState("");
 
+  const handleChange = (event: SelectChangeEvent) => {
+    setAge(event.target.value as string);
+  };
   const handleCloseModal = () => {
     setOpenModal(false);
   };
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentBannerIndex((prev) => (prev + 1) % slides.length);
-    }, 3000);
-
-    return () => clearInterval(timer);
-  }, []);
-
   return (
     <Box
-      sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
+      sx={{
+        background: `
+          radial-gradient(circle at 20% 30%, rgba(78, 46, 131, 0.4) 0%, rgba(78, 46, 131, 0) 50%),
+          radial-gradient(circle at 75% 15%, rgba(33, 64, 154, 0.4) 0%, rgba(33, 64, 154, 0) 50%),
+          linear-gradient(135deg, #0B0D1A 0%, #1A1E3C 50%, #3A1155 100%)
+        `,
+        minHeight: "100vh",
+        color: "white",
+        position: "relative",
+      }}
     >
       {/* Preview Modal */}
       <Modal
@@ -91,7 +101,7 @@ const Homepage: React.FC = () => {
             <CloseIcon />
           </IconButton>
           <img
-            src={slides[currentBannerIndex]}
+            src={slides[Math.floor(Math.random() * slides.length)]}
             alt="Movie Banner"
             style={{
               width: "100%",
@@ -104,23 +114,45 @@ const Homepage: React.FC = () => {
         </Box>
       </Modal>
 
-      {/* Header */}
+      {/* Place Aurora first and style it to cover the entire viewport */}
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 0,
+          pointerEvents: "none", // This allows clicks to pass through
+        }}
+      >
+        <Aurora
+          colorStops={["#3A29FF", "#FF94B4", "#FF3232"]}
+          blend={1.0}
+          amplitude={2.5}
+          speed={1.0}
+        />
+      </Box>
+
+      {/* Header with adjusted z-index */}
       <Header />
-      <Aurora
-        colorStops={["#3A29FF", "#FF94B4", "#FF3232"]}
-        blend={0.5}
-        amplitude={1.0}
-        speed={2.5}
-      />
-      <Container>
-        <Box sx={{ backgroundColor: "#0B0D1A", color: "white", mb: 3 }}>
+
+      {/* Main content container with position relative and z-index */}
+      <Container
+        sx={{
+          paddingTop: "100px",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        <Box sx={{ color: "white", mb: 3, mt: 2 }}>
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={50}
             slidesPerView={1}
             navigation
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 3000 }}
+            pagination={{ clickable: false }}
+            autoplay={{ delay: 100000 }}
             loop={true}
             style={{ width: "100%", height: "auto" }}
           >
@@ -133,13 +165,14 @@ const Homepage: React.FC = () => {
                     width: "100%",
                     maxHeight: "400px",
                     objectFit: "initial",
-                    borderRadius: "10px",
+                    borderRadius: "3px",
                   }}
                 />
               </SwiperSlide>
             ))}
           </Swiper>
         </Box>
+        <QuickBookingComponent t={t} />
         <ListMovies />
         <Promotions />
       </Container>

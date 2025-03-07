@@ -3,9 +3,9 @@ import { useTranslation } from "react-i18next";
 import { JapanFlag, UsaFlag, VietnamFlag } from "../../data/CustomIcons";
 
 const languages: { [key: string]: { name: string; icon: JSX.Element } } = {
-  vi: { name: "Tiếng Việt", icon: <VietnamFlag /> },
-  en: { name: "English", icon: <UsaFlag /> },
-  jp: { name: "日本語", icon: <JapanFlag /> },
+  vi: { name: "VN", icon: <VietnamFlag /> },
+  en: { name: "ENG", icon: <UsaFlag /> },
+  jp: { name: "JP", icon: <JapanFlag /> },
 };
 
 const LanguageSelector = () => {
@@ -22,8 +22,15 @@ const LanguageSelector = () => {
       onChange={handleChange}
       displayEmpty
       renderValue={(selected: string) => (
-        <Box display="flex" alignItems="center">
-          {languages[selected]?.icon}
+        <Box
+          display="flex"
+          alignItems="center"
+          sx={{
+            gap: 1,
+            color: "white",
+          }}
+        >
+          {languages[selected]?.icon} {languages[selected]?.name}
         </Box>
       )}
       sx={{

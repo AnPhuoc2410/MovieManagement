@@ -1,14 +1,27 @@
 {
   "translation": {
-    "search": "Tìm kiếm phim...",
+    "search": "Tìm phim, rạp...",
+    "view_trailer": "Xem Trailer",
     "book_ticket": "Đặt Vé",
     "book_snacks": "Đặt Bắp Nước",
     "login": "Đăng nhập",
     "see_more": "Xem Thêm",
-    "now_showing": "Phim Đang Chiếu",
-    "upcoming": "Phim Sắp Chiếu",
-    "membership": "Chương trình thành viên",
-    "promotions": "Khuyến Mãi",
-    "list_promotions": "Xem Thêm Khuyến Mãi"
+    "now_showing": "PHIM ĐANG CHIẾU",
+    "upcoming": "PHIM SẮP CHIẾU",
+    "membership": "CHƯƠNG TRÌNH THÀNH VIÊN",
+    "promotions": "KHUYẾN MÃI",
+    "list_promotions": "TẤT CẢ ƯU ĐÃI",
+    "quick_booking": "ĐẶT VÉ NHANH",
+    "book_now": "ĐẶT NGAY",
+    "select_theater": "Chọn Rạp",
+    "select_movie": "Chọn Phim",
+    "select_date": "Chọn Ngày",
+    "select_show_time": "Chọn Suất",
+    "select_theater1": "Cinestar Hai Bà Trưng (TP.HCM)",
+    "select_theater2": "Cinestar Sinh Viên (TP.HCM)",
+    "select_theater3": "Cinestar Mỹ Tho (Bình Dương)",
+    "select_theater4": "Cinestar Kiên Giang (Rạch Sỏi)",
+    "select_theater5": "Cinestar Lâm Đồng (Đức Trọng)",
+    "select_theater6": "Cinestar Đà Lạt (TP.Đà Lạt)"
   }
 }
