@@ -13,6 +13,12 @@ namespace MovieManagement.Server.Services.SeatTypeService
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
+        public SeatTypeService(IUnitOfWork unitOfWork, IMapper mapper)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
+
         public async Task<SeatTypeDto> CreateSeatTypeAsync(SeatTypeDto seatType)
         {
             try
