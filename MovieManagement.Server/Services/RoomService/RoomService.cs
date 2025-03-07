@@ -122,5 +122,15 @@ namespace MovieManagement.Server.Services.RoomService
             }
         }
 
+        public async Task<RoomResponseModel> GetRoomInfo(Guid roomId)
+        {
+            var room = await _unitOfWork.RoomRepository.GetRoomInfo(roomId);
+
+            var response = _mapper.Map<RoomResponseModel>(room);
+
+            return response;
+
+        }
+
     }
 }
