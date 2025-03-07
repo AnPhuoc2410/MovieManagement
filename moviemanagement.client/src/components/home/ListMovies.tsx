@@ -1,3 +1,4 @@
+import { Box, Button, Container, Typography, Chip } from "@mui/material";
 import React, { ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -11,6 +12,9 @@ import ScrollFloat from "../shared/ScrollFloat";
 import "./ListMovies.css";
 import PlayCircleOutlineOutlinedIcon from "@mui/icons-material/PlayCircleOutlineOutlined";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import toast from "react-hot-toast";
+import api from "../../apis/axios.config";
+import LoadingSpinner from "../LoadingSpinner";
 
 const MovieSlider = ({
   movies,
