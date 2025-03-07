@@ -116,24 +116,46 @@ namespace MovieManagement.Server.Services.SeatService
             }
         }
 
-        public async Task CreateByRoomAsync(Guid SeatTypeId, RoomDto roomDto)
+        public async Task<bool> CreateByRoomIdAsync(Guid roomId, Guid SeatTypeId)
         {
+            bool isCompleted = false;
+            var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
 
-            for (int i = 0; i < roomDto.Row; i++)
+            if (room == null)
             {
-                for (int j = 0; j < roomDto.Column; j++)
+                throw new ArgumentException("Room not found", nameof(roomId));
+            }
+
+            var seatType = await _unitOfWork.SeatTypeRepository.GetByIdAsync(SeatTypeId);
+            if (seatType == null)
+            {
+                throw new ArgumentException("SeatType not found", nameof(SeatTypeId));
+            }
+
+            var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
+            if (seats.Any())
+            {
+                throw new ArgumentException("Seats already created", nameof(roomId));
+            }
+
+            for (int i = 0; i < room.Row; i++)
+            {
+                for (int j = 0; j < room.Column; j++)
                 {
                     var newSeat = new Seat
                     {
                         AtRow = NumberToLetter(i).ToString(),
                         AtColumn = j + 1,
-                        RoomId = roomDto.RoomId.Value,
+                        RoomId = roomId,
                         SeatTypeId = SeatTypeId,
                         IsActive = true
                     };
                     await _unitOfWork.SeatRepository.CreateAsync(newSeat);
                 }
             }
+
+            isCompleted = await _unitOfWork.CompleteAsync() > 0;
+            return isCompleted;
         }
 
         public static int LetterToNumber(char letter)
