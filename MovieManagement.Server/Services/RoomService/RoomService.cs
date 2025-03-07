@@ -125,6 +125,8 @@ namespace MovieManagement.Server.Services.RoomService
         public async Task<RoomResponseModel> GetRoomInfo(Guid roomId)
         {
             var room = await _unitOfWork.RoomRepository.GetRoomInfo(roomId);
+            if (room == null)
+                throw new NotFoundException("Room not found!");
 
             var response = _mapper.Map<RoomResponseModel>(room);
 

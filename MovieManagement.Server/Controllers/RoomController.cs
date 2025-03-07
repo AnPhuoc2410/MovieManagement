@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.RoomService;
 
@@ -370,8 +371,53 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-    
-    
-    
+
+        [HttpGet]
+        [Route("GetRoomInfo/{roomId:guid}")]
+        [ProducesResponseType(typeof(ApiResponseServices<RoomResponseModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        /// <summary>
+        /// Retrieves room information by room ID.
+        /// </summary>
+        /// <param name="roomId">The ID of the room.</param>
+        /// <returns>An IActionResult containing the room information.</returns>
+        public async Task<IActionResult> GetRoomInfo(Guid roomId)
+        {
+            try
+            {
+                var data = await _roomService.GetRoomInfo(roomId);
+                var response = new ApiResponseServices<RoomResponseModel>
+                {
+                    StatusCode = 200,
+                    Message = "Room info retrieved successfully",
+                    IsSuccess = true,
+                    Data = data
+                };
+                return Ok(response);
+            }
+            catch (NotFoundException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 404,
+                    Message = "Room not found",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return NotFound(response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while retrieving room info",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
     }
 }

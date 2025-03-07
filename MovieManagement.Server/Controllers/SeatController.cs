@@ -370,5 +370,7 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+    
+        
     }
 }
