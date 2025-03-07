@@ -68,7 +68,7 @@ namespace MovieManagement.Server.Services.EmailService
                     throw new Exception("This OTP is expired!");
 
                 //Checking change password
-                if (!await _unitOfWork.UserRepository.ChangeUserPassword(email, password))
+                if (!await _unitOfWork.UserRepository.ChangeUserPasswordByEmail(email, password))
                     throw new Exception("Password cannot change!");
 
                 otpRecord.IsUsed = 1;

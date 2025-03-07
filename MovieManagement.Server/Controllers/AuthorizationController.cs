@@ -17,15 +17,15 @@ namespace MovieManagement.Server.Controllers
             _emailService = emailService;
         }
 
-        [HttpPost("send/{email:required}")]
+        [HttpPost("send")]
         [ProducesResponseType(typeof(ApiResponseServices<OtpCodeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SendOtp(string email)
+        public async Task<IActionResult> SendOtp([FromBody] OtpCodeDto otpCode)
         {
             try
             {
-                bool otp = await _emailService.SendOtpEmail(email);
+                bool otp = await _emailService.SendOtpEmail(otpCode.Email);
                 if (!otp)
                 {
                     var response = new ApiResponseServices<IEnumerable<OtpCodeDto>>
@@ -40,19 +40,19 @@ namespace MovieManagement.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error.");
+                return StatusCode(500, ex.Message);
             }
         }
-        [HttpPost("verify/email/{email:required}/newpassword/{password:required}/otp/{otp:required}")]
+        [HttpPost("verify")]
         [ProducesResponseType(typeof(ApiResponseServices<OtpCodeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> VerifyOtp(string email, string password, string otp)
+        public async Task<IActionResult> VerifyOtp([FromBody] OtpCodeDto otpCode)
         {
             try
             {
-                bool isValid = await _emailService.ValidationOtp(email, password, otp);
+                bool isValid = await _emailService.ValidationOtp(otpCode.Email, otpCode.NewPassword, otpCode.Code);
                 if (!isValid)
                 {
                     var response = new ApiResponseServices<IEnumerable<OtpCodeDto>>
@@ -78,7 +78,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error.");
+                return StatusCode(500, ex.Message);
             }
         }
     }

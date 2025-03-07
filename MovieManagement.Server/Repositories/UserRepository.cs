@@ -15,7 +15,7 @@ namespace MovieManagement.Server.Repositories
             _context = context;
         }
 
-        public async Task<bool> ChangeUserPassword(string email, string newPassword)
+        public async Task<bool> ChangeUserPasswordByEmail(string email, string newPassword)
         {
             var user = await _context.Users
                             .Where(user => user.Email == email)
