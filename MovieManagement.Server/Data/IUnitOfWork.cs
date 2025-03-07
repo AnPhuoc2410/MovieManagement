@@ -15,6 +15,7 @@ namespace MovieManagement.Server.Data
         IShowtimeRepository ShowtimeRepository { get; }
         ITicketDetailRepository TicketDetailRepository { get; }
         ISeatTypeRepository SeatTypeRepository { get; }
+        IOtpCodeRepository OtpCodeRepository { get; }
         Task<int> CompleteAsync();
     }
 }

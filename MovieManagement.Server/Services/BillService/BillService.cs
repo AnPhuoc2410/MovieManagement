@@ -59,8 +59,8 @@ namespace MovieManagement.Server.Services.BillService
             try
             {
                 //Checking user is existing
-                billDto.UserId = userId;
-                if (_unitOfWork.UserRepository.GetByIdAsync(userId) == null)
+                var user = _unitOfWork.UserRepository.GetByIdAsync(userId);
+                if (user == null)
                     throw new NotFoundException("User cannot found!");
 
                 //Calculator ticket total

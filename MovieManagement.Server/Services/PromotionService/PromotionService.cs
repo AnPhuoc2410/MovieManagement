@@ -51,7 +51,7 @@ namespace MovieManagement.Server.Services.PromotionService
             {
 
                 var promotion = _mapper.Map<List<PromotionDto>>(await _unitOfWork.ShowtimeRepository.GetAllAsync());
-                if (promotion.Count == 0)
+                if (promotion == null)
                 {
                     throw new NotFoundException("Promotion does not found!");
                 }

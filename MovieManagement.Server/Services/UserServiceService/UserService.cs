@@ -106,14 +106,23 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<UserDto> UpdateUserAsync(Guid id, UserDto user)
+        public async Task<UserDto> UpdateUserAsync(Guid id, UserDto userDto)
         {
             try
             {
+                //Checking user is existing
                 var existingUser = await _unitOfWork.UserRepository.GetByIdAsync(id);
                 if (existingUser == null)
                     throw new NotFoundException("User not found!");
-                var updatedUser = await _unitOfWork.UserRepository.UpdateAsync(_mapper.Map<User>(user));
+
+                //password hasher
+                var passwordHasher = new PasswordHasher<User>();
+                existingUser.Password = passwordHasher.HashPassword(existingUser, userDto.Password);
+
+                // Map updated fields from userDto to existingUser
+                _mapper.Map(userDto, existingUser);
+
+                var updatedUser = await _unitOfWork.UserRepository.UpdateAsync(existingUser);
                 if (updatedUser == null)
                     throw new DbUpdateException("Fail to update user.");
                 return _mapper.Map<UserDto>(updatedUser);
@@ -123,6 +132,5 @@ namespace MovieManagement.Server.Services.UserService
                 throw new Exception("Couldn't access the database due to a system error.", ex);
             }
         }
-
     }
 }

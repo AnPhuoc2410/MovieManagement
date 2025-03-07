@@ -144,6 +144,33 @@ namespace MovieManagement.Server.Migrations
                     b.ToTable("MOVIE", (string)null);
                 });
 
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.OtpCode", b =>
+                {
+                    b.Property<Guid>("otpId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("varchar(7)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTime>("ExpiredTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IsUsed")
+                        .HasColumnType("int");
+
+                    b.HasKey("otpId");
+
+                    b.ToTable("OTP_CODE", (string)null);
+                });
+
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Promotion", b =>
                 {
                     b.Property<Guid>("PromotionId")
