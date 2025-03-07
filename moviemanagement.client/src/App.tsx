@@ -1,7 +1,6 @@
 import { createTheme, ThemeProvider } from "@mui/material";
 import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router";
-import ScrollToTop from "./components/common/ScrollToTop";
 import { ToasterWithMax } from "./components/common/ToasterWithMax";
 import Dashboard from "./components/shared/Dashboard";
 import BuyTicket from "./pages/admin/QuanLyBanVe/SoldTicket";
@@ -31,6 +30,8 @@ import Payment from "./pages/ticket/Payment";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
 import SplashCursor from "./components/shared/SplashCursor";
+import ForgotPassword from "./pages/auth/ForgotPassword/ForgotPassword";
+import PageTransition from "./components/shared/PageTransition";
 
 const theme = createTheme({
   components: {
@@ -56,13 +57,35 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <ScrollToTop />
       <SplashCursor />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/auth">
-          <Route path="login" element={<LoginForm />} />
-          <Route path="signup" element={<SignupForm />} />
+          <Route
+            path="login"
+            element={
+              <PageTransition>
+                <LoginForm />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="signup"
+            element={
+              <PageTransition>
+                <SignupForm />
+              </PageTransition>
+            }
+          />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+          {/* <Route
+            path="/otp-verification"
+            element={
+              <PageTransition>
+                <OtpVerification />
+              </PageTransition>
+            }
+          /> */}
         </Route>
         <Route path="/promotions" element={<Promotion />} />
         <Route path="/promotions/:id" element={<PromotionDetail />} />

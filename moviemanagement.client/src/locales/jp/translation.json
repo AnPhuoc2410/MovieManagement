@@ -1,14 +1,27 @@
 {
   "translation": {
-    "search": "映画を検索する...",
+    "search": "映画を検索する, 映画館...",
+    "view_trailer": "予告編を見る",
     "book_ticket": "チケットを予約する",
     "book_snacks": "スナックを予約する",
     "login": "ログイン",
     "see_more": "もっと見る",
     "now_showing": "上映中",
     "upcoming": "近日公開",
-    "membership": "メンバーシップ",
+    "membership": "メンバーシップ プログラム",
     "promotions": "プロモーション",
-    "list_promotions": "もっと見るプロモーション"
+    "list_promotions": "もっと見るプロモーション",
+    "quick_booking": "クイック予約",
+    "book_now": "今すぐ予約",
+    "select_theater": "劇場を選択",
+    "select_movie": "映画を選択",
+    "select_date": "日付を選択",
+    "select_show_time": "上映時間を選択",
+    "select_theater1": "Hai Ba Trung 劇場 (ホーチミン市)",
+    "select_theater2": "学生劇場 (ホーチミン市)",
+    "select_theater3": "My Tho 劇場 (ビンズン省)",
+    "select_theater4": "Kien Giang 劇場 (Rach Soi)",
+    "select_theater5": "Lam Dong 劇場 (Duc Trong)",
+    "select_theater6": "Da Lat 劇場 (Da Lat City)"
   }
 }

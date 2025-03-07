@@ -1,14 +1,27 @@
 {
   "translation": {
-    "search": "Search for a movie...",
+    "search": "Search for a movie, theater...",
+    "view_trailer": "View Trailer",
     "book_ticket": "Book Ticket",
     "book_snacks": "Book Snacks",
     "login": "Login",
     "see_more": "See More",
-    "now_showing": "Now Showing",
-    "upcoming": "Upcoming",
-    "membership": "Membership",
-    "promotions": "Promotions",
-    "list_promotions": "See more Promotions"
+    "now_showing": "NOW SHOWING",
+    "upcoming": "UPCOMING",
+    "membership": "MEMBERSHIP PROGRAM",
+    "promotions": "PROMOTIONS",
+    "list_promotions": "See more Promotions",
+    "quick_booking": "Quick Booking",
+    "book_now": "BOOK NOW",
+    "select_theater": "Select Theater",
+    "select_movie": "Select Movie",
+    "select_date": "Select Date",
+    "select_show_time": "Select Show Time",
+    "select_theater1": "Hai Ba Trung Theater (Ho Chi Minh City)",
+    "select_theater2": "Student Theater (Ho Chi Minh City)",
+    "select_theater3": "My Tho Theater (Binh Duong)",
+    "select_theater4": "Kien Giang Theater (Rach Soi)",
+    "select_theater5": "Lam Dong Theater (Duc Trong)",
+    "select_theater6": "Da Lat Theater (Da Lat City)"
   }
 }

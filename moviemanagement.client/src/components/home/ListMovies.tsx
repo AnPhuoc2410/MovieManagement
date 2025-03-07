@@ -1,19 +1,16 @@
 import React, { ReactNode, useEffect, useState } from "react";
-import { Box, Button, Container, Typography } from "@mui/material";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import "./ListMovies.css";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import "../../index.scss";
-import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
-import Scroll from "quill/blots/scroll";
 import ScrollFloat from "../shared/ScrollFloat";
-import LoadingSpinner from "../LoadingSpinner";
-import toast from "react-hot-toast";
-import api from "../../apis/axios.config";
+import "./ListMovies.css";
+import PlayCircleOutlineOutlinedIcon from "@mui/icons-material/PlayCircleOutlineOutlined";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 const MovieSlider = ({
   movies,
@@ -28,8 +25,8 @@ const MovieSlider = ({
   const { t } = useTranslation();
 
   return (
-    <Container sx={{ mt: 4, textAlign: "center" }}>
-      <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
+    <Container sx={{ mt: 0, textAlign: "center", mb: 13 }}>
+      <Typography variant="h4" fontWeight="bold" sx={{ mb: 5 }}>
         {title}
       </Typography>
       <Swiper
@@ -45,18 +42,86 @@ const MovieSlider = ({
         {movies.map((movie, index) => (
           <SwiperSlide key={index}>
             <Box className="movie-card">
-              <img src={movie.image} alt={movie.name} className="movie-image" />
+              <Box className="movie-image-container">
+                <img
+                  src={movie.image}
+                  alt={movie.title}
+                  className="movie-image"
+                />
+                <Box className="date-tag-container">
+                  <Chip
+                    icon={<CalendarTodayIcon />}
+                    label={
+                      <Box className="date-content">
+                        <span className="month">APR</span>
+                        <span className="full-date">04.04.2024</span>
+                      </Box>
+                    }
+                    className="publish-date-tag"
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      backgroundColor: "orange",
+                      color: "white",
+                      fontWeight: "bold",
+                      borderRadius: "3px 0 3px 0",
+                      "& .MuiSvgIcon-root": {
+                        color: "white",
+                        fontSize: "1rem",
+                      },
+                    }}
+                  />
+                </Box>
+              </Box>
               <Typography variant="h6" className="movie-title">
                 {movie.name}
               </Typography>
-              <Button
-                variant="contained"
-                color="warning"
-                className="book-button"
-                onClick={() => navigate(`/showtime/${index}`)}
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 1,
+                  mt: 3,
+                  mb: 2,
+                }}
               >
-                <span>{t("book_ticket")}</span>
-              </Button>
+                {/* View Trailer Button */}
+                <Button
+                  variant="text"
+                  sx={{
+                    backgroundColor: "transparent",
+                    color: "#FFFFFF",
+                    display: "flex",
+                    alignItems: "center", // Vertically center the icon and text
+                    gap: 1,
+                    whiteSpace: "nowrap", // Prevents text from wrapping
+                    minWidth: "fit-content", // Ensures the button resizes based on content
+                  }}
+                >
+                  <PlayCircleOutlineOutlinedIcon />
+                  <span
+                    style={{
+                      textDecoration: "underline", // Add underline only to the text
+                    }}
+                  >
+                    {t("view_trailer")}
+                  </span>
+                </Button>
+
+                {/* Book Ticket Button */}
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "yellow",
+                    color: "black",
+                    fontWeight: "bold",
+                    width: "120px",
+                  }}
+                  onClick={() => navigate(`/showtime/${index}`)}
+                >
+                  {t("book_ticket")}
+                </Button>
+              </Box>
             </Box>
           </SwiperSlide>
         ))}
@@ -146,7 +211,7 @@ const ListMovies: React.FC = () => {
 
   if (loading) return <LoadingSpinner />;
   return (
-    <Box sx={{ backgroundColor: "#0B0D1A", color: "white" }}>
+    <Box sx={{ mt: 5, textAlign: "center" }}>
       {/* Now Showing Section */}
       <MovieSlider
         movies={nowShowingMovies}

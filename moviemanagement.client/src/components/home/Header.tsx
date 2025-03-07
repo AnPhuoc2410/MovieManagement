@@ -10,28 +10,51 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "../common/LanguageSelector";
+import LocalActivityOutlinedIcon from "@mui/icons-material/LocalActivityOutlined";
+import { AccountCircleOutlined, FastfoodOutlined } from "@mui/icons-material";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <AppBar
-      position="fixed"
-      sx={{ backgroundColor: "rgb(47, 39, 39)", padding: 1 }}
+      sx={{
+        position: "fixed",
+        backgroundColor: isScrolled ? "rgb(26, 30, 60)" : "transparent",
+        backdropFilter: isScrolled ? "blur(8px)" : "none",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+        transition: "all 0.3s ease-in-out",
+        padding: 1,
+        boxShadow: isScrolled ? 2 : "none",
+        zIndex: 10,
+        height: "80px",
+      }}
     >
       <Toolbar
         sx={{
           display: "flex",
+          minWidth: "1200px",
           justifyContent: "space-between",
           alignItems: "center",
         }}
       >
-        {/* Logo - Fixed Cursor Issue */}
+        {/* Logo */}
         <Box
           component="a"
           href="/"
@@ -51,37 +74,13 @@ const Header: React.FC = () => {
           />
         </Box>
 
-        {/* Search Bar */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            flexGrow: 1,
-            justifyContent: "center",
-          }}
-        >
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder={t("search")}
-            sx={{ backgroundColor: "white", borderRadius: 2, width: "70%" }}
-            InputProps={{
-              endAdornment: (
-                <IconButton>
-                  <SearchIcon />
-                </IconButton>
-              ),
-            }}
-          />
-        </Box>
-
         {/* Right Icons */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
           <Button
             onClick={() => navigate("/")}
             variant="contained"
             sx={{
+              fontWeight: "bold",
               position: "relative",
               overflow: "hidden",
               bgcolor: "yellow",
@@ -108,6 +107,7 @@ const Header: React.FC = () => {
                 zIndex: 1,
               },
             }}
+            startIcon={<LocalActivityOutlinedIcon />}
           >
             <span>{t("book_ticket")}</span>
           </Button>
@@ -115,6 +115,7 @@ const Header: React.FC = () => {
             onClick={() => navigate("/")}
             variant="contained"
             sx={{
+              fontWeight: "bold",
               position: "relative",
               overflow: "hidden",
               bgcolor: "#834bff",
@@ -141,12 +142,65 @@ const Header: React.FC = () => {
                 zIndex: 1,
               },
             }}
-            startIcon={<ShoppingCartIcon />}
+            startIcon={<FastfoodOutlined />}
           >
             <span>{t("book_snacks")}</span>
           </Button>
-          <IconButton color="inherit" onClick={() => navigate("/auth/login")}>
-            <AccountCircleIcon />
+
+          {/* Search Bar */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              flexGrow: 1,
+              justifyContent: "center",
+              borderRadius: 20,
+              border: "none",
+              marginLeft: 40,
+            }}
+          >
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder={t("search")}
+              sx={{
+                backgroundColor: "white",
+                width: "30rem",
+                border: 0,
+                borderRadius: "20px",
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "20px",
+                  "& fieldset": {
+                    borderRadius: "20px",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "rgba(0, 0, 0, 0.23)",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "primary.main",
+                  },
+                },
+              }}
+              InputProps={{
+                endAdornment: (
+                  <IconButton>
+                    <SearchIcon />
+                  </IconButton>
+                ),
+              }}
+            />
+          </Box>
+
+          <IconButton
+            color="inherit"
+            sx={{
+              display: { xs: "none", md: "flex" },
+              gap: 1,
+            }}
+            onClick={() => navigate("/auth/login")}
+          >
+            <AccountCircleOutlined />
             <Typography>{t("login")}</Typography>
           </IconButton>
           <LanguageSelector />
