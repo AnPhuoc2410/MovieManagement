@@ -36,7 +36,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Rooms not found",
+                        Message = "Room not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -94,7 +94,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Rooms not found",
+                        Message = "Room not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -314,7 +314,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpDelete]
         [Route("{roomId:guid}")]
-        [ProducesResponseType(typeof(ApiResponseServices<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<RoomDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
@@ -329,7 +329,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Bill not found",
+                        Message = "Room not found",
                         IsSuccess = false
                     };
                     return NotFound(response);

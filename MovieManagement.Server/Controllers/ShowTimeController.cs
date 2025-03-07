@@ -36,7 +36,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Seat type not found",
+                        Message = "Showtime not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -106,7 +106,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Seat type not found",
+                        Message = "Showtime not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -134,17 +134,6 @@ namespace MovieManagement.Server.Controllers
                     Reason = ex.Message
                 };
                 return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (NotFoundException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 404,
-                    Message = "Show time not found",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return NotFound(response);
             }
             catch (Exception ex)
             {
@@ -175,7 +164,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Show Time not found",
+                        Message = "Showtime not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -233,7 +222,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Show Time not found",
+                        Message = "Showtime not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -290,7 +279,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Bill not found",
+                        Message = "Showtime not found",
                         IsSuccess = false
                     };
                     return NotFound(response);

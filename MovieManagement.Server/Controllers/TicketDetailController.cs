@@ -41,7 +41,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Seat type not found",
+                        Message = "Ticket detail not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -101,7 +101,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Seat type not found",
+                        Message = "Ticket detail not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -160,7 +160,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Seat type not found",
+                        Message = "Ticket detail not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -219,7 +219,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Seat type not found",
+                        Message = "Ticket detail not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -278,7 +278,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Seat type not found",
+                        Message = "Ticket detail not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -337,7 +337,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Bill not found",
+                        Message = "Ticket detail not found",
                         IsSuccess = false
                     };
                     return NotFound(response);

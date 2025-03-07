@@ -325,7 +325,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Bill not found",
+                        Message = "Promotion not found",
                         IsSuccess = false
                     };
                     return NotFound(response);

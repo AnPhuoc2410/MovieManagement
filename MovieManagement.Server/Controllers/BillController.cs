@@ -35,10 +35,9 @@ namespace MovieManagement.Server.Controllers
                 {
                     var response = new ApiResponseServices<IEnumerable<BillDto>>
                     {
-                        StatusCode = 200,
-                        Message = "Bill retrieved successfully",
-                        IsSuccess = true,
-                        Data = bills
+                        StatusCode = 404,
+                        Message = "Bill not found",
+                        IsSuccess = false
                     };
                     return NotFound(response);
                 }
@@ -65,17 +64,6 @@ namespace MovieManagement.Server.Controllers
                     Reason = ex.Message
                 };
                 return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (NotFoundException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 404,
-                    Message = "Show time not found",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return NotFound(response);
             }
             catch (Exception ex)
             {
@@ -105,7 +93,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Movie not found",
+                        Message = "Bill not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -205,7 +193,6 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-
         [HttpGet("user/{userId:guid}")]
         [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
@@ -221,13 +208,24 @@ namespace MovieManagement.Server.Controllers
                 {
                     var response = new ApiResponseServices<object>
                     {
-                        StatusCode = 400,
+                        StatusCode = 404,
                         Message = "Bad request from client side",
                         IsSuccess = false,
                     };
                     return NotFound(response);
                 }
                 return Ok(purchasedTickets);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -239,17 +237,6 @@ namespace MovieManagement.Server.Controllers
                     Reason = ex.Message
                 };
                 return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (NotFoundException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 404,
-                    Message = "Bill not found",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return NotFound(response);
             }
             catch (Exception ex)
             {
@@ -279,7 +266,7 @@ namespace MovieManagement.Server.Controllers
                 {
                     var response = new ApiResponseServices<object>
                     {
-                        StatusCode = 400,
+                        StatusCode = 404,
                         Message = "Bad request from client side",
                         IsSuccess = false,
                     };
@@ -308,17 +295,6 @@ namespace MovieManagement.Server.Controllers
                     Reason = ex.Message
                 };
                 return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (NotFoundException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 404,
-                    Message = "Bill not found",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return NotFound(response);
             }
             catch (Exception ex)
             {

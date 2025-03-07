@@ -36,7 +36,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Rooms not found",
+                        Message = "Seat not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -150,20 +150,15 @@ namespace MovieManagement.Server.Controllers
                 var seat = await _seatService.GetSeatByIdAsync(seatId);
                 if (seat == null)
                 {
-                    return NotFound(new ApiResponseServices<object>
+                    var respone = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
                         Message = "Seat not found",
                         IsSuccess = false
-                    });
+                    };
+                    return NotFound(respone);
                 }
-                return Ok(new ApiResponseServices<SeatDto>
-                {
-                    StatusCode = 200,
-                    Message = "Seat retrieved successfully",
-                    IsSuccess = true,
-                    Data = seat
-                });
+                return Ok(seat);
             }
             catch (BadRequestException ex)
             {
@@ -216,7 +211,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Category not found",
+                        Message = "Seat not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
@@ -272,12 +267,13 @@ namespace MovieManagement.Server.Controllers
                 var updatedSeat = await _seatService.UpdateSeatAsync(seatId, seatDto);
                 if (updatedSeat == null)
                 {
-                    return NotFound(new ApiResponseServices<object>
+                    var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
                         Message = "Seat not found",
                         IsSuccess = false
-                    });
+                    };
+                    return NotFound(response);
                 }
                 return Ok(updatedSeat);
             }
@@ -333,7 +329,7 @@ namespace MovieManagement.Server.Controllers
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Bill not found",
+                        Message = "Seat not found",
                         IsSuccess = false
                     };
                     return NotFound(response);

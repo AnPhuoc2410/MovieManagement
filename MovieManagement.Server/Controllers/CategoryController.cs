@@ -40,7 +40,7 @@ namespace MovieManagement.Server.Controllers
                         Message = "Category not found",
                         IsSuccess = false
                     };
-                    return NotFound();
+                    return NotFound(response);
                 }
                 return Ok(categories);
             }
@@ -99,7 +99,7 @@ namespace MovieManagement.Server.Controllers
                         Message = "Category not found",
                         IsSuccess = false
                     };
-                    return NotFound();
+                    return NotFound(response);
                 }
                 return Ok(categories);
             }
@@ -217,7 +217,7 @@ namespace MovieManagement.Server.Controllers
                         Message = "Category not found",
                         IsSuccess = false
                     };
-                    return NotFound();
+                    return NotFound(response);
                 }
                 return Ok(newCategory);
             }
@@ -277,7 +277,7 @@ namespace MovieManagement.Server.Controllers
                         Message = "Category not found",
                         IsSuccess = false
                     };
-                    return NotFound();
+                    return NotFound(response);
                 }
                 return Ok(updatedCategory);
             }

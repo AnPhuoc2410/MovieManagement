@@ -12,14 +12,10 @@ namespace MovieManagement.Server.Controllers
     public class MovieController : Controller
     {
         private readonly IMovieService _movieService;
-
-
         public MovieController(IMovieService movieService)
         {
             _movieService = movieService;
         }
-
-
         [HttpGet]
         [Route("all")]
         [ProducesResponseType(typeof(ApiResponseServices<MovieDto>), StatusCodes.Status200OK)]
@@ -36,9 +32,9 @@ namespace MovieManagement.Server.Controllers
                 {
                     var response = new ApiResponseServices<IEnumerable<BillDto>>
                     {
-                        StatusCode = 200,
-                        Message = "Bill retrieved successfully",
-                        IsSuccess = true,
+                        StatusCode = 404,
+                        Message = "Movie not found",
+                        IsSuccess = false,
                     };
                     return NotFound(response);
                 }
@@ -54,17 +50,6 @@ namespace MovieManagement.Server.Controllers
                     Reason = ex.Message
                 };
                 return BadRequest(response);
-            }
-            catch (NotFoundException ex)
-            {
-                var response = new ApiResponseServices<IEnumerable<MovieDto>>
-                {
-                    StatusCode = 404,
-                    Message = "Movie not found",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return NotFound(response);
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -168,7 +153,6 @@ namespace MovieManagement.Server.Controllers
                         StatusCode = 404,
                         Message = "Movie not found",
                         IsSuccess = false,
-                        Data = movie
                     };
                     return NotFound(response);
                 }
@@ -428,17 +412,6 @@ namespace MovieManagement.Server.Controllers
                     Reason = ex.Message
                 };
                 return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (NotFoundException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 404,
-                    Message = "Movie not found",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return NotFound(response);
             }
             catch (Exception ex)
             {
