@@ -3,6 +3,7 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories;
+using MovieManagement.Server.Services.CategoryService;
 using System.Drawing.Printing;
 
 namespace MovieManagement.Server.Services.MovieService
@@ -11,6 +12,7 @@ namespace MovieManagement.Server.Services.MovieService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ICategoryService _categoryService;
         public MovieService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
@@ -29,7 +31,14 @@ namespace MovieManagement.Server.Services.MovieService
         public async Task<MovieDto> GetAsync(Guid movieId)
         {
             var movie = await _unitOfWork.MovieRepository.GetMovieById(movieId);
-            return _mapper.Map<MovieDto>(movie);
+            var response = _mapper.Map<MovieDto>(movie);
+            var movieCategories = _unitOfWork.MovieCategoryRepository.GetMovieCategoriesByMovieId(movieId);
+            foreach (var movieCategory in movieCategories)
+            {
+                var category = await _unitOfWork.CategoryRepository.GetByIdAsync(movieCategory.CategoryId);
+                response.Categories.Add(_mapper.Map<CategoryDto>(category));
+            }
+            return response;
         }
 
         public async Task<MovieDto> CreateAsync(Guid employeeId, MovieRequest movieRequest)

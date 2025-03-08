@@ -63,6 +63,6 @@ namespace MovieManagement.Server.Services.CategoryService
             return await _unitOfWork.CategoryRepository.DeleteAsync(categoryId);
         }
 
-
+        
     }
 }

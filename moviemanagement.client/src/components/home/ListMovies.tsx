@@ -1,4 +1,4 @@
-import { Box, Button, Container, Typography, Chip } from "@mui/material";
+import { Box, Button, Container, Typography, Chip, Modal } from "@mui/material";
 import React, { ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -20,10 +20,12 @@ const MovieSlider = ({
   movies,
   title,
   navigateTo,
+  onOpenTrailer,
 }: {
   movies: any[];
   title: ReactNode;
   navigateTo: string;
+  onOpenTrailer: (url: string) => void;
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -101,6 +103,7 @@ const MovieSlider = ({
                     whiteSpace: "nowrap", // Prevents text from wrapping
                     minWidth: "fit-content", // Ensures the button resizes based on content
                   }}
+                  onClick={() => onOpenTrailer(movie.trailer)}
                 >
                   <PlayCircleOutlineOutlinedIcon />
                   <span
@@ -121,7 +124,11 @@ const MovieSlider = ({
                     fontWeight: "bold",
                     width: "120px",
                   }}
-                  onClick={() => navigate(`/showtime/${index}`)}
+                  onClick={() =>
+                    navigate(`/showtime/${movie.movieId}`, {
+                      state: { movieId: movie.movieId },
+                    })
+                  }
                 >
                   {t("book_ticket")}
                 </Button>
@@ -173,6 +180,8 @@ const ListMovies: React.FC = () => {
   const [nowShowingMovies, setNowShowingMovies] = useState<any[]>([]);
   const [upcomingMovies, setUpcomingMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [openTrailer, setOpenTrailer] = useState(false);
+  const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
   const page = 0;
   const pageSize = 6;
 
@@ -213,6 +222,19 @@ const ListMovies: React.FC = () => {
     fetchUpcomingMovies();
   }, []);
 
+  const handleOpenTrailer = (url: string) => {
+    let embedUrl = url.replace("youtu.be", "youtube.com/embed");
+    embedUrl = embedUrl.replace("watch?v=", "embed/");
+    embedUrl = embedUrl + "?autoplay=1";
+    setTrailerUrl(embedUrl);
+    setOpenTrailer(true);
+  };
+
+  const handleCloseTrailer = () => {
+    setOpenTrailer(false);
+    setTrailerUrl(null);
+  };
+
   if (loading) return <LoadingSpinner />;
   return (
     <Box sx={{ mt: 5, textAlign: "center" }}>
@@ -231,6 +253,7 @@ const ListMovies: React.FC = () => {
           </ScrollFloat>
         }
         navigateTo="/movies/now-showing"
+        onOpenTrailer={handleOpenTrailer}
       />
 
       {/* Upcoming Movies Section */}
@@ -248,7 +271,44 @@ const ListMovies: React.FC = () => {
           </ScrollFloat>
         }
         navigateTo="/movies/up-coming"
+        onOpenTrailer={handleOpenTrailer}
       />
+
+      {/* Trailer Modal */}
+      <Modal
+        open={openTrailer}
+        onClose={handleCloseTrailer}
+        aria-labelledby="trailer-modal"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          bgcolor: "rgba(61, 14, 97, 0.95)",
+        }}
+      >
+        <Box
+          sx={{
+            position: "relative",
+            width: "80%",
+            maxWidth: "1000px",
+            aspectRatio: "16/9",
+            bgcolor: "transparent",
+          }}
+        >
+          {trailerUrl && (
+            <iframe
+              width="100%"
+              height="100%"
+              src={`${trailerUrl}`}
+              title="Movie Trailer"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ position: "absolute", top: 0, left: 0 }}
+            />
+          )}
+        </Box>
+      </Modal>
     </Box>
   );
 };
