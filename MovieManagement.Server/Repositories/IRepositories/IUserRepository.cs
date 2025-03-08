@@ -6,6 +6,8 @@ namespace MovieManagement.Server.Repositories.IRepositories
     {
         public Task<bool> IsExistingEmailAsync(string email);
         public Task<bool> IsExistingUserNameAsync(string userName);
-        public Task<bool> ChangeUserPasswordByEmail(string email, string newPassword);
+        public Task<bool> ChangeUserPasswordByEmailAsync(string email, string newPassword);
+        public Task<bool> ResetUserPasswordByUserIdAsync(Guid userId, string currentPassword, string newPassword);
+        Task<User> GetUserByEmailAsync(string email);
     }
 }

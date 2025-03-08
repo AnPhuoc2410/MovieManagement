@@ -26,6 +26,45 @@ namespace MovieManagement.Server.Services.UserService
             _mapper = mapper;
         }
 
+        public async Task<bool> ChangeUserPasswordByUserId(Guid userId, string currentPassword, string newPassword)
+        {
+            try
+            {
+                //Checking userId is existing
+                var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+                if (user == null)
+                    throw new NotFoundException("User not found!");
+
+                //Checking new password is blank
+                if (string.IsNullOrEmpty(newPassword))
+                    throw new Exception("New password is blank!");
+                Console.WriteLine($"Stored Hashed Password: {user.Password}");
+                Console.WriteLine($"Input Password: {currentPassword}");
+                //Create PasswordHasher
+                var passwordHasher = new PasswordHasher<User>();
+
+                //Verify password
+                var verificationResult = passwordHasher.VerifyHashedPassword(user, user.Password, currentPassword);
+                Console.WriteLine($"Verification Result: {verificationResult}");
+                if (verificationResult == PasswordVerificationResult.Failed)
+                    throw new Exception("Current password is incorrect.");
+
+                //Hash new password
+                user.Password = passwordHasher.HashPassword(user, newPassword);
+
+                //Update new password
+                var updatedUser = await _unitOfWork.UserRepository.ResetUserPasswordByUserIdAsync(userId, user.Password, newPassword);
+                if (updatedUser == null)
+                    throw new Exception("Failed to change password.");
+
+                return updatedUser;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access the database due to a system error.", ex);
+            }
+        }
+
         public async Task<UserDto> CreateUserAsync(UserDto user)
         {
             try
@@ -115,12 +154,17 @@ namespace MovieManagement.Server.Services.UserService
                 if (existingUser == null)
                     throw new NotFoundException("User not found!");
 
+
+                // Map updated fields from userDto to existingUser
+                existingUser = _mapper.Map(userDto, existingUser);
+
+                //add again the id to the userDto
+                existingUser.UserId = id;
+
                 //password hasher
                 var passwordHasher = new PasswordHasher<User>();
                 existingUser.Password = passwordHasher.HashPassword(existingUser, userDto.Password);
-
-                // Map updated fields from userDto to existingUser
-                _mapper.Map(userDto, existingUser);
+                Console.WriteLine($"Hashed Password: {existingUser.Password}");
 
                 var updatedUser = await _unitOfWork.UserRepository.UpdateAsync(existingUser);
                 if (updatedUser == null)

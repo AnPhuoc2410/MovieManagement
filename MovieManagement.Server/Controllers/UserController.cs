@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
+using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.UserService;
 
@@ -65,7 +66,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<object>
                 {
                     StatusCode = 500,
-                    Message = "An error occurred while updating bill",
+                    Message = "An error occurred while updating user",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
@@ -122,7 +123,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<object>
                 {
                     StatusCode = 500,
-                    Message = "An error occurred while updating bill",
+                    Message = "An error occurred while updating user",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
@@ -180,7 +181,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<object>
                 {
                     StatusCode = 500,
-                    Message = "An error occurred while updating bill",
+                    Message = "An error occurred while updating user",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
@@ -237,7 +238,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<object>
                 {
                     StatusCode = 500,
-                    Message = "An error occurred while updating bill",
+                    Message = "An error occurred while updating user",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
@@ -294,11 +295,59 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<object>
                 {
                     StatusCode = 500,
-                    Message = "An error occurred while updating bill",
+                    Message = "An error occurred while updating user",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+        
+        [HttpPost("ResetPassword")]
+        [ProducesResponseType(typeof(ApiResponseServices<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ResetPasswordByUserId([FromBody] ResetPasswordModel request)
+        {
+            try
+            {
+                bool isSuccess = await _userService.ChangeUserPasswordByUserId(request.UserId, request.CurrentPassword, request.NewPassword);
+                if (!isSuccess)
+                {
+                    var response = new ApiResponseServices<IEnumerable<OtpCodeDto>>
+                    {
+                        StatusCode = 404,
+                        Message = "Change password faild!",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                else
+                {
+                    var response = new ApiResponseServices<IEnumerable<OtpCodeDto>>
+                    {
+                        StatusCode = 200,
+                        Message = "Change password successfully",
+                        IsSuccess = true
+                    };
+                    return Ok(response);
+                }
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
         [HttpDelete]
@@ -351,7 +400,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<object>
                 {
                     StatusCode = 500,
-                    Message = "An error occurred while deleting show time",
+                    Message = "An error occurred while deleting user",
                     IsSuccess = false,
                     Reason = ex.Message
                 };

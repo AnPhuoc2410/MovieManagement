@@ -10,6 +10,7 @@ namespace MovieManagement.Server.Services.UserService
         Task<IEnumerable<UserDto>> GetUserPageAsync(int page, int pageSize);
         Task<IEnumerable<UserDto>> GetAllUsersAsync();
         Task<UserDto> UpdateUserAsync(Guid id, UserDto user);
+        Task<bool> ChangeUserPasswordByUserId(Guid userId, string currentPassword, string newPassword);
         Task<bool> DeleteUserAsync(Guid id);
 
     }

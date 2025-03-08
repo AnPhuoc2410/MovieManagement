@@ -1,8 +1,10 @@
 ﻿using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Identity;
 using MimeKit;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
+using MovieManagement.Server.Models.Entities;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
@@ -56,6 +58,11 @@ namespace MovieManagement.Server.Services.EmailService
         {
             try
             {
+                //Checking user is existing by email
+                var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
+                if(user == null)
+                    throw new NotFoundException("User cannot found!");
+
                 //Checking validation user
                 var otpRecord = await _unitOfWork.OtpCodeRepository.GetOtpCode(email, otp);
                 if (otpRecord == null)
@@ -67,8 +74,18 @@ namespace MovieManagement.Server.Services.EmailService
                 if (otpRecord.ExpiredTime < DateTime.UtcNow)
                     throw new Exception("This OTP is expired!");
 
+                //Create HashPassword
+                var passwordHasher = new PasswordHasher<User>();
+
+                //Verify password
+                //Xac thuc mat khau co trong database khong -> tranh viec Hashpassword 2 lan
+                var verificationResult = passwordHasher.VerifyHashedPassword(user, user.Password, password);
+
+                //Hash new password
+                password = passwordHasher.HashPassword(user, password);
+
                 //Checking change password
-                if (!await _unitOfWork.UserRepository.ChangeUserPasswordByEmail(email, password))
+                if (!await _unitOfWork.UserRepository.ChangeUserPasswordByEmailAsync(email, password))
                     throw new Exception("Password cannot change!");
 
                 otpRecord.IsUsed = 1;

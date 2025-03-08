@@ -57,8 +57,4 @@
     </ProjectReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\RequestModel\" />
-  </ItemGroup>
-
 </Project>
