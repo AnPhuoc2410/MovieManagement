@@ -14,7 +14,6 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router";
 import { fetchNhanVienDetail } from "../../../apis/mock.apis";
-import LoadingSpinner from "../../../components/LoadingSpinner";
 import { Employee } from "./BangNhanVien";
 
 import type {} from "@mui/x-charts/themeAugmentation";
@@ -29,6 +28,7 @@ import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
 import AppTheme from "../../../shared-theme/AppTheme";
+import Loader from "../../../components/shared/Loading";
 
 // Components
 const ChinhSuaNhanVien: React.FC = ({
@@ -58,7 +58,7 @@ const ChinhSuaNhanVien: React.FC = ({
     }
   }, [employeeData]);
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <div>Failed to fetch data</div>;
   if (!employeeData) return <div>No employee data found</div>;
 

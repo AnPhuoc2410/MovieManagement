@@ -3,10 +3,10 @@ import type {} from "@mui/x-data-grid-pro/themeAugmentation";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
 import { useQuery } from "react-query";
 import { fetchRoom } from "../../../apis/mock.apis";
-import LoadingSpinner from "../../../components/LoadingSpinner";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import { Room } from "../../../types/room.types";
 import RoomTable from "./BangRoom";
+import Loader from "../../../components/shared/Loading/LoadingScreen";
 
 const QuanLyPhongChieu: React.FC = () => {
   const {
@@ -15,7 +15,7 @@ const QuanLyPhongChieu: React.FC = () => {
     error,
   } = useQuery<Room[]>("PhongChieuData", fetchRoom);
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <div>Failed to fetch data</div>;
 
   return (

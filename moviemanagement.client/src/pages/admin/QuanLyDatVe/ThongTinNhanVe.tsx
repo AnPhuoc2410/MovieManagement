@@ -12,8 +12,8 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router";
 import { getBookingDetail } from "../../../apis/mock.apis";
-import LoadingSpinner from "../../../components/LoadingSpinner";
 import { XacNhanDatVe } from "./ChiTietDatVe";
+import Loader from "../../../components/shared/Loading/LoadingScreen";
 
 const ThongTinNhanVe = () => {
   const { bId } = useParams();
@@ -43,7 +43,7 @@ const ThongTinNhanVe = () => {
     getBookingDetail(bId as string),
   );
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <div>Failed to fetch data</div>;
 
   const handleChangeTicket = (event: React.ChangeEvent<HTMLInputElement>) => {

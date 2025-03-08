@@ -13,7 +13,6 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router";
 import { getBookingDetail } from "../../../apis/mock.apis";
-import LoadingSpinner from "../../../components/LoadingSpinner";
 import { UserBase } from "../../../types/users.type";
 
 export type XacNhanDatVe = {
@@ -41,6 +40,7 @@ import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
 import AppTheme from "../../../shared-theme/AppTheme";
+import Loader from "../../../components/shared/Loading";
 
 // Components
 const ChiTietDatVe: React.FC = ({
@@ -75,7 +75,7 @@ const ChiTietDatVe: React.FC = ({
     getBookingDetail(bId as string),
   );
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <div>Failed to fetch data</div>;
 
   const handleChangeTicket = (event: React.ChangeEvent<HTMLInputElement>) => {

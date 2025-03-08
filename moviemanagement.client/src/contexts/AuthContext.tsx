@@ -5,7 +5,8 @@ import { AuthLoginData } from "../types/auth.types";
 import { eraseCookie, getCookie, setCookie } from "../utils/cookieUtils";
 
 interface AuthContextType {
-  isLoggedIn: boolean;
+  isAuthenticated: boolean;
+  isInitialized: boolean;
   user: AuthLoginData | null;
   authLogin: (userData: AuthLoginData) => void;
   authLogout: () => void;
@@ -17,26 +18,28 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [user, setUser] = useState<AuthLoginData | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const access_token = getCookie("access_token");
-    if (access_token) {
-      const access_token = getCookie("access_token") || "";
-      const token_type = getCookie("token_type") || "";
-      const expires = getCookie("expires") || "";
-      const is_mobile = getCookie("is_mobile") === "true";
+    const initializeAuth = () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (token) {
+          // Validate token and set user
+          setIsAuthenticated(true);
+          // Set user data
+        }
+      } catch (error) {
+        console.error("Failed to initialize auth:", error);
+      } finally {
+        setIsInitialized(true);
+      }
+    };
 
-      setIsLoggedIn(true);
-      setUser({
-        access_token,
-        token_type,
-        expires,
-        is_mobile,
-      });
-    }
+    initializeAuth();
   }, []);
 
   const authLogin = (userData: AuthLoginData) => {
@@ -46,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     // Set login state
-    setIsLoggedIn(true);
+    setIsAuthenticated(true);
 
     // Create authData with token details
     const authData: AuthLoginData = {
@@ -68,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (token) {
       await doLogout(token);
     }
-    setIsLoggedIn(false);
+    setIsAuthenticated(false);
     setUser(null);
     eraseCookie("access_token");
     eraseCookie("token_type");
@@ -81,7 +84,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, user, authLogin, authLogout, getToken }}
+      value={{
+        isAuthenticated,
+        isInitialized,
+        user,
+        authLogin,
+        authLogout,
+        getToken,
+      }}
     >
       {children}
     </AuthContext.Provider>
