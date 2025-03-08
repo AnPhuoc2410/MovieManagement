@@ -36,6 +36,7 @@ import AdminTheme from "./shared-theme/AdminTheme";
 import ChinhSuaThanhVien from "./pages/admin/QuanLyThanhVien/ChinhSuaThanhVien";
 import ThemNhanVienMoi from "./pages/admin/QuanLyNhanVien/ThemNhanVien";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import AuthForm from "./pages/auth/AuthForm";
 
 const theme = createTheme({
   components: {
@@ -76,33 +77,7 @@ const App = () => {
             }
           />
 
-          <Route path="/auth">
-            <Route
-              path="login"
-              element={
-                <PageTransition>
-                  <LoginForm />
-                </PageTransition>
-              }
-            />
-            <Route
-              path="signup"
-              element={
-                <PageTransition>
-                  <SignupForm />
-                </PageTransition>
-              }
-            />
-            <Route path="forgot-password" element={<ForgotPassword />} />
-            {/* <Route
-              path="/otp-verification"
-              element={
-                <PageTransition>
-                  <OtpVerification />
-                </PageTransition>
-              }
-            /> */}
-          </Route>
+          <Route path="/auth/*" element={<AuthForm />} />
           <Route path="/promotions" element={<Promotion />} />
           <Route path="/promotions/:id" element={<PromotionDetail />} />
           <Route path="/showtime/:id" element={<Ticket />} />

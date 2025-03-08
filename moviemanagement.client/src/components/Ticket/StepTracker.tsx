@@ -22,7 +22,6 @@ import { useTranslation } from "react-i18next";
 import LanguageSelector from "../common/LanguageSelector";
 import MenuIcon from "@mui/icons-material/Menu";
 
-
 const steps = [
   { label: "Chọn Suất Chiếu", icon: <MovieIcon /> },
   { label: "Chọn Ghế", icon: <EventSeatIcon /> },
@@ -119,7 +118,9 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
               <Step key={index}>
                 <StepLabel
                   StepIconComponent={() => (
-                    <Box sx={{ color: index < currentStep ? "#834bff" : "gray" }}>
+                    <Box
+                      sx={{ color: index < currentStep ? "#834bff" : "gray" }}
+                    >
                       {step.icon}
                     </Box>
                   )}
@@ -130,29 +131,29 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
             ))}
           </Stepper>
           <IconButton
-              sx={{
-                display: { xs: "flex", md: "none" },
-                color: "white",
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
+            sx={{
+              display: { xs: "flex", md: "none" },
+              color: "white",
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
 
-            {/* Login Button */}
-            <IconButton
-              color="inherit"
-              sx={{
-                display: { xs: "none", md: "flex" },
-                gap: 1,
-              }}
-              onClick={() => navigate("/auth/login")}
-            >
-              <AccountCircleOutlined />
-              <Typography>{t("login")}</Typography>
-            </IconButton>
+          {/* Login Button */}
+          <IconButton
+            color="inherit"
+            sx={{
+              display: { xs: "none", md: "flex" },
+              gap: 1,
+            }}
+            onClick={() => navigate("/auth/login")}
+          >
+            <AccountCircleOutlined />
+            <Typography>{t("login")}</Typography>
+          </IconButton>
 
-            {/* Language Selector */}
-            <LanguageSelector />
+          {/* Language Selector */}
+          <LanguageSelector />
         </Toolbar>
       </Container>
     </AppBar>
