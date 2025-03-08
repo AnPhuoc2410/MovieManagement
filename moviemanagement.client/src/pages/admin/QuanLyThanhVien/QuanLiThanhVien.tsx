@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useQuery } from "react-query";
+import { useNavigate } from "react-router";
 import { fetchThanhVien } from "../../../apis/mock.apis";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import MemberTable, { ThanhVien } from "./BangThanhVien";
-import ChinhSuaThanhVien from "./ChinhSuaThanhVien";
 
 const QuanLiThanhVien: React.FC = () => {
+  const navigate = useNavigate();
   const {
     data: danhSachThanhVien = [],
     isLoading,
@@ -24,8 +25,7 @@ const QuanLiThanhVien: React.FC = () => {
     console.log("Handling edit for ID:", id);
     const employee = danhSachThanhVien.find((emp) => emp.MaNhanVien === id);
     if (employee) {
-      setSelectedEmployee(employee);
-      setIsEditDialogOpen(true);
+      navigate(`/admin/ql-thanh-vien/${id}`);
     }
   };
 
@@ -43,15 +43,6 @@ const QuanLiThanhVien: React.FC = () => {
         employees={danhSachThanhVien}
         onEdit={handleEdit}
         onDelete={handleDelete}
-      />
-
-      <ChinhSuaThanhVien
-        isDialogOpen={isEditDialogOpen}
-        handleCloseDialog={() => {
-          setIsEditDialogOpen(false);
-          setSelectedEmployee(null);
-        }}
-        memberData={selectedEmployee}
       />
     </ManagementPageLayout>
   );

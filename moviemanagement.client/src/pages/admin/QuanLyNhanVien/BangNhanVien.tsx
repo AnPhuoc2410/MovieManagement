@@ -1,11 +1,10 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 
-import { useState } from "react";
+import { useNavigate } from "react-router";
 import ManagementTable, {
   ColumnDef,
   TableData,
 } from "../../../components/shared/ManagementTable";
-import ThemNhanVien from "./ThemNhanVien";
 
 export interface Employee extends TableData {
   MaNhanVien: string;
@@ -26,8 +25,7 @@ const EmployeeTable: React.FC<{
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }> = ({ employees, onEdit, onDelete }) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  const navigate = useNavigate();
   const columns: ColumnDef<Employee>[] = [
     {
       field: "MaNhanVien",
@@ -84,7 +82,7 @@ const EmployeeTable: React.FC<{
             flexShrink: 0, // Prevent button from shrinking
           }}
           onClick={() => {
-            setIsDialogOpen(true);
+            navigate("/admin/ql-nhan-vien/them-moi");
           }}
         >
           Thêm nhân viên
@@ -116,11 +114,6 @@ const EmployeeTable: React.FC<{
           headerName: "Hành động",
           width: "120px",
         }}
-      />
-
-      <ThemNhanVien
-        isDialogOpen={isDialogOpen}
-        handleCloseDialog={() => setIsDialogOpen(false)}
       />
     </>
   );

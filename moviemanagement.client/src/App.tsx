@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router";
 import { ToasterWithMax } from "./components/common/ToasterWithMax";
 import Dashboard from "./components/shared/Dashboard";
+import PageTransition from "./components/shared/PageTransition";
+import SplashCursor from "./components/shared/SplashCursor";
 import BuyTicket from "./pages/admin/QuanLyBanVe/SoldTicket";
 import ChiTietDatVe from "./pages/admin/QuanLyDatVe/ChiTietDatVe";
 import QuanLyDatVe from "./pages/admin/QuanLyDatVe/QuanLyDatVe";
@@ -10,12 +12,14 @@ import ThongTinNhanVe from "./pages/admin/QuanLyDatVe/ThongTinNhanVe";
 import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
 import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import QuanLiNhanVien from "./pages/admin/QuanLyNhanVien";
+import ChinhSuaNhanVien from "./pages/admin/QuanLyNhanVien/ChinhSuaNhanVien";
 import ChinhSuaPhim from "./pages/admin/QuanLyPhim/ChinhSuaPhim";
 import QuanLyPhim from "./pages/admin/QuanLyPhim/QuanLyPhim";
 import ThemPhim from "./pages/admin/QuanLyPhim/ThemPhim";
 import ChiTietPhongChieu from "./pages/admin/QuanLyPhongChieu/ChiTietPhongChieu";
 import QuanLyPhongChieu from "./pages/admin/QuanLyPhongChieu/QuanLyPhongChieu";
 import QuanLiThanhVien from "./pages/admin/QuanLyThanhVien/QuanLiThanhVien";
+import ForgotPassword from "./pages/auth/ForgotPassword/ForgotPassword";
 import LoginForm from "./pages/auth/Login";
 import SignupForm from "./pages/auth/Signup";
 import Home from "./pages/Home";
@@ -29,9 +33,8 @@ import MovieSeat from "./pages/ticket/MovieSeat";
 import Payment from "./pages/ticket/Payment";
 import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
-import SplashCursor from "./components/shared/SplashCursor";
-import ForgotPassword from "./pages/auth/ForgotPassword/ForgotPassword";
-import PageTransition from "./components/shared/PageTransition";
+import ChinhSuaThanhVien from "./pages/admin/QuanLyThanhVien/ChinhSuaThanhVien";
+import ThemNhanVienMoi from "./pages/admin/QuanLyNhanVien/ThemNhanVien";
 
 const theme = createTheme({
   components: {
@@ -114,8 +117,15 @@ const App = () => {
             <Route path="them-phim" element={<ThemPhim />} />
           </Route>
           <Route path="ban-ve" element={<BuyTicket />} />
-          <Route path="ql-nhan-vien" element={<QuanLiNhanVien />} />
-          <Route path="ql-thanh-vien" element={<QuanLiThanhVien />} />
+          <Route path="ql-nhan-vien">
+            <Route path="" element={<QuanLiNhanVien />} />
+            <Route path=":id" element={<ChinhSuaNhanVien />} />
+            <Route path="them-moi" element={<ThemNhanVienMoi />} />
+          </Route>
+          <Route path="ql-thanh-vien">
+            <Route path="" element={<QuanLiThanhVien />} />
+            <Route path=":id" element={<ChinhSuaThanhVien />} />
+          </Route>
           <Route path="ql-phong-chieu">
             <Route path="" element={<QuanLyPhongChieu />} />
             <Route path=":roomId" element={<ChiTietPhongChieu />} />

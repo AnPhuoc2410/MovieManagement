@@ -18,8 +18,18 @@ export const fetchThanhVien = async (): Promise<ThanhVien[]> => {
   return response.data;
 };
 
+export const fetchThanhVienDetail = async (id: string): Promise<ThanhVien> => {
+  const response = await axios.get<ThanhVien>(`/api/thanh-vien/${id}`);
+  return response.data;
+};
+
 export const fetchNhanVien = async (): Promise<Employee[]> => {
   const response = await axios.get<Employee[]>("/api/nhan-vien");
+  return response.data;
+};
+
+export const fetchNhanVienDetail = async (id: string): Promise<Employee> => {
+  const response = await axios.get<Employee>(`/api/nhan-vien/${id}`);
   return response.data;
 };
 
