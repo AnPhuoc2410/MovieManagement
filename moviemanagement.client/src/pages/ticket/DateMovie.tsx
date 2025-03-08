@@ -44,25 +44,33 @@ const Ticket: React.FC = () => {
       <Box sx={{ position: "sticky", top: 0, zIndex: 999 }}>
         <StepTracker currentStep={1} />
       </Box>
+      <Container
+        sx={{
+          paddingTop: { xs: "80px", sm: "90px", md: "100px" },
+          position: "relative",
+          zIndex: 1,
+          px: { xs: 2, sm: 3, md: 4 },
+        }}
+      >
+        <Box sx={{ color: "white", mb: 3, mt: 2 }}>
+          {/* Movie details */}
+          <MovieDetail />
 
-      <Container sx={{ py: 4 }}>
-        {/* Movie details */}
-        <MovieDetail />
+          {/* ShowTime component for picking date */}
+          <ShowTime
+            selectedDate={selectedDate}
+            onDateChange={(newDate) => setSelectedDate(newDate)}
+          />
 
-        {/* ShowTime component for picking date */}
-        <ShowTime
-          selectedDate={selectedDate}
-          onDateChange={(newDate) => setSelectedDate(newDate)}
-        />
+          {/* ListCinema for picking a showtime */}
+          <ListCinema
+            selectedTime={selectedTime}
+            onTimeSelect={(time: string) => setSelectedTime(time)}
+          />
 
-        {/* ListCinema for picking a showtime */}
-        <ListCinema
-          selectedTime={selectedTime}
-          onTimeSelect={(time: string) => setSelectedTime(time)}
-        />
-
-        {/* TicketPrice for selecting ticket types/quantities */}
-        <TicketPrice onNext={handleTicketSelection} />
+          {/* TicketPrice for selecting ticket types/quantities */}
+          <TicketPrice onNext={handleTicketSelection} />
+        </Box>
       </Container>
 
       <Footer />

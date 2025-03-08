@@ -89,7 +89,20 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
   };
 
   return (
-    <Box sx={{ mt: 6, ...sx }}>
+    <Box
+      sx={{
+        background: `
+              radial-gradient(circle at 20% 30%, rgba(78, 46, 131, 0.4) 0%, rgba(78, 46, 131, 0) 50%),
+              radial-gradient(circle at 75% 15%, rgba(33, 64, 154, 0.4) 0%, rgba(33, 64, 154, 0) 50%),
+              linear-gradient(135deg, #0B0D1A 0%, #1A1E3C 50%, #3A1155 100%)
+            `,
+        minHeight: "100vh",
+        color: "white",
+        position: "relative",
+        zIndex: 1,
+        overflow: "hidden",
+      }}
+    >
       {/* Title */}
       <Typography
         variant="h4"
