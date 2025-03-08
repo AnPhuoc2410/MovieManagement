@@ -95,7 +95,7 @@ export default function useRouteElements() {
     },
     // Protected Client Routes
     {
-      element: <ProtectedRoute />,
+      element: <RejectedRoute />,
       children: [
         {
           path: "/promotions",
@@ -112,9 +112,9 @@ export default function useRouteElements() {
           ],
         },
         {
-          path: "/ticket",
+          path: "/showtime",
           children: [
-            { path: "showtime/:id", element: <ClientPages.Ticket.Booking /> },
+            { path: ":id", element: <ClientPages.Ticket.Booking /> },
             { path: "movie-seat", element: <ClientPages.Ticket.Seat /> },
             { path: "payment", element: <ClientPages.Ticket.Payment /> },
             {
