@@ -14,8 +14,7 @@ import AppTheme from "../../../shared-theme/AppTheme";
 import { Box, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import MovieDetail from "../../../components/Movie/MovieDetail";
-import ShowTime from "../../../components/Ticket/ShowTimeCinema";
-import ListCinema from "../../../components/Ticket/ListCinema";
+import ShowTimeCinema from "../../../components/Ticket/ShowTimeCinema";
 import TicketPrice, {
   TicketType,
 } from "../../../components/Ticket/TicketPrice";
@@ -30,11 +29,11 @@ export default function BuyTicket({
   disableCustomTheme = false,
 }: BuyTicketProps) {
   const navigate = useNavigate();
-
-  const [selectedDate, setSelectedDate] = useState(() =>
-    format(new Date(), "dd/MM"),
-  );
+  const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+
+  // movieId could come from props, context, or elsewhere. For now we hardcode it.
+  const movieId = "321fb7db-6361-4c64-8e16-fedfec9736a4";
 
   const handleTicketSelection = (tickets: TicketType[]) => {
     // Validate that a showtime is selected
@@ -48,8 +47,9 @@ export default function BuyTicket({
       toast.error("Vui lòng chọn ít nhất 1 vé!");
       return;
     }
-    navigate("/movie-seat", {
+    navigate("/ticket/movie-seat", {
       state: {
+        movieId,
         selectedDate,
         selectedTime,
         tickets,
@@ -78,17 +78,28 @@ export default function BuyTicket({
           >
             <Stack spacing={2} alignItems="center">
               <Header />
-              <Container sx={{ py: 4 }}>
-                <MovieDetail />
-                <ShowTime
-                  selectedDate={selectedDate}
-                  onDateChange={(newDate) => setSelectedDate(newDate)}
-                />
-                <ListCinema
-                  selectedTime={selectedTime}
-                  onTimeSelect={(time: string) => setSelectedTime(time)}
-                />
-                <TicketPrice onNext={handleTicketSelection} />
+              <Container
+                sx={{
+                  paddingTop: { xs: "80px", sm: "90px", md: "100px" },
+                  position: "relative",
+                  zIndex: 1,
+                  px: { xs: 2, sm: 3, md: 4 },
+                }}
+              >
+                <Box sx={{ color: "white", mb: 3, mt: 2 }}>
+                  {/* Movie details */}
+                  <MovieDetail />
+
+                  {/* ShowTime component for picking date and time */}
+                  <ShowTimeCinema
+                    movieId={movieId}
+                    onSelectDate={(date: string) => setSelectedDate(date)}
+                    onSelectTime={(time: string) => setSelectedTime(time)}
+                  />
+
+                  {/* TicketPrice for selecting ticket types/quantities */}
+                  <TicketPrice onNext={handleTicketSelection} />
+                </Box>
               </Container>
             </Stack>
           </Box>
