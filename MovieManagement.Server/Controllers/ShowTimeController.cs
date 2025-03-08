@@ -163,7 +163,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ShowTimeDto>> GetShowTime(Guid showTimeId)
+        public async Task<ActionResult<ShowTimeDto>> GetShowTimeById(Guid showTimeId)
         {
             try
             {
