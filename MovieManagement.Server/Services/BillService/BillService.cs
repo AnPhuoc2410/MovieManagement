@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 
@@ -14,54 +17,109 @@ namespace MovieManagement.Server.Services.BillService
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<BillDto>> GetAllAsync()
+        public async Task<IEnumerable<BillDto>> GetAllBillsAsync()
         {
-            var bills = await _unitOfWork.BillRepository.GetAllAsync();
-            return _mapper.Map<List<BillDto>>(bills);
+            try
+            {
+                var bills = _mapper.Map<List<BillDto>>(await _unitOfWork.BillRepository.GetAllAsync());
+                if (bills == null)
+                {
+                    throw new NotFoundException("Movie does not found!");
+                }
+                return bills;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
-        public async Task<IEnumerable<BillDto>> GetPageAsync(int page, int sizePage)
+        public async Task<IEnumerable<BillDto>> GetBillPageAsync(int page, int sizePage)
         {
             var bills = await _unitOfWork.BillRepository.GetPageAsync(page, sizePage);
             return _mapper.Map<List<BillDto>>(bills);
         }
-        public async Task<BillDto> GetByIdAsync(Guid billId)
+        public async Task<BillDto> GetBillByIdAsync(Guid billId)
         {
-            var bill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
-            return _mapper.Map<BillDto>(bill);
-        }
-        public async Task<BillDto> CreateAsync(Guid movieId, Guid memberId, Guid employeeId, Guid promotionId, BillDto billDto)
-        {
-            var newBill = new Bill
+            try
             {
-                CreatedDate = billDto.CreatedDate,
-                Point = billDto.Point,
-                TotalTicket = billDto.TotalTicket,
-                Amount = billDto.Amount,
-                UserId = billDto.UserId,
-                PromotionId = promotionId,
-                Status = billDto.Status,
-            };
-            var bill = await _unitOfWork.BillRepository.CreateAsync(newBill);
-            return _mapper.Map<BillDto>(bill);
+                var bill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.GetByIdAsync(billId));
+                if (bill == null)
+                {
+                    throw new NotFoundException("Bill not found");
+                }
+                return bill;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
-        public async Task<BillDto> UpdateAsync(Guid billId, BillDto billDto)
+        public async Task<BillDto> CreateBillAsync(Guid userId, BillDto billDto)
         {
-            var updateBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
+            try
+            {
+                //Checking user is existing
+                var user = _unitOfWork.UserRepository.GetByIdAsync(userId);
+                if (user == null)
+                    throw new NotFoundException("User cannot found!");
 
-            updateBill.CreatedDate = billDto.CreatedDate;
-            updateBill.Point = billDto.Point;
-            updateBill.TotalTicket = billDto.TotalTicket;
-            updateBill.Amount = billDto.Amount;
-            updateBill.UserId = billDto.UserId;
-            updateBill.PromotionId = billDto.PromotionId;
-            updateBill.Status = billDto.Status;
-
-            var bill = await _unitOfWork.BillRepository.UpdateAsync(updateBill);
-            return _mapper.Map<BillDto>(bill);
+                //Calculator ticket total
+                var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateAsync(_mapper.Map<Bill>(billDto)));
+                if (createdBill == null)
+                    throw new Exception("Failed to create bill.");
+                return createdBill;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while processing into Database", ex);
+            }
         }
-        public async Task<bool> DeleteAsync(Guid billId)
+        public async Task<BillDto> UpdateBillAsync(Guid billId, BillDto billDto)
         {
-            return await _unitOfWork.BillRepository.DeleteAsync(billId);
+            try
+            {
+                var existingBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
+                if (existingBill == null)
+                    throw new NotFoundException("Bill cannot found!");
+
+                _mapper.Map(billDto, existingBill);
+                var updatedBill = await _unitOfWork.BillRepository.UpdateAsync(existingBill);
+                if (updatedBill == null)
+                    throw new DbUpdateException("Bill cannot update!");
+                return _mapper.Map<BillDto>(updatedBill);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while processing with database.", ex);
+            }
+        }
+        public async Task<bool> DeleteBillAsync(Guid billId)
+        {
+            try
+            {
+                var bill = _unitOfWork.BillRepository.GetByIdAsync(billId);
+                if (bill == null)
+                    throw new NotFoundException("Bill cannot found!");
+                return await _unitOfWork.BillRepository.DeleteAsync(billId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
+        }
+        public async Task<IEnumerable<PurchasedTicketDto>> GetPurchasedTicketsAsync(Guid userId)
+        {
+            try
+            {
+                var bill = _unitOfWork.BillRepository.GetPurchasedTickets(userId);
+                if (bill == null)
+                    throw new NotFoundException("Bill of user is not found!");
+                return (IEnumerable<PurchasedTicketDto>)bill;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Couldn't access into database due to systems error.", ex);
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 
@@ -16,69 +18,117 @@ namespace MovieManagement.Server.Services.PromotionService
             _mapper = mapper;
         }
 
-        public async Task<PromotionDto> CreateAsync(PromotionDto promotionDto)
+        public async Task<PromotionDto> CreatePromotionAsync(PromotionDto promotionDto)
         {
-            //var newPromotion = new Promotion
-            //{
-            //    PromotionName = promotionDto.PromotionName,
-            //    Image = promotionDto.Image,
-            //    FromDate = promotionDto.FromDate,
-            //    ToDate = promotionDto.ToDate,
-            //    Discount = promotionDto.Discount,
-            //    Content = promotionDto.Content
-            //};
-
-            var newPromotion = _mapper.Map<Promotion>(promotionDto);
-            newPromotion.PromotionId = Guid.NewGuid();
-
-            // CreateAsync the promotion and return the created entity
-            return _mapper.Map<PromotionDto>(await _unitOfWork.PromotionRepository.CreateAsync(newPromotion));
-        }
-
-        public async Task<PromotionDto> GetByIdAsync(Guid id)
-        {
-            var promotion = await _unitOfWork.PromotionRepository.GetByIdAsync(id);
-            if (promotion == null)
+            try
             {
-                // You might choose to throw a custom exception or return null
-                throw new Exception("Promotion not found.");
+                
+                var newPromotion = _mapper.Map<Promotion>(promotionDto);
+                newPromotion.PromotionId = Guid.NewGuid();
+                var createdPromotion = _mapper.Map<PromotionDto>(await _unitOfWork.PromotionRepository.CreateAsync(newPromotion));
+                return createdPromotion;
+
             }
-            return _mapper.Map<PromotionDto>(promotion);
-        }
-
-        public async Task<IEnumerable<PromotionDto>> GetAllAsync()
-        {
-            var promotions = await _unitOfWork.PromotionRepository.GetAllAsync();
-            return _mapper.Map<List<PromotionDto>>(promotions);
-        }
-
-        public async Task<PromotionDto> UpdateAsync(Guid id, PromotionDto promotionDto)
-        {
-            // Retrieve the existing promotion
-            var existingPromotion = await _unitOfWork.PromotionRepository.GetByIdAsync(id);
-            if (existingPromotion == null)
+            catch (Exception ex)
             {
-                throw new Exception("Promotion not found.");
+                throw new ApplicationException("An error occurred while processing into Database", ex);
+            }
+        }
+
+        public async Task<PromotionDto> GetPromotionByIdAsync(Guid id)
+        {
+            try
+            {
+                var bill = _mapper.Map<PromotionDto>(await _unitOfWork.PromotionRepository.GetByIdAsync(id));
+                if (bill == null)
+                {
+                    throw new NotFoundException("Bill does not found!");
+                }
+                return bill;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
             }
 
-            existingPromotion = _mapper.Map(promotionDto, existingPromotion);
-
-            // Update the promotion in the repository and return the updated entity
-            var updatedPromotion = await _unitOfWork.PromotionRepository.UpdateAsync(existingPromotion);
-            return _mapper.Map<PromotionDto>(updatedPromotion);
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task<IEnumerable<PromotionDto>> GetAllPromotionsAsync()
         {
+            try
+            {
+                var promotion = _mapper.Map<List<PromotionDto>>(await _unitOfWork.ShowtimeRepository.GetAllAsync());
+                if (promotion == null)
+                {
+                    throw new NotFoundException("Promotion does not found!");
+                }
+                return promotion;
+            }
+            catch (NotFoundException ex)
+            {
+                throw new NotFoundException("Promotion does not found!");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
+        }
+
+        public async Task<PromotionDto> UpdatePromotionAsync(Guid id, PromotionDto promotionDto)
+        {
+            try
+            {
+
+                // Retrieve the existing promotion
+                var existingPromotion = await _unitOfWork.PromotionRepository.GetByIdAsync(id);
+                if (existingPromotion == null)
+                {
+                    throw new Exception("Promotion not found.");
+                }
+                
+                existingPromotion = _mapper.Map(promotionDto, existingPromotion);
+
+                // Update the promotion in the repository and return the updated entity
+                var updatedPromotion = await _unitOfWork.PromotionRepository.UpdateAsync(existingPromotion);
+
+                return _mapper.Map<PromotionDto>(updatedPromotion);
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while processing with database.", ex);
+            }
+        }
+
+        public async Task<bool> DeletePromotionAsync(Guid id)
+        {
+            try
             // Delete the promotion using the repository
-            var result = await _unitOfWork.PromotionRepository.DeleteAsync(id);
-            return result;
+            {
+                if (await _unitOfWork.PromotionRepository.GetByIdAsync(id) == null)
+                    throw new NotFoundException("Category cannot found!");
+                return await _unitOfWork.PromotionRepository.DeleteAsync(id);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
 
-        public async Task<IEnumerable<PromotionDto>> GetPageAsync(int page, int pageSize)
+        public async Task<IEnumerable<PromotionDto>> GetPromotionPageAsync(int page, int pageSize)
         {
-            var promotions = await _unitOfWork.PromotionRepository.GetPageAsync(page, pageSize);
-            return _mapper.Map<IEnumerable<PromotionDto>>(promotions);
+            try
+            {
+                var promotions = await _unitOfWork.PromotionRepository.GetPageAsync(page, pageSize);
+                if (promotions == null)
+                    throw new NotFoundException("Promotion cannot found!");
+                return _mapper.Map<IEnumerable<PromotionDto>>(promotions);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access into database due to systems error.", ex);
+            }
         }
     }
 }

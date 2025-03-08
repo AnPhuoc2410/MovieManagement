@@ -6,8 +6,11 @@ namespace MovieManagement.Server.Repositories
 {
     public class TicketDetailRepository : GenericRepository<TicketDetail>, ITicketDetailRepository
     {
+        private readonly AppDbContext _context;
+
         public TicketDetailRepository(AppDbContext context) : base(context)
         {
+            _context = context;
         }
     }
 }

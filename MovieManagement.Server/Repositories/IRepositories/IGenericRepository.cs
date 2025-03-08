@@ -21,7 +21,6 @@
         /// </summary>
 
         //Synchronous Interfaces
-        T GetByComposeId(Guid id, Guid id2);
 
         /// <summary>
         /// Dùng List ở đây vì để lấy dữ liệu đưa vào trong RAM
@@ -32,10 +31,14 @@
         /// Và cần truy xuất dữ liệu cho các LINQ kế tiếp.
         /// </summary>
         List<T> GetAll();
+        T GetById(Guid id);
+        List<T> GetPage(int page, int pageSize);
+        T GetByComposeId(Guid id, Guid id2);
         T Create(T entity);
         T Update(T entity);
         bool Delete(Guid id);
-
+        bool Delete(T Entity);
+        bool DeleteCompose(Guid id, Guid id2);
         /// <summary>
         /// Dùng List cho việc phân trang vì dữ liệu sau khi lấy sẽ load lên RAM
         /// Tránh cho việc gập lỗi Disposed
@@ -43,20 +46,16 @@
         /// <param name="page">Trang số bao nhiêu</param>
         /// <param name="pageSize">Trang có kích thước như thế nào (bao nhiêu object)</param>
         /// <returns>Trả về một list</returns>
-        List<T> GetPage(int page, int pageSize);
 
         //Asynchronous Interfaces
-        Task<T> GetByIdAsync(Guid id);
-        Task<T> GetByComposeIdAsync(Guid id, Guid id2);
         Task<List<T>> GetAllAsync();
+        Task<T> GetByIdAsync(Guid id);
+        Task<List<T>> GetPageAsync(int page, int pageSize);
+        Task<T> GetByComposeIdAsync(Guid id, Guid id2);
         Task<T> CreateAsync(T entity);
         Task<T> UpdateAsync(T entity);
         Task<bool> DeleteAsync(Guid id);
         Task<bool> DeleteAsync(T Entity);
-        bool Delete(T Entity);
-        Task<List<T>> GetPageAsync(int page, int pageSize);
-
         Task<bool> DeleteComposeAsync(Guid id, Guid id2);
-        bool DeleteCompose(Guid id, Guid id2);
     }
 }

@@ -5,12 +5,12 @@ namespace MovieManagement.Server.Services.UserService
     public interface IUserService
     {
 
-        Task<UserDto> CreateAsync(UserDto employee);
-        Task<UserDto> GetByIdAsync(Guid id);
-        Task<IEnumerable<UserDto>> GetPageAsync(int page, int pageSize);
-        Task<IEnumerable<UserDto>> GetAllAsync();
-        Task<UserDto> UpdateAsync(Guid id, UserDto employee);
-        Task<bool> DeleteAsync(Guid id);
+        Task<UserDto> CreateUserAsync(UserDto user);
+        Task<UserDto> GetUserByIdAsync(Guid id);
+        Task<IEnumerable<UserDto>> GetUserPageAsync(int page, int pageSize);
+        Task<IEnumerable<UserDto>> GetAllUsersAsync();
+        Task<UserDto> UpdateUserAsync(Guid id, UserDto user);
+        Task<bool> DeleteUserAsync(Guid id);
 
     }
 }

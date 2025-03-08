@@ -11,7 +11,7 @@ namespace MovieManagement.Server.Data
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<User> Employees { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<Bill> Bills { get; set; }
         public DbSet<TicketDetail> TicketDetails { get; set; }
@@ -19,7 +19,7 @@ namespace MovieManagement.Server.Data
         public DbSet<Room> Rooms { get; set; }
         public DbSet<ShowTime> Showtimes { get; set; }
         public DbSet<Movie> Movies { get; set; }
-
+        public DbSet<OtpCode> OtpCodes { get; set; }
         public static string GetConnectionString(string connectionStringName)
         {
             var config = new ConfigurationBuilder()
@@ -47,6 +47,7 @@ namespace MovieManagement.Server.Data
             modelBuilder.ApplyConfiguration(new SeatConfiguration());
             modelBuilder.ApplyConfiguration(new ShowtimeConfiguration());
             modelBuilder.ApplyConfiguration(new TicketDetailConfiguration());
+            modelBuilder.ApplyConfiguration(new OtpCodeConfiguration());
 
 
             base.OnModelCreating(modelBuilder);

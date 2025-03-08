@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
+using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.SeatTypeService;
 
 namespace MovieManagement.Server.Controllers
@@ -18,65 +21,357 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("GetAll")]
-        public async Task<ActionResult> GetAllSeatTypesAsync()
+        [Route("all")]
+        [ProducesResponseType(typeof(ApiResponseServices<SeatTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAllSeatTypesAsync()
         {
-            var seatTypes = await _seatTypeService.GetAllAsync();
-            return Ok(seatTypes);
+            try
+            {
+                var seatTypes = await _seatTypeService.GetAllSeatTypesAsync();
+                if (seatTypes == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Seat type not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(seatTypes);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating category",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
         [HttpGet]
-        [Route("GetById/{seatTypeId}")]
-        public async Task<ActionResult> GetSeatTypeByIdAsync(Guid seatTypeId)
+        [Route("{seatTypeId}")]
+        [ProducesResponseType(typeof(ApiResponseServices<SeatTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<SeatTypeDto>> GetSeatTypeByIdAsync(Guid seatTypeId)
         {
-            var seatType = await _seatTypeService.GetByIdAsync(seatTypeId);
-            return Ok(seatType);
+            try
+            {
+                var seatType = await _seatTypeService.GetSeatTypeByIdAsync(seatTypeId);
+                if (seatType == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Seat type not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(seatType);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating category",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
         [HttpGet]
         [Route("page/{page:int}/pageSize/{pageSize:int}")]
-        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        [ProducesResponseType(typeof(ApiResponseServices<SeatTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetSeatTypePageAsync(int page, int pageSize)
         {
-            var seatTypes = await _seatTypeService.GetPageAsync(page, pageSize);
-            return Ok(seatTypes);
+            try
+            {
+                var seatTypes = await _seatTypeService.GetSeatTypePageAsync(page, pageSize);
+                if (seatTypes == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Seat type not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(seatTypes);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating category",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
         [HttpPost]
-        [Route("Create")]
-        public async Task<ActionResult> CreateSeatType([FromBody] SeatTypeDto seatTypeDto)
+        [ProducesResponseType(typeof(ApiResponseServices<SeatTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<SeatTypeDto>> CreateSeatTypeAsync([FromBody] SeatTypeDto seatTypeDto)
         {
-            var result = await _seatTypeService.CreateAsync(seatTypeDto);
-            if (result != null)
+            try
             {
-                return Ok(result);
+                var seat = await _seatTypeService.CreateSeatTypeAsync(seatTypeDto);
+
+                if (seat == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Seat type not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(seat);
             }
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating category",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
         [HttpPut]
-        [Route("Update/{seatTypeId:guid}")]
-        public async Task<ActionResult> UpdateSeatType(Guid seatTypeId, [FromBody] SeatTypeDto seatTypeDto)
+        [Route("{seatTypeId:guid}")]
+        [ProducesResponseType(typeof(ApiResponseServices<SeatTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<SeatTypeDto>> UpdateSeatTypeAsync(Guid seatTypeId, [FromBody] SeatTypeDto seatTypeDto)
         {
-            var result = await _seatTypeService.UpdateAsync(seatTypeId, seatTypeDto);
-            if (result != null)
+            try
             {
-                return Ok(result);
+                var seat = await _seatTypeService.UpdateSeatTypeAsync(seatTypeId, seatTypeDto);
+                if (seat == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Seat type not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(seat);
             }
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating category",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
         [HttpDelete]
-        [Route("Delete/{seatTypeId:guid}")]
-        public async Task<ActionResult> DeleteSeatType(Guid seatTypeId)
+        [Route("{seatTypeId:guid}")]
+        [ProducesResponseType(typeof(ApiResponseServices<SeatTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteSeatTypeAsync(Guid seatTypeId)
         {
-            var result = await _seatTypeService.DeleteAsync(seatTypeId);
-            if (result)
+            try
             {
-                return Ok();
+                bool isDeleted = await _seatTypeService.DeleteSeatTypeAsync(seatTypeId);
+                if (!isDeleted)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Seat type not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(isDeleted);
             }
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating bill",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
-
-
     }
 }

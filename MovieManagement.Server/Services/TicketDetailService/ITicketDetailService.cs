@@ -5,11 +5,11 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 {
     public interface ITicketDetailService
     {
-        Task<TicketDetailDto> CreateAsync(TicketDetailDto ticketDetail);
-        Task<TicketDetailDto> GetByIdAsync(Guid ticketId);
-        Task<IEnumerable<TicketDetailDto>> GetPageAsync(int  page, int pageSize);
-        Task<IEnumerable<TicketDetailDto>> GetAllAsync();
-        Task<TicketDetailDto> UpdateAsync(Guid id, TicketDetailDto ticketDetail);
-        Task<bool> DeleteAsync(Guid id);
+        Task<TicketDetailDto> CreateTicketDetailAsync(TicketDetailDto ticketDetail);
+        Task<TicketDetailDto> GetTicketDetailByIdAsync(Guid ticketId);
+        Task<IEnumerable<TicketDetailDto>> GetTicketDetailPageAsync(int  page, int pageSize);
+        Task<IEnumerable<TicketDetailDto>> GetAllTicketDetailsAsync();
+        Task<TicketDetailDto> UpdateTicketDetailAsync(Guid id, TicketDetailDto ticketDetail);
+        Task<bool> DeleteTicketDetailAsync(Guid id);
     }
 }

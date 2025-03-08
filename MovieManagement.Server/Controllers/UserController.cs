@@ -1,250 +1,42 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
-using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services;
-using MovieManagement.Server.Services.ShowTimeService;
+using MovieManagement.Server.Services.UserService;
 
 namespace MovieManagement.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ShowTimeController : ControllerBase
+    public class UserController : Controller
     {
-        private readonly IShowTimeService _showTimeService;
-
-        public ShowTimeController(IShowTimeService showTimeService)
+        private readonly IUserService _userService;
+        public UserController(IUserService userService)
         {
-            _showTimeService = showTimeService;
+            _userService = userService;
         }
-
-        [HttpGet]
-        [Route("GetAllShowTime")]
-        [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
+        [HttpGet("all")]
+        [ProducesResponseType(typeof(ApiResponseServices<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> GetAllShowTime()
+        public async Task<IActionResult> GetAllUSerAsync()
         {
             try
             {
-                var ListShowTime = await _showTimeService.GetAllShowtime();
-                var response = new ApiResponseServices<IEnumerable<ShowTimeDto>>
-                {
-                    StatusCode = 200,
-                    Message = "Show Time retrieved successfully",
-                    IsSuccess = true,
-                    Data = ListShowTime
-                };
-                return Ok(response);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponseServices<IEnumerable<ShowTimeDto>>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (NotFoundException ex)
-            {
-                var response = new ApiResponseServices<IEnumerable<ShowTimeDto>>
-                {
-                    StatusCode = 404,
-                    Message = "Show Time not found",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return NotFound(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while retrieving show times",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
-
-        [HttpPost]
-        [Route("CreateShowTime")]
-        [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ShowTimeDto>> CreateShowTime(ShowTimeDto showTimeDto)
-        {
-            try
-            {
-                var createdShowTime = await _showTimeService.CreateShowtimeAsync(showTimeDto);
-
-                var response = new ApiResponseServices<ShowTimeDto>
-                {
-                    StatusCode = 200,
-                    Message = "Show Time created successfully",
-                    IsSuccess = true,
-                    Data = createdShowTime
-                };
-                return Ok(response);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (NotFoundException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 404,
-                    Message = "Unable to create this Show Time",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return NotFound(response);
-            }
-            catch (ApplicationException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 400,
-                    Message = "Show Time is conflicted with other",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while creating show time",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
-
-        [HttpGet("{showTimeId:guid}")]
-        [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ShowTimeDto>> GetShowTime(Guid showTimeId)
-        {
-            try
-            {
-                var showTime = await _showTimeService.GetShowtimeByIdAsync(showTimeId);
-                if (showTime == null)
+                var users = await _userService.GetAllUsersAsync();
+                if (users == null)
                 {
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Show Time not found",
+                        Message = "Bill not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
                 }
-                return Ok(showTime);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while retrieving show time",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
-
-        [HttpPut("UpdateShowTime/{id:guid}")]
-        [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateShowTime(Guid showTimeId, ShowTimeDto showTimeDto)
-        {
-            try
-            {
-                var updateShowTime = await _showTimeService.UpdateShowtimeAsync(showTimeId, showTimeDto);
-                if (updateShowTime == null)
-                {
-                    var response = new ApiResponseServices<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Show Time not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(updateShowTime);
+                return Ok(users);
             }
             catch (BadRequestException ex)
             {
@@ -273,45 +65,264 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponseServices<object>
                 {
                     StatusCode = 500,
-                    Message = "An error occurred while updating show time",
+                    Message = "An error occurred while updating bill",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-        
-        [HttpDelete("Delete/{showTimeId:guid}")]
-        [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
+        [HttpGet("{userId:guid}")]
+        [ProducesResponseType(typeof(ApiResponseServices<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteShowTime(Guid showTimeId)
+        public async Task<ActionResult<UserDto>> GetUserByIdAsync(Guid userId)
         {
             try
             {
-                var result = await _showTimeService.DeleteShowtimeAsync(showTimeId);
-                if (result)
-                {
-                    var response = new ApiResponseServices<object>
-                    {
-                        StatusCode = 200,
-                        Message = "Show Time deleted successfully",
-                        IsSuccess = true
-                    };
-                    return Ok(response);
-                }
-                else
+                var user = await _userService.GetUserByIdAsync(userId);
+                if (user == null)
                 {
                     var response = new ApiResponseServices<object>
                     {
                         StatusCode = 404,
-                        Message = "Show Time not found",
+                        Message = "Bill not found",
                         IsSuccess = false
                     };
                     return NotFound(response);
                 }
+                return Ok(user);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating bill",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        [ProducesResponseType(typeof(ApiResponseServices<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetPageAsync(int page, int pageSize)
+        {
+
+            try
+            {
+                var users = await _userService.GetAllUsersAsync();
+                if(users == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "User not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(users);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating bill",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+        [HttpPost]
+        [ProducesResponseType(typeof(ApiResponseServices<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserDto>> CreateUserAsync(UserDto userDto)
+        {
+            try
+            {
+                var newUser = await _userService.CreateUserAsync(userDto);
+                if(newUser == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "User not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(newUser);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating bill",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+        [HttpPut]
+        [ProducesResponseType(typeof(ApiResponseServices<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserDto>> UpdateUserAsync(Guid userId, UserDto userDto)
+        {
+            try
+            {
+                var updated = await _userService.UpdateUserAsync(userId, userDto);
+                if(updated == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "User not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(updated);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating bill",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+        [HttpDelete]
+        [ProducesResponseType(typeof(ApiResponseServices<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteUserAsync(Guid userId)
+        {
+            try
+            {
+                var isDeleted = await _userService.DeleteUserAsync(userId);
+                if (!isDeleted)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "User not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(isDeleted);
             }
             catch (BadRequestException ex)
             {
@@ -347,74 +358,5 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-
-        [HttpGet("GetShowTimeByDates")]
-        [ProducesResponseType(typeof(ApiResponseServices<ShowTimeDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate)
-        {
-            try
-            {
-                var showTime = await _showTimeService.GetShowTimeFromDateToDate(movieId, fromDate, toDate);
-
-                var response = new ApiResponseServices<Dictionary<DateTime, List<ShowTimeDto>>>
-                {
-                    StatusCode = 200,
-                    Message = "Show Time retrieved successfully",
-                    IsSuccess = true,
-                    Data = showTime
-                };
-
-                return Ok(showTime);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (NotFoundException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 404,
-                    Message = "Show Time not found",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return NotFound(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while retrieving show time",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
-
     }
 }
