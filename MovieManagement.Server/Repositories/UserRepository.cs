@@ -32,6 +32,16 @@ namespace MovieManagement.Server.Repositories
             return true;
         }
 
+        public Task<List<User>> GetUserByRoleAsync(Role role)
+        {
+            
+            var users = _context.Users
+                        .Where(user => user.Role == role)
+                        .ToListAsync();
+
+            return users;
+        }
+
         public async Task<bool> IsExistingEmailAsync(string email)
         {
             var user = await _context.Users

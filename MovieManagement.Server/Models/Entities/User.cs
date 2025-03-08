@@ -4,6 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieManagement.Server.Models.Entities
 {
+
+    public enum Role
+    {
+        Member,
+        Employee,
+        Admin
+    }
+
     public class User
     {
 
@@ -33,7 +41,7 @@ namespace MovieManagement.Server.Models.Entities
 
         public int Status { get; set; } // 0: Khóa, 1: Mở
 
-        public int Role { get; set; }
+        public Role Role { get; set; }
 
         public decimal Point { get; set; }
 

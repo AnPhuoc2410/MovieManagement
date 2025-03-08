@@ -26,7 +26,7 @@ namespace MovieManagement.Server.Services.UserService
             _mapper = mapper;
         }
 
-        public async Task<UserDto> CreateUserAsync(UserDto user)
+        public async Task<UserDto.UserResponse> CreateUserAsync(UserDto.UserRequest user)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace MovieManagement.Server.Services.UserService
                 var createdUser = await _unitOfWork.UserRepository.CreateAsync(newUser);
                 if (createdUser == null)
                     throw new Exception("Failed to create user.");
-                return _mapper.Map<UserDto>(createdUser);
+                return _mapper.Map<UserDto.UserResponse>(createdUser);
             }
             catch (Exception ex)
             {
@@ -61,14 +61,14 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserDto.UserResponse>> GetAllUsersAsync()
         {
             try
             {
                 var users = await _unitOfWork.UserRepository.GetAllAsync();
                 if (users == null)
                     throw new NotFoundException("No users found!");
-                return _mapper.Map<List<UserDto>>(users);
+                return _mapper.Map<List<UserDto.UserResponse>>(users);
             }
             catch (Exception ex)
             {
@@ -76,14 +76,14 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<UserDto> GetUserByIdAsync(Guid id)
+        public async Task<UserDto.UserResponse> GetUserByIdAsync(Guid id)
         {
             try
             {
                 var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
                 if (user == null)
                     throw new NotFoundException("User not found!");
-                return _mapper.Map<UserDto>(user);
+                return _mapper.Map<UserDto.UserResponse>(user);
             }
             catch (Exception ex)
             {
@@ -91,14 +91,29 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<IEnumerable<UserDto>> GetUserPageAsync(int page, int pageSize)
+        public async Task<List<UserDto.UserResponse>> GetUserByRoleAsync(Role role)
+        {
+            try
+            {
+                var usersList = await _unitOfWork.UserRepository.GetUserByRoleAsync(role);
+                if (usersList == null)
+                    throw new NotFoundException("Users not found!");
+                return _mapper.Map<List<UserDto.UserResponse>>(usersList);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error:", ex);
+            }
+        }
+
+        public async Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page, int pageSize)
         {
             try
             {
                 var users = await _unitOfWork.UserRepository.GetPageAsync(page, pageSize);
                 if (users == null)
                     throw new NotFoundException("Users not found!");
-                return _mapper.Map<List<UserDto>>(users);
+                return _mapper.Map<List<UserDto.UserResponse>>(users);
             }
             catch (Exception ex)
             {
@@ -106,7 +121,7 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<UserDto> UpdateUserAsync(Guid id, UserDto userDto)
+        public async Task<UserDto.UserResponse> UpdateUserAsync(Guid id, UserDto.UserRequest userDto)
         {
             try
             {
@@ -125,7 +140,7 @@ namespace MovieManagement.Server.Services.UserService
                 var updatedUser = await _unitOfWork.UserRepository.UpdateAsync(existingUser);
                 if (updatedUser == null)
                     throw new DbUpdateException("Fail to update user.");
-                return _mapper.Map<UserDto>(updatedUser);
+                return _mapper.Map<UserDto.UserResponse>(updatedUser);
             }
             catch (Exception ex)
             {

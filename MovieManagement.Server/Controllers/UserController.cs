@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
+using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.UserService;
 
@@ -129,6 +130,25 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
+        [HttpGet("role/{role}")]
+        [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ApiResponse<List<UserDto.UserResponse>>> GetUserByRoleAsync(Role role)
+        {
+            var users = await _userService.GetUserByRoleAsync(role);
+            return new ApiResponse<List<UserDto.UserResponse>>
+            {
+                StatusCode = 200,
+                Message = "Get user by role successfully",
+                IsSuccess = true,
+                Data = users
+            };
+        }
+
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
         [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -193,7 +213,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserDto>> CreateUserAsync(UserDto userDto)
+        public async Task<ActionResult<UserDto>> CreateUserAsync(UserDto.UserRequest userDto)
         {
             try
             {
@@ -250,7 +270,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserDto>> UpdateUserAsync(Guid userId, UserDto userDto)
+        public async Task<ActionResult<UserDto>> UpdateUserAsync(Guid userId, UserDto.UserRequest userDto)
         {
             try
             {
