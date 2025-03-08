@@ -1,27 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Box, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import StepTracker from "../../components/Ticket/StepTracker";
 import MovieDetail from "../../components/Movie/MovieDetail";
-import ShowTime from "../../components/Ticket/ShowTime";
-import ListCinema from "../../components/Ticket/ListCinema";
+import ShowTimeCinema from "../../components/Ticket/ShowTimeCinema";
 import TicketPrice, { TicketType } from "../../components/Ticket/TicketPrice";
 import Footer from "../../components/home/Footer";
-import { format } from "date-fns";
 import toast from "react-hot-toast";
 
 const Ticket: React.FC = () => {
   const navigate = useNavigate();
-
-  const [selectedDate, setSelectedDate] = useState(() => {
-    return format(new Date(), "dd/MM");
-  });
+  // Lift the selected date and time to the parent component.
+  const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+
+  // movieId could come from props, context, or elsewhere. For now we hardcode it.
+  const movieId = "321fb7db-6361-4c64-8e16-fedfec9736a4";
 
   const handleTicketSelection = (tickets: TicketType[]) => {
     // Validate that a showtime is selected
     if (!selectedTime) {
-      toast.error("Vui lòng chọn xuất chiếu!");
+      toast.error("Vui lòng chọn suất chiếu!");
       return;
     }
     // Validate that at least one ticket is selected
@@ -30,8 +29,9 @@ const Ticket: React.FC = () => {
       toast.error("Vui lòng chọn ít nhất 1 vé!");
       return;
     }
-    navigate("/movie-seat", {
+    navigate("/ticket/movie-seat", {
       state: {
+        movieId,
         selectedDate,
         selectedTime,
         tickets,
@@ -57,16 +57,11 @@ const Ticket: React.FC = () => {
           {/* Movie details */}
           <MovieDetail />
 
-          {/* ShowTime component for picking date */}
-          <ShowTime
-            selectedDate={selectedDate}
-            onDateChange={(newDate) => setSelectedDate(newDate)}
-          />
-
-          {/* ListCinema for picking a showtime */}
-          <ListCinema
-            selectedTime={selectedTime}
-            onTimeSelect={(time: string) => setSelectedTime(time)}
+          {/* ShowTime component for picking date and time */}
+          <ShowTimeCinema
+            movieId={movieId}
+            onSelectDate={(date: string) => setSelectedDate(date)}
+            onSelectTime={(time: string) => setSelectedTime(time)}
           />
 
           {/* TicketPrice for selecting ticket types/quantities */}

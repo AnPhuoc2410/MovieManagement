@@ -14,7 +14,7 @@ import AppTheme from "../../../shared-theme/AppTheme";
 import { Box, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import MovieDetail from "../../../components/Movie/MovieDetail";
-import ShowTime from "../../../components/Ticket/ShowTime";
+import ShowTime from "../../../components/Ticket/ShowTimeCinema";
 import ListCinema from "../../../components/Ticket/ListCinema";
 import TicketPrice, {
   TicketType,

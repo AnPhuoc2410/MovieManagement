@@ -82,7 +82,7 @@ const Payment: React.FC = () => {
     if (hasError) return;
 
     toast.success("Đặt vé thành công!");
-    navigate("/confirmation", {
+    navigate("/ticket/confirmation", {
       state: {
         movieTitle,
         screen,

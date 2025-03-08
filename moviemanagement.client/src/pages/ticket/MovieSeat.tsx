@@ -29,7 +29,7 @@ const MovieSeat: React.FC = () => {
       toast.error(`Vui lòng chọn đúng ${maxSeats} ghế.`);
       return;
     }
-    navigate("/payment", {
+    navigate("/ticket/payment", {
       state: { selectedDate, selectedTime, tickets, seats: selectedSeats },
     });
   };

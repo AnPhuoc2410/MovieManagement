@@ -58,7 +58,7 @@ const ClientPages = {
     Detail: lazy(() => import("./pages/promotion/PromotionDetail")),
   },
   Ticket: {
-    Booking: lazy(() => import("./pages/ticket/DateMovie")),
+    Booking: lazy(() => import("./pages/ticket/ShowTime")),
     Seat: lazy(() => import("./pages/ticket/MovieSeat")),
     Payment: lazy(() => import("./pages/ticket/Payment")),
     Confirmation: lazy(() => import("./pages/ticket/Confirmation")),
@@ -112,7 +112,7 @@ export default function useRouteElements() {
           ],
         },
         {
-          path: "/showtime",
+          path: "/ticket",
           children: [
             { path: ":id", element: <ClientPages.Ticket.Booking /> },
             { path: "movie-seat", element: <ClientPages.Ticket.Seat /> },
