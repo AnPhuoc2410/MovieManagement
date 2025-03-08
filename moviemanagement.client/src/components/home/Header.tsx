@@ -1,6 +1,7 @@
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { AccountCircleOutlined, FastfoodOutlined } from "@mui/icons-material";
+import LocalActivityOutlinedIcon from "@mui/icons-material/LocalActivityOutlined";
+import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import {
   AppBar,
   Box,
@@ -11,13 +12,10 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import LanguageSelector from "../common/LanguageSelector";
-import LocalActivityOutlinedIcon from "@mui/icons-material/LocalActivityOutlined";
-import { AccountCircleOutlined, FastfoodOutlined } from "@mui/icons-material";
-import MenuIcon from "@mui/icons-material/Menu";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();

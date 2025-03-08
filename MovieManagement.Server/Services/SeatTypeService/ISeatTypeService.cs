@@ -5,12 +5,12 @@ namespace MovieManagement.Server.Services.SeatTypeService
     public interface ISeatTypeService
     {
 
-        Task<SeatTypeDto> CreateAsync(SeatTypeDto seatType);
-        Task<SeatTypeDto> GetByIdAsync(Guid SeatTypeId);
-        Task<IEnumerable<SeatTypeDto>> GetPageAsync(int page, int pageSize);
-        Task<IEnumerable<SeatTypeDto>> GetAllAsync();
-        Task<SeatTypeDto> UpdateAsync(Guid SeatTypeId, SeatTypeDto seatType);
-        Task<bool> DeleteAsync(Guid SeatTypeId);
+        Task<SeatTypeDto> CreateSeatTypeAsync(SeatTypeDto seatType);
+        Task<SeatTypeDto> GetSeatTypeByIdAsync(Guid SeatTypeId);
+        Task<IEnumerable<SeatTypeDto>> GetSeatTypePageAsync(int page, int pageSize);
+        Task<IEnumerable<SeatTypeDto>> GetAllSeatTypesAsync();
+        Task<SeatTypeDto> UpdateSeatTypeAsync(Guid SeatTypeId, SeatTypeDto seatType);
+        Task<bool> DeleteSeatTypeAsync(Guid SeatTypeId);
 
 
     }

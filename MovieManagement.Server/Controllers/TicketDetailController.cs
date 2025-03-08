@@ -2,9 +2,11 @@
 
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories.IRepositories;
+using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.TicketDetailServices;
 
 namespace MovieManagement.Server.Controllers
@@ -23,75 +25,358 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet]
-        [Route("GetAll")]
-        public async Task<ActionResult> GetAllTicketDetail()
+        [Route("all")]
+        [ProducesResponseType(typeof(ApiResponseServices<TicketDetailDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAllTicketDetailAsync()
         {
-            var ticket = await _ticketDetailService.GetAllAsync();
-            return Ok(ticket);
+            try
+            {
+                var ticket = await _ticketDetailService.GetAllTicketDetailsAsync();
+                if (ticket == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Ticket detail not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(ticket);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating category",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
 
 
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
-        public async Task<ActionResult> GetPageAsync(int page, int pageSize)
+        [ProducesResponseType(typeof(ApiResponseServices<TicketDetailDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetTicketDetailPageAsync(int page, int pageSize)
         {
-            var ticketDetails = await _ticketDetailService.GetPageAsync(page, pageSize);
-            return Ok(ticketDetails);
+            try
+            {
+                var ticketDetails = await _ticketDetailService.GetTicketDetailPageAsync(page, pageSize);
+                if (ticketDetails == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Ticket detail not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(ticketDetails);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating category",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<TicketDetailDto>> GetTicketDetail(Guid id)
+        [ProducesResponseType(typeof(ApiResponseServices<TicketDetailDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<TicketDetailDto>> GetTicketDetailAsync(Guid id)
         {
-            var ticket = await _ticketDetailService.GetByIdAsync(id);
-            if (ticket == null)
+            try
             {
-                return NotFound();
+                var ticket = await _ticketDetailService.GetTicketDetailByIdAsync(id);
+                if (ticket == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Ticket detail not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(ticket);
             }
-            return ticket;
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating category",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
 
         [HttpPost]
-        [Route("Create")]
-        public async Task<ActionResult<TicketDetail>> CreateTicketDetail([FromBody] TicketDetailDto ticketDetail)
-        {
-            var createdTicketDetail = _ticketDetailService.CreateAsync(ticketDetail);
-            return Ok(createdTicketDetail);
-        }
-
-
-        [HttpPut("Update/{id:guid}")]
-        public async Task<IActionResult> UpdateTicketDetail(Guid id, [FromBody] TicketDetailDto ticketDetailDto)
+        [ProducesResponseType(typeof(ApiResponseServices<TicketDetailDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<TicketDetailDto>> CreateTicketDetailAsync([FromBody] TicketDetailDto ticketDetail)
         {
             try
             {
-                var updateTicket = _ticketDetailService.UpdateAsync(id, ticketDetailDto);
-                if (updateTicket == null)
+                var createdTicketDetail = _ticketDetailService.CreateTicketDetailAsync(ticketDetail);
+                if (createdTicketDetail == null)
                 {
-                    throw new Exception("Nothing were found!");
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Ticket detail not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
                 }
-                return Ok(UpdateTicketDetail);
+                return Ok(createdTicketDetail);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating category",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
 
 
-        [HttpDelete("Delete/{id:guid}")]
-        public async Task<IActionResult> DeleteTicketDetail(Guid id)
+        [HttpPut("{id:guid}")]
+        [ProducesResponseType(typeof(ApiResponseServices<TicketDetailDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<TicketDetailDto>> UpdateTicketDetailAsync(Guid id, [FromBody] TicketDetailDto ticketDetailDto)
         {
-            var result = await _ticketDetailService.DeleteAsync(id);
-            if (!result)
+            try
             {
-                return NotFound();
+                var UpdateTicketDetail = _ticketDetailService.UpdateTicketDetailAsync(id, ticketDetailDto);
+                if (UpdateTicketDetail == null)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Ticket detail not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(UpdateTicketDetail);
             }
-            return NoContent();
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while updating category",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
         }
 
 
-
+        [HttpDelete("{id:guid}")]
+        [ProducesResponseType(typeof(ApiResponseServices<TicketDetailDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteTicketDetailAsync(Guid id)
+        {
+            try
+            {
+                var isDeleted = await _ticketDetailService.DeleteTicketDetailAsync(id);
+                if (!isDeleted)
+                {
+                    var response = new ApiResponseServices<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Ticket detail not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(isDeleted);
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized Access",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponseServices<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while deleting show time",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
     }
 }

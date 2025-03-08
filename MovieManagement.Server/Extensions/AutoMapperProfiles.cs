@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.ResponseModel;
 namespace MovieManagement.Server.Extensions
 {
     public class AutoMapperProfiles : Profile
@@ -21,7 +22,7 @@ namespace MovieManagement.Server.Extensions
             CreateMap<RoomDto, Room>();
 
             CreateMap<Bill, BillDto>();
-            CreateMap<BillDto, BillDto>();
+            CreateMap<BillDto, Bill>();
 
             CreateMap<SeatType, SeatTypeDto>();
             CreateMap<SeatTypeDto, SeatType>();
@@ -37,6 +38,15 @@ namespace MovieManagement.Server.Extensions
 
             CreateMap<Category, CategoryDto>();
             CreateMap<CategoryDto, Category>();
+
+            CreateMap<Room, RoomResponseModel>();
+            CreateMap<RoomResponseModel, Room>();
+
+            CreateMap<Seat, SeatResponseModel>();
+            CreateMap<SeatResponseModel, Seat>();
+
+            CreateMap<SeatType, SeatTypeResponseModel>();
+            CreateMap<SeatTypeResponseModel, SeatType>();
 
         }
     }

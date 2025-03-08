@@ -35,7 +35,7 @@ namespace MovieManagement.Server.Repositories
         public async Task<List<Movie>> GetMoviesByNameRelative(string name, int page, int pageSize)
         {
             return await _context.Movies
-                .Where(m => m.Name.ToLower().Contains(name.ToLower()))
+                .Where(m => m.MovieName.ToLower().Contains(name.ToLower()))
                 .Skip(page * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

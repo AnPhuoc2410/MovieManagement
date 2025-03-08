@@ -38,7 +38,7 @@ namespace MovieManagement.Server.Migrations
                     b.Property<decimal>("Point")
                         .HasColumnType("numeric(10,2)");
 
-                    b.Property<Guid>("PromotionId")
+                    b.Property<Guid?>("PromotionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
@@ -85,7 +85,7 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Movie", b =>
                 {
-                    b.Property<Guid>("MovieId")
+                    b.Property<Guid?>("MovieId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
@@ -111,9 +111,9 @@ namespace MovieManagement.Server.Migrations
                     b.Property<string>("Image")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("varchar(50)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("MovieName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(true)
@@ -142,6 +142,33 @@ namespace MovieManagement.Server.Migrations
                     b.HasKey("MovieId");
 
                     b.ToTable("MOVIE", (string)null);
+                });
+
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.OtpCode", b =>
+                {
+                    b.Property<Guid>("otpId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("varchar(7)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTime>("ExpiredTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IsUsed")
+                        .HasColumnType("int");
+
+                    b.HasKey("otpId");
+
+                    b.ToTable("OTP_CODE", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Promotion", b =>
@@ -187,9 +214,9 @@ namespace MovieManagement.Server.Migrations
                     b.Property<int>("Column")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("RoomName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int>("Row")
                         .HasColumnType("int");
@@ -258,9 +285,12 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.ShowTime", b =>
                 {
-                    b.Property<Guid>("ShowTimeId")
+                    b.Property<Guid?>("ShowTimeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("MovieId")
                         .HasColumnType("uniqueidentifier");
@@ -366,9 +396,7 @@ namespace MovieManagement.Server.Migrations
                 {
                     b.HasOne("MovieManagement.Server.Models.Entities.Promotion", "Promotion")
                         .WithMany("Bills")
-                        .HasForeignKey("PromotionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PromotionId");
 
                     b.HasOne("MovieManagement.Server.Models.Entities.User", "User")
                         .WithMany("Bills")

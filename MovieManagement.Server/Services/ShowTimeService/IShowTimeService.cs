@@ -5,11 +5,13 @@ namespace MovieManagement.Server.Services.ShowTimeService
 {
     public interface IShowTimeService
     {
-        Task<ShowTimeDto> CreateAsync(ShowTimeDto showtime);
-        Task<ShowTimeDto> GetByComposeId(Guid movieId, Guid roomId);
-        Task<IEnumerable<ShowTimeDto>> GetPageAsync(int page, int pageSize);
-        Task<IEnumerable<ShowTimeDto>> GetAll();
-        Task<ShowTimeDto> UpdateAsync(Guid movieId, Guid roomId, ShowTimeDto showtime);
-        Task<bool> DeleteAsync(Guid movieId, Guid roomId);
+        Task<ShowTimeDto> CreateShowtimeAsync(ShowTimeDto showtime);
+        Task<ShowTimeDto> GetShowtimeByIdAsync(Guid showTimeId);
+        Task<IEnumerable<ShowTimeDto>> GetShowtimePageAsync(int page, int pageSize);
+        Task<IEnumerable<ShowTimeDto>> GetAllShowtime();
+        Task<ShowTimeDto> UpdateShowtimeAsync(Guid showTimeId, ShowTimeDto showtime);
+        Task<bool> DeleteShowtimeAsync(Guid showTimeId);
+
+        Task<Dictionary<DateTime, List<ShowTimeDto>>> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate);
     }
 }

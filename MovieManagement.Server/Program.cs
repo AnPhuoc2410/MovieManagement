@@ -18,12 +18,12 @@ namespace MovieManagement.Server
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
             builder.Services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
@@ -79,9 +79,6 @@ namespace MovieManagement.Server
 
             // Đăng ký UnitOfWork
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            // Đăng ký JwtService
-            //builder.Services.AddScoped<JwtService>();
 
             // Đăng Ký GenericRepository, Repository và Service
             builder.Services.AddAllDependencies("Repository", "Service", "UnitOfWork");

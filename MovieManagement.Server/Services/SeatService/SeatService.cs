@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 
@@ -15,74 +17,146 @@ namespace MovieManagement.Server.Services.SeatService
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<SeatDto>> GetAllAsync()
+        public async Task<IEnumerable<SeatDto>> GetAllSeatAsync()
         {
-            var seats = await _unitOfWork.SeatRepository.GetAllAsync();
-            return _mapper.Map<List<SeatDto>>(seats);
-        }
-        public async Task<IEnumerable<SeatDto>> GetPageAsync(int page, int pageSize)
-        {
-            var seats = await _unitOfWork.SeatRepository.GetPageAsync(page, pageSize);
-            return _mapper.Map<IEnumerable<SeatDto>>(seats);
-        }
-        public async Task<SeatDto> GetByIdAsync(Guid seatId)
-        {
-            var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
-            return _mapper.Map<SeatDto>(seat);
-        }
-
-        public async Task<SeatDto> CreateAsync(SeatDto seat)
-        {
-            var newSeat = new Seat
+            try
             {
-                AtRow = seat.AtRow,
-                AtColumn = seat.AtColumn,
-                RoomId = seat.RoomId,
-                SeatTypeId = seat.SeatTypeId,
-                IsActive = true
-            };
-            var createdSeat = await _unitOfWork.SeatRepository.CreateAsync(newSeat);
-            return _mapper.Map<SeatDto>(createdSeat);
+                var seats = await _unitOfWork.SeatRepository.GetAllAsync();
+                if (seats == null)
+                    throw new NotFoundException("Seats not found!");
+                return _mapper.Map<List<SeatDto>>(seats);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access the database due to a system error.", ex);
+            }
         }
 
-        public async Task<SeatDto> UpdateAsync(Guid seatId, SeatDto seat)
+        public async Task<IEnumerable<SeatDto>> GetSeatPageAsync(int page, int pageSize)
         {
-            var newSeat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
-
-            newSeat.AtRow = seat.AtRow;
-            newSeat.AtColumn = seat.AtColumn;
-            newSeat.RoomId = seat.RoomId;
-            newSeat.SeatTypeId = seat.SeatTypeId;
-            newSeat.IsActive = seat.IsActive;
-
-            var updatedSeat = await _unitOfWork.SeatRepository.UpdateAsync(newSeat);
-            return _mapper.Map<SeatDto>(updatedSeat);
+            try
+            {
+                var seats = await _unitOfWork.SeatRepository.GetPageAsync(page, pageSize);
+                if (seats == null)
+                    throw new NotFoundException("Seats not found!");
+                return _mapper.Map<List<SeatDto>>(seats);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access the database due to a system error.", ex);
+            }
         }
 
-        public async Task<bool> DeleteAsync(Guid seatId)
+        public async Task<SeatDto> GetSeatByIdAsync(Guid seatId)
         {
-            return await _unitOfWork.SeatRepository.DeleteAsync(seatId);
+            try
+            {
+                var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
+                if (seat == null)
+                    throw new NotFoundException("Seat not found!");
+                return _mapper.Map<SeatDto>(seat);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access the database due to a system error.", ex);
+            }
         }
 
-        public async Task CreateByRoomAsync(Guid SeatTypeId, Guid roomId)
+        public async Task<SeatDto> CreateSeatAsync(SeatDto seat)
         {
+            try
+            {
+                var newSeat = _mapper.Map<Seat>(seat);
+                newSeat.SeatId = Guid.NewGuid();
+                var createdSeat = await _unitOfWork.SeatRepository.CreateAsync(newSeat);
+                if (createdSeat == null)
+                    throw new Exception("Failed to create seat.");
+                return _mapper.Map<SeatDto>(createdSeat);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while processing into the database.", ex);
+            }
+        }
+
+        public async Task<SeatDto> UpdateSeatAsync(Guid seatId, SeatDto seatDto)
+        {
+            try
+            {
+                var existingSeat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
+                if (existingSeat == null)
+                    throw new NotFoundException("Seat not found!");
+
+                _mapper.Map(seatDto, existingSeat);
+
+                var updatedSeat = await _unitOfWork.SeatRepository.UpdateAsync(existingSeat);
+                if (updatedSeat == null)
+                    throw new DbUpdateException("Fail to update seat.");
+                return _mapper.Map<SeatDto>(updatedSeat);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access the database due to a system error.", ex);
+            }
+        }
+
+        public async Task<bool> DeleteSeatAsync(Guid seatId)
+        {
+            try
+            {
+                var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
+                if (seat == null)
+                    throw new NotFoundException("Seat not found!");
+
+                return await _unitOfWork.SeatRepository.DeleteAsync(seatId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access the database due to a system error.", ex);
+            }
+        }
+
+        public async Task<bool> CreateByRoomIdAsync(Guid roomId, Guid SeatTypeId)
+        {
+            bool isCompleted = false;
             var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
+
+            if (room == null)
+            {
+                throw new ArgumentException("Room not found", nameof(roomId));
+            }
+
+            var seatType = await _unitOfWork.SeatTypeRepository.GetByIdAsync(SeatTypeId);
+            if (seatType == null)
+            {
+                throw new ArgumentException("SeatType not found", nameof(SeatTypeId));
+            }
+
+            var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
+            if (seats.Any())
+            {
+                throw new ArgumentException("Seats already created", nameof(roomId));
+            }
 
             for (int i = 0; i < room.Row; i++)
             {
                 for (int j = 0; j < room.Column; j++)
                 {
-                    _unitOfWork.SeatRepository.Create(new Seat
+                    var newSeat = new Seat
                     {
                         AtRow = NumberToLetter(i).ToString(),
                         AtColumn = j + 1,
                         RoomId = roomId,
                         SeatTypeId = SeatTypeId,
-                        IsActive = true
-                    });
+                        IsActive = true,
+                        SeatId = Guid.NewGuid()
+                    };
+                    await _unitOfWork.SeatRepository.CreateAsync(newSeat);
                 }
             }
 
+            isCompleted = await _unitOfWork.CompleteAsync() == 0;
+            return isCompleted;
         }
 
         public static int LetterToNumber(char letter)

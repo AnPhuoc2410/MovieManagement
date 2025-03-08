@@ -5,11 +5,11 @@ namespace MovieManagement.Server.Services.PromotionService
 {
     public interface IPromotionService
     {
-        Task<PromotionDto> CreateAsync(PromotionDto promotion);
-        Task<IEnumerable<PromotionDto>> GetPageAsync(int page, int pageSize);
-        Task<PromotionDto> GetByIdAsync(Guid id);
-        Task<IEnumerable<PromotionDto>> GetAllAsync();
-        Task<PromotionDto> UpdateAsync(Guid id, PromotionDto promotion);
-        Task<bool> DeleteAsync(Guid id);
+        Task<PromotionDto> CreatePromotionAsync(PromotionDto promotion);
+        Task<IEnumerable<PromotionDto>> GetPromotionPageAsync(int page, int pageSize);
+        Task<PromotionDto> GetPromotionByIdAsync(Guid id);
+        Task<IEnumerable<PromotionDto>> GetAllPromotionsAsync();
+        Task<PromotionDto> UpdatePromotionAsync(Guid id, PromotionDto promotion);
+        Task<bool> DeletePromotionAsync(Guid id);
     }
 }

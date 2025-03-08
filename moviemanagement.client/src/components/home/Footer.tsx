@@ -10,6 +10,8 @@ import {
 import React from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import { FastfoodOutlined } from "@mui/icons-material";
+import LocalActivityOutlinedIcon from "@mui/icons-material/LocalActivityOutlined";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -56,31 +58,80 @@ const Footer: React.FC = () => {
               variant="contained"
               fullWidth
               sx={{
-                mb: 1,
+                display: { xs: "none", md: "flex" },
+                fontWeight: "bold",
+                position: "relative",
+                overflow: "hidden",
                 bgcolor: "yellow",
                 color: "black",
+                transition: "color 0.5s ease-in-out",
+                minWidth: "auto",
+                px: 2,
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                  transform: "translateX(-100%)",
+                  transition: "transform 0.5s ease-in-out",
+                  zIndex: 0,
+                },
                 "&:hover": {
-                  bgcolor: "#834BFF",
                   color: "white",
                 },
+                "&:hover::before": {
+                  transform: "translateX(0)",
+                },
+                "& span": {
+                  position: "relative",
+                  zIndex: 1,
+                  whiteSpace: "nowrap",
+                },
               }}
+              startIcon={<LocalActivityOutlinedIcon />}
             >
-              {t("footer.book_ticket")}
+              <span>{t("footer.book_ticket")}</span>
             </Button>
             <Button
               onClick={() => navigate("/")}
               variant="contained"
               fullWidth
               sx={{
-                mb: 2,
-                bgcolor: "#834BFF",
+                display: { xs: "none", md: "flex" },
+                fontWeight: "bold",
+                position: "relative",
+                overflow: "hidden",
+                bgcolor: "#834bff",
+                color: "white",
+                transition: "color 0.5s ease-in-out",
+                minWidth: "auto",
+                px: 2,
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                  transform: "translateX(-100%)",
+                  transition: "transform 0.5s ease-in-out",
+                  zIndex: 0,
+                },
                 "&:hover": {
-                  bgcolor: "yellow",
                   color: "black",
                 },
+                "&:hover::before": {
+                  transform: "translateX(0)",
+                },
+                "& span": {
+                  position: "relative",
+                  zIndex: 1,
+                  whiteSpace: "nowrap",
+                },
               }}
+              startIcon={<FastfoodOutlined />}
             >
-              {t("footer.book_snacks")}
+              <span>{t("footer.book_snacks")}</span>
             </Button>
             <Typography variant="subtitle2" gutterBottom>
               {t("footer.social_media")}:
