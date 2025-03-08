@@ -15,32 +15,8 @@
 <body>
   <div id="root"></div>
   <script>
-    (function () {
-      const now = Date.now();
-      const lastRefreshTime = sessionStorage.getItem("lastRefreshTime");
-      let refreshCount = parseInt(sessionStorage.getItem("refreshCount")) || 0;
-
-      if (lastRefreshTime) {
-        const diff = now - lastRefreshTime;
-        // If refreshed within 2000ms (2 seconds), count it as a "spam" refresh
-        if (diff < 2000) {
-          refreshCount++;
-        } else {
-          refreshCount = 1;
-        }
-      } else {
-        refreshCount = 1;
-      }
-
-      sessionStorage.setItem("lastRefreshTime", now);
-      sessionStorage.setItem("refreshCount", refreshCount);
-
+    function displayConsoleMessage() {
       console.clear();
-
-      if (refreshCount > 3) {
-        console.log("You're refreshing too fast! Please slow down.");
-      }
-
       console.log(`
     :::,
  '::::'._
@@ -74,46 +50,17 @@
                '-'-'  PIKACHU!
   `);
       console.log("“No Code No Bug.” – An Phuoc Dao");
-    })();
+    }
+
+    // On page refresh (or load), display the message
+    displayConsoleMessage();
+
+    // Also listen for F12 key press to display the same message
     document.addEventListener("keydown", function (event) {
       if (event.key === "F12") {
-        console.clear();
-        console.log(`
-     :::,
- '::::'._
-   '.    '.                        __.,,.
-     '.    '.                _..-'''':::"
-       \     \,.--""""--.,-''      _:'
-   /\   \  .               .    .-'
-  /  \   \                   ':'
- /    \  :                     :
-/      \:                       :
-\       :                       :
- \      :      ,--,         ,-,  :
-  \    :      |(_):|       |():| :
-   \   :     __'--'   __    '-'_  :
-    \  :    /  \      \/      / \ :
-     \  :  (    )             \_/ :
-  .-'' . :  \__/   '--''--'      :
-  \  . .-:'.                   .:
-   \' :| :  '-.__      ___...-' :
-    \::|:        ''''''          '.
-  .,:::':  :                       '.
-   \::\:   :                         '._
-    \::    :     /             '-._     '.
-     \:    :    /              .   :-._ :-'
-      :    :   /               :   :  ''
-      :   .'   )'.             :   :
-       :  :  .'   '.          :   :
-        : '..'      :      _.' _.:
-         '._        :..---'\'''  _)
-            '':---''_)      '-'-'
-               '-'-'  PIKACHU!
-    `);
-        console.log("“No Code No Bug.” – An Phuoc Dao");
+        displayConsoleMessage();
       }
     });
-
   </script>
   <script type="module" src="/src/main.tsx"></script>
   <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
