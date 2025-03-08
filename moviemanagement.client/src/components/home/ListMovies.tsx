@@ -226,7 +226,7 @@ const MovieSlider = ({
                     fontWeight: "bold",
                     width: "120px",
                   }}
-                  onClick={() => navigate(`/showtime/${index}`)}
+                  onClick={() => navigate(`/ticket/${index}`)}
                 >
                   {t("book_ticket")}
                 </Button>

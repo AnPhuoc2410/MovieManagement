@@ -14,12 +14,13 @@ import AppTheme from "../../../shared-theme/AppTheme";
 import { Box, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import MovieDetail from "../../../components/Movie/MovieDetail";
-import ShowTime from "../../../components/Ticket/ShowTime";
+import ShowTime from "../../../components/Ticket/ShowTimeCinema";
 import ListCinema from "../../../components/Ticket/ListCinema";
 import TicketPrice, {
   TicketType,
 } from "../../../components/Ticket/TicketPrice";
 import { format } from "date-fns";
+import toast from "react-hot-toast";
 
 interface BuyTicketProps {
   disableCustomTheme?: boolean;
@@ -38,13 +39,13 @@ export default function BuyTicket({
   const handleTicketSelection = (tickets: TicketType[]) => {
     // Validate that a showtime is selected
     if (!selectedTime) {
-      alert("Vui lòng chọn suất chiếu!");
+      toast.error("Vui lòng chọn suất chiếu!");
       return;
     }
     // Validate that at least one ticket is selected
     const totalTickets = tickets.reduce((sum, t) => sum + (t.quantity || 0), 0);
     if (totalTickets === 0) {
-      alert("Vui lòng chọn ít nhất 1 vé!");
+      toast.error("Vui lòng chọn ít nhất 1 vé!");
       return;
     }
     navigate("/movie-seat", {
