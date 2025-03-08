@@ -8,6 +8,7 @@ import ListCinema from "../../components/Ticket/ListCinema";
 import TicketPrice, { TicketType } from "../../components/Ticket/TicketPrice";
 import Footer from "../../components/home/Footer";
 import { format } from "date-fns";
+import toast from "react-hot-toast";
 
 const Ticket: React.FC = () => {
   const navigate = useNavigate();
@@ -20,13 +21,13 @@ const Ticket: React.FC = () => {
   const handleTicketSelection = (tickets: TicketType[]) => {
     // Validate that a showtime is selected
     if (!selectedTime) {
-      alert("Vui lòng chọn xuất chiếu!");
+      toast.error("Vui lòng chọn xuất chiếu!");
       return;
     }
     // Validate that at least one ticket is selected
     const totalTickets = tickets.reduce((sum, t) => sum + (t.quantity || 0), 0);
     if (totalTickets === 0) {
-      alert("Vui lòng chọn ít nhất 1 vé!");
+      toast.error("Vui lòng chọn ít nhất 1 vé!");
       return;
     }
     navigate("/movie-seat", {
