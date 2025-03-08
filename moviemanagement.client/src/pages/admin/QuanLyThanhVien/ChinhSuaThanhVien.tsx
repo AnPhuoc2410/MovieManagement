@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router";
 import { fetchThanhVienDetail } from "../../../apis/mock.apis";
-import LoadingSpinner from "../../../components/LoadingSpinner";
+import Loader from "../../../components/shared/Loading";
 import { ThanhVien } from "./BangThanhVien";
 
 import type {} from "@mui/x-charts/themeAugmentation";
@@ -60,7 +60,7 @@ const ChinhSuaThanhVien: React.FC = ({
 
   if (!memberData) return null;
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <div>Failed to fetch data</div>;
   if (!memberData) return <div>No employee data found</div>;
 

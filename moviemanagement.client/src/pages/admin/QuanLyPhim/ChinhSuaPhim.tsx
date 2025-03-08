@@ -18,7 +18,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router";
 import { getCategoryList, getFilmDetail } from "../../../apis/mock.apis";
-import LoadingSpinner from "../../../components/LoadingSpinner";
+import Loader from "../../../components/shared/Loading";
 import { Category } from "../../../types/category.types";
 import { Movie } from "../../../types/movie.types";
 
@@ -94,7 +94,7 @@ const ChinhSuaPhim: React.FC = ({
     fetchCategories();
   }, []);
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <div>Failed to fetch data</div>;
   if (!filmDetail) return <div>No movie found with ID: {id}</div>;
 

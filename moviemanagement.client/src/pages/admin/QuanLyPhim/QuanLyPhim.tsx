@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import { getFilmList } from "../../../apis/mock.apis";
-import LoadingSpinner from "../../../components/LoadingSpinner";
+import Loader from "../../../components/shared/Loading";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import { QuanLyPhimType } from "../../../types/movie.types";
 import FilmTable from "./BangPhim";
@@ -14,7 +14,7 @@ const QuanLyPhim = () => {
     error,
   } = useQuery<QuanLyPhimType[]>("QuanLyPhimData", () => getFilmList("all"));
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <div>Failed to fetch data</div>;
 
   const handleEdit = (id: string) => {

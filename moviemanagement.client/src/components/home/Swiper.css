@@ -1,7 +1,6 @@
-
 .custom-swiper {
-  position: static!important;
-  display: grid!important;
+  position: static !important;
+  display: grid !important;
 }
 .swiper-wrapper {
   display: flex;
@@ -55,4 +54,3 @@
   opacity: 1;
   background-color: #834bff; /* Active bullet color */
 }
-

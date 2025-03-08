@@ -14,8 +14,8 @@ import axios from "axios";
 import dayjs from "dayjs";
 import CloudinaryImage from "../../components/cloudinary/CloudinaryImage";
 import { useTranslation } from "react-i18next";
-import LoadingSpinner from "../../components/LoadingSpinner";
 import toast from "react-hot-toast";
+import Loader from "../../components/shared/Loading";
 
 interface Promotion {
   promotionId: string;
@@ -58,7 +58,7 @@ const PromotionsPage: React.FC = () => {
     fetchPromotions();
   }, [page]);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <Loader />;
 
   return (
     <Box

@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router";
 import { fetchNhanVien } from "../../../apis/mock.apis";
-import LoadingSpinner from "../../../components/LoadingSpinner";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import EmployeeTable, { Employee } from "./BangNhanVien";
 import XoaNhanVien from "./XoaNhanVien";
+import Loader from "../../../components/shared/Loading";
 
 const QuanLiNhanVien: React.FC = () => {
   const {
@@ -46,7 +46,7 @@ const QuanLiNhanVien: React.FC = () => {
     setSelectedEmployee(null);
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <div>Failed to fetch data</div>;
 
   return (
