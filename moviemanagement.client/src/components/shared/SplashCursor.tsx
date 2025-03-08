@@ -8,6 +8,7 @@ interface ColorRGB {
 }
 
 interface SplashCursorProps {
+  children: React.ReactNode;
   SIM_RESOLUTION?: number;
   DYE_RESOLUTION?: number;
   CAPTURE_RESOLUTION?: number;
@@ -20,7 +21,7 @@ interface SplashCursorProps {
   SPLAT_FORCE?: number;
   SHADING?: boolean;
   COLOR_UPDATE_SPEED?: number;
-  BACK_COLOR?: ColorRGB;
+  BACK_COLOR?: { r: number; g: number; b: number };
   TRANSPARENT?: boolean;
 }
 
@@ -53,6 +54,7 @@ function pointerPrototype(): Pointer {
 }
 
 export default function SplashCursor({
+  children,
   SIM_RESOLUTION = 128,
   DYE_RESOLUTION = 1440,
   CAPTURE_RESOLUTION = 512,
@@ -1539,12 +1541,38 @@ export default function SplashCursor({
   ]);
 
   return (
-    <div className="fixed top-0 left-0 z-50 pointer-events-none w-full h-full">
-      <canvas
-        ref={canvasRef}
-        id="fluid"
-        className="w-screen h-screen block"
-      ></canvas>
+    <div style={{ position: "relative", minHeight: "100vh" }}>
+      {/* Canvas container with fixed position and proper z-index */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
+          pointerEvents: "none",
+        }}
+      >
+        <canvas
+          ref={canvasRef}
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "block",
+          }}
+        />
+      </div>
+
+      {/* Content container with proper z-index */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 }

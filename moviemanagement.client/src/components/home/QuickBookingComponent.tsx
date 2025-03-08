@@ -49,28 +49,39 @@ const QuickBookingComponent = ({ t }: QuickBookingComponentProps) => {
       sx={{
         backgroundColor: "#ECF2FF",
         borderRadius: 1,
-        p: 3,
+        p: { xs: 2, sm: 2.5, md: 3 },
         display: "flex",
-        alignItems: "center",
+        flexDirection: { xs: "column", md: "row" },
+        alignItems: { xs: "stretch", md: "center" },
         margin: "0 auto",
         boxShadow: "0 8px 24px rgba(0, 0, 0, 0.12)",
+        gap: { xs: 2, md: 0 },
       }}
     >
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-          mr: 3,
-          minWidth: "120px",
+          mb: { xs: 1, md: 0 },
+          mr: { md: 3 },
+          minWidth: { md: "120px" },
         }}
       >
-        <Typography variant="h5" fontWeight="bold" color="#464545" noWrap>
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          color="#464545"
+          noWrap
+          sx={{
+            fontSize: { xs: "1.2rem", sm: "1.5rem", md: "h5.fontSize" },
+          }}
+        >
           {t("quick_booking")}
         </Typography>
       </Box>
 
-      <Grid container spacing={2} sx={{ flex: 1 }}>
-        <Grid item xs={12} md={2.2}>
+      <Grid container spacing={{ xs: 1.5, sm: 2 }} sx={{ flex: 1 }}>
+        <Grid item xs={12} sm={6} md={2.2}>
           <FormControl fullWidth variant="outlined" size="small">
             <InputLabel
               id="select-theater-label"
@@ -103,7 +114,7 @@ const QuickBookingComponent = ({ t }: QuickBookingComponentProps) => {
           </FormControl>
         </Grid>
 
-        <Grid item xs={12} md={2.2}>
+        <Grid item xs={12} sm={6} md={2.2}>
           <FormControl fullWidth variant="outlined" size="small">
             <InputLabel
               id="select-movie-label"
@@ -135,7 +146,7 @@ const QuickBookingComponent = ({ t }: QuickBookingComponentProps) => {
           </FormControl>
         </Grid>
 
-        <Grid item xs={12} md={2.2}>
+        <Grid item xs={12} sm={6} md={2.2}>
           <FormControl fullWidth variant="outlined" size="small">
             <InputLabel
               id="select-date-label"
@@ -199,7 +210,7 @@ const QuickBookingComponent = ({ t }: QuickBookingComponentProps) => {
           </FormControl>
         </Grid>
 
-        <Grid item xs={12} md={2.2}>
+        <Grid item xs={12} sm={6} md={2.2}>
           <FormControl fullWidth variant="outlined" size="small">
             <InputLabel
               id="select-showtime-label"
@@ -268,11 +279,11 @@ const QuickBookingComponent = ({ t }: QuickBookingComponentProps) => {
             variant="contained"
             fullWidth
             sx={{
-              height: "40px", // Match the height of MUI's small Select component
+              height: "40px",
               borderRadius: 1,
               fontWeight: "bold",
               textTransform: "none",
-              fontSize: "0.875rem",
+              fontSize: { xs: "0.8rem", sm: "0.875rem" },
               backgroundColor: "#834BFF",
               "&:hover": {
                 backgroundColor: "#6B3FBF",

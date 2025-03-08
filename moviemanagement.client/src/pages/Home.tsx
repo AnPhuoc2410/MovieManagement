@@ -61,6 +61,8 @@ const Homepage: React.FC = () => {
         minHeight: "100vh",
         color: "white",
         position: "relative",
+        zIndex: 1,
+        overflow: "hidden",
       }}
     >
       {/* Preview Modal */}
@@ -69,6 +71,12 @@ const Homepage: React.FC = () => {
         onClose={handleCloseModal}
         aria-labelledby="movie-preview-modal"
         aria-describedby="movie-banner-preview"
+        sx={{
+          "& .MuiBox-root": {
+            width: { xs: "95%", sm: "80%" },
+            maxWidth: "1000px",
+          },
+        }}
       >
         <Box
           sx={{
@@ -140,9 +148,10 @@ const Homepage: React.FC = () => {
       {/* Main content container with position relative and z-index */}
       <Container
         sx={{
-          paddingTop: "100px",
+          paddingTop: { xs: "80px", sm: "90px", md: "100px" },
           position: "relative",
           zIndex: 1,
+          px: { xs: 2, sm: 3, md: 4 },
         }}
       >
         <Box sx={{ color: "white", mb: 3, mt: 2 }}>
@@ -154,7 +163,11 @@ const Homepage: React.FC = () => {
             pagination={{ clickable: false }}
             autoplay={{ delay: 100000 }}
             loop={true}
-            style={{ width: "100%", height: "auto" }}
+            style={{
+              width: "100%",
+              height: "auto",
+              maxHeight: { xs: "200px", sm: "300px", md: "400px" },
+            }}
           >
             {slides.map((slide, index) => (
               <SwiperSlide key={index}>

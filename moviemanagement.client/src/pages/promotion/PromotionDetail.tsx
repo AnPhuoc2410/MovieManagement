@@ -11,6 +11,7 @@ import {
 import Header from "../../components/home/Header";
 import Footer from "../../components/home/Footer";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import dayjs from "dayjs";
 
@@ -27,6 +28,7 @@ interface Promotion {
 const PromotionDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Local state for promotion detail, loading, and error
   const [promotion, setPromotion] = useState<Promotion | null>(null);
@@ -43,14 +45,14 @@ const PromotionDetail: React.FC = () => {
         })
         .catch((err) => {
           console.error("Error fetching promotion:", err);
-          setError("Không thể tải thông tin khuyến mãi.");
+          setError(t("promotion.detail.not_found"));
           setLoading(false);
         });
     } else {
-      setError("Không có mã khuyến mãi.");
+      setError(t("promotion.detail.not_found"));
       setLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   if (loading) {
     return (
@@ -64,7 +66,7 @@ const PromotionDetail: React.FC = () => {
       >
         <Header />
         <Typography variant="h6" align="center">
-          Đang tải...
+          {t("promotion.detail.loading")}
         </Typography>
         <Footer />
       </Box>
@@ -83,14 +85,14 @@ const PromotionDetail: React.FC = () => {
       >
         <Header />
         <Typography variant="h6" align="center">
-          {error || "Không tìm thấy khuyến mãi."}
+          {error || t("promotion.detail.not_found")}
         </Typography>
         <Button
           onClick={() => navigate("/promotions")}
           variant="contained"
           sx={{ mt: 2 }}
         >
-          Quay lại
+          {t("promotion.detail.back")}
         </Button>
         <Footer />
       </Box>
@@ -132,7 +134,8 @@ const PromotionDetail: React.FC = () => {
               {promotion.promotionName}
             </Typography>
             <Typography variant="subtitle2" gutterBottom>
-              Thời gian: {dayjs(promotion.fromDate).format("DD/MM/YYYY")} -{" "}
+              {t("promotion.detail.period")}:{" "}
+              {dayjs(promotion.fromDate).format("DD/MM/YYYY")} -{" "}
               {dayjs(promotion.toDate).format("DD/MM/YYYY")}
             </Typography>
             <Box
@@ -145,7 +148,7 @@ const PromotionDetail: React.FC = () => {
               color="secondary"
               sx={{ mt: 2, alignSelf: "start" }}
             >
-              Đặt Vé Ngay
+              {t("promotion.detail.book_now")}
             </Button>
           </CardContent>
         </Card>

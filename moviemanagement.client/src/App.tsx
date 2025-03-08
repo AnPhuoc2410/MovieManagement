@@ -35,6 +35,7 @@ import UserDetail from "./pages/user/UserDetail/UserDetail";
 import AdminTheme from "./shared-theme/AdminTheme";
 import ChinhSuaThanhVien from "./pages/admin/QuanLyThanhVien/ChinhSuaThanhVien";
 import ThemNhanVienMoi from "./pages/admin/QuanLyNhanVien/ThemNhanVien";
+import { LanguageProvider } from "./contexts/LanguageContext";
 
 const theme = createTheme({
   components: {
@@ -55,89 +56,105 @@ const App = () => {
   const location = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0); // Scroll to the top on route change
+    window.scrollTo(0, 0);
   }, [location]);
 
   return (
     <ThemeProvider theme={theme}>
-      <SplashCursor />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/auth">
+      <LanguageProvider>
+        <Routes>
           <Route
-            path="login"
+            path="/"
             element={
-              <PageTransition>
-                <LoginForm />
-              </PageTransition>
+              <SplashCursor
+                SPLAT_RADIUS={0.2}
+                SPLAT_FORCE={6000}
+                COLOR_UPDATE_SPEED={10}
+              >
+                <Home />
+              </SplashCursor>
             }
           />
-          <Route
-            path="signup"
-            element={
-              <PageTransition>
-                <SignupForm />
-              </PageTransition>
-            }
-          />
-          <Route path="forgot-password" element={<ForgotPassword />} />
-          {/* <Route
-            path="/otp-verification"
-            element={
-              <PageTransition>
-                <OtpVerification />
-              </PageTransition>
-            }
-          /> */}
-        </Route>
-        <Route path="/promotions" element={<Promotion />} />
-        <Route path="/promotions/:id" element={<PromotionDetail />} />
-        <Route path="/showtime/:id" element={<Ticket />} />
-        <Route path="/movie-seat" element={<MovieSeat />} />
-        <Route path="/payment" element={<Payment />} />
-        <Route path="/confirmation" element={<Confirmation />} />
-        <Route path="/users">
-          <Route path="profile/:userId" element={<UserDetail />} />
-        </Route>
-        <Route path="/movies">
-          <Route path="now-showing" element={<NowShowingMoviesPage />} />
-          <Route path="up-coming" element={<UpComingMoviesPage />} />
-        </Route>
 
-        <Route path="/admin">
-          <Route path="" element={<AdminTheme />} />
-          <Route path="thong-ke" element={<Dashboard />} />
-          <Route path="khuyen-mai">
-            <Route path="" element={<PromotionManagement />} />
-            <Route path=":id" element={<PromotionDetailManagement />} />
+          <Route path="/auth">
+            <Route
+              path="login"
+              element={
+                <PageTransition>
+                  <LoginForm />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="signup"
+              element={
+                <PageTransition>
+                  <SignupForm />
+                </PageTransition>
+              }
+            />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+            {/* <Route
+              path="/otp-verification"
+              element={
+                <PageTransition>
+                  <OtpVerification />
+                </PageTransition>
+              }
+            /> */}
           </Route>
-          <Route path="ql-phim">
-            <Route path="" element={<QuanLyPhim />} />
-            <Route path=":id" element={<ChinhSuaPhim />} />
-            <Route path="them-phim" element={<ThemPhim />} />
+          <Route path="/promotions" element={<Promotion />} />
+          <Route path="/promotions/:id" element={<PromotionDetail />} />
+          <Route path="/showtime/:id" element={<Ticket />} />
+          <Route path="/movie-seat" element={<MovieSeat />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/confirmation" element={<Confirmation />} />
+          <Route path="/users">
+            <Route path="profile/:userId" element={<UserDetail />} />
           </Route>
-          <Route path="ban-ve" element={<BuyTicket />} />
-          <Route path="ql-nhan-vien">
-            <Route path="" element={<QuanLiNhanVien />} />
-            <Route path=":id" element={<ChinhSuaNhanVien />} />
-            <Route path="them-moi" element={<ThemNhanVienMoi />} />
+          <Route path="/movies">
+            <Route path="now-showing" element={<NowShowingMoviesPage />} />
+            <Route path="up-coming" element={<UpComingMoviesPage />} />
           </Route>
-          <Route path="ql-thanh-vien">
-            <Route path="" element={<QuanLiThanhVien />} />
-            <Route path=":id" element={<ChinhSuaThanhVien />} />
+
+          <Route path="/admin">
+            <Route path="" element={<AdminTheme />} />
+            <Route path="thong-ke" element={<Dashboard />} />
+            <Route path="khuyen-mai">
+              <Route path="" element={<PromotionManagement />} />
+              <Route path=":id" element={<PromotionDetailManagement />} />
+            </Route>
+            <Route path="ql-phim">
+              <Route path="" element={<QuanLyPhim />} />
+              <Route path=":id" element={<ChinhSuaPhim />} />
+              <Route path="them-phim" element={<ThemPhim />} />
+            </Route>
+            <Route path="ban-ve" element={<BuyTicket />} />
+            <Route path="ql-nhan-vien">
+              <Route path="" element={<QuanLiNhanVien />} />
+              <Route path=":id" element={<ChinhSuaNhanVien />} />
+              <Route path="them-moi" element={<ThemNhanVienMoi />} />
+            </Route>
+            <Route path="ql-thanh-vien">
+              <Route path="" element={<QuanLiThanhVien />} />
+              <Route path=":id" element={<ChinhSuaThanhVien />} />
+            </Route>
+            <Route path="ql-phong-chieu">
+              <Route path="" element={<QuanLyPhongChieu />} />
+              <Route path=":roomId" element={<ChiTietPhongChieu />} />
+            </Route>
+            <Route path="ql-dat-ve">
+              <Route path="" element={<QuanLyDatVe />} />
+              <Route path=":bId" element={<ChiTietDatVe />} />
+              <Route
+                path="thong-tin-nhan-ve/:bId"
+                element={<ThongTinNhanVe />}
+              />
+            </Route>
           </Route>
-          <Route path="ql-phong-chieu">
-            <Route path="" element={<QuanLyPhongChieu />} />
-            <Route path=":roomId" element={<ChiTietPhongChieu />} />
-          </Route>
-          <Route path="ql-dat-ve">
-            <Route path="" element={<QuanLyDatVe />} />
-            <Route path=":bId" element={<ChiTietDatVe />} />
-            <Route path="thong-tin-nhan-ve/:bId" element={<ThongTinNhanVe />} />
-          </Route>
-        </Route>
-      </Routes>
-      <ToasterWithMax position="top-center" max={3} />
+        </Routes>
+        <ToasterWithMax position="top-center" max={3} />
+      </LanguageProvider>
     </ThemeProvider>
   );
 };

@@ -8,7 +8,6 @@
     "see_more": "See More",
     "now_showing": "NOW SHOWING",
     "upcoming": "UPCOMING",
-    "membership": "MEMBERSHIP PROGRAM",
     "promotions": "PROMOTIONS",
     "list_promotions": "See more Promotions",
     "quick_booking": "Quick Booking",
@@ -22,6 +21,111 @@
     "select_theater3": "My Tho Theater (Binh Duong)",
     "select_theater4": "Kien Giang Theater (Rach Soi)",
     "select_theater5": "Lam Dong Theater (Duc Trong)",
-    "select_theater6": "Da Lat Theater (Da Lat City)"
+    "select_theater6": "Da Lat Theater (Da Lat City)",
+    "footer": {
+      "slogan": "BE HAPPY, BE A STAR",
+      "book_ticket": "BOOK TICKET",
+      "book_snacks": "BOOK SNACKS",
+      "social_media": "SOCIAL MEDIA",
+      "language": "Language",
+      "account": {
+        "title": "ACCOUNT",
+        "login": "Login",
+        "register": "Register",
+        "membership": "Membership"
+      },
+      "movies": {
+        "title": "MOVIES",
+        "now_showing": "Now Showing",
+        "coming_soon": "Coming Soon",
+        "special_screening": "Special Screening"
+      },
+      "theaters": {
+        "title": "OUR THEATERS",
+        "all_theaters": "All Theaters",
+        "quoc_thanh": "Quoc Thanh Theater",
+        "hai_ba_trung": "Hai Ba Trung Theater",
+        "binh_duong": "Binh Duong Theater",
+        "da_lat": "Da Lat Theater"
+      },
+      "legal": {
+        "title": "LEGAL",
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "faq": "FAQ",
+        "about_us": "About Us",
+        "contact": "Contact Us"
+      },
+      "copyright": "© 2025 EIGA. All rights reserved.",
+      "address": "S10.06 Origami, Vinhomes Grandpark"
+    },
+    "auth": {
+      "login": {
+        "title": "Login",
+        "username": "Username",
+        "password": "Password",
+        "forgot_password": "Forgot password?",
+        "login_button": "Login",
+        "processing": "Processing...",
+        "no_account": "Don't have an account?",
+        "signup_link": "Sign up now",
+        "validation": {
+          "username_required": "Username is required",
+          "password_required": "Password is required",
+          "password_length": "Password must be at least 8 characters"
+        }
+      },
+      "signup": {
+        "title": "Sign Up",
+        "steps": {
+          "account": "Account Details",
+          "personal": "Personal Information",
+          "contact": "Contact Information"
+        },
+        "fields": {
+          "username": "Username",
+          "password": "Password",
+          "fullname": "Full Name",
+          "dob": "Date of Birth",
+          "gender": "Gender",
+          "male": "Male",
+          "female": "Female",
+          "id_card": "ID Card",
+          "email": "Email",
+          "address": "Address",
+          "phone": "Phone Number"
+        },
+        "buttons": {
+          "back": "Back",
+          "next": "Next",
+          "signup": "Sign Up",
+          "processing": "Processing..."
+        },
+        "have_account": "Already have an account?",
+        "login_link": "Login now"
+      }
+    },
+    "promotion": {
+      "detail": {
+        "loading": "Loading...",
+        "not_found": "Promotion not found.",
+        "back": "Back",
+        "period": "Period",
+        "book_now": "Book Now"
+      }
+    },
+    "membership": {
+      "title": "MEMBERSHIP PROGRAM",
+      "friend": {
+        "title": "FRIEND MEMBER",
+        "description": "Friend card with many benefits for new members",
+        "button": "LEARN MORE"
+      },
+      "vip": {
+        "title": "VIP MEMBER",
+        "description": "VIP card brings exclusive privileges",
+        "button": "LEARN MORE"
+      }
+    }
   }
 }

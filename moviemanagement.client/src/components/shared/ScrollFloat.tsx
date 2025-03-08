@@ -14,6 +14,7 @@ interface ScrollFloatProps {
   scrollStart?: string;
   scrollEnd?: string;
   stagger?: number;
+  component?: keyof JSX.IntrinsicElements | React.ComponentType<any>;
 }
 
 const ScrollFloat: React.FC<ScrollFloatProps> = ({
@@ -26,8 +27,9 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
   scrollStart = "center bottom+=50%",
   scrollEnd = "bottom bottom-=40%",
   stagger = 0.03,
+  component: Component = "div",
 }) => {
-  const containerRef = useRef<HTMLHeadingElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
 
   const splitText = useMemo(() => {
     const text = typeof children === "string" ? children : "";
@@ -86,16 +88,16 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
   ]);
 
   return (
-    <h2
+    <Component
       ref={containerRef}
       className={`my-5 overflow-hidden ${containerClassName}`}
     >
       <span
         className={`inline-block text-[clamp(1.6rem,4vw,3rem)] leading-[1.5] ${textClassName}`}
       >
-        {splitText}
+        {typeof children === "string" ? splitText : children}
       </span>
-    </h2>
+    </Component>
   );
 };
 

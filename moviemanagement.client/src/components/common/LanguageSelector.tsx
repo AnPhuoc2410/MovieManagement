@@ -1,6 +1,7 @@
 import { Box, ListItemIcon, MenuItem, Select, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { JapanFlag, UsaFlag, VietnamFlag } from "../../data/CustomIcons";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const languages: { [key: string]: { name: string; icon: JSX.Element } } = {
   vi: { name: "VN", icon: <VietnamFlag /> },
@@ -10,15 +11,16 @@ const languages: { [key: string]: { name: string; icon: JSX.Element } } = {
 
 const LanguageSelector = () => {
   const { i18n } = useTranslation();
-  const language = i18n.language;
+  const { currentLanguage, changeLanguage } = useLanguage();
 
   const handleChange = (event: any) => {
-    i18n.changeLanguage(event.target.value);
+    const newLang = event.target.value;
+    changeLanguage(newLang);
   };
 
   return (
     <Select
-      value={language}
+      value={currentLanguage}
       onChange={handleChange}
       displayEmpty
       renderValue={(selected: string) => (

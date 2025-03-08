@@ -12,35 +12,37 @@ import {
 import { useFormik } from "formik";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import * as yup from "yup";
 import { login } from "../../../apis/mock.apis";
 import { useAuth } from "../../../contexts/AuthContext";
-
-const validationSchema = yup.object({
-  username: yup.string().required("Tài khoản không được để trống"),
-  password: yup
-    .string()
-    .test(
-      "is-valid-password",
-      "Mật khẩu phải có ít nhất 8 ký tự",
-      (value, context) => {
-        // Bypass validation for admin/admin in development
-        if (context.parent.username === "admin" && value === "admin") {
-          return true;
-        }
-        // Apply normal validation rules
-        return value !== undefined && value.length >= 8;
-      },
-    )
-    .required("Mật khẩu không được để trống"),
-});
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { authLogin } = useAuth();
+  const { t } = useTranslation();
+
+  const validationSchema = yup.object({
+    username: yup
+      .string()
+      .required(t("auth.login.validation.username_required")),
+    password: yup
+      .string()
+      .test(
+        "is-valid-password",
+        t("auth.login.validation.password_length"),
+        (value, context) => {
+          if (context.parent.username === "admin" && value === "admin") {
+            return true;
+          }
+          return value !== undefined && value.length >= 8;
+        },
+      )
+      .required(t("auth.login.validation.password_required")),
+  });
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -102,19 +104,13 @@ export const Login = () => {
         elevation={3}
         sx={{
           p: 4,
-          maxWidth: 400,
-          mx: "auto",
-          borderRadius: 2,
+          width: "100%",
+          maxWidth: "400px",
+          bgcolor: "background.paper",
         }}
       >
-        <Typography
-          variant="h5"
-          component="h1"
-          gutterBottom
-          align="center"
-          sx={{ mb: 3, fontWeight: 600 }}
-        >
-          Đăng nhập
+        <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
+          {t("auth.login.title")}
         </Typography>
 
         <form onSubmit={formik.handleSubmit}>
@@ -122,7 +118,7 @@ export const Login = () => {
             fullWidth
             id="username"
             name="username"
-            label="Tài khoản"
+            label={t("auth.login.username")}
             value={formik.values.username}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -142,7 +138,7 @@ export const Login = () => {
             fullWidth
             id="password"
             name="password"
-            label="Mật khẩu"
+            label={t("auth.login.password")}
             type={showPassword ? "text" : "password"}
             value={formik.values.password}
             onChange={formik.handleChange}
@@ -172,7 +168,7 @@ export const Login = () => {
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
             <Link href="#" underline="hover" sx={{ fontSize: "0.875rem" }}>
-              Quên mật khẩu?
+              {t("auth.login.forgot_password")}
             </Link>
           </Box>
 
@@ -194,14 +190,16 @@ export const Login = () => {
               },
             }}
           >
-            {loading ? "Đang xử lý..." : "Đăng nhập"}
+            {loading
+              ? t("auth.login.processing")
+              : t("auth.login.login_button")}
           </Button>
 
           <Box sx={{ mt: 3, textAlign: "center" }}>
             <Typography variant="body2" color="text.secondary">
-              Chưa có tài khoản?{" "}
+              {t("auth.login.no_account")}{" "}
               <Link href="/auth/signup" underline="hover">
-                Đăng ký ngay
+                {t("auth.login.signup_link")}
               </Link>
             </Typography>
           </Box>

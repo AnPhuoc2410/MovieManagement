@@ -118,10 +118,26 @@ const MovieSlider = ({
   const { t } = useTranslation();
 
   return (
-    <Container sx={{ mt: 0, textAlign: "center", mb: 13 }}>
-      <Typography variant="h4" fontWeight="bold" sx={{ mb: 5 }}>
-        {title}
-      </Typography>
+    <Container sx={{ mt: { xs: 4, sm: 6, md: 8 }, textAlign: "center" }}>
+      <Box
+        sx={{
+          fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem" },
+          fontWeight: "bold",
+          mb: { xs: 2, sm: 3 },
+          color: "white",
+        }}
+      >
+        <ScrollFloat
+          animationDuration={1}
+          ease="back.inOut(2)"
+          scrollStart="center bottom+=50%"
+          scrollEnd="bottom bottom-=40%"
+          stagger={0.08}
+        >
+          {title}
+        </ScrollFloat>
+      </Box>
+
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={20}
@@ -265,15 +281,16 @@ const ListMovies: React.FC = () => {
       <MovieSlider
         movies={nowShowingMovies}
         title={
-          <ScrollFloat
-            animationDuration={1}
-            ease="back.inOut(2)"
-            scrollStart="center bottom+=50%"
-            scrollEnd="bottom bottom-=40%"
-            stagger={0.07}
+          <Typography
+            component="div"
+            sx={{
+              fontSize: "inherit",
+              fontWeight: "inherit",
+              color: "inherit",
+            }}
           >
             {t("now_showing")}
-          </ScrollFloat>
+          </Typography>
         }
         navigateTo="/movies/now-showing"
       />
@@ -282,15 +299,16 @@ const ListMovies: React.FC = () => {
       <MovieSlider
         movies={upcomingMovies}
         title={
-          <ScrollFloat
-            animationDuration={1}
-            ease="back.inOut(2)"
-            scrollStart="center bottom+=50%"
-            scrollEnd="bottom bottom-=40%"
-            stagger={0.08}
+          <Typography
+            component="div"
+            sx={{
+              fontSize: "inherit",
+              fontWeight: "inherit",
+              color: "inherit",
+            }}
           >
             {t("upcoming")}
-          </ScrollFloat>
+          </Typography>
         }
         navigateTo="/movies/up-coming"
       />

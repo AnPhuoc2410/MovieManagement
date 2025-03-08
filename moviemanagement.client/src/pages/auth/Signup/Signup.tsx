@@ -30,40 +30,44 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 import { signUp } from "../../../apis/mock.apis";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
-
-const validationSchema = yup.object({
-  username: yup.string().required("Tài khoản không được để trống"),
-  password: yup
-    .string()
-    .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
-    .required("Mật khẩu không được để trống"),
-  fullname: yup.string().required("Full name không được để trống"),
-  dob: yup.date().required("Ngày sinh không được để trống"),
-  gender: yup.string().required("Giới tính không được để trống"),
-  cmnd: yup.string().required("CMND không được để trống"),
-  email: yup
-    .string()
-    .email("Email không hợp lệ")
-    .required("Email không được để trống"),
-  address: yup.string().required("Địa chỉ không được để trống"),
-  phone: yup.string().required("Số điện thoại không được để trống"),
-});
 
 export const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const steps = [
-    "Chi tiết tài khoản",
-    "Thông tin cá nhân",
-    "Thông tin liên hệ",
+    t("auth.signup.steps.account"),
+    t("auth.signup.steps.personal"),
+    t("auth.signup.steps.contact"),
   ];
+
+  const validationSchema = yup.object({
+    username: yup
+      .string()
+      .required(t("auth.login.validation.username_required")),
+    password: yup
+      .string()
+      .min(8, t("auth.login.validation.password_length"))
+      .required(t("auth.login.validation.password_required")),
+    fullname: yup.string().required(t("auth.signup.fields.fullname")),
+    dob: yup.date().required(t("auth.signup.fields.dob")),
+    gender: yup.string().required(t("auth.signup.fields.gender")),
+    cmnd: yup.string().required(t("auth.signup.fields.id_card")),
+    email: yup
+      .string()
+      .email("Invalid email")
+      .required(t("auth.signup.fields.email")),
+    address: yup.string().required(t("auth.signup.fields.address")),
+    phone: yup.string().required(t("auth.signup.fields.phone")),
+  });
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -158,14 +162,8 @@ export const Signup = () => {
         elevation={3}
         sx={{ p: 4, maxWidth: 600, mx: "auto", borderRadius: 2 }}
       >
-        <Typography
-          variant="h5"
-          component="h1"
-          gutterBottom
-          align="center"
-          sx={{ mb: 4, fontWeight: 600 }}
-        >
-          Đăng ký tài khoản
+        <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
+          {t("auth.signup.title")}
         </Typography>
 
         <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
@@ -183,7 +181,7 @@ export const Signup = () => {
                 fullWidth
                 id="username"
                 name="username"
-                label="Tài khoản"
+                label={t("auth.signup.fields.username")}
                 value={formik.values.username}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -204,7 +202,7 @@ export const Signup = () => {
                 fullWidth
                 id="password"
                 name="password"
-                label="Mật khẩu"
+                label={t("auth.signup.fields.password")}
                 type={showPassword ? "text" : "password"}
                 value={formik.values.password}
                 onChange={formik.handleChange}
@@ -242,7 +240,7 @@ export const Signup = () => {
                 fullWidth
                 id="fullname"
                 name="fullname"
-                label="Họ Tên"
+                label={t("auth.signup.fields.fullname")}
                 value={formik.values.fullname}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -263,7 +261,7 @@ export const Signup = () => {
                 fullWidth
                 id="dob"
                 name="dob"
-                label="Ngày Sinh"
+                label={t("auth.signup.fields.dob")}
                 type="date"
                 InputLabelProps={{ shrink: true }}
                 value={formik.values.dob}
@@ -280,34 +278,31 @@ export const Signup = () => {
                   ),
                 }}
               />
-              <FormControl component="fieldset" sx={{ mb: 3, width: "100%" }}>
-                <FormLabel component="legend">Giới Tính</FormLabel>
+              <FormControl component="fieldset" sx={{ mb: 3 }}>
+                <FormLabel>{t("auth.signup.fields.gender")}</FormLabel>
                 <RadioGroup
-                  aria-label="gender"
-                  id="gender"
+                  row
                   name="gender"
                   value={formik.values.gender}
                   onChange={formik.handleChange}
-                  row
                 >
                   <FormControlLabel
-                    value="Nam"
+                    value="male"
                     control={<Radio />}
-                    label="Nam"
+                    label={t("auth.signup.fields.male")}
                   />
-                  <FormControlLabel value="Nữ" control={<Radio />} label="Nữ" />
+                  <FormControlLabel
+                    value="female"
+                    control={<Radio />}
+                    label={t("auth.signup.fields.female")}
+                  />
                 </RadioGroup>
-                {formik.touched.gender && formik.errors.gender && (
-                  <Typography color="error" variant="caption">
-                    {formik.errors.gender}
-                  </Typography>
-                )}
               </FormControl>
               <TextField
                 fullWidth
                 id="cmnd"
                 name="cmnd"
-                label="CMND"
+                label={t("auth.signup.fields.id_card")}
                 value={formik.values.cmnd}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -331,7 +326,7 @@ export const Signup = () => {
                 fullWidth
                 id="email"
                 name="email"
-                label="Email"
+                label={t("auth.signup.fields.email")}
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -350,7 +345,7 @@ export const Signup = () => {
                 fullWidth
                 id="address"
                 name="address"
-                label="Địa Chỉ"
+                label={t("auth.signup.fields.address")}
                 value={formik.values.address}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -369,7 +364,7 @@ export const Signup = () => {
                 fullWidth
                 id="phone"
                 name="phone"
-                label="Số điện thoại"
+                label={t("auth.signup.fields.phone")}
                 value={formik.values.phone}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -394,7 +389,7 @@ export const Signup = () => {
               sx={{ mr: 1 }}
               disabled={activeStep === 0}
             >
-              Quay lại
+              {t("auth.signup.buttons.back")}
             </Button>
             <Box>
               {activeStep === steps.length - 1 ? (
@@ -416,7 +411,9 @@ export const Signup = () => {
                     },
                   }}
                 >
-                  {loading ? "Đang xử lý..." : "Đăng ký"}
+                  {loading
+                    ? t("auth.signup.buttons.processing")
+                    : t("auth.signup.buttons.signup")}
                 </Button>
               ) : (
                 <Button
@@ -443,7 +440,7 @@ export const Signup = () => {
                     },
                   }}
                 >
-                  Tiếp tục
+                  {t("auth.signup.buttons.next")}
                 </Button>
               )}
             </Box>
@@ -451,9 +448,9 @@ export const Signup = () => {
 
           <Box sx={{ mt: 4, textAlign: "center" }}>
             <Typography variant="body2" color="text.secondary">
-              Đã có tài khoản?{" "}
+              {t("auth.signup.have_account")}{" "}
               <Link href="/auth/login" underline="hover">
-                Đăng nhập ngay
+                {t("auth.signup.login_link")}
               </Link>
             </Typography>
           </Box>
