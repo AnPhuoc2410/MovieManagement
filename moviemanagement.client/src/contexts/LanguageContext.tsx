@@ -15,15 +15,18 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [currentLanguage, setCurrentLanguage] = useState(() => {
-    return localStorage.getItem("language") || "en";
+    return localStorage.getItem("language") || "vi";
   });
 
   useEffect(() => {
-    // Initialize with stored language
     const storedLanguage = localStorage.getItem("language");
     if (storedLanguage) {
       i18n.changeLanguage(storedLanguage);
       setCurrentLanguage(storedLanguage);
+    } else {
+      localStorage.setItem("language", "vi");
+      i18n.changeLanguage("vi");
+      setCurrentLanguage("vi");
     }
   }, []);
 

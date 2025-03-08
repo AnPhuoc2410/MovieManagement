@@ -21,15 +21,16 @@ const resources = {
 // Only initialize if not already initialized
 if (!i18n.isInitialized) {
   i18n
-    .use(LanguageDetector)
     .use(initReactI18next)
+    .use(LanguageDetector)
     .init({
       resources,
-      lng: "vi", // default language
+      lng: localStorage.getItem("language") || "vi",
       ns: ["translation"],
-      fallbackLng: "jp",
+      fallbackLng: "en",
       detection: {
         order: ["localStorage", "navigator"],
+        lookupLocalStorage: "language",
         caches: ["localStorage"],
       },
       interpolation: {
