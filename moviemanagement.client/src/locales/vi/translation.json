@@ -69,11 +69,14 @@
         "processing": "Đang xử lý...",
         "no_account": "Chưa có tài khoản?",
         "signup_link": "Đăng ký ngay",
+        "welcome": "Chào mừng bạn trở lại!",
+        "subtitle": "Đăng nhập để tiếp tục",
         "validation": {
           "username_required": "Tài khoản không được để trống",
           "password_required": "Mật khẩu không được để trống",
           "password_length": "Mật khẩu phải có ít nhất 8 ký tự"
-        }
+        },
+        "remember_me": "Ghi nhớ đăng nhập"
       },
       "signup": {
         "title": "Đăng ký tài khoản",
@@ -103,6 +106,12 @@
         },
         "have_account": "Đã có tài khoản?",
         "login_link": "Đăng nhập ngay"
+      },
+      "logout": {
+        "title": "Đăng xuất",
+        "description": "Bạn có chắc chắn muốn đăng xuất?",
+        "cancel": "Hủy",
+        "confirm": "Xác nhận"
       }
     },
     "promotion": {

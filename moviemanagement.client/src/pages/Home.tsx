@@ -1,5 +1,11 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Container, IconButton, Modal, SelectChangeEvent } from "@mui/material";
+import {
+  Box,
+  Container,
+  IconButton,
+  Modal,
+  SelectChangeEvent,
+} from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -26,7 +32,9 @@ const Homepage: React.FC = () => {
 
   // Pick a random banner only once when the component mounts
   useEffect(() => {
-    setRandomBanner(bannerslider[Math.floor(Math.random() * bannerslider.length)]);
+    setRandomBanner(
+      bannerslider[Math.floor(Math.random() * bannerslider.length)],
+    );
   }, []);
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -124,7 +132,12 @@ const Homepage: React.FC = () => {
           pointerEvents: "none",
         }}
       >
-        <Aurora colorStops={["#3A29FF", "#FF94B4", "#FF3232"]} blend={1.0} amplitude={2.5} speed={1.0} />
+        <Aurora
+          colorStops={["#3A29FF", "#FF94B4", "#FF3232"]}
+          blend={1.0}
+          amplitude={2.5}
+          speed={1.0}
+        />
       </Box>
 
       {/* Header */}

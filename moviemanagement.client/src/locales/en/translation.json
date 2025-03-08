@@ -69,11 +69,14 @@
         "processing": "Processing...",
         "no_account": "Don't have an account?",
         "signup_link": "Sign up now",
+        "welcome": "Welcome back",
+        "subtitle": "Please enter your credentials to continue",
         "validation": {
           "username_required": "Username is required",
           "password_required": "Password is required",
           "password_length": "Password must be at least 8 characters"
-        }
+        },
+        "remember_me": "Remember me"
       },
       "signup": {
         "title": "Sign Up",
@@ -103,6 +106,12 @@
         },
         "have_account": "Already have an account?",
         "login_link": "Login now"
+      },
+      "logout": {
+        "title": "Logout",
+        "description": "Are you sure you want to logout?",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
       }
     },
     "promotion": {
