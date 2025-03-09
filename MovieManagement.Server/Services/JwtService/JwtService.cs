@@ -45,9 +45,44 @@ namespace MovieManagement.Server.Services.JwtService
 
         }
 
+        public ClaimsPrincipal DecodeToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+    
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = _configuration["Jwt:Issuer"],
+                ValidAudience = _configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]))
+            };
+    
+            try
+            {
+                // Validate the token and get the principal
+                ClaimsPrincipal principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+                return principal;
+            }
+            catch (Exception)
+            {
+                // Token validation failed
+                return null;
+            }
+        }
 
-
-
-
+        public JwtSecurityToken ReadTokenWithoutValidation(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+    
+            if (tokenHandler.CanReadToken(token))
+            {
+                return tokenHandler.ReadJwtToken(token);
+            }
+    
+            return null;
+        }
     }
 }

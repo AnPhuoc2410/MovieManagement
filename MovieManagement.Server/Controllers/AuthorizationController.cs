@@ -4,6 +4,7 @@ using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.EmailService;
 using System.Threading.Tasks;
+using MovieManagement.Server.Services.UserService;
 
 namespace MovieManagement.Server.Controllers
 {
@@ -12,15 +13,18 @@ namespace MovieManagement.Server.Controllers
     public class AuthorizationController : Controller
     {
         private readonly IEmailService _emailService;
-        public AuthorizationController(IEmailService emailService)
+        private readonly IUserService _userService;
+        public AuthorizationController(IEmailService emailService
+            , IUserService userService)
         {
             _emailService = emailService;
+            _userService = userService;
         }
 
         [HttpPost("send")]
-        [ProducesResponseType(typeof(ApiResponseServices<OtpCodeDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<OtpCodeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> SendOtp([FromBody] OtpCodeDto otpCode)
         {
             try
@@ -28,7 +32,7 @@ namespace MovieManagement.Server.Controllers
                 bool otp = await _emailService.SendOtpEmail(otpCode.Email);
                 if (!otp)
                 {
-                    var response = new ApiResponseServices<IEnumerable<OtpCodeDto>>
+                    var response = new ApiResponse<IEnumerable<OtpCodeDto>>
                     {
                         StatusCode = 404,
                         Message = "User not found",
@@ -43,11 +47,12 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        
         [HttpPost("verify")]
-        [ProducesResponseType(typeof(ApiResponseServices<OtpCodeDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<OtpCodeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> VerifyOtp([FromBody] OtpCodeDto otpCode)
         {
             try
@@ -55,7 +60,7 @@ namespace MovieManagement.Server.Controllers
                 bool isValid = await _emailService.ValidationOtp(otpCode.Email, otpCode.NewPassword, otpCode.Code);
                 if (!isValid)
                 {
-                    var response = new ApiResponseServices<IEnumerable<OtpCodeDto>>
+                    var response = new ApiResponse<IEnumerable<OtpCodeDto>>
                     {
                         StatusCode = 404,
                         Message = "Otp not found",
@@ -67,7 +72,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (BadRequestException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = "Bad request from client side",
@@ -81,5 +86,8 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        
+        
+        
     }
 }

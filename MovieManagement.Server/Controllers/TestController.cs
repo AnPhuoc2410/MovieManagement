@@ -34,7 +34,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost("Registration")]
-        public async Task<IActionResult> Registration(UserDto userDto)
+        public async Task<IActionResult> Registration(UserDto.UserRequest userDto)
         {
 
             var output = await _userService.CreateUserAsync(userDto);
@@ -43,29 +43,29 @@ namespace MovieManagement.Server.Controllers
 
         }
 
-        [HttpPost("Login")]
-        public async Task<ActionResult> Login(String userName, String pass)
-        {
-            var userList = await _userService.GetAllUsersAsync();
-
-            var user = userList.FirstOrDefault(x => x.UserName == userName);
-
-
-            // Use PasswordHasher to verify the password
-            var passwordHasher = new PasswordHasher<UserDto>();
-
-            var result = passwordHasher.VerifyHashedPassword(user, user.Password, pass);
-
-            if (result == PasswordVerificationResult.Failed)
-            {
-                return Unauthorized("Invalid username/email or password");
-            }
-
-            var token = _jwtService.GenerateToken(user.UserId.Value, user.UserName, user.Role.ToString());
-
-            return Ok(new { message = "Login successful", token = token, user = user });
-
-        }
+        // [HttpPost("Login")]
+        // public async Task<ActionResult> Login(String userName, String pass)
+        // {
+        //     var userList = await _userService.GetAllUsersAsync();
+        //
+        //     var user = userList.FirstOrDefault(x => x.UserName == userName);
+        //
+        //
+        //     // Use PasswordHasher to verify the password
+        //     var passwordHasher = new PasswordHasher<UserDto.UserResponse>();
+        //
+        //     var result = passwordHasher.VerifyHashedPassword(user, user.Password, pass);
+        //
+        //     if (result == PasswordVerificationResult.Failed)
+        //     {
+        //         return Unauthorized("Invalid username/email or password");
+        //     }
+        //
+        //     var token = _jwtService.GenerateToken(user.UserId.Value, user.UserName, user.Role.ToString());
+        //
+        //     return Ok(new { message = "Login successful", token = token, user = user });
+        //
+        // }
 
         [HttpGet]
         [Route("GetAllShowtime")]
@@ -117,7 +117,7 @@ namespace MovieManagement.Server.Controllers
                 BirthDate = DateTime.Now,
                 Address = "HCM",
                 Avatar = "https://www.google.com",
-                Role = 0,
+                Role = Role.Admin,
                 JoinDate = DateTime.Now,
                 FullName = "Admin",
                 Gender = 0,
@@ -136,7 +136,7 @@ namespace MovieManagement.Server.Controllers
                 BirthDate = DateTime.Now,
                 Address = "HCM",
                 Avatar = "https://www.google.com",
-                Role = 1,
+                Role = Role.Admin,
                 JoinDate = DateTime.Now,
                 FullName = "Manager",
                 Gender = 0,
@@ -155,7 +155,7 @@ namespace MovieManagement.Server.Controllers
                 BirthDate = DateTime.Now,
                 Address = "HCM",
                 Avatar = "https://www.google.com",
-                Role = 3,
+                Role = Role.Member,
                 JoinDate = DateTime.Now,
                 FullName = "User1",
             };
@@ -169,7 +169,7 @@ namespace MovieManagement.Server.Controllers
                 BirthDate = DateTime.Now,
                 Address = "HCM",
                 Avatar = "https://www.google.com",
-                Role = 3,
+                Role = Role.Member,
                 JoinDate = DateTime.Now,
                 FullName = "User2",
             };
@@ -183,7 +183,7 @@ namespace MovieManagement.Server.Controllers
                 BirthDate = DateTime.Now,
                 Address = "HCM",
                 Avatar = "https://www.google.com",
-                Role = 3,
+                Role = Role.Member,
                 JoinDate = DateTime.Now,
                 FullName = "User3",
             };
@@ -197,7 +197,7 @@ namespace MovieManagement.Server.Controllers
                 BirthDate = DateTime.Now,
                 Address = "HCM",
                 Avatar = "https://www.google.com",
-                Role = 2,
+                Role = Role.Employee,
                 JoinDate = DateTime.Now,
                 FullName = "Employee",
             };
@@ -211,7 +211,7 @@ namespace MovieManagement.Server.Controllers
                 BirthDate = DateTime.Now,
                 Address = "HCM",
                 Avatar = "https://www.google.com",
-                Role = 2,
+                Role = Role.Employee,
                 JoinDate = DateTime.Now,
                 FullName = "Employee2",
             };
@@ -225,7 +225,7 @@ namespace MovieManagement.Server.Controllers
                 BirthDate = DateTime.Now,
                 Address = "HCM",
                 Avatar = "https://www.google.com",
-                Role = 2,
+                Role = Role.Employee,
                 JoinDate = DateTime.Now,
                 FullName = "Employee3",
             };
@@ -239,7 +239,7 @@ namespace MovieManagement.Server.Controllers
                 BirthDate = DateTime.Now,
                 Address = "HCM",
                 Avatar = "https://www.google.com",
-                Role = 0,
+                Role = Role.Member,
                 JoinDate = DateTime.Now,
                 FullName = "Admin2",
             };

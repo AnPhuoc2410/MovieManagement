@@ -8,7 +8,7 @@ import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDe
 import { ProtectedRoute, RejectedRoute } from "./guards/AuthGuard";
 
 // Lazy load components
-const Home = lazy(() => import("./pages/Home"));
+const Home = lazy(() => import("./pages/Home/Home"));
 const AuthForm = lazy(() => import("./pages/auth/AuthForm"));
 
 // Admin Pages

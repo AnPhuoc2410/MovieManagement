@@ -2,7 +2,7 @@
 
 namespace MovieManagement.Server.Services
 {
-    public class ApiResponseServices <T>
+    public class ApiResponse <T>
     {
         [JsonPropertyName("status_code")]
         public int StatusCode { get; set; } = 500;

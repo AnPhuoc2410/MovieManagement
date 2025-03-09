@@ -57,25 +57,8 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("TempConnection"))
             );
-
-
-            // su dung Postgres option
-            //builder.Services.AddDbContext<AppDbContext>(options =>
-            //{
-            //    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"),
-            //        npgsqlOptionsAction: sqlOptions =>
-            //        {
-            //            sqlOptions.EnableRetryOnFailure(
-            //                maxRetryCount: 5,
-            //                maxRetryDelay: TimeSpan.FromSeconds(30),
-            //                errorCodesToAdd: null);
-
-            //            // Add this line to ensure UTC timestamps
-            //            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-            //        });
-            //});
 
             // Đăng ký UnitOfWork
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -139,26 +122,6 @@ namespace MovieManagement.Server
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
-
-
-
-
-            //builder.Services.AddDbContext<AppDbContext>(options =>
-            //{
-            //    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"),
-            //        npgsqlOptionsAction: sqlOptions =>
-            //        {
-            //            sqlOptions.EnableRetryOnFailure(
-            //                maxRetryCount: 5,
-            //                maxRetryDelay: TimeSpan.FromSeconds(30),
-            //                errorCodesToAdd: null);
-
-            //            // Add this line to ensure UTC timestamps
-            //            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-            //        });
-            //});
-
-
 
             var app = builder.Build();
 
