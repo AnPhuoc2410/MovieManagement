@@ -72,5 +72,20 @@ namespace MovieManagement.Server.Repositories
             return user;
         }
 
+        public async Task<User> GetByIdAsync(Guid id)
+        {
+
+            var user = await _context.Users
+                .Where(u => u.UserId == id)
+                .FirstOrDefaultAsync();
+            
+            if(user == null)
+            {
+                return null;
+            }
+
+            return user;
+
+        }
     }
 }

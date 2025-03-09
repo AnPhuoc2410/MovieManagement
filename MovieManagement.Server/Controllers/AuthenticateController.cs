@@ -101,7 +101,7 @@ namespace MovieManagement.Server.Controllers
         [HttpPost("Login")]
         [ProducesResponseType(typeof(ApiResponse<AuthDto.LoginResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ApiResponse<AuthDto.LoginResponse>>> Login([FromBody] AuthDto.LoginRequest loginDto)
         {
@@ -117,6 +117,17 @@ namespace MovieManagement.Server.Controllers
                 };
                 return Ok(response);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 401,
+                    Message = "Invalid credentials",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
             catch (BadRequestException ex)
             {
                 var response = new ApiResponse<object>
@@ -127,6 +138,17 @@ namespace MovieManagement.Server.Controllers
                     Reason = ex.Message
                 };
                 return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred during login",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
     }

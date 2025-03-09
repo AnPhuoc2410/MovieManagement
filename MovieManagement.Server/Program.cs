@@ -10,6 +10,7 @@ using MovieManagement.Server.Services.AuthorizationService;
 using MovieManagement.Server.Services.JwtService;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace MovieManagement.Server
@@ -49,10 +50,9 @@ namespace MovieManagement.Server
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "0"));
-                options.AddPolicy("Manager", policy => policy.RequireClaim("Role", "1"));
-                options.AddPolicy("Employee", policy => policy.RequireClaim("Role", "2"));
-                options.AddPolicy("Customer", policy => policy.RequireClaim("Role", "3"));
+                options.AddPolicy("Member", policy => policy.RequireClaim("Role", "0"));
+                options.AddPolicy("Employee", policy => policy.RequireClaim("Role", "1"));
+                options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "2"));
             });
 
             // Đăng ký JwtService
@@ -73,6 +73,8 @@ namespace MovieManagement.Server
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
             // Đăng ký AutoMapper

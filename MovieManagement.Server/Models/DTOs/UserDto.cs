@@ -28,9 +28,9 @@ namespace MovieManagement.Server.Models.DTOs
 
             public string Address { get; set; }
 
-            public int Status { get; set; } // 0: Khóa, 1: Mở
+            public int Status { get; set; } = 1; // 0: Khóa, 1: Mở
 
-            public Role Role { get; set; }
+            public Role Role { get; set; } = Role.Member;
 
             public decimal Point { get; set; }
         }

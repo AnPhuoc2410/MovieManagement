@@ -5,10 +5,11 @@ namespace MovieManagement.Server.Repositories.IRepositories
 {
     public interface IUserRepository : IGenericRepository<User>
     {
-        public Task<bool> IsExistingEmailAsync(string email);
-        public Task<bool> IsExistingUserNameAsync(string userName);
-        public Task<bool> ChangeUserPasswordByEmail(string email, string newPassword);
-        public Task<List<User>> GetUserByRoleAsync(Role role);
+        Task<bool> IsExistingEmailAsync(string email);
+        Task<bool> IsExistingUserNameAsync(string userName);
+        Task<bool> ChangeUserPasswordByEmail(string email, string newPassword);
+        Task<List<User>> GetUserByRoleAsync(Role role);
+        Task<User> GetByIdAsync(Guid id);
         Task<User> GetByEmail(string email);
     }
 
