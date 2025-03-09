@@ -7,9 +7,10 @@ namespace MovieManagement.Server.Models.Entities
 
     public enum Role
     {
-        Member,
-        Employee,
-        Admin
+        Admin = 0,
+        Manager = 1,
+        Employee = 2,
+        Member = 3
     }
 
     public class User
