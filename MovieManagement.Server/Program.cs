@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Services.AuthorizationService;
 using MovieManagement.Server.Services.JwtService;
 using System.Reflection;
 using System.Text;

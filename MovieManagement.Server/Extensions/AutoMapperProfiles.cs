@@ -38,6 +38,13 @@ namespace MovieManagement.Server.Extensions
             CreateMap<Category, CategoryDto>();
             CreateMap<CategoryDto, Category>();
 
+
+            CreateMap<LoginRequestDto,LoginResponseDto>();
+            CreateMap<LoginResponseDto, LoginRequestDto>();
+
+            CreateMap<RegisterDto, User>();
+            CreateMap<User, RegisterDto>();
+
         }
     }
 }

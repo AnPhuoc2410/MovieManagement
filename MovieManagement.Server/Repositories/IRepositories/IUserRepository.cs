@@ -4,7 +4,7 @@ namespace MovieManagement.Server.Repositories.IRepositories
 {
     public interface IUserRepository : IGenericRepository<User>
     {
-        public User GetByName(string username);
+       Task<User> GetByName(string username, string email);
     }
 
 }
