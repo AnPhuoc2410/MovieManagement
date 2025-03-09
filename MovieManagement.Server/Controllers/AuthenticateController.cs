@@ -23,37 +23,37 @@ namespace MovieManagement.Server.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IAuthenticateService _authenticateService;
-        public AuthenticateController(IUserRepository userRepository, IAuthenticateService authenticateService )
+        public AuthenticateController(IUserRepository userRepository, IAuthenticateService authenticateService)
         {
-      
+
             _userRepository = userRepository;
             _authenticateService = authenticateService;
         }
 
         [HttpPost("Register")]
-        [ProducesResponseType(typeof(ApiResponseServices<UserDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status409Conflict)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Register([FromBody] AuthDto.RegisterRequest registerDto)
         {
             try
             {
-                var existingUser = await _userRepository.GetByName(registerDto.UserName, registerDto.Email);
+                var existingUser = await _userRepository.GetByEmail(registerDto.Email);
                 if (existingUser != null)
                 {
-                    var response = new ApiResponseServices<object>
+                    var response = new ApiResponse<object>
                     {
                         StatusCode = 409,
                         Message = "User already exists",
                         IsSuccess = false,
-                        Reason = "A user with the same username or email already exists."
+                        Reason = "A user with the same email already exists."
                     };
                     return Conflict(response);
                 }
 
                 var newUser = await _authenticateService.Register(registerDto);
-                var successResponse = new ApiResponseServices<UserDto>
+                var successResponse = new ApiResponse<UserDto.UserResponse>
                 {
                     StatusCode = 200,
                     Message = "User registered successfully",
@@ -64,7 +64,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = "Bad request from client side",
@@ -75,7 +75,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (NotFoundException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 404,
                     Message = "Show time not found",
@@ -86,7 +86,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (Exception ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
                     Message = "An error occurred while creating show time",
@@ -99,16 +99,16 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPost("Login")]
-        [ProducesResponseType(typeof(ApiResponseServices<LoginResponseDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> Login([FromBody] LoginRequestDto loginDto)
+        [ProducesResponseType(typeof(ApiResponse<AuthDto.LoginResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ApiResponse<AuthDto.LoginResponse>>> Login([FromBody] AuthDto.LoginRequest loginDto)
         {
             try
             {
                 var result = await _authenticateService.Login(loginDto);
-                var response = new ApiResponseServices<LoginResponseDto>
+                var response = new ApiResponse<AuthDto.LoginResponse>
                 {
                     StatusCode = 200,
                     Message = "Login successfully",
@@ -119,7 +119,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (BadRequestException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = "Bad request from client side",
@@ -127,28 +127,6 @@ namespace MovieManagement.Server.Controllers
                     Reason = ex.Message
                 };
                 return BadRequest(response);
-            }
-            catch (NotFoundException ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 404,
-                    Message = "User not found",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return NotFound(response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponseServices<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while logging in",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
     }

@@ -52,11 +52,11 @@ namespace MovieManagement.Server.Extensions
             CreateMap<SeatTypeResponseModel, SeatType>();
 
 
-            CreateMap<LoginRequestDto, LoginResponseDto>();
-            CreateMap<LoginResponseDto, LoginRequestDto>();
+            CreateMap<AuthDto.LoginRequest, AuthDto.LoginResponse>();
+            CreateMap<AuthDto.LoginResponse, AuthDto.LoginRequest>();
 
-            CreateMap<RegisterDto, User>();
-            CreateMap<User, RegisterDto>();
+            CreateMap<AuthDto.RegisterRequest, User>();
+            CreateMap<User, AuthDto.RegisterRequest>();
 
         }
     }

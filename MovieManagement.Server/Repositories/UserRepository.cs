@@ -63,18 +63,14 @@ namespace MovieManagement.Server.Repositories
             return user != null;
         }
 
-        public async Task<User> GetByName(string username, string email)
+        public async Task<User> GetByEmail(string email)
         {
-            var groupUser = await (from g in _context.Users
-                                   where g.UserName == username && g.Status == 1
-                                   group g by g.Email into groupUsers
-                                   select new
-                                   {
-                                       Email = groupUsers.Key,
-                                       FirstUser = groupUsers.FirstOrDefault()
-                                   }).FirstOrDefaultAsync();
+            var user = await _context.Users
+                .Where(u => u.Email == email && u.Status == 1)
+                .FirstOrDefaultAsync();
 
-            return groupUser?.FirstUser;
+            return user;
         }
+
     }
 }

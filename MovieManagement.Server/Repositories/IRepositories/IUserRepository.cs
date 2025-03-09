@@ -9,7 +9,7 @@ namespace MovieManagement.Server.Repositories.IRepositories
         public Task<bool> IsExistingUserNameAsync(string userName);
         public Task<bool> ChangeUserPasswordByEmail(string email, string newPassword);
         public Task<List<User>> GetUserByRoleAsync(Role role);
-        Task<User> GetByName(string username, string email);
+        Task<User> GetByEmail(string email);
     }
 
 }
