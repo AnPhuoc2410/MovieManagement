@@ -30,18 +30,20 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
+                var response = new ApiResponse<IEnumerable<BillDto>>();
                 var bills = await _billService.GetAllBillsAsync();
                 if (bills == null)
                 {
-                    var response = new ApiResponse<IEnumerable<BillDto>>
-                    {
-                        StatusCode = 404,
-                        Message = "Bill not found",
-                        IsSuccess = false
-                    };
+                    response.StatusCode = 404;
+                    response.Message = "Bill not found";
+                    response.IsSuccess = false;
                     return NotFound(response);
                 }
-                return Ok(bills);
+                response.StatusCode = 200;
+                response.Message = "Get all bills successfully";
+                response.IsSuccess = true;
+                response.Data = bills;
+                return Ok(response);
             }
             catch (BadRequestException ex)
             {

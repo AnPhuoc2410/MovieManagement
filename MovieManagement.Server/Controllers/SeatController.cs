@@ -388,7 +388,7 @@ namespace MovieManagement.Server.Controllers
 
                 return Ok(response);
             }
-            catch (ArgumentException ex)
+            catch (NotFoundException ex)
             {
                 response.StatusCode = StatusCodes.Status404NotFound;
                 response.IsSuccess = false;
@@ -414,7 +414,7 @@ namespace MovieManagement.Server.Controllers
                 response.Data = updatedList;
                 return Ok(response);
             }
-            catch (ArgumentException ex)
+            catch (NotFoundException ex)
             {
                 response.StatusCode = StatusCodes.Status404NotFound;
                 response.IsSuccess = false;
