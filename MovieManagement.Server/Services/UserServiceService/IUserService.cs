@@ -13,6 +13,7 @@ namespace MovieManagement.Server.Services.UserService
         Task<IEnumerable<UserDto.UserResponse>> GetAllUsersAsync();
         Task<UserDto.UserResponse> UpdateUserAsync(Guid id, UserDto.UserRequest user);
         Task<bool> DeleteUserAsync(Guid id);
+        Task<UserDto.UserResponse> ExtractTokenAsync(string token);
 
     }
 }

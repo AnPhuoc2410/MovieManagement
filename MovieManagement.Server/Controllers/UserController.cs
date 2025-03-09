@@ -12,16 +12,19 @@ namespace MovieManagement.Server.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+
         public UserController(IUserService userService)
         {
             _userService = userService;
         }
+
         [HttpGet("all")]
         [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllUSerAsync()
         {
             try
@@ -37,6 +40,7 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
+
                 return Ok(users);
             }
             catch (BadRequestException ex)
@@ -73,12 +77,14 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
         [HttpGet("{userId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDto>> GetUserByIdAsync(Guid userId)
         {
             try
@@ -94,6 +100,7 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
+
                 return Ok(user);
             }
             catch (BadRequestException ex)
@@ -132,21 +139,56 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet("role/{role}")]
-        [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<List<UserDto.UserResponse>>),
+            StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ApiResponse<List<UserDto.UserResponse>>> GetUserByRoleAsync(Role role)
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUserByRoleAsync(Role role)
         {
             var users = await _userService.GetUserByRoleAsync(role);
-            return new ApiResponse<List<UserDto.UserResponse>>
+            if (users == null || users.Count == 0)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = "No users found for the specified role.",
+                    IsSuccess = false
+                });
+            }
+
+            return Ok(new ApiResponse<List<UserDto.UserResponse>>
             {
                 StatusCode = 200,
                 Message = "Get user by role successfully",
                 IsSuccess = true,
                 Data = users
-            };
+            });
+        }
+
+        [HttpPost("extract-token")]
+        public async Task<IActionResult> ExtractToken([FromBody] TokenDto.TokenRequest tokenRequest)
+        {
+            var userData = await _userService.ExtractTokenAsync(tokenRequest.AccessToken);
+            if (userData == null)
+            {
+                return Unauthorized(new ApiResponse<object>
+                {
+                    StatusCode = 401,
+                    Message = "Invalid token",
+                    IsSuccess = false
+                });
+            }
+
+            return Ok(new ApiResponse<object>
+            {
+                StatusCode = 200,
+                Message = "Token extracted successfully",
+                IsSuccess = true,
+                Data = userData
+            });
         }
 
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
@@ -154,14 +196,14 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetPageAsync(int page, int pageSize)
         {
-
             try
             {
                 var users = await _userService.GetAllUsersAsync();
-                if(users == null)
+                if (users == null)
                 {
                     var response = new ApiResponse<object>
                     {
@@ -171,6 +213,7 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
+
                 return Ok(users);
             }
             catch (BadRequestException ex)
@@ -207,18 +250,20 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDto>> CreateUserAsync(UserDto.UserRequest userDto)
         {
             try
             {
                 var newUser = await _userService.CreateUserAsync(userDto);
-                if(newUser == null)
+                if (newUser == null)
                 {
                     var response = new ApiResponse<object>
                     {
@@ -228,6 +273,7 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
+
                 return Ok(newUser);
             }
             catch (BadRequestException ex)
@@ -264,18 +310,21 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
         [HttpPut]
         [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserDto>> UpdateUserAsync(Guid userId, UserDto.UserRequest userDto)
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserDto>> UpdateUserAsync(Guid userId,
+            UserDto.UserRequest userDto)
         {
             try
             {
                 var updated = await _userService.UpdateUserAsync(userId, userDto);
-                if(updated == null)
+                if (updated == null)
                 {
                     var response = new ApiResponse<object>
                     {
@@ -285,6 +334,7 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
+
                 return Ok(updated);
             }
             catch (BadRequestException ex)
@@ -321,12 +371,14 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
         [HttpDelete]
         [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteUserAsync(Guid userId)
         {
             try
@@ -342,6 +394,7 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
+
                 return Ok(isDeleted);
             }
             catch (BadRequestException ex)

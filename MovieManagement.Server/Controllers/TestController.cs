@@ -43,29 +43,29 @@ namespace MovieManagement.Server.Controllers
 
         }
 
-        [HttpPost("Login")]
-        public async Task<ActionResult> Login(String userName, String pass)
-        {
-            var userList = await _userService.GetAllUsersAsync();
-
-            var user = userList.FirstOrDefault(x => x.UserName == userName);
-
-
-            // Use PasswordHasher to verify the password
-            var passwordHasher = new PasswordHasher<UserDto.UserResponse>();
-
-            var result = passwordHasher.VerifyHashedPassword(user, user.Password, pass);
-
-            if (result == PasswordVerificationResult.Failed)
-            {
-                return Unauthorized("Invalid username/email or password");
-            }
-
-            var token = _jwtService.GenerateToken(user.UserId.Value, user.UserName, user.Role.ToString());
-
-            return Ok(new { message = "Login successful", token = token, user = user });
-
-        }
+        // [HttpPost("Login")]
+        // public async Task<ActionResult> Login(String userName, String pass)
+        // {
+        //     var userList = await _userService.GetAllUsersAsync();
+        //
+        //     var user = userList.FirstOrDefault(x => x.UserName == userName);
+        //
+        //
+        //     // Use PasswordHasher to verify the password
+        //     var passwordHasher = new PasswordHasher<UserDto.UserResponse>();
+        //
+        //     var result = passwordHasher.VerifyHashedPassword(user, user.Password, pass);
+        //
+        //     if (result == PasswordVerificationResult.Failed)
+        //     {
+        //         return Unauthorized("Invalid username/email or password");
+        //     }
+        //
+        //     var token = _jwtService.GenerateToken(user.UserId.Value, user.UserName, user.Role.ToString());
+        //
+        //     return Ok(new { message = "Login successful", token = token, user = user });
+        //
+        // }
 
         [HttpGet]
         [Route("GetAllShowtime")]

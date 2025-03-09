@@ -8,9 +8,11 @@ using MovieManagement.Server.Models.Entities;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Data;
 using System.Drawing;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Exceptions;
+using MovieManagement.Server.Services.JwtService;
 
 namespace MovieManagement.Server.Services.UserService
 {
@@ -19,13 +21,15 @@ namespace MovieManagement.Server.Services.UserService
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IJwtService _jwtService;
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IJwtService jwtService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _jwtService = jwtService;
         }
-
+        
         public async Task<UserDto.UserResponse> CreateUserAsync(UserDto.UserRequest user)
         {
             try
@@ -59,6 +63,22 @@ namespace MovieManagement.Server.Services.UserService
             {
                 throw new Exception("Couldn't access the database due to a system error.", ex);
             }
+        }
+
+        public Task<UserDto.UserResponse> ExtractTokenAsync(string token)
+        {
+
+            var jwtToken = _jwtService.ReadTokenWithoutValidation(token);
+            if(jwtToken == null)
+                throw new Exception("Invalid token");
+            
+            var userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            var user = _unitOfWork.UserRepository.GetByIdAsync(Guid.Parse(userId));
+            if (user == null)
+                throw new NotFoundException("User not found!");
+            
+            return Task.FromResult(_mapper.Map<UserDto.UserResponse>(user));
+
         }
 
         public async Task<IEnumerable<UserDto.UserResponse>> GetAllUsersAsync()

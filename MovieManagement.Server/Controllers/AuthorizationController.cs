@@ -4,6 +4,7 @@ using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.EmailService;
 using System.Threading.Tasks;
+using MovieManagement.Server.Services.UserService;
 
 namespace MovieManagement.Server.Controllers
 {
@@ -12,9 +13,12 @@ namespace MovieManagement.Server.Controllers
     public class AuthorizationController : Controller
     {
         private readonly IEmailService _emailService;
-        public AuthorizationController(IEmailService emailService)
+        private readonly IUserService _userService;
+        public AuthorizationController(IEmailService emailService
+            , IUserService userService)
         {
             _emailService = emailService;
+            _userService = userService;
         }
 
         [HttpPost("send")]
@@ -43,6 +47,7 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        
         [HttpPost("verify")]
         [ProducesResponseType(typeof(ApiResponse<OtpCodeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -81,5 +86,8 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        
+        
+        
     }
 }

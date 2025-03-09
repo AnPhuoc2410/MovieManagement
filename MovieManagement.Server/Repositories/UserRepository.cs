@@ -2,8 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories.IRepositories;
+using MovieManagement.Server.Services.JwtService;
 
 namespace MovieManagement.Server.Repositories
 {
@@ -13,6 +15,7 @@ namespace MovieManagement.Server.Repositories
         public UserRepository(AppDbContext context) : base(context)
         {
             _context = context;
+            
         }
 
         public async Task<bool> ChangeUserPasswordByEmail(string email, string newPassword)
