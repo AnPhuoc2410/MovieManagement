@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Seat from "../../components/Ticket/Seat";
 import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
+import toast from "react-hot-toast";
 
 const MovieSeat: React.FC = () => {
   const location = useLocation();
@@ -25,10 +26,10 @@ const MovieSeat: React.FC = () => {
 
   const handleNext = () => {
     if (selectedSeats.length !== maxSeats) {
-      alert(`Vui lòng chọn đúng ${maxSeats} ghế.`);
+      toast.error(`Vui lòng chọn đúng ${maxSeats} ghế.`);
       return;
     }
-    navigate("/payment", {
+    navigate("/ticket/payment", {
       state: { selectedDate, selectedTime, tickets, seats: selectedSeats },
     });
   };

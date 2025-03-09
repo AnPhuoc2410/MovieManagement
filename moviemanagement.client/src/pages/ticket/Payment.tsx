@@ -11,6 +11,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
+import toast from "react-hot-toast";
 
 const Payment: React.FC = () => {
   const location = useLocation();
@@ -80,8 +81,8 @@ const Payment: React.FC = () => {
     }
     if (hasError) return;
 
-    alert("Đặt vé thành công!");
-    navigate("/confirmation", {
+    toast.success("Đặt vé thành công!");
+    navigate("/ticket/confirmation", {
       state: {
         movieTitle,
         screen,
