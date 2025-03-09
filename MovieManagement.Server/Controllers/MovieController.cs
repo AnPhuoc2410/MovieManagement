@@ -389,7 +389,13 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
-                return Ok(createdMovie);
+                return Ok(new ApiResponse<MovieDto>
+                {
+                    Data = createdMovie,
+                    IsSuccess = true,
+                    Message = "Created movie successfully",
+                    StatusCode = StatusCodes.Status200OK
+                });
             }
             catch (BadRequestException ex)
             {

@@ -7,7 +7,8 @@
         {
             Cancelled = 0,
             Pending = 1,
-            Received = 2
+            Received = 2,
+            Completed = 3
         }
 
 

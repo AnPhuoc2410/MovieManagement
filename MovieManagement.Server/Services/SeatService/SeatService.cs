@@ -151,12 +151,10 @@ namespace MovieManagement.Server.Services.SeatService
                         IsActive = true,
                         SeatId = Guid.NewGuid()
                     };
-                    await _unitOfWork.SeatRepository.CreateAsync(newSeat);
+                    _unitOfWork.SeatRepository.PrepareCreate(newSeat);
                 }
             }
-
-            isCompleted = await _unitOfWork.CompleteAsync() == 0;
-            return isCompleted;
+            return await _unitOfWork.SeatRepository.SaveAsync() > 0;
         }
 
         public static int LetterToNumber(char letter)
@@ -178,6 +176,135 @@ namespace MovieManagement.Server.Services.SeatService
             return (char)(number + 'A');
         }
 
+        public async Task<IEnumerable<SeatDto>> UpdateByList(List<Guid> list, bool isActived)
+        {
+            List<Seat> output = new List<Seat>();
+            foreach (var item in list)
+            {
+                var seat = await _unitOfWork.SeatRepository.GetByIdAsync(item);
+                if (seat == null)
+                {
+                    throw new NotFoundException("Seat not found!");
+                }
+                seat.IsActive = isActived;
+                output.Add(await _unitOfWork.SeatRepository.UpdateAsync(seat));
+            }
+            await _unitOfWork.CompleteAsync();
+            return _mapper.Map<List<SeatDto>>(output);
+        }
+
+        public async Task<IEnumerable<SeatDto>> UpdateTypeByList(List<Guid> list, Guid seatTypeId)
+        {
+            List<Seat> output = new List<Seat>();
+            foreach (var item in list)
+            {
+                var seat = await _unitOfWork.SeatRepository.GetByIdAsync(item);
+                if (seat == null)
+                {
+                    throw new NotFoundException("Seat not found!");
+                }
+                seat.SeatTypeId = seatTypeId;
+                output.Add(await _unitOfWork.SeatRepository.UpdateAsync(seat));
+            }
+            await _unitOfWork.CompleteAsync();
+            return _mapper.Map<List<SeatDto>>(output);
+        }
+
+        public async Task<bool> AddRowByRoomId(Guid roomId, Guid seatTypeId)
+        {
+            var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
+            if (room == null)
+            {
+                throw new ArgumentException("Room not found", nameof(roomId));
+            }
+            var seatType = await _unitOfWork.SeatTypeRepository.GetByIdAsync(seatTypeId);
+            if (seatType == null)
+            {
+                throw new ArgumentException("SeatType not found", nameof(seatTypeId));
+            }
+            var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
+            if (!seats.Any())
+            {
+                throw new ArgumentException("Seats not created", nameof(roomId));
+            }
+            for (int i = 0; i < room.Column; i++)
+            {
+                var newSeat = new Seat
+                {
+                    AtRow = NumberToLetter(room.Row).ToString(),
+                    AtColumn = i + 1,
+                    RoomId = roomId,
+                    SeatTypeId = seatTypeId,
+                    IsActive = true,
+                    SeatId = Guid.NewGuid()
+                };
+                _unitOfWork.SeatRepository.PrepareCreate(newSeat);
+            }
+            room.Row += 1;
+            room.Total = room.Row * room.Column;
+            await _unitOfWork.RoomRepository.UpdateAsync(room);
+            return await _unitOfWork.SeatRepository.SaveAsync() > 0;
+        }
+
+        public async Task<bool> AddColumnByRoomId(Guid roomId, Guid seatTypeId)
+        {
+            var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
+            if (room == null)
+            {
+                throw new ArgumentException("Room not found", nameof(roomId));
+            }
+            var seatType = await _unitOfWork.SeatTypeRepository.GetByIdAsync(seatTypeId);
+            if (seatType == null)
+            {
+                throw new ArgumentException("SeatType not found", nameof(seatTypeId));
+            }
+            var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
+            if (!seats.Any())
+            {
+                throw new ArgumentException("Seats not created", nameof(roomId));
+            }
+            for (int i = 0; i < room.Row; i++)
+            {
+                var newSeat = new Seat
+                {
+                    AtRow = NumberToLetter(i).ToString(),
+                    AtColumn = room.Column + 1,
+                    RoomId = roomId,
+                    SeatTypeId = seatTypeId,
+                    IsActive = true,
+                    SeatId = Guid.NewGuid()
+                };
+                _unitOfWork.SeatRepository.PrepareCreate(newSeat);
+            }
+            room.Column += 1;
+            room.Total = room.Row * room.Column;
+            await _unitOfWork.RoomRepository.UpdateAsync(room);
+            return await _unitOfWork.SeatRepository.SaveAsync() > 0;
+        }
+
+        public async Task<bool> DeleteByRoomId(Guid roomId)
+        {
+            var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
+            if (!seats.Any())
+            {
+                throw new ArgumentException("Seats not found", nameof(roomId));
+            }
+            foreach (var seat in seats)
+            {
+                _unitOfWork.SeatRepository.PrepareRemove(seat);
+            }
+            return await _unitOfWork.SeatRepository.SaveAsync() > 0;
+        }
+
+        public async Task<IEnumerable<SeatDto>> GetByRoomId(Guid roomId)
+        {
+            var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
+            if (!seats.Any())
+            {
+                throw new ArgumentException("Seats not found", nameof(roomId));
+            }
+            return _mapper.Map<List<SeatDto>>(seats);
+        }
 
     }
 }
