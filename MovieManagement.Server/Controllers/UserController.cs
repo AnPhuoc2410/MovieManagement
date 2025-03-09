@@ -136,7 +136,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetPageAsync(int page, int pageSize)
+        public async Task<IActionResult> GetUserPageAsync(int page, int pageSize)
         {
 
             try
@@ -303,12 +303,12 @@ namespace MovieManagement.Server.Controllers
             }
         }
         
-        [HttpPost("ResetPassword")]
+        [HttpPut("ResetPassword")]
         [ProducesResponseType(typeof(ApiResponseServices<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ResetPasswordByUserId([FromBody] ResetPasswordModel request)
+        public async Task<IActionResult> ResetPasswordByUserId([FromBody] ResetPasswordRequest request)
         {
             try
             {
@@ -350,6 +350,7 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        
         [HttpDelete]
         [ProducesResponseType(typeof(ApiResponseServices<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]

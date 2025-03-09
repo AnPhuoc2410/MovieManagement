@@ -1,4 +1,5 @@
 ﻿using MovieManagement.Server.Models.DTOs;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Services.UserService
 {
@@ -8,7 +9,7 @@ namespace MovieManagement.Server.Services.UserService
         Task<UserDto> CreateUserAsync(UserDto user);
         Task<UserDto> GetUserByIdAsync(Guid id);
         Task<IEnumerable<UserDto>> GetUserPageAsync(int page, int pageSize);
-        Task<IEnumerable<UserDto>> GetAllUsersAsync();
+        Task<IEnumerable<ListUserResponse>> GetAllUsersAsync();
         Task<UserDto> UpdateUserAsync(Guid id, UserDto user);
         Task<bool> ChangeUserPasswordByUserId(Guid userId, string currentPassword, string newPassword);
         Task<bool> DeleteUserAsync(Guid id);

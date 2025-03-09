@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MovieManagement.Server.Models.RequestModel
 {
-    public class VerifyOtpModel
+    public class VerifyOtpRequest
     {
         [Required]
         [EmailAddress]

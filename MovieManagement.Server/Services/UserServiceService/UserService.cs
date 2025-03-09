@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Exceptions;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Services.UserService
 {
@@ -100,14 +101,14 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
+        public async Task<IEnumerable<ListUserResponse>> GetAllUsersAsync()
         {
             try
             {
                 var users = await _unitOfWork.UserRepository.GetAllAsync();
                 if (users == null)
                     throw new NotFoundException("No users found!");
-                return _mapper.Map<List<UserDto>>(users);
+                return _mapper.Map<List<ListUserResponse>>(users);
             }
             catch (Exception ex)
             {

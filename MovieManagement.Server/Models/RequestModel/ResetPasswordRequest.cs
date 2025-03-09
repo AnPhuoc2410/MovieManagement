@@ -2,7 +2,7 @@
 
 namespace MovieManagement.Server.Models.RequestModel
 {
-    public class ResetPasswordModel
+    public class ResetPasswordRequest
     {
         [Required]
         public Guid UserId { get; set; }

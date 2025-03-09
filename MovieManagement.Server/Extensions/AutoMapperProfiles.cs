@@ -12,6 +12,15 @@ namespace MovieManagement.Server.Extensions
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
 
+            //List User Response For Admin  
+            CreateMap<User, ListUserResponse>();
+            CreateMap<ListUserResponse, User>()
+                .ForMember(dest => dest.Password, opt => opt.Ignore())
+                .ForMember(dest => dest.JoinDate, opt => opt.Ignore())
+                .ForMember(dest => dest.IDCard, opt => opt.Ignore())
+                .ForMember(dest => dest.BirthDate, opt => opt.Ignore())
+                .ForMember(dest => dest.Address, opt => opt.Ignore());
+
             CreateMap<Promotion, PromotionDto>();
             CreateMap<PromotionDto, Promotion>();
 

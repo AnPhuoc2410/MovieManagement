@@ -28,17 +28,8 @@ namespace MovieManagement.Server.Controllers
             try
             {
                 bool otp = await _emailService.SendOtpEmail(request.Email);
-                if (!otp)
-                {
-                    var response = new ApiResponseServices<IEnumerable<OtpCodeDto>>
-                    {
-                        StatusCode = 404,
-                        Message = "User not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                else
+                
+                if(otp)
                 {
                     var response = new ApiResponseServices<IEnumerable<OtpCodeDto>>
                     {
@@ -47,6 +38,16 @@ namespace MovieManagement.Server.Controllers
                         IsSuccess = true
                     };
                     return Ok(response);
+                }
+                else
+                {
+                    var response = new ApiResponseServices<IEnumerable<OtpCodeDto>>
+                    {
+                        StatusCode = 404,
+                        Message = "User not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
                 }
             }
             catch (Exception ex)
@@ -59,7 +60,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpModel request)
+        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest request)
         {
             try
             {
