@@ -10,7 +10,10 @@ namespace MovieManagement.Server.Extensions
         {
 
             CreateMap<User, UserDto>();
-            CreateMap<UserDto, User>();
+            CreateMap<User, UserDto.UserResponse>();
+            CreateMap<UserDto.CreateUser, User>()
+                .ForMember(dest => dest.Bills, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()));
 
             CreateMap<Promotion, PromotionDto>();
             CreateMap<PromotionDto, Promotion>();

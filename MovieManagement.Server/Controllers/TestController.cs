@@ -34,7 +34,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost("Registration")]
-        public async Task<IActionResult> Registration(UserDto.UserRequest userDto)
+        public async Task<IActionResult> Registration(UserDto.CreateUser userDto)
         {
 
             var output = await _userService.CreateUserAsync(userDto);

@@ -243,7 +243,6 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
-                    Message = "An error occurred while updating bill",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
@@ -258,7 +257,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>),
             StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserDto>> CreateUserAsync(UserDto.UserRequest userDto)
+        public async Task<ActionResult<UserDto>> CreateUserAsync(UserDto.CreateUser userDto)
         {
             try
             {
@@ -303,7 +302,6 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
-                    Message = "An error occurred while updating bill",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
@@ -364,7 +362,6 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
-                    Message = "An error occurred while updating bill",
                     IsSuccess = false,
                     Reason = ex.Message
                 };

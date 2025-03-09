@@ -30,7 +30,7 @@ namespace MovieManagement.Server.Services.UserService
             _jwtService = jwtService;
         }
         
-        public async Task<UserDto.UserResponse> CreateUserAsync(UserDto.UserRequest user)
+        public async Task<UserDto.UserResponse> CreateUserAsync(UserDto.CreateUser user)
         {
             try
             {
@@ -118,6 +118,7 @@ namespace MovieManagement.Server.Services.UserService
                 var usersList = await _unitOfWork.UserRepository.GetUserByRoleAsync(role);
                 if (usersList == null)
                     throw new NotFoundException("Users not found!");
+
                 return _mapper.Map<List<UserDto.UserResponse>>(usersList);
             }
             catch (Exception ex)

@@ -7,6 +7,7 @@ using MovieManagement.Server.Extensions;
 using MovieManagement.Server.Services.JwtService;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace MovieManagement.Server
 {
@@ -65,6 +66,11 @@ namespace MovieManagement.Server
 
             // Đăng Ký GenericRepository, Repository và Service
             builder.Services.AddAllDependencies("Repository", "Service", "UnitOfWork");
+
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
             // Đăng ký AutoMapper
             builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);

@@ -6,7 +6,7 @@ namespace MovieManagement.Server.Services.UserService
     public interface IUserService
     {
 
-        Task<UserDto.UserResponse> CreateUserAsync(UserDto.UserRequest user);
+        Task<UserDto.UserResponse> CreateUserAsync(UserDto.CreateUser user);
         Task<UserDto.UserResponse> GetUserByIdAsync(Guid id);
         Task<List<UserDto.UserResponse>> GetUserByRoleAsync(Role role);
         Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page, int pageSize);
