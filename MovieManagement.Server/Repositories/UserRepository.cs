@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
@@ -15,7 +16,7 @@ namespace MovieManagement.Server.Repositories
         public UserRepository(AppDbContext context) : base(context)
         {
             _context = context;
-            
+
         }
 
         public async Task<bool> ChangeUserPasswordByEmail(string email, string newPassword)
@@ -37,7 +38,7 @@ namespace MovieManagement.Server.Repositories
 
         public Task<List<User>> GetUserByRoleAsync(Role role)
         {
-            
+
             var users = _context.Users
                         .Where(user => user.Role == role)
                         .ToListAsync();
@@ -60,6 +61,20 @@ namespace MovieManagement.Server.Repositories
                             .OrderBy(user => user.JoinDate)
                             .LastOrDefaultAsync();
             return user != null;
+        }
+
+        public async Task<User> GetByName(string username, string email)
+        {
+            var groupUser = await (from g in _context.Users
+                                   where g.UserName == username && g.Status == 1
+                                   group g by g.Email into groupUsers
+                                   select new
+                                   {
+                                       Email = groupUsers.Key,
+                                       FirstUser = groupUsers.FirstOrDefault()
+                                   }).FirstOrDefaultAsync();
+
+            return groupUser?.FirstUser;
         }
     }
 }

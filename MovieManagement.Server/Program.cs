@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Services.AuthorizationService;
 using MovieManagement.Server.Services.JwtService;
 using System.Reflection;
 using System.Text;
@@ -129,6 +132,14 @@ namespace MovieManagement.Server
                 c.IncludeXmlComments(xmlPath);
             });
 
+            // Register the password hasher
+            builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
+            //Enable role based and policy based authorization
+            builder.Services.AddAuthorization();
+
+
+
             var app = builder.Build();
 
 
@@ -156,6 +167,13 @@ namespace MovieManagement.Server
             app.UseWebSockets();
             app.UseRouting();
 
+
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
