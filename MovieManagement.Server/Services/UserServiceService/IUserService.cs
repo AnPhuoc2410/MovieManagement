@@ -1,5 +1,6 @@
 ﻿using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Services.UserService
 {

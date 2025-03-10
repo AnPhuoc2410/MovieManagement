@@ -33,7 +33,12 @@ namespace MovieManagement.Server.Models.Entities
 
         public string Address { get; set; }
 
-        public UserStatus Status { get; set; } // 0: Khóa, 1: Mở
+        /// <summary>
+        /// Trạng thái tài khoản
+        /// 0: Khóa
+        /// 1: Mở
+        /// </summary>
+        public UserStatus Status { get; set; }
 
         public Role Role { get; set; }
 

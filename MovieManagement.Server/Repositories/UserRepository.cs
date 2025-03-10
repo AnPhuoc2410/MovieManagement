@@ -7,6 +7,7 @@ using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories.IRepositories;
 using MovieManagement.Server.Services.JwtService;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Repositories
 {
@@ -66,7 +67,7 @@ namespace MovieManagement.Server.Repositories
         public async Task<User> GetByEmail(string email)
         {
             var user = await _context.Users
-                .Where(u => u.Email == email && u.Status == 1)
+                .Where(u => u.Email == email && u.Status == UserStatus.Active)
                 .FirstOrDefaultAsync();
 
             return user;

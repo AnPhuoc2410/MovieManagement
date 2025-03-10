@@ -13,6 +13,7 @@ using System.Net;
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Services.JwtService;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Services.UserService
 {

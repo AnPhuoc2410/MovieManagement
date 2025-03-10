@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using static MovieManagement.Server.Models.Enums.BillEnum;
 
 namespace MovieManagement.Server.Models.DTOs
 {
@@ -10,6 +11,6 @@ namespace MovieManagement.Server.Models.DTOs
         public string Showtime { get; set; }
         public string RoomName { get; set; }
         public decimal Price { get; set; }
-        public int Status { get; set; }
+        public BillStatus Status { get; set; }
     }
 }

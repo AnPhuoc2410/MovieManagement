@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using MovieManagement.Server.Repositories.IRepositories;
 using MovieManagement.Server.Exceptions;
 using Microsoft.VisualBasic;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 
 namespace MovieManagement.Server.Services.AuthorizationService
@@ -79,7 +80,7 @@ namespace MovieManagement.Server.Services.AuthorizationService
                 UserId = Guid.NewGuid(),
                 UserName = dto.UserName,
                 Email = dto.Email,
-                Status = 1, // Active user
+                Status = UserStatus.Active, // Active user
                 JoinDate = DateTime.UtcNow
             };
             // Hash the password
