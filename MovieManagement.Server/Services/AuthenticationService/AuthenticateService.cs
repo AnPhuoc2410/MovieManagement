@@ -44,7 +44,7 @@ namespace MovieManagement.Server.Services.AuthorizationService
 
             // Use PasswordHasher to verify the password
             var passwordHasher = new PasswordHasher<User>();
-            user.Password = passwordHasher.HashPassword(user, dto.Password); // Store this in DB
+
 
             //Check password
             var result = passwordHasher.VerifyHashedPassword(user, user.Password, dto.Password);
