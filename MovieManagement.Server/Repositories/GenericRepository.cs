@@ -80,8 +80,8 @@ namespace MovieManagement.Server.Repositories
         }
         public async Task<T> CreateAsync(T entity)
         {
-            _context.AddAsync(entity);
-            _context.SaveChangesAsync();
+            await _context.AddAsync(entity);
+            await _context.SaveChangesAsync();
             return entity;
         }
         public async Task<T> UpdateAsync(T entity)

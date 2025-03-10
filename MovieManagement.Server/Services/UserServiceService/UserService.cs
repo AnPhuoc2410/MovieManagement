@@ -67,7 +67,7 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<bool> CreateUserByOAuthAsync(OAuthRequest account)
+        public async Task<bool> RegisterWithGoogle(OAuthRequest account)
         {
             try
             {

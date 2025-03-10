@@ -8,7 +8,7 @@ namespace MovieManagement.Server.Services.UserService
     {
 
         Task<UserDto> CreateUserAsync(UserDto user);
-        Task<bool> CreateUserByOAuthAsync(OAuthRequest account);
+        Task<bool> RegisterWithGoogle(OAuthRequest account);
         Task<UserDto> GetUserByIdAsync(Guid id);
         Task<IEnumerable<UserDto>> GetUserPageAsync(int page, int pageSize);
         Task<IEnumerable<UserResponse>> GetAllUsersAsync();
