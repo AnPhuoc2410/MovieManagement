@@ -2,7 +2,7 @@
 {
     public class MovieRequest
     {
-        public string Name { get; set; }
+        public string MovieName { get; set; }
 
         public string Image { get; set; }
 
@@ -29,5 +29,6 @@
         public Guid UserId { get; set; }
 
         public ICollection<Guid> CategoriesIds { get; set; } = new List<Guid>();
+
     }
 }

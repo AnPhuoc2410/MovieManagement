@@ -30,7 +30,7 @@ namespace MovieManagement.Server.Controllers
                 var movies = await _movieService.GetAllMoviesAsync();
                 if (movies == null)
                 {
-                    var response = new ApiResponse<IEnumerable<BillDto>>
+                    var response = new ApiResponse<IEnumerable<MovieDto>>
                     {
                         StatusCode = 404,
                         Message = "Movie not found",
@@ -38,7 +38,13 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
-                return Ok(movies);
+                return Ok(new ApiResponse<IEnumerable<MovieDto>>
+                {
+                    Data = movies,
+                    IsSuccess = true,
+                    Message = "Get all movies successfully",
+                    StatusCode = StatusCodes.Status200OK
+                });
             }
             catch (BadRequestException ex)
             {
@@ -311,7 +317,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpGet]
         [Route("SearchMoviesByNameRelative/{searchValue}")]
-        [ProducesResponseType(typeof(ApiResponse<MovieDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<MoviePreview>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -331,7 +337,13 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
-                return Ok(movies);
+                return Ok(new ApiResponse<IEnumerable<MoviePreview>>
+                {
+                    Data = movies,
+                    IsSuccess = true,
+                    Message = "Get all movies successfully",
+                    StatusCode = StatusCodes.Status200OK
+                });
             }
             catch (BadRequestException ex)
             {
@@ -551,5 +563,8 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
+
+
     }
 }

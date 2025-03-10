@@ -23,23 +23,16 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
         {
-            try
+            var movies = _mapper.Map<List<MovieDto>>(await _unitOfWork.MovieRepository.GetAllAsync());
+            if (movies == null)
             {
-                var movies = _mapper.Map<List<MovieDto>>(await _unitOfWork.MovieRepository.GetAllAsync());
-                if (movies == null)
-                {
-                    throw new NotFoundException("Movies do not found!");
-                }
-                return movies;
+                throw new NotFoundException("Movies do not found!");
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
-            }
+            return movies;
         }
         public async Task<IEnumerable<MoviePreview>> GetPageAsync(int page, int pageSize)
         {
-            var movies = await _unitOfWork.MovieRepository.GetPage(page, pageSize);
+            var movies = await _unitOfWork.MovieRepository.GetMovieByPage(page, pageSize);
             return _mapper.Map<IEnumerable<MoviePreview>>(movies);
         }
         public async Task<MovieDto> GetMovieByIdAsync(Guid movieId)
@@ -57,38 +50,23 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<MovieDto> CreateMovieAsync(Guid employeeId, MovieRequest movieRequest)
         {
-            //var newMovie = new Movie
-            //{
-            //    Name = movieRequest.Name,
-            //    Image = movieRequest.Image,
-            //    PostDate = movieRequest.PostDate,
-            //    FromDate = movieRequest.FromDate,
-            //    ToDate = movieRequest.ToDate,
-            //    Actors = movieRequest.Actors,
-            //    Director = movieRequest.Director,
-            //    Rating = movieRequest.Rating,
-            //    Duration = movieRequest.Duration,
-            //    Version = movieRequest.Version,
-            //    Trailer = movieRequest.Trailer,
-            //    Content = movieRequest.Content,
-            //    UserId = employeeId,
-            //};
 
             movieRequest.UserId = employeeId;
             var movie = await _unitOfWork.MovieRepository.CreateAsync(_mapper.Map<Movie>(movieRequest));
             var response = _mapper.Map<MovieDto>(movie);
 
-            foreach (var categoryId in movieRequest.CategoriesIds)
-            {
-                var movieCategory = new MovieCategory
+            if(movieRequest.CategoriesIds.Count != 0)
+                foreach (var categoryId in movieRequest.CategoriesIds)
                 {
-                    MovieId = movie.MovieId.Value,
-                    CategoryId = categoryId
-                };
-                _unitOfWork.MovieCategoryRepository.Create(movieCategory);
-                var category = await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId);
-                response.Categories.Add(_mapper.Map<CategoryDto>(category));
-            }
+                    var movieCategory = new MovieCategory
+                    {
+                        MovieId = movie.MovieId.Value,
+                        CategoryId = categoryId
+                    };
+                    _unitOfWork.MovieCategoryRepository.Create(movieCategory);
+                    var category = await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId);
+                    response.Categories.Add(_mapper.Map<CategoryDto>(category));
+                }
             return response;
         }
 
@@ -96,19 +74,9 @@ namespace MovieManagement.Server.Services.MovieService
         {
             var updateMovie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
 
-            updateMovie.MovieName = movieRequest.Name;
-            updateMovie.Image = movieRequest.Image;
-            updateMovie.PostDate = movieRequest.PostDate;
-            updateMovie.FromDate = movieRequest.FromDate;
-            updateMovie.ToDate = movieRequest.ToDate;
-            updateMovie.Actors = movieRequest.Actors;
-            updateMovie.Director = movieRequest.Director;
-            updateMovie.Rating = movieRequest.Rating;
-            updateMovie.Duration = movieRequest.Duration;
-            updateMovie.Version = movieRequest.Version;
-            updateMovie.Trailer = movieRequest.Trailer;
-            updateMovie.Content = movieRequest.Content;
-            updateMovie.UserId = movieRequest.UserId;
+            movieRequest.UserId = updateMovie.UserId;
+            updateMovie = _mapper.Map(movieRequest, updateMovie);
+
             var updateMovieCategories = _unitOfWork.MovieCategoryRepository.GetMovieCategoriesByMovieId(updateMovie.MovieId.Value);
 
             if (updateMovieCategories.Count > 0)
@@ -120,17 +88,19 @@ namespace MovieManagement.Server.Services.MovieService
             var updatedMovie = await _unitOfWork.MovieRepository.UpdateAsync(updateMovie);
             var response = _mapper.Map<MovieDto>(updatedMovie);
 
-            foreach (var categoryId in movieRequest.CategoriesIds)
-            {
-                var movieCategory = new MovieCategory
+            if (movieRequest.CategoriesIds.Count != 0)
+                foreach (var categoryId in movieRequest.CategoriesIds)
                 {
-                    MovieId = updateMovie.MovieId.Value,
-                    CategoryId = categoryId
-                };
-                await _unitOfWork.MovieCategoryRepository.CreateAsync(movieCategory);
-                var category = await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId);
-                response.Categories.Add(_mapper.Map<CategoryDto>(category));
-            }
+                    var movieCategory = new MovieCategory
+                    {
+                        MovieId = updateMovie.MovieId.Value,
+                        CategoryId = categoryId
+                    };
+                    await _unitOfWork.MovieCategoryRepository.CreateAsync(movieCategory);
+                    var category = await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId);
+                    response.Categories.Add(_mapper.Map<CategoryDto>(category));
+                }
+
             return response;
         }
 
@@ -140,7 +110,7 @@ namespace MovieManagement.Server.Services.MovieService
             {
                 var existingMovie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
                 if (existingMovie == null)
-                    throw new NotFoundException("Bill cannot found!");
+                    throw new NotFoundException("Movie cannot found!");
                 return await _unitOfWork.MovieRepository.DeleteAsync(movieId);
             }
             catch (Exception ex)
@@ -173,6 +143,11 @@ namespace MovieManagement.Server.Services.MovieService
             return _mapper.Map<MovieDto>(movie);
         }
 
+        public async Task<IEnumerable<MovieDto>> GetMoviesByCategory(Guid categoryId, int page, int pageSize)
+        {
+            var movies = await _unitOfWork.MovieRepository.GetMoviesByCategory(categoryId, page, pageSize);
+            return _mapper.Map<IEnumerable<MovieDto>>(movies);
+        }
 
     }
 }

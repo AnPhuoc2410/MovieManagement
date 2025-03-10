@@ -51,7 +51,7 @@ namespace MovieManagement.Server.Repositories
             return query.Skip(page * pageSize).Take(pageSize).ToListAsync();
         }
 
-        public Task<List<Movie>> GetPage(int page, int pageSize)
+        public Task<List<Movie>> GetMovieByPage(int page, int pageSize)
         {
             return _context.Movies
                 .Where(m => m.IsDeleted == false)
