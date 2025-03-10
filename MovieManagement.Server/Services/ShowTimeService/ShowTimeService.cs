@@ -70,7 +70,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var createdShowTime = await _unitOfWork.ShowtimeRepository.CreateAsync(newShowTime);
 
 
-
+            
             return _mapper.Map<ShowTimeDto>(createdShowTime);
         }
 
