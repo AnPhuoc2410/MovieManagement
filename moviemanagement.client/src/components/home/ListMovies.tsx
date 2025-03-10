@@ -1,5 +1,5 @@
-import { Box, Button, Container, Typography, Chip } from "@mui/material";
-import React, { ReactNode } from "react";
+import { Box, Button, Container, Typography, Chip, Modal } from "@mui/material";
+import React, { ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import "swiper/css";
@@ -12,107 +12,20 @@ import ScrollFloat from "../shared/ScrollFloat";
 import "./ListMovies.css";
 import PlayCircleOutlineOutlinedIcon from "@mui/icons-material/PlayCircleOutlineOutlined";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-
-const nowShowingMovies = [
-  {
-    title: "Kimi wo Aishita Hitori no Boku e (T16)",
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx139311-5iHY459iwQ46.jpg",
-  },
-  {
-    title: "Boku ga Aishita Subete no Kimi e (T16)",
-    image:
-      "https://screenbox.in/wp-content/uploads/2023/06/cropped-sgechfsdhgxcfghvcbgcdgsbu-jpeg.webp",
-  },
-  {
-    title: "Tenki No Ko (T16)",
-    image:
-      "https://www.wheninmanila.com/wp-content/uploads/2019/06/D7rQ8bGX4AYrtLJ.jpeg",
-  },
-  {
-    title: "Kimi no Na wa (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP._rW1f9vUm1sm5uVtobKvYQHaK3?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Suzume no Tojimari (T16)",
-    image: "https://www.posterhub.com.sg/images/detailed/134/80_1A_1B.jpg",
-  },
-  {
-    title: "Spirited Away (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP.uK0O7q8JA30sKMuwOrAsdQHaLN?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Pokemon Collection 22 (T16)",
-    image: "https://i.ebayimg.com/images/g/la0AAOSwGKJf8y5s/s-l1600.jpg",
-  },
-  {
-    title: "Captain America: Brave New World (T18)",
-    image:
-      "https://www.bhdstar.vn/wp-content/uploads/2025/02/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-2.jpg",
-  },
-  {
-    title: "Minecraft: The Movie (T16)",
-    image:
-      "https://www.bhdstar.vn/wp-content/uploads/2025/02/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-22.jpg",
-  },
-];
-
-const upcomingMovies = [
-  {
-    title: "Suzume no Tojimari (T16)",
-    image: "https://www.posterhub.com.sg/images/detailed/134/80_1A_1B.jpg",
-  },
-  {
-    title: "Spirited Away (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP.uK0O7q8JA30sKMuwOrAsdQHaLN?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Captain America: Brave New World (T18)",
-    image:
-      "https://d2oi1rqwb0pj00.cloudfront.net/challenge/nio_1739276625112_100.webp",
-  },
-  {
-    title: "Pokemon Heros The Movie (T16)",
-    image:
-      "https://th.bing.com/th/id/R.3689c865e31936ceee7588a094638911?rik=fXjX%2ferUrFzFRA&pid=ImgRaw&r=0",
-  },
-  {
-    title: "Kimi wo Aishita Hitori no Boku e (T16)",
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx139311-5iHY459iwQ46.jpg",
-  },
-  {
-    title: "Boku ga Aishita Subete no Kimi e (T16)",
-    image:
-      "https://screenbox.in/wp-content/uploads/2023/06/cropped-sgechfsdhgxcfghvcbgcdgsbu-jpeg.webp",
-  },
-  {
-    title: "Tenki No Ko (T16)",
-    image:
-      "https://www.wheninmanila.com/wp-content/uploads/2019/06/D7rQ8bGX4AYrtLJ.jpeg",
-  },
-  {
-    title: "Kimi no Na wa (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP._rW1f9vUm1sm5uVtobKvYQHaK3?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Suzume no Tojimari (T16)",
-    image: "https://www.posterhub.com.sg/images/detailed/134/80_1A_1B.jpg",
-  },
-];
+import toast from "react-hot-toast";
+import api from "../../apis/axios.config";
+import Loader from "../shared/Loading";
 
 const MovieSlider = ({
   movies,
   title,
   navigateTo,
+  onOpenTrailer,
 }: {
   movies: any[];
   title: ReactNode;
   navigateTo: string;
+  onOpenTrailer: (url: string) => void;
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -184,7 +97,7 @@ const MovieSlider = ({
                 </Box>
               </Box>
               <Typography variant="h6" className="movie-title">
-                {movie.title}
+                {movie.name}
               </Typography>
               <Box
                 sx={{
@@ -206,6 +119,7 @@ const MovieSlider = ({
                     whiteSpace: "nowrap", // Prevents text from wrapping
                     minWidth: "fit-content", // Ensures the button resizes based on content
                   }}
+                  onClick={() => onOpenTrailer(movie.trailer)}
                 >
                   <PlayCircleOutlineOutlinedIcon />
                   <span
@@ -226,7 +140,11 @@ const MovieSlider = ({
                     fontWeight: "bold",
                     width: "120px",
                   }}
-                  onClick={() => navigate(`/ticket/${index}`)}
+                  onClick={() =>
+                    navigate(`/ticket/${movie.movieId}`, {
+                      state: { movieId: movie.movieId },
+                    })
+                  }
                 >
                   {t("book_ticket")}
                 </Button>
@@ -275,6 +193,65 @@ const MovieSlider = ({
 
 const ListMovies: React.FC = () => {
   const { t } = useTranslation();
+  const [nowShowingMovies, setNowShowingMovies] = useState<any[]>([]);
+  const [upcomingMovies, setUpcomingMovies] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [openTrailer, setOpenTrailer] = useState(false);
+  const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
+  const page = 0;
+  const pageSize = 6;
+
+  const fetchNowShowingMovies = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get(
+        `Movie/GetMoviesNowShowing/page/${page}/pageSize/${pageSize}`,
+      );
+      console.log("Now showing movies:", response.data);
+      setNowShowingMovies(response.data);
+    } catch (error) {
+      console.error("Error fetching now showing movies:", error);
+      toast.error("Failed to fetch now showing movies");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUpcomingMovies = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get(
+        `Movie/GetMoviesUpcoming/page/${page}/pageSize/${pageSize}`,
+      );
+      console.log("Upcoming movies:", response.data);
+      setUpcomingMovies(response.data);
+    } catch (error) {
+      console.error("Error fetching upcoming movies:", error);
+      toast.error("Failed to fetch upcoming movies");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNowShowingMovies();
+    fetchUpcomingMovies();
+  }, []);
+
+  const handleOpenTrailer = (url: string) => {
+    let embedUrl = url.replace("youtu.be", "youtube.com/embed");
+    embedUrl = embedUrl.replace("watch?v=", "embed/");
+    embedUrl = embedUrl + "?autoplay=1";
+    setTrailerUrl(embedUrl);
+    setOpenTrailer(true);
+  };
+
+  const handleCloseTrailer = () => {
+    setOpenTrailer(false);
+    setTrailerUrl(null);
+  };
+
+  if (loading) return <Loader />;
   return (
     <Box sx={{ mt: 5, textAlign: "center" }}>
       {/* Now Showing Section */}
@@ -293,6 +270,7 @@ const ListMovies: React.FC = () => {
           </Typography>
         }
         navigateTo="/movies/now-showing"
+        onOpenTrailer={handleOpenTrailer}
       />
 
       {/* Upcoming Movies Section */}
@@ -311,7 +289,44 @@ const ListMovies: React.FC = () => {
           </Typography>
         }
         navigateTo="/movies/up-coming"
+        onOpenTrailer={handleOpenTrailer}
       />
+
+      {/* Trailer Modal */}
+      <Modal
+        open={openTrailer}
+        onClose={handleCloseTrailer}
+        aria-labelledby="trailer-modal"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          bgcolor: "rgba(61, 14, 97, 0.95)",
+        }}
+      >
+        <Box
+          sx={{
+            position: "relative",
+            width: "80%",
+            maxWidth: "1000px",
+            aspectRatio: "16/9",
+            bgcolor: "transparent",
+          }}
+        >
+          {trailerUrl && (
+            <iframe
+              width="100%"
+              height="100%"
+              src={`${trailerUrl}`}
+              title="Movie Trailer"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ position: "absolute", top: 0, left: 0 }}
+            />
+          )}
+        </Box>
+      </Modal>
     </Box>
   );
 };

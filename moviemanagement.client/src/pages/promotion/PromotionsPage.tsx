@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import CloudinaryImage from "../../components/cloudinary/CloudinaryImage";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
+import api from "../../apis/axios.config";
 import Loader from "../../components/shared/Loading";
 
 interface Promotion {
@@ -39,8 +40,8 @@ const PromotionsPage: React.FC = () => {
     const fetchPromotions = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          `https://localhost:7119/api/Promotions/page/${page}/pageSize/${pageSize}`,
+        const response = await api.get(
+          `Promotions/page/${page}/pageSize/${pageSize}`,
         );
         if (response.data.length === 0 && page > 0) {
           toast.error("Không còn trang tiếp theo");
