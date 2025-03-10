@@ -35,9 +35,14 @@ namespace MovieManagement.Server.Services.MovieService
             var movies = await _unitOfWork.MovieRepository.GetMovieByPage(page, pageSize);
             return _mapper.Map<IEnumerable<MoviePreview>>(movies);
         }
+
         public async Task<MovieDto> GetMovieByIdAsync(Guid movieId)
         {
             var movie = await _unitOfWork.MovieRepository.GetMovieById(movieId);
+            if (movie == null)
+            {
+                throw new NotFoundException("Movie does not found!");
+            }
             var response = _mapper.Map<MovieDto>(movie);
             var movieCategories = _unitOfWork.MovieCategoryRepository.GetMovieCategoriesByMovieId(movieId);
             foreach (var movieCategory in movieCategories)
