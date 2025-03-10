@@ -56,6 +56,13 @@ namespace MovieManagement.Server.Extensions
             CreateMap<SeatType, SeatTypeResponseModel>();
             CreateMap<SeatTypeResponseModel, SeatType>();
 
+
+            CreateMap<AuthDto.LoginRequest, AuthDto.LoginResponse>();
+            CreateMap<AuthDto.LoginResponse, AuthDto.LoginRequest>();
+
+            CreateMap<AuthDto.RegisterRequest, User>();
+            CreateMap<User, AuthDto.RegisterRequest>();
+
         }
     }
 }
