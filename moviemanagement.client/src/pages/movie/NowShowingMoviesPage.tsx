@@ -1,6 +1,6 @@
 import React from "react";
 import MovieList from "../../components/Movie/MovieList";
-import { Box } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -8,6 +8,8 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Header from "../../components/home/Header";
 import Footer from "../../components/home/Footer";
+import Aurora from "../../components/shared/Aurora";
+import ScrollToTop from "../../components/common/ScrollToTop";
 
 const slides = [
   "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",
@@ -136,41 +138,70 @@ const nowShowingMovies = [
 const NowShowingMoviesPage: React.FC = () => {
   return (
     <Box
-      sx={{ backgroundColor: "#0B0D1A", minHeight: "100vh", color: "white" }}
+      sx={{
+        minHeight: "100vh",
+        background: `linear-gradient(to bottom,
+          rgba(11, 13, 26, 0.95) 0%,
+          rgba(11, 13, 26, 0.85) 100%
+        )`,
+        position: "relative",
+        "&::before": {
+          content: '""',
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: `radial-gradient(circle at 20% 30%, rgba(78, 46, 131, 0.4) 0%, rgba(78, 46, 131, 0) 50%),
+                      radial-gradient(circle at 75% 15%, rgba(33, 64, 154, 0.4) 0%, rgba(33, 64, 154, 0) 50%),
+                      linear-gradient(135deg, #0B0D1A 0%, #1A1E3C 50%, #3A1155 100%)`,
+          zIndex: -1,
+        },
+      }}
     >
-      <Header />
-      <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pt: 10 }}>
-        <Swiper
-          modules={[Navigation, Pagination, Autoplay]}
-          spaceBetween={50}
-          slidesPerView={1}
-          navigation
-          pagination={{ clickable: true }}
-          autoplay={{ delay: 3000 }}
-          loop={true}
-          style={{ width: "100%", height: "auto" }}
-        >
-          {slides.map((slide, index) => (
-            <SwiperSlide key={index}>
-              <img
-                src={slide}
-                alt={`Slide ${index + 1}`}
-                style={{
-                  width: "100%",
-                  maxHeight: "400px",
-                  objectFit: "initial",
-                  borderRadius: "5px",
-                }}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+      {/* Aurora Effect */}
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 0,
+          opacity: 0.4,
+          pointerEvents: "none",
+        }}
+      >
+        <Aurora
+          colorStops={["#3A29FF", "#FF94B4", "#FF3232"]}
+          blend={1.0}
+          amplitude={2.5}
+          speed={1.0}
+        />
       </Box>
-      <MovieList
-        movies={nowShowingMovies}
-        title="PHIM ĐANG CHIẾU"
-        buttonText="ĐẶT VÉ"
-      />
+
+      <Header />
+
+      <Container
+        maxWidth="xl"
+        sx={{
+          pt: { xs: "64px", sm: "72px", md: "80px" },
+          pb: { xs: 4, sm: 6, md: 8 },
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        {/* Movie List */}
+        <Box sx={{ position: "relative", zIndex: 1 }}>
+          <MovieList
+            movies={nowShowingMovies}
+            title="PHIM ĐANG CHIẾU"
+            buttonText="ĐẶT VÉ"
+          />
+        </Box>
+      </Container>
+
+      <ScrollToTop />
       <Footer />
     </Box>
   );
