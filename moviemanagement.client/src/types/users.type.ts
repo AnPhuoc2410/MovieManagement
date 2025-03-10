@@ -18,7 +18,7 @@ export type UserBase = {
 };
 
 export type LoginDTO = {
-  username: string;
+  email: string;
   password: string;
   rememberMe?: boolean;
 };

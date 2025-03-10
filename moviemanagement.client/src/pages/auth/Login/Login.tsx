@@ -28,16 +28,14 @@ export const Login = () => {
   const { t } = useTranslation();
 
   const validationSchema = yup.object({
-    username: yup
-      .string()
-      .required(t("auth.login.validation.username_required")),
+    email: yup.string().required(t("auth.login.validation.email_required")),
     password: yup
       .string()
       .test(
         "is-valid-password",
         t("auth.login.validation.password_length"),
         (value, context) => {
-          if (context.parent.username === "admin" && value === "admin") {
+          if (context.parent.email === "admin" && value === "admin") {
             return true;
           }
           return value !== undefined && value.length >= 8;
@@ -56,7 +54,7 @@ export const Login = () => {
 
   const formik = useFormik({
     initialValues: {
-      username: "",
+      email: "",
       password: "",
     },
     validationSchema: validationSchema,
@@ -66,7 +64,7 @@ export const Login = () => {
 
       try {
         const response = await login({
-          username: values.username,
+          email: values.email,
           password: values.password,
         });
         toast.dismiss(toastId);
@@ -144,14 +142,14 @@ export const Login = () => {
 
       <TextField
         fullWidth
-        id="username"
-        name="username"
-        label={t("auth.login.username")}
-        value={formik.values.username}
+        id="email"
+        name="email"
+        label={t("auth.login.email")}
+        value={formik.values.email}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        error={formik.touched.username && Boolean(formik.errors.username)}
-        helperText={formik.touched.username && formik.errors.username}
+        error={formik.touched.email && Boolean(formik.errors.email)}
+        helperText={formik.touched.email && formik.errors.email}
         sx={textFieldStyle}
         InputProps={{
           startAdornment: (
