@@ -42,14 +42,14 @@ namespace MovieManagement.Server.Repositories
                 .ToListAsync();
         }
 
-        //public Task<List<Movie>> GetMoviesByCategory(Guid categoryId, int page, int pageSize)
-        //{
-        //    var query = from m in _context.Movies
-        //                join mc in _context.MovieCategories on m.MovieId equals mc.MovieId
-        //                where mc.CategoryId == categoryId && m.IsDeleted == false
-        //                select m;
-        //    return query.Skip(page * pageSize).Take(pageSize).ToListAsync();
-        //}
+        public Task<List<Movie>> GetMoviesByCategory(Guid categoryId, int page, int pageSize)
+        {
+            var query = from m in _context.Movies
+                        join mc in _context.MovieCategories on m.MovieId equals mc.MovieId
+                        where mc.CategoryId == categoryId && m.IsDeleted == false
+                        select m;
+            return query.Skip(page * pageSize).Take(pageSize).ToListAsync();
+        }
 
         public Task<List<Movie>> GetPage(int page, int pageSize)
         {

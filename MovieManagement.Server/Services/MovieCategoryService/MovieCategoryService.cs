@@ -7,32 +7,38 @@ namespace MovieManagement.Server.Services.MovieCategoryService
     public class MovieCategoryService : IMovieCategoryService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public Task<MovieCategory> CreateAsync(MovieCategory movieCategory)
+
+        public MovieCategoryService(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+        public Task<MovieCategory> CreateMovieCategoryAsync(MovieCategory movieCategory)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteAsync(Guid id)
+        public Task<bool> DeleteMovieCategoryAsync(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<MovieCategory>> GetAllAsync()
+        public Task<IEnumerable<MovieCategory>> GetAllMovieCategoryAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<MovieCategory> GetByIdAsync(Guid ticketId)
+        public Task<MovieCategory> GetMovieCategoryByIdAsync(Guid ticketId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<MovieCategory>> GetPageAsync(int page, int pageSize)
+        public Task<IEnumerable<MovieCategory>> GetMovieCategoryPageAsync(int page, int pageSize)
         {
             throw new NotImplementedException();
         }
 
-        public Task<MovieCategory> UpdateAsync(Guid id, MovieCategory movieCategory)
+        public Task<MovieCategory> UpdateMovieCategoryAsync(Guid id, MovieCategory movieCategory)
         {
             throw new NotImplementedException();
         }
