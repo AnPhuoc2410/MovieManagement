@@ -82,9 +82,16 @@ namespace MovieManagement.Server.Services.AuthorizationService
             {
                 UserId = Guid.NewGuid(),
                 UserName = dto.UserName,
+                FullName = dto.FullName,
                 Email = dto.Email,
                 Status = 1, // Active user
-                JoinDate = DateTime.UtcNow
+                JoinDate = DateTime.UtcNow,
+                Address = dto.Address,
+                Avatar = "",
+                IDCard = "",
+                PhoneNumber = "",
+                Role = 0,
+                Point = 0
             };
             // Hash the password
             var passwordHasher = new PasswordHasher<User>();

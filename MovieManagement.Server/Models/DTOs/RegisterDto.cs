@@ -7,8 +7,11 @@
         public string FullName { get; set; }
         public string Email { get; set; }
         public DateTime BirthDate { get; set; }
-        public int Gendder { get; set; }
+        public int Gender { get; set; } // 0: Nam, 1: Nữ
         public string Address { get; set; }
+
+
+     
 
     }
 }
