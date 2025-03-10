@@ -96,10 +96,10 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
               radial-gradient(circle at 75% 15%, rgba(33, 64, 154, 0.4) 0%, rgba(33, 64, 154, 0) 50%),
               linear-gradient(135deg, #0B0D1A 0%, #1A1E3C 50%, #3A1155 100%)
             `,
-        minHeight: "100vh",
         color: "white",
         position: "relative",
         zIndex: 1,
+        padding: { xs: 4, sm: 6, md: 8, lg: 10 },
         overflow: "hidden",
       }}
     >
@@ -108,6 +108,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
         variant="h4"
         sx={{
           textTransform: "uppercase",
+          mt: 3,
           mb: 4,
           fontWeight: "bold",
           textAlign: "center",
@@ -118,7 +119,15 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
       </Typography>
 
       {/* Ticket Cards */}
-      <Grid container spacing={3} justifyContent="center">
+      <Grid
+        container
+        spacing={3}
+        justifyContent="center"
+        sx={{
+          paddingLeft: "10%",
+          paddingRight: "10%",
+        }}
+      >
         {tickets.map((ticket) => (
           <Grid item xs={12} sm={6} md={4} key={ticket.id}>
             <Box
@@ -212,7 +221,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
       {onNext && (
         <Box sx={{ mt: 4, textAlign: "center" }}>
           <Button variant="contained" color="primary" onClick={handleNext}>
-            Next
+            Tiếp tục
           </Button>
         </Box>
       )}

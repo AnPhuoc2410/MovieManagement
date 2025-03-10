@@ -1,26 +1,11 @@
-import React, { useState, useEffect } from "react";
 import {
-  AppBar,
-  Box,
-  IconButton,
-  Toolbar,
-  Typography,
-  Container,
-  Stepper,
-  Step,
-  StepLabel,
-} from "@mui/material";
-import {
-  AccountCircleOutlined as AccountCircleOutlined,
-  MovieOutlined as MovieIcon,
-  EventSeatOutlined as EventSeatIcon,
-  PaymentOutlined as PaymentIcon,
   CheckCircleOutline as CheckCircleIcon,
+  EventSeatOutlined as EventSeatIcon,
+  MovieOutlined as MovieIcon,
+  PaymentOutlined as PaymentIcon,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import LanguageSelector from "../common/LanguageSelector";
-import MenuIcon from "@mui/icons-material/Menu";
+import { Box, Step, StepLabel, Stepper } from "@mui/material";
+import React from "react";
 
 const steps = [
   { label: "Chọn Suất Chiếu", icon: <MovieIcon /> },
@@ -34,129 +19,78 @@ interface StepTrackerProps {
 }
 
 const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const offset = window.scrollY;
-      if (offset > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
   return (
-    <AppBar
-      position="fixed"
+    <Box
       sx={{
-        backgroundColor: scrolled ? "rgba(0, 0, 0, 0.8)" : "transparent",
-        backdropFilter: scrolled ? "blur(8px)" : "none",
-        boxShadow: scrolled ? 2 : "none",
-        transition: "all 0.3s ease-in-out",
-        padding: { xs: 2, sm: 2.5, md: 3 },
-        margin: 0,
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1100,
+        backgroundColor: "rgba(18, 18, 18, 0.8)",
+        backdropFilter: "blur(8px)",
+        borderRadius: "12px",
+        mt: 10,
+        padding: 3,
+        height: "fit-content",
+        position: "relative",
+        transition: "all 0.3s ease",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
       }}
     >
-      <Container maxWidth="xl">
-        <Toolbar
-          disableGutters
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            minHeight: { xs: "56px", sm: "64px", md: "72px" },
-            padding: 0,
-            margin: 0,
-          }}
-        >
-          {/* Logo */}
-          <Box
-            onClick={() => navigate("/")}
-            sx={{
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <img
-              src="https://www.cinestar.com.vn/pictures/moi/9Logo/white-2018.png"
-              alt="Logo"
-              style={{
-                height: "40px",
-                objectFit: "contain",
-              }}
-            />
-          </Box>
-          <Stepper
-            activeStep={currentStep - 1}
-            alternativeLabel
-            sx={{
-              flexGrow: 1,
-              alignItems: "center",
-              maxWidth: "75%",
-              "& .MuiStepLabel-label": { color: "gray" },
-              "& .MuiStepLabel-label.Mui-active": { color: "white !important" },
-              "& .MuiStepLabel-label.Mui-completed": {
-                color: "white !important",
+      <Stepper
+        activeStep={currentStep - 1}
+        orientation="vertical"
+        sx={{
+          "& .MuiStepConnector-line": {
+            minHeight: "40px",
+            borderLeftColor: "rgba(255, 255, 255, 0.2)",
+            transition: "border-color 0.3s ease",
+          },
+          "& .MuiStepLabel-label": {
+            color: "gray",
+            fontSize: "0.9rem",
+            marginLeft: 1,
+            transition: "color 0.3s ease",
+          },
+          "& .MuiStepLabel-label.Mui-active": {
+            color: "white !important",
+            fontWeight: "bold",
+          },
+          "& .MuiStepLabel-label.Mui-completed": {
+            color: "white !important",
+          },
+          "& .MuiStepLabel-iconContainer": {
+            paddingRight: 0,
+          },
+          "& .MuiStep-root": {
+            transition: "all 0.3s ease",
+            "&:hover": {
+              "& .MuiStepLabel-label": {
+                color: "rgba(255, 255, 255, 0.8)",
               },
-            }}
-          >
-            {steps.map((step, index) => (
-              <Step key={index}>
-                <StepLabel
-                  StepIconComponent={() => (
-                    <Box
-                      sx={{ color: index < currentStep ? "#834bff" : "gray" }}
-                    >
-                      {step.icon}
-                    </Box>
-                  )}
+            },
+          },
+        }}
+      >
+        {steps.map((step, index) => (
+          <Step key={index}>
+            <StepLabel
+              StepIconComponent={() => (
+                <Box
+                  sx={{
+                    color: index < currentStep ? "#834bff" : "gray",
+                    display: "flex",
+                    alignItems: "center",
+                    transition: "color 0.3s ease",
+                  }}
                 >
-                  {step.label}
-                </StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-          <IconButton
-            sx={{
-              display: { xs: "flex", md: "none" },
-              color: "white",
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-
-          {/* Login Button */}
-          <IconButton
-            color="inherit"
-            sx={{
-              display: { xs: "none", md: "flex" },
-              gap: 1,
-            }}
-            onClick={() => navigate("/auth/login")}
-          >
-            <AccountCircleOutlined />
-            <Typography>{t("login")}</Typography>
-          </IconButton>
-
-          {/* Language Selector */}
-          <LanguageSelector />
-        </Toolbar>
-      </Container>
-    </AppBar>
+                  {step.icon}
+                </Box>
+              )}
+            >
+              {step.label}
+            </StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+    </Box>
   );
 };
 
