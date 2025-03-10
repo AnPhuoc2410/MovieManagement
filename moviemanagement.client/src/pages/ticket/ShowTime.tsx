@@ -10,20 +10,18 @@ import toast from "react-hot-toast";
 
 const Ticket: React.FC = () => {
   const navigate = useNavigate();
-  // Lift the selected date and time to the parent component.
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [roomId, setRoomId] = useState<string>("");
 
-  // movieId could come from props, context, or elsewhere. For now we hardcode it.
-  const movieId = "321fb7db-6361-4c64-8e16-fedfec9736a4";
+  // You can still retrieve movieId from location or params if needed.
+  const movieId = "5CC368FD-5BFA-4B06-A88C-1E659A26C224";
 
   const handleTicketSelection = (tickets: TicketType[]) => {
-    // Validate that a showtime is selected
     if (!selectedTime) {
       toast.error("Vui lòng chọn suất chiếu!");
       return;
     }
-    // Validate that at least one ticket is selected
     const totalTickets = tickets.reduce((sum, t) => sum + (t.quantity || 0), 0);
     if (totalTickets === 0) {
       toast.error("Vui lòng chọn ít nhất 1 vé!");
@@ -32,6 +30,7 @@ const Ticket: React.FC = () => {
     navigate("/ticket/movie-seat", {
       state: {
         movieId,
+        roomId,
         selectedDate,
         selectedTime,
         tickets,
@@ -57,9 +56,10 @@ const Ticket: React.FC = () => {
           {/* Movie details */}
           <MovieDetail />
 
-          {/* ShowTime component for picking date and time */}
+          {/* ShowTimeCinema component for picking date, time, and room */}
           <ShowTimeCinema
             movieId={movieId}
+            onRoomSelect={(roomId: string) => setRoomId(roomId)}
             onSelectDate={(date: string) => setSelectedDate(date)}
             onSelectTime={(time: string) => setSelectedTime(time)}
           />

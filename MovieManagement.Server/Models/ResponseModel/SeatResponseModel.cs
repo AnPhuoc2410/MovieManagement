@@ -20,6 +20,8 @@ namespace MovieManagement.Server.Models.ResponseModel
 
         public bool IsActive { get; set; }
 
+        public SeatStatus Status { get; set; }
+
         public virtual SeatType SeatType { get; set; }
 
         //public virtual ICollection<TicketDetail> TicketDetail { get; set; } = new List<TicketDetail>();

@@ -13,5 +13,7 @@
         public Guid SeatTypeId { get; set; }
 
         public bool IsActive { get; set; }
+
+        public Entities.SeatStatus Status { get; set; }
     }
 }

@@ -3,6 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieManagement.Server.Models.Entities
 {
+
+    public enum SeatStatus
+    {
+        Available = 0,
+        Selected = 1,
+        Reserved = 2,
+        Booked = 3
+    }
+
     public class Seat
     {
         public Guid SeatId { get; set; }
@@ -16,6 +25,8 @@ namespace MovieManagement.Server.Models.Entities
         public Guid SeatTypeId { get; set; }
 
         public bool IsActive { get; set; }
+
+        public SeatStatus Status { get; set; }
 
         public virtual Room Room { get; set; }
 

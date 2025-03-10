@@ -16,29 +16,19 @@ import {
 import { format, addDays } from "date-fns";
 import { vi as viLocale } from "date-fns/locale";
 import axios from "axios";
-
-interface ShowTime {
-  showTimeId: string;
-  movieId: string;
-  roomId: string;
-  startTime: string;
-  endTime: string;
-}
-
-interface Cinema {
-  name: string;
-  address: string;
-  times: string[];
-}
+import { ShowTime } from "../../types/showtime.types";
+import { Cinema } from "../../types/cinema.types";
 
 interface ShowTimeCinemaProps {
   movieId: string;
+  onRoomSelect: (roomId: string) => void;
   onSelectDate: (date: string) => void;
   onSelectTime: (time: string) => void;
 }
 
 const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
   movieId,
+  onRoomSelect,
   onSelectDate,
   onSelectTime,
 }) => {
@@ -68,7 +58,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
     }
   };
 
-  // Fetch showtimes when city or date changes
+  // Fetch showtimes when city or date changes.
   useEffect(() => {
     const selectedDay = days.find((day) => day.formatted === selectedDate);
     if (!selectedDay) return;
@@ -83,7 +73,6 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
           `https://localhost:7119/api/ShowTime/GetShowTimeByDates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}`
         );
         const showtimes: ShowTime[] = response.data.data[apiKey] || [];
-
         if (showtimes.length === 0) {
           setCinemas([]);
           return;
@@ -93,9 +82,10 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
           name: "Cinema Eiga",
           address:
             "S10.06 Origami, Vinhomes Grandpark, Thủ Đức, Hồ Chí Minh",
-          times: showtimes.map((show) =>
-            format(new Date(show.startTime), "HH:mm")
-          ),
+          times: showtimes.map((show) => ({
+            time: format(new Date(show.startTime), "HH:mm"),
+            roomId: show.roomId,
+          })),
         };
 
         setCinemas([dummyCinema]);
@@ -249,14 +239,14 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                     {cinema.address}
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                    {cinema.times.map((time, idx) => (
+                    {cinema.times.map((showtime, idx) => (
                       <Button
                         key={idx}
                         variant="contained"
                         sx={{
                           backgroundColor:
-                            selectedTime === time ? "yellow" : "transparent",
-                          color: selectedTime === time ? "black" : "white",
+                            selectedTime === showtime.time ? "yellow" : "transparent",
+                          color: selectedTime === showtime.time ? "black" : "white",
                           border: "1px solid white",
                           fontWeight: "bold",
                           "&:hover": {
@@ -265,11 +255,12 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                           },
                         }}
                         onClick={() => {
-                          setSelectedTime(time);
-                          onSelectTime(time);
+                          setSelectedTime(showtime.time);
+                          onSelectTime(showtime.time);
+                          onRoomSelect(showtime.roomId);
                         }}
                       >
-                        {time}
+                        {showtime.time}
                       </Button>
                     ))}
                   </Box>

@@ -9,7 +9,8 @@ import toast from "react-hot-toast";
 const MovieSeat: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { selectedTime, selectedDate, tickets } = location.state || {
+  const { roomId, selectedTime, selectedDate, tickets } = location.state || {
+    roomId: "",
     selectedTime: "Not selected",
     selectedDate: "Not selected",
     tickets: [],
@@ -71,6 +72,7 @@ const MovieSeat: React.FC = () => {
             <Grid item xs={12} md={8}>
               {/* Seat component handles seat selection */}
               <Seat
+                roomId={roomId}
                 selectedSeats={selectedSeats}
                 setSelectedSeats={setSelectedSeats}
               />
