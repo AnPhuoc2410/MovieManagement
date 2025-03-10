@@ -1,16 +1,10 @@
-﻿namespace MovieManagement.Server.Models.DTOs
+﻿namespace MovieManagement.Server.Models.RequestModel
 {
-    public class UserDto
+    public class UserRequest
     {
-        public Guid? UserId { get; set; }  // PK
-
         public string UserName { get; set; }
 
-        public string Password { get; set; }
-
         public string Avatar { get; set; }
-
-        public DateTime JoinDate { get; set; }
 
         public string FullName { get; set; }
 
@@ -28,9 +22,6 @@
 
         public int Status { get; set; } // 0: Khóa, 1: Mở
 
-        public int Role { get; set; }
-
         public decimal Point { get; set; }
     }
-
 }

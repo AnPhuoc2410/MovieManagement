@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Models.ResponseModel;
 namespace MovieManagement.Server.Extensions
 {
@@ -13,13 +14,16 @@ namespace MovieManagement.Server.Extensions
             CreateMap<UserDto, User>();
 
             //List User Response For Admin  
-            CreateMap<User, ListUserResponse>();
-            CreateMap<ListUserResponse, User>()
+            CreateMap<User, UserResponse>();
+            CreateMap<UserResponse, User>()
                 .ForMember(dest => dest.Password, opt => opt.Ignore())
                 .ForMember(dest => dest.JoinDate, opt => opt.Ignore())
                 .ForMember(dest => dest.IDCard, opt => opt.Ignore())
                 .ForMember(dest => dest.BirthDate, opt => opt.Ignore())
                 .ForMember(dest => dest.Address, opt => opt.Ignore());
+
+            //Create User By OAuth
+            CreateMap<User, OAuthRequest>();
 
             CreateMap<Promotion, PromotionDto>();
             CreateMap<PromotionDto, Promotion>();

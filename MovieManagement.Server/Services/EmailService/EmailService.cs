@@ -13,10 +13,12 @@ namespace MovieManagement.Server.Services.EmailService
     public class EmailService : IEmailService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IConfiguration _configuration;
 
-        public EmailService(IUnitOfWork unitOfWork)
+        public EmailService(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
+            _configuration = configuration;
         }
         public async Task<bool> SendOtpEmail(string userEmail)
         {
@@ -29,7 +31,7 @@ namespace MovieManagement.Server.Services.EmailService
 
                 //Create email
                 var message = new MimeMessage();
-                message.From.Add(new MailboxAddress("Eiga Cinema", "huusang2k4@gmail.com"));
+                message.From.Add(new MailboxAddress("Eiga Cinema", _configuration["Account:AppEmail"]));
                 message.To.Add(new MailboxAddress("", userEmail));
                 message.Subject = "Gửi mã xác thực OTP";
 
@@ -43,7 +45,7 @@ namespace MovieManagement.Server.Services.EmailService
                 //Login to email and send message
                 using var client = new SmtpClient();
                 await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                await client.AuthenticateAsync("huusang2k4@gmail.com", "pvnr awxr tbmd ihmx");
+                await client.AuthenticateAsync(_configuration["Account:AppEmail"], _configuration["Account:AppPassword"]);
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
                 return true;
@@ -67,12 +69,13 @@ namespace MovieManagement.Server.Services.EmailService
                 var otpRecord = await _unitOfWork.OtpCodeRepository.GetOtpCode(email, otp);
                 if (otpRecord == null)
                     throw new NotFoundException("User's OTP code is invalid");
-                if (otpRecord == null)
-                    throw new NotFoundException("This OTP is not existing!");
                 if (otpRecord.IsUsed == 1)
                     throw new Exception("This OTP is used!");
                 if (otpRecord.ExpiredTime < DateTime.UtcNow)
                     throw new Exception("This OTP is expired!");
+
+                //Xac nhan da su dung OTP
+                otpRecord.IsUsed = 1;
 
                 //Create HashPassword
                 var passwordHasher = new PasswordHasher<User>();
@@ -88,7 +91,6 @@ namespace MovieManagement.Server.Services.EmailService
                 if (!await _unitOfWork.UserRepository.ChangeUserPasswordByEmailAsync(email, password))
                     throw new Exception("Password cannot change!");
 
-                otpRecord.IsUsed = 1;
                 await _unitOfWork.OtpCodeRepository.UpdateAsync(otpRecord);
                 await _unitOfWork.CompleteAsync();
                 return true;

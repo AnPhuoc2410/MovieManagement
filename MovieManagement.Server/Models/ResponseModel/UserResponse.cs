@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MovieManagement.Server.Models.ResponseModel
 {
-    public class ListUserResponse
+    public class UserResponse
     {
         public Guid UserId { get; set; }
 

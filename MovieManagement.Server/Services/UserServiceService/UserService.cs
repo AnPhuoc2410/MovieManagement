@@ -12,6 +12,7 @@ using System.Net;
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.ResponseModel;
+using MovieManagement.Server.Models.RequestModel;
 
 namespace MovieManagement.Server.Services.UserService
 {
@@ -66,6 +67,25 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
+        public async Task<bool> CreateUserByOAuthAsync(OAuthRequest account)
+        {
+            try
+            {
+                var newUser = _mapper.Map<User>(account);
+                newUser.UserId = Guid.NewGuid();
+                newUser.JoinDate = DateTime.Now;
+                var createdUser = await _unitOfWork.UserRepository.CreateAsync(newUser);
+                if (createdUser == null)
+                    throw new Exception("Failed to create user.");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while creating the user using OAuth.", ex);
+            }
+        }
+
         public async Task<UserDto> CreateUserAsync(UserDto user)
         {
             try
@@ -101,14 +121,14 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<IEnumerable<ListUserResponse>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserResponse>> GetAllUsersAsync()
         {
             try
             {
                 var users = await _unitOfWork.UserRepository.GetAllAsync();
                 if (users == null)
                     throw new NotFoundException("No users found!");
-                return _mapper.Map<List<ListUserResponse>>(users);
+                return _mapper.Map<List<UserResponse>>(users);
             }
             catch (Exception ex)
             {
@@ -146,7 +166,7 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<UserDto> UpdateUserAsync(Guid id, UserDto userDto)
+        public async Task<UserResponse> UpdateUserAsync(Guid id, UserDto userDto)
         {
             try
             {
@@ -170,7 +190,7 @@ namespace MovieManagement.Server.Services.UserService
                 var updatedUser = await _unitOfWork.UserRepository.UpdateAsync(existingUser);
                 if (updatedUser == null)
                     throw new DbUpdateException("Fail to update user.");
-                return _mapper.Map<UserDto>(updatedUser);
+                return _mapper.Map<UserResponse>(updatedUser);
             }
             catch (Exception ex)
             {
