@@ -68,7 +68,7 @@ namespace MovieManagement.Server.Repositories
         public async Task<User> GetByUsername(string username)
         {
             var user = await _context.Users
-                .Where(u => u.UserName == username && u.Status == 1)
+                .Where(u => u.UserName == username && u.Status != 0)
                 .FirstOrDefaultAsync();
 
             return user;

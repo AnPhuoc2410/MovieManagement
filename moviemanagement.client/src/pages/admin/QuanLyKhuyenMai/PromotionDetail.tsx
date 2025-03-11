@@ -80,7 +80,7 @@ export default function PromotionDetail() {
       };
 
       await axios.put(
-        `https://localhost:7119/api/Promotions/Update/${data.promotionId}`,
+        `https://localhost:7119/api/promotions/${data.promotionId}`,
         payload,
         {
           headers: {

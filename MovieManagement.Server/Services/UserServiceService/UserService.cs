@@ -212,7 +212,7 @@ namespace MovieManagement.Server.Services.UserService
             if (userDto.UserName != existingUser.UserName && await _unitOfWork.UserRepository.GetByUsername(userDto.UserName) != null)
                 throw new BadRequestException("Username already exists.");
 
-            if (userDto.Email != existingUser.Email && await _unitOfWork.UserRepository.GetByEmail(userDto.Email) != null)
+            if (userDto.Email != existingUser.Email && await _unitOfWork.UserRepository.GetUserByEmailAsync(userDto.Email) != null)
                 throw new BadRequestException("Email already exists.");
 
             // Map and update the user

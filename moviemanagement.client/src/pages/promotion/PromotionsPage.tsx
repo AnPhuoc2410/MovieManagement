@@ -6,6 +6,7 @@ import {
   Box,
   Button,
   Grid,
+  CardMedia,
 } from "@mui/material";
 import Header from "../../components/home/Header";
 import Footer from "../../components/home/Footer";
@@ -35,7 +36,7 @@ const PromotionsPage: React.FC = () => {
   const { t } = useTranslation();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [page, setPage] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
   const pageSize = 5;
 
   useEffect(() => {
@@ -184,34 +185,21 @@ const PromotionsPage: React.FC = () => {
                 }}
               >
                 {/* Image Section */}
-                <Grid
-                  item
-                  xs={12}
-                  md={6}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Box
+                <Grid item xs={12} md={6} sx={{ display: "flex", justifyContent: "center" }}>
+                  <CardMedia
+                    component="img"
+                    image={promotion.image || "/images/default-promotion.jpg"} // Fallback image
+                    alt={promotion.promotionName}
                     sx={{
                       height: 300,
                       width: "100%",
-                      overflow: "hidden",
                       borderRadius: 2,
                       boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                       transition: "transform 0.3s ease",
-                      "&:hover": {
-                        transform: "scale(1.02)",
-                      },
+                      objectFit: "contain",
+                      "&:hover": { transform: "scale(1.02)" },
                     }}
-                  >
-                    {promotion.image ? (
-                      <CloudinaryImage imageUrl={promotion.image} hd />
-                    ) : (
-                      <Typography variant="subtitle1">No image</Typography>
-                    )}
-                  </Box>
+                  />
                 </Grid>
 
                 {/* Text Section */}

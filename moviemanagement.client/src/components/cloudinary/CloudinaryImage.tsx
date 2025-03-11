@@ -1,13 +1,13 @@
+import React from "react";
 import { AdvancedImage } from "@cloudinary/react";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { auto } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
-import React from "react";
 import { ENV } from "../../env/env.config";
 
 interface CloudinaryImageProps {
   imageUrl: string;
-  hd?: boolean; // Pass true to get HD image
+  hd?: boolean; // Set true to request a high-resolution image
 }
 
 const cld = new Cloudinary({
@@ -16,20 +16,35 @@ const cld = new Cloudinary({
   },
 });
 
+/**
+ * Extracts the public ID from a Cloudinary URL.
+ * It assumes the format: "https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+ */
 const extractPublicId = (url: string): string => {
-  const parts = url.split("/");
-  const uploadIndex = parts.indexOf("upload");
-  if (uploadIndex > -1 && parts.length > uploadIndex + 1) {
-    return parts.slice(uploadIndex + 1).join("/");
+  try {
+    const urlObject = new URL(url);
+    const pathParts = urlObject.pathname.split("/");
+    const uploadIndex = pathParts.indexOf("upload");
+
+    if (uploadIndex > -1 && pathParts.length > uploadIndex + 1) {
+      return pathParts.slice(uploadIndex + 1).join("/");
+    }
+  } catch (error) {
+    console.error("Invalid Cloudinary URL:", url);
   }
   return "";
 };
 
-const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
-  imageUrl,
-  hd = false,
-}) => {
-  const publicId = extractPublicId(imageUrl);
+const CloudinaryImage: React.FC<CloudinaryImageProps> = ({ imageUrl, hd = false }) => {
+  if (!imageUrl) {
+    console.warn("Missing image URL for CloudinaryImage component.");
+    return null;
+  }
+
+  const publicId = extractPublicId(imageUrl) || "default-image"; // Set a fallback image ID
+
+  console.log("Cloudinary Image URL:", imageUrl);
+  console.log("Extracted Public ID:", publicId);
 
   let img = cld.image(publicId).format("auto").quality("auto");
 
