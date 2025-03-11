@@ -34,6 +34,9 @@ namespace MovieManagement.Server.Services.UserService
         {
             try
             {
+
+                if(user.Role == Role.Admin) throw new Exception("Admin cannot be created by this method.");
+
                 var newUser = _mapper.Map<User>(user);
                 var passwordHasher = new PasswordHasher<User>();
                 newUser.Password = passwordHasher.HashPassword(newUser, user.Password);
@@ -65,7 +68,7 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public Task<UserDto.UserResponse> ExtractTokenAsync(string token)
+        public async Task<UserDto.UserResponse> ExtractTokenAsync(string token)
         {
 
             var jwtToken = _jwtService.ReadTokenWithoutValidation(token);
@@ -73,11 +76,11 @@ namespace MovieManagement.Server.Services.UserService
                 throw new Exception("Invalid token");
             
             var userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
-            var user = _unitOfWork.UserRepository.GetByIdAsync(Guid.Parse(userId));
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(Guid.Parse(userId));
             if (user == null)
                 throw new NotFoundException("User not found!");
             
-            return Task.FromResult(_mapper.Map<UserDto.UserResponse>(user));
+            return _mapper.Map<UserDto.UserResponse>(user);
 
         }
 

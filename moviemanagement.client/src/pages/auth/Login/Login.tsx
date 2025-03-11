@@ -16,8 +16,8 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import * as yup from "yup";
-import { login } from "../../../apis/mock.apis";
 import { useAuth } from "../../../contexts/AuthContext";
+import { login } from "../../../apis/auth.apis";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -65,7 +65,10 @@ export const Login = () => {
       const toastId = toast.loading("Đang đăng nhập...");
 
       try {
-        const response = await login(values.username, values.password);
+        const response = await login({
+          username: values.username,
+          password: values.password,
+        });
         toast.dismiss(toastId);
 
         if (response.is_success) {

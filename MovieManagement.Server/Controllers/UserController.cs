@@ -19,13 +19,13 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet("all")]
-        [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserDto.UserResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>),
             StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllUSerAsync()
+        public async Task<ActionResult<IEnumerable<UserDto.UserResponse>>> GetAllUSerAsync()
         {
             try
             {
@@ -41,7 +41,13 @@ namespace MovieManagement.Server.Controllers
                     return NotFound(response);
                 }
 
-                return Ok(users);
+                return Ok(new ApiResponse<IEnumerable<UserDto.UserResponse>>
+                {
+                    Message = "Get all users successfully",
+                    StatusCode = 200,
+                    IsSuccess = true,
+                    Data = users
+                });
             }
             catch (BadRequestException ex)
             {

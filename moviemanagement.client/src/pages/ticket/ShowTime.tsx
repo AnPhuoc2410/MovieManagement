@@ -7,6 +7,7 @@ import ShowTimeCinema from "../../components/Ticket/ShowTimeCinema";
 import TicketPrice, { TicketType } from "../../components/Ticket/TicketPrice";
 import Footer from "../../components/home/Footer";
 import toast from "react-hot-toast";
+import Header from "../../components/home/Header";
 
 const Ticket: React.FC = () => {
   const navigate = useNavigate();
@@ -43,17 +44,37 @@ const Ticket: React.FC = () => {
   };
 
   return (
-    <>
-      {/* Step tracker at top */}
-      <Box sx={{ position: "sticky", top: 0, zIndex: 999 }}>
-        <StepTracker currentStep={1} />
-      </Box>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: `linear-gradient(to bottom,
+          rgba(11, 13, 26, 0.95) 0%,
+          rgba(11, 13, 26, 0.85) 100%
+        )`,
+        position: "relative",
+        "&::before": {
+          content: '""',
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: `radial-gradient(circle at 20% 30%, rgba(78, 46, 131, 0.4) 0%, rgba(78, 46, 131, 0) 50%),
+                      radial-gradient(circle at 75% 15%, rgba(33, 64, 154, 0.4) 0%, rgba(33, 64, 154, 0) 50%),
+                      linear-gradient(135deg, #0B0D1A 0%, #1A1E3C 50%, #3A1155 100%)`,
+          zIndex: -1,
+        },
+      }}
+    >
+      <Header />
+
       <Container
+        maxWidth="xl"
         sx={{
-          paddingTop: { xs: "80px", sm: "90px", md: "100px" },
-          position: "relative",
-          zIndex: 1,
+          pt: { xs: "64px", sm: "72px", md: "80px" },
+          pb: { xs: 4, sm: 6, md: 8 },
           px: { xs: 2, sm: 3, md: 4 },
+          position: "relative",
         }}
       >
         <Box sx={{ color: "white", mb: 3, mt: 2 }}>
@@ -74,7 +95,7 @@ const Ticket: React.FC = () => {
         </Box>
       </Container>
       <Footer />
-    </>
+    </Box>
   );
 };
 

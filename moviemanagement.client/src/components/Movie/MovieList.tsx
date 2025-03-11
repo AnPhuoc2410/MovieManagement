@@ -29,7 +29,7 @@ const MovieList = ({
       <Grid item xs={12} sm={6} md={3} key={index}>
         <Box className="movie-card">
           <Link to="/">
-            <img src={movie.image} alt={movie.title} className="movie-image" />
+            <img src={movie.image} alt={movie.title} className="movie-card" />
             <Typography variant="h6" className="movie-title">
               <Box sx={{ mb: 2 }} />
               {movie.title}
@@ -45,13 +45,12 @@ const MovieList = ({
               position: "relative",
               overflow: "hidden",
               color: "black",
+              backgroundColor: "yellow",
               transition: "color 0.5s ease-in-out",
               "&::before": {
                 content: '""',
                 position: "absolute",
                 inset: 0,
-                background:
-                  "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
                 transform: "translateX(-100%)",
                 transition: "transform 0.5s ease-in-out",
                 zIndex: 0,
@@ -81,8 +80,8 @@ const MovieList = ({
   };
 
   return (
-    <Container sx={{ mt: 4, textAlign: "center" }}>
-      <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
+    <Container sx={{ mt: 6, textAlign: "center" }}>
+      <Typography variant="h3" fontWeight="bold" sx={{ mb: 2 }}>
         {title}
       </Typography>
       <Grid container spacing={2}>
