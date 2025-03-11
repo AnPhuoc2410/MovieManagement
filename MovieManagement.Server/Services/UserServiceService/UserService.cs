@@ -36,12 +36,26 @@ namespace MovieManagement.Server.Services.UserService
             try
             {
 
-                if(user.Role == Role.Admin) throw new Exception("Admin cannot be created by this method.");
+                //Checking new password is blank
+                if (string.IsNullOrEmpty(newPassword))
+                    throw new Exception("New password is blank!");
+                //Create PasswordHasher
+                var passwordHasher = new PasswordHasher<User>();
+
+                //Verify password
+                var verificationResult = passwordHasher.VerifyHashedPassword(user, user.Password, currentPassword);
+                if (verificationResult == PasswordVerificationResult.Failed)
+                    throw new Exception("Current password is incorrect.");
+
+                //Hash new password
+                user.Password = passwordHasher.HashPassword(user, newPassword);
 
                 var newUser = _mapper.Map<User>(user);
                 var passwordHasher = new PasswordHasher<User>();
                 newUser.Password = passwordHasher.HashPassword(newUser, user.Password);
                 newUser.UserId = Guid.NewGuid();
+                newUser.JoinDate = DateTime.Now;
+                newUser.Status = UserStatus.Active;
                 var createdUser = await _unitOfWork.UserRepository.CreateAsync(newUser);
                 if (createdUser == null)
                     throw new Exception("Failed to create user.");
@@ -155,9 +169,8 @@ namespace MovieManagement.Server.Services.UserService
                 if (existingUser == null)
                     throw new NotFoundException("User not found!");
 
-                //password hasher
-                var passwordHasher = new PasswordHasher<User>();
-                existingUser.Password = passwordHasher.HashPassword(existingUser, userDto.Password);
+            if (userDto.Email != existingUser.Email && await _unitOfWork.UserRepository.GetUserByEmailAsync(userDto.Email) != null)
+                throw new BadRequestException("Email already exists.");
 
                 // Map updated fields from userDto to existingUser
                 _mapper.Map(userDto, existingUser);
