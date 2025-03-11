@@ -61,7 +61,6 @@
   <ItemGroup>
     <Folder Include="Constants\" />
     <Folder Include="Exceptions\" />
-    <Folder Include="Models\RequestModel\" />
   </ItemGroup>
 
 </Project>

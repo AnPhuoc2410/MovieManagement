@@ -5,6 +5,7 @@ using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.EmailService;
 using System.Threading.Tasks;
 using MovieManagement.Server.Services.UserService;
+using MovieManagement.Server.Models.RequestModel;
 
 namespace MovieManagement.Server.Controllers
 {
@@ -13,23 +14,20 @@ namespace MovieManagement.Server.Controllers
     public class AuthorizationController : Controller
     {
         private readonly IEmailService _emailService;
-        private readonly IUserService _userService;
-        public AuthorizationController(IEmailService emailService
-            , IUserService userService)
+        public AuthorizationController(IEmailService emailService)
         {
             _emailService = emailService;
-            _userService = userService;
         }
 
         [HttpPost("send")]
         [ProducesResponseType(typeof(ApiResponse<OtpCodeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SendOtp([FromBody] OtpCodeDto otpCode)
+        public async Task<IActionResult> SendOtp([FromBody] SendOtpRequest request)
         {
             try
             {
-                bool otp = await _emailService.SendOtpEmail(otpCode.Email);
+                bool otp = await _emailService.SendOtpEmail(request.Email);
                 if (!otp)
                 {
                     var response = new ApiResponse<IEnumerable<OtpCodeDto>>
