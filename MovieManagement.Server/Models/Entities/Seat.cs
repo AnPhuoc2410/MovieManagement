@@ -1,8 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MovieManagement.Server.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static MovieManagement.Server.Models.Enums.SeatEnum;
 
 namespace MovieManagement.Server.Models.Entities
 {
+
     public class Seat
     {
         public Guid SeatId { get; set; }
@@ -16,6 +19,8 @@ namespace MovieManagement.Server.Models.Entities
         public Guid SeatTypeId { get; set; }
 
         public bool IsActive { get; set; }
+
+        public SeatEnum.SeatStatus SeatStatus { get; set; }
 
         public virtual Room Room { get; set; }
 

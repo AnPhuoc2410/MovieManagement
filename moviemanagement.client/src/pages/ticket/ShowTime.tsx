@@ -11,12 +11,14 @@ import Header from "../../components/home/Header";
 
 const Ticket: React.FC = () => {
   const navigate = useNavigate();
-  // Lift the selected date and time to the parent component.
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [roomId, setRoomId] = useState<string>("");
+  // New state to control the visibility of TicketPrice
+  const [showTicketPrice, setShowTicketPrice] = useState<boolean>(false);
 
-  // movieId could come from props, context, or elsewhere. For now we hardcode it.
-  const movieId = "321fb7db-6361-4c64-8e16-fedfec9736a4";
+  // You can still retrieve movieId from location or params if needed.
+  const movieId = "b6d29d0d-4d39-45d9-8f09-4f997a65d8cf";
 
   const handleTicketSelection = (tickets: TicketType[]) => {
     // Validate that a showtime is selected
@@ -33,6 +35,7 @@ const Ticket: React.FC = () => {
     navigate("/ticket/movie-seat", {
       state: {
         movieId,
+        roomId,
         selectedDate,
         selectedTime,
         tickets,
@@ -68,8 +71,8 @@ const Ticket: React.FC = () => {
       <Container
         maxWidth="xl"
         sx={{
-          pt: { xs: "64px", sm: "72px", md: "80px" },
-          pb: { xs: 4, sm: 6, md: 8 },
+          pt: { xs: "70px", sm: "80px", md: "90px" }, // Adjusted padding
+          pb: { xs: 5, sm: 6, md: 8 },
           px: { xs: 2, sm: 3, md: 4 },
           position: "relative",
         }}
@@ -105,7 +108,6 @@ const Ticket: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               gap: { xs: 2, sm: 3, md: 4 },
-
               pb: 4,
             }}
           >
@@ -114,17 +116,23 @@ const Ticket: React.FC = () => {
               <StepTracker currentStep={1} />
             </Box>
 
+            {/* Movie details */}
             <MovieDetail />
+
+            {/* ShowTimeCinema component for picking date, time, and room */}
             <ShowTimeCinema
               movieId={movieId}
+              onRoomSelect={(roomId: string) => setRoomId(roomId)}
               onSelectDate={(date: string) => setSelectedDate(date)}
               onSelectTime={(time: string) => setSelectedTime(time)}
+              onShowtimeAvailability={(available: boolean) => setShowTicketPrice(available)}
             />
-            <TicketPrice onNext={handleTicketSelection} />
+
+            {/* Neu ko co ShowTime thi ko hien TicketPrice */}
+            {showTicketPrice && <TicketPrice onNext={handleTicketSelection} />}
           </Box>
         </Box>
       </Container>
-
       <Footer />
     </Box>
   );

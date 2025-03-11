@@ -34,7 +34,9 @@ namespace MovieManagement.Server.Models.Entities
 
         public Guid UserId { get; set; }
 
-        public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+        public bool IsDeleted { get; set; } = false;
+
+        public virtual ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
 
         public virtual ICollection<ShowTime> Showtimes { get; set; } = new List<ShowTime>();
 

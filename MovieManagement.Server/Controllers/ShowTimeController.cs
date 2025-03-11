@@ -368,7 +368,7 @@ namespace MovieManagement.Server.Controllers
                     Data = showTime
                 };
 
-                return Ok(showTime);
+                return Ok(response);
             }
             catch (BadRequestException ex)
             {

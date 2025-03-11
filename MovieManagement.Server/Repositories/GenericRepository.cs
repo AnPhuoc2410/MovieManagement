@@ -72,7 +72,7 @@ namespace MovieManagement.Server.Repositories
         }
         public async Task<List<T>> GetPageAsync(int page, int pageSize)
         {
-            return await _context.Set<T>().Skip(page * pageSize).Take(pageSize).ToListAsync();
+            return await _context.Set<T>().Skip((page-1) * pageSize).Take(pageSize).ToListAsync();
         }
         public async Task<T> GetByComposeIdAsync(Guid id, Guid id2)
         {
@@ -80,8 +80,8 @@ namespace MovieManagement.Server.Repositories
         }
         public async Task<T> CreateAsync(T entity)
         {
-            _context.AddAsync(entity);
-            _context.SaveChangesAsync();
+            await _context.AddAsync(entity);
+            await _context.SaveChangesAsync();
             return entity;
         }
         public async Task<T> UpdateAsync(T entity)
@@ -174,5 +174,36 @@ namespace MovieManagement.Server.Repositories
 
             return false;
         }
+
+        #region Separating asigned entities and save operators        
+
+        public void PrepareCreate(T entity)
+        {
+            _context.Add(entity);
+        }
+
+        public void PrepareUpdate(T entity)
+        {
+            var tracker = _context.Attach(entity);
+            tracker.State = EntityState.Modified;
+        }
+
+        public void PrepareRemove(T entity)
+        {
+            _context.Remove(entity);
+        }
+
+        public int Save()
+        {
+            return _context.SaveChanges();
+        }
+
+        public async Task<int> SaveAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
+        #endregion Separating asign entity and save operators
+
     }
 }

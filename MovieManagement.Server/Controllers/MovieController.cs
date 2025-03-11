@@ -30,7 +30,7 @@ namespace MovieManagement.Server.Controllers
                 var movies = await _movieService.GetAllMoviesAsync();
                 if (movies == null)
                 {
-                    var response = new ApiResponse<IEnumerable<BillDto>>
+                    var response = new ApiResponse<IEnumerable<MovieDto>>
                     {
                         StatusCode = 404,
                         Message = "Movie not found",
@@ -38,7 +38,13 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
-                return Ok(movies);
+                return Ok(new ApiResponse<IEnumerable<MovieDto>>
+                {
+                    Data = movies,
+                    IsSuccess = true,
+                    Message = "Get all movies successfully",
+                    StatusCode = StatusCodes.Status200OK
+                });
             }
             catch (BadRequestException ex)
             {
@@ -87,7 +93,7 @@ namespace MovieManagement.Server.Controllers
             try
             {
                 var movies = await _movieService.GetPageAsync(page, pageSize);
-                if(movies == null)
+                if (movies == null)
                 {
                     var response = new ApiResponse<object>
                     {
@@ -204,7 +210,7 @@ namespace MovieManagement.Server.Controllers
             try
             {
                 var movies = await _movieService.GetMoviesNowShowing(page, pageSize);
-                if(movies == null)
+                if (movies == null)
                 {
                     var response = new ApiResponse<object>
                     {
@@ -311,7 +317,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpGet]
         [Route("SearchMoviesByNameRelative/{searchValue}")]
-        [ProducesResponseType(typeof(ApiResponse<MovieDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<MoviePreview>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -331,7 +337,13 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
-                return Ok(movies);
+                return Ok(new ApiResponse<IEnumerable<MoviePreview>>
+                {
+                    Data = movies,
+                    IsSuccess = true,
+                    Message = "Get all movies successfully",
+                    StatusCode = StatusCodes.Status200OK
+                });
             }
             catch (BadRequestException ex)
             {
@@ -374,12 +386,12 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<MovieDto>> CreateMovie(Guid employeeId, [FromBody] MovieDto movieDto)
+        public async Task<ActionResult<MovieDto>> CreateMovie(Guid employeeId, [FromBody] MovieRequest movieDto)
         {
             try
             {
                 var createdMovie = await _movieService.CreateMovieAsync(employeeId, movieDto);
-                if(createdMovie == null)
+                if (createdMovie == null)
                 {
                     var response = new ApiResponse<object>
                     {
@@ -389,7 +401,13 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
-                return Ok(createdMovie);
+                return Ok(new ApiResponse<MovieDto>
+                {
+                    Data = createdMovie,
+                    IsSuccess = true,
+                    Message = "Created movie successfully",
+                    StatusCode = StatusCodes.Status200OK
+                });
             }
             catch (BadRequestException ex)
             {
@@ -434,7 +452,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<MovieDto>> UpdateMovie(Guid movieId, [FromBody] MovieDto movieDto)
+        public async Task<ActionResult<MovieDto>> UpdateMovie(Guid movieId, [FromBody] MovieRequest movieDto)
         {
             try
             {
@@ -545,5 +563,8 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
+
+
     }
 }

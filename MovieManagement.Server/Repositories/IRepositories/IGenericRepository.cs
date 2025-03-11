@@ -63,5 +63,11 @@
         bool SoftDelete(T entity);
         Task<bool> SoftDeleteAsync(Guid id);
         Task<bool> SoftDeleteAsync(T entity);
+
+        void PrepareCreate(T entity);
+        void PrepareUpdate(T entity);
+        void PrepareRemove(T entity);
+        int Save();
+        Task<int> SaveAsync();
     }
 }

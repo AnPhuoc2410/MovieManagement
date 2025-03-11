@@ -1,4 +1,5 @@
 ﻿using MovieManagement.Server.Models.Entities;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Models.DTOs
 {
@@ -18,7 +19,7 @@ namespace MovieManagement.Server.Models.DTOs
 
             public DateTime BirthDate { get; set; }
 
-            public int Gender { get; set; } // 0: Nam, 1: Nữ
+            public UserGender Gender { get; set; } // 0: Nam, 1: Nữ
 
             public string IDCard { get; set; }
 
@@ -28,7 +29,7 @@ namespace MovieManagement.Server.Models.DTOs
 
             public string Address { get; set; }
 
-            public int Status { get; set; } = 1; // 0: Khóa, 1: Mở
+            public UserStatus Status { get; set; } = UserStatus.Active; // 0: Khóa, 1: Mở
 
             public Role Role { get; set; } = Role.Member;
 
@@ -78,7 +79,7 @@ namespace MovieManagement.Server.Models.DTOs
 
             public DateTime BirthDate { get; set; }
 
-            public int Gender { get; set; } // 0: Nam, 1: Nữ
+            public UserGender Gender { get; set; } // 0: Nam, 1: Nữ
 
             public string IDCard { get; set; }
 
@@ -88,7 +89,7 @@ namespace MovieManagement.Server.Models.DTOs
 
             public string Address { get; set; }
 
-            public int Status { get; set; } // 0: Khóa, 1: Mở
+            public UserStatus Status { get; set; } // 0: Khóa, 1: Mở
 
             public Role Role { get; set; }
 
@@ -108,7 +109,7 @@ namespace MovieManagement.Server.Models.DTOs
 
             public DateTime BirthDate { get; set; }
 
-            public int Gender { get; set; } // 0: Nam, 1: Nữ
+            public UserGender Gender { get; set; } // 0: Nam, 1: Nữ
 
             public string IDCard { get; set; }
 
@@ -118,7 +119,7 @@ namespace MovieManagement.Server.Models.DTOs
 
             public string Address { get; set; }
 
-            public int Status { get; set; } // 0: Khóa, 1: Mở
+            public UserStatus Status { get; set; } // 0: Khóa, 1: Mở
 
             public Role Role { get; set; }
 

@@ -5,14 +5,13 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Data;
-using System.Drawing;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Exceptions;
+using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Services.JwtService;
+using MovieManagement.Server.Models.ResponseModel;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Services.UserService
 {
@@ -28,6 +27,68 @@ namespace MovieManagement.Server.Services.UserService
             _mapper = mapper;
             _jwtService = jwtService;
         }
+
+        public async Task<bool> ChangeUserPasswordByUserId(Guid userId, string currentPassword, string newPassword)
+        {
+            try
+            {
+                //Checking userId is existing
+                var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+                if (user == null)
+                    throw new NotFoundException("User not found!");
+
+                //Checking new password is blank
+                if (string.IsNullOrEmpty(newPassword))
+                    throw new Exception("New password is blank!");
+                Console.WriteLine($"Stored Hashed Password: {user.Password}");
+                Console.WriteLine($"Input Password: {currentPassword}");
+                //Create PasswordHasher
+                var passwordHasher = new PasswordHasher<User>();
+
+                //Verify password
+                var verificationResult = passwordHasher.VerifyHashedPassword(user, user.Password, currentPassword);
+                Console.WriteLine($"Verification Result: {verificationResult}");
+                if (verificationResult == PasswordVerificationResult.Failed)
+                    throw new Exception("Current password is incorrect.");
+
+                //Hash new password
+                user.Password = passwordHasher.HashPassword(user, newPassword);
+
+                //Update new password
+                var updatedUser = await _unitOfWork.UserRepository.ResetUserPasswordByUserIdAsync(userId, user.Password, newPassword);
+                if (updatedUser == null)
+                    throw new Exception("Failed to change password.");
+
+                return updatedUser;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't access the database due to a system error.", ex);
+            }
+        }
+
+        public async Task<bool> RegisterWithGoogle(OAuthRequest account)
+        {
+            try
+            {
+                if(await _unitOfWork.UserRepository.IsExistingEmailAsync(account.Email))
+                    throw new Exception("Email already exists.");
+
+                var newUser = _mapper.Map<User>(account);
+                newUser.UserId = Guid.NewGuid();
+                newUser.JoinDate = DateTime.Now;
+                var createdUser = await _unitOfWork.UserRepository.CreateAsync(newUser);
+                if (createdUser == null)
+                    throw new Exception("Failed to create user.");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while creating the user using OAuth.", ex);
+            }
+        }
+
 
         public async Task<UserDto.UserResponse> CreateUserAsync(UserDto.CreateUser user)
         {

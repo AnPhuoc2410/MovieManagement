@@ -1,19 +1,17 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
-using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
-using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Repositories.IRepositories;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.AuthorizationService;
-using NuGet.Packaging.Rules;
-using System.IdentityModel.Tokens.Jwt;
+using MovieManagement.Server.Services.EmailService;
 using System.Security.Claims;
-using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using MovieManagement.Server.Services.UserService;
 
 namespace MovieManagement.Server.Controllers
 {
@@ -22,12 +20,16 @@ namespace MovieManagement.Server.Controllers
     public class AuthenticateController : Controller
     {
         private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
         private readonly IAuthenticateService _authenticateService;
-        public AuthenticateController(IUserRepository userRepository, IAuthenticateService authenticateService)
+        private readonly IEmailService _emailService;
+        public AuthenticateController(IUserRepository userRepository, IUserService userService, IAuthenticateService authenticateService, IEmailService emailService)
         {
 
             _userRepository = userRepository;
             _authenticateService = authenticateService;
+            _emailService = emailService;
+            _userService = userService;
         }
 
         [HttpPost("Register")]
@@ -39,7 +41,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var existingUser = await _userRepository.GetByEmail(registerDto.Email);
+                var existingUser = await _userRepository.GetUserByEmailAsync(registerDto.Email);
                 if (existingUser != null)
                 {
                     var response = new ApiResponse<object>
@@ -89,14 +91,13 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
-                    Message = "An error occurred while creating show time",
+                    Message = "An error occurred while creating user",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-
 
         [HttpPost("Login")]
         [ProducesResponseType(typeof(ApiResponse<AuthDto.LoginResponse>), StatusCodes.Status200OK)]
@@ -151,5 +152,205 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
+        [HttpPost("OTP/Send")]
+        [ProducesResponseType(typeof(ApiResponse<OtpCodeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> SendOtp([FromBody] SendOtpRequest request)
+        {
+            try
+            {
+                bool otp = await _emailService.SendOtpEmail(request.Email);
+
+                if (otp)
+                {
+                    var response = new ApiResponse<IEnumerable<OtpCodeDto>>
+                    {
+                        StatusCode = 200,
+                        Message = "OTP is sended!",
+                        IsSuccess = true
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    var response = new ApiResponse<IEnumerable<OtpCodeDto>>
+                    {
+                        StatusCode = 404,
+                        Message = "User not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("OTP/Verify/ChangePassword")]
+        [ProducesResponseType(typeof(ApiResponse<OtpCodeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest request)
+        {
+            try
+            {
+                bool isValid = await _emailService.ValidationOtp(request.Email, request.NewPassword, request.Code);
+                if (!isValid)
+                {
+                    var response = new ApiResponse<IEnumerable<OtpCodeDto>>
+                    {
+                        StatusCode = 404,
+                        Message = "Otp not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                else
+                {
+                    var response = new ApiResponse<IEnumerable<OtpCodeDto>>
+                    {
+                        StatusCode = 200,
+                        Message = "Change password successfully",
+                        IsSuccess = true
+                    };
+                    return Ok(response);
+                }
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPost("ResetPassword")]
+        [ProducesResponseType(typeof(ApiResponse<ResetPasswordRequest>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ResetUserPassword([FromBody] ResetPasswordRequest request)
+        {
+            try
+            {
+                bool isValid = await _userService.ChangeUserPasswordByUserId(request.UserId, request.CurrentPassword, request.NewPassword);
+                if (!isValid)
+                {
+                    var response = new ApiResponse<IEnumerable<ResetPasswordRequest>>
+                    {
+                        StatusCode = 404,
+                        Message = "Reset password is not fail!",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                else
+                {
+                    var response = new ApiResponse<IEnumerable<ResetPasswordRequest>>
+                    {
+                        StatusCode = 200,
+                        Message = "Change password successfully",
+                        IsSuccess = true
+                    };
+                    return Ok(response);
+                }
+            }
+            catch (BadRequestException ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        //[HttpPost("GoogleAuth/Login")]
+        //public async Task<IActionResult> Login()
+        //{
+        //    var properties = new AuthenticationProperties { RedirectUri = "/GoogleAuth/Callback" };
+        //    return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        //}
+
+        //[HttpGet("GoogleAuth/Callback")]
+        //[ProducesResponseType(typeof(ApiResponse<AuthDto>), StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        //public async Task<IActionResult> Callback()
+        //{
+        //    try
+        //    {
+        //        var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+        //        if (result.Succeeded != true)
+        //        {
+        //            return BadRequest("External authentication error");
+        //        }
+
+        //        var email = result.Principal.FindFirstValue(ClaimTypes.Email);
+        //        var name = result.Principal.FindFirstValue(ClaimTypes.Name);
+        //        var picture = result.Principal.FindFirstValue("picture");
+
+        //        if (email == null)
+        //        {
+        //            return BadRequest("Failed to get user information from Google");
+        //        }
+
+        //        var account = new OAuthRequest
+        //        {
+        //            Email = email,
+        //            FullName = name,
+        //            Avatar = picture
+        //        };
+
+        //        await _userService.RegisterWithGoogle(account);
+
+        //        var identity = new ClaimsIdentity(GoogleDefaults.AuthenticationScheme);
+        //        identity.AddClaim(new Claim(ClaimTypes.Email, email));
+        //        identity.AddClaim(new Claim(ClaimTypes.Name, name));
+        //        identity.AddClaim(new Claim("picture", picture));
+
+        //        var principal = new ClaimsPrincipal(identity);
+        //        await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
+        //        return Redirect("/");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var response = new ApiResponse<object>
+        //        {
+        //            StatusCode = 400,
+        //            Message = "Bad request from client side",
+        //            IsSuccess = false,
+        //            Reason = ex.Message
+        //        };
+        //        return BadRequest(response);
+        //    }
+        //}
+
+        //[HttpPost("Logout")]
+        //public async Task<IActionResult> Logout()
+        //{
+        //    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        //    return Redirect("/");
+        //}
     }
 }

@@ -21,7 +21,7 @@
             public string FullName { get; set; }
             public string Email { get; set; }
             public DateTime BirthDate { get; set; }
-            public int Gendder { get; set; }
+            public int Gender { get; set; }
             public string Address { get; set; }
 
         }
