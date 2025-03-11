@@ -21,7 +21,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  MenuItem,
   Paper,
   Radio,
   RadioGroup,
@@ -38,7 +37,9 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { getUserDetail } from "../../../apis/mock.apis";
 import { SampleMemberProfiles } from "../../../data/user.data";
+import { UserProfile } from "../../../types/users.type";
 
 const tickets = [
   {
@@ -112,31 +113,36 @@ export default function UserDetail() {
     confirmPassword: "",
   });
 
-  const [profile, setProfile] = useState({
+  const [profile, setProfile] = useState<UserProfile>({
     fullName: "",
-    dob: "",
-    gender: "male",
+    birthDate: "",
+    gender: 0,
     email: "",
     idCard: "",
-    phone: "",
+    phoneNumber: "",
     address: "",
-    pointReward: 0,
+    point: 0,
   });
 
   useEffect(() => {
-    if (userId && SampleMemberProfiles[Number(userId)]) {
-      const userData = SampleMemberProfiles[Number(userId)];
-      setProfile({
-        fullName: userData.HoTen,
-        dob: userData.NgaySinh,
-        gender: userData.GioiTinh === 1 ? "male" : "female",
-        email: userData.Email,
-        idCard: userData.CMND,
-        phone: userData.SoDienThoai,
-        address: userData.DiaChi,
-        pointReward: userData.DiemTichLuy,
-      });
-    }
+    const fetchUserData = async () => {
+      if (userId) {
+        const userData = await getUserDetail(userId);
+        if (userData) {
+          setProfile({
+            fullName: userData.fullName,
+            birthDate: userData.birthDate,
+            gender: userData.gender,
+            email: userData.email,
+            idCard: userData.idCard,
+            phoneNumber: userData.phoneNumber,
+            address: userData.address,
+            point: userData.point,
+          });
+        }
+      }
+    };
+    fetchUserData();
   }, [userId]);
 
   interface ShowPasswordState {
@@ -276,7 +282,7 @@ export default function UserDetail() {
               }}
             >
               <Typography variant="body2" fontWeight="medium">
-                Điểm tích lũy: {profile.pointReward}
+                Điểm tích lũy: {profile.point}
               </Typography>
             </Box>
 
@@ -412,7 +418,7 @@ export default function UserDetail() {
                 <TextField
                   label="Ngày sinh"
                   name="dob"
-                  value={profile.dob}
+                  value={profile.birthDate}
                   onChange={handleProfileChange}
                   fullWidth
                   sx={{ mb: 2 }}
@@ -454,7 +460,7 @@ export default function UserDetail() {
                 <TextField
                   label="Số điện thoại"
                   name="phone"
-                  value={profile.phone}
+                  value={profile.phoneNumber}
                   onChange={handleProfileChange}
                   fullWidth
                   sx={{ mb: 2 }}

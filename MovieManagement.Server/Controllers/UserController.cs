@@ -266,7 +266,7 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-
+        
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -326,31 +326,25 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
-        [HttpPut]
-        [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
+        [HttpPatch("{userId:guid}")]
+        [ProducesResponseType(typeof(ApiResponse<UserDto.UpdateRequest>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>),
             StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDto>> UpdateUserAsync(Guid userId,
-            UserDto.UserRequest userDto)
+            UserDto.UpdateRequest updateReq)
         {
             try
             {
-                var updated = await _userService.UpdateUserAsync(userId, userDto);
-                if (updated == null)
+                await _userService.UpdateUserAsync(userId, updateReq);
+                return Ok(new ApiResponse<object>
                 {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "User not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-
-                return Ok(updated);
+                    StatusCode = 200,
+                    Message = "User updated successfully",
+                    IsSuccess = true,
+                });
             }
             catch (BadRequestException ex)
             {

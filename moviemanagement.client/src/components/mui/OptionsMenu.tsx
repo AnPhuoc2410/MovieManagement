@@ -30,6 +30,10 @@ export default function OptionsMenu() {
     setAnchorEl(null);
   };
 
+  const handleNavigateToUserProfile = () => {
+    navigate("/users/profile/1");
+  };
+
   const handleLogout = async () => {
     await authLogout();
     toast.success("Đăng xuất thành công", { removeDelay: 2500 });
@@ -67,11 +71,11 @@ export default function OptionsMenu() {
           },
         }}
       >
-        <MenuItem onClick={handleClose}>Hồ sơ</MenuItem>
-        <MenuItem onClick={handleClose}>Tài khoản của tôi</MenuItem>
-        <Divider />
-        <MenuItem onClick={handleClose}>Thêm tài khoản mới</MenuItem>
-        <MenuItem onClick={handleClose}>Cài đặt</MenuItem>
+        <MenuItem onClick={handleNavigateToUserProfile}>Hồ sơ</MenuItem>
+        {/* <MenuItem onClick={handleClose}>Tài khoản của tôi</MenuItem> */}
+        {/* <Divider /> */}
+        {/* <MenuItem onClick={handleClose}>Thêm tài khoản mới</MenuItem> */}
+        {/* <MenuItem onClick={handleClose}>Cài đặt</MenuItem> */}
         <Divider />
         <MenuItem
           onClick={handleClose}
@@ -80,6 +84,8 @@ export default function OptionsMenu() {
               ml: "auto",
               minWidth: 0,
             },
+            display: "flex",
+            gap: "8px",
           }}
         >
           <ListItemText onClick={handleLogout}>Đăng xuất</ListItemText>

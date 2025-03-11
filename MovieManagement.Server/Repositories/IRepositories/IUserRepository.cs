@@ -11,6 +11,7 @@ namespace MovieManagement.Server.Repositories.IRepositories
         Task<List<User>> GetUserByRoleAsync(Role role);
         Task<User> GetByIdAsync(Guid id);
         Task<User> GetByEmail(string email);
+        Task<User> GetByUsername(string username);
     }
 
 }

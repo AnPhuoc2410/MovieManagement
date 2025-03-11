@@ -11,7 +11,7 @@ namespace MovieManagement.Server.Services.UserService
         Task<List<UserDto.UserResponse>> GetUserByRoleAsync(Role role);
         Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page, int pageSize);
         Task<IEnumerable<UserDto.UserResponse>> GetAllUsersAsync();
-        Task<UserDto.UserResponse> UpdateUserAsync(Guid id, UserDto.UserRequest user);
+        Task UpdateUserAsync(Guid id, UserDto.UpdateRequest updateRequest);
         Task<bool> DeleteUserAsync(Guid id);
         Task<UserDto.UserResponse> ExtractTokenAsync(string token);
 

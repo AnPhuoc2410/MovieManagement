@@ -81,9 +81,36 @@ export const Login = () => {
           });
 
           toast.success("Đăng nhập thành công! Đang chuyển hướng...");
-          setTimeout(() => {
-            navigate("/admin/thong-ke");
-          }, 1000);
+
+          console.log("value email", values.email);
+
+          switch (values.email) {
+            case "admin":
+              setTimeout(() => {
+                navigate("/admin/thong-ke");
+              }, 1000);
+              break;
+            case "hoangdz1604@gmail.com":
+              setTimeout(() => {
+                navigate("/admin/thong-ke");
+              }, 1000);
+              break;
+            case "m@gmail.com":
+              setTimeout(() => {
+                navigate("/users/profile/09ace9f8-a25a-4c92-80a1-17c08ebef2e1");
+              }, 1000);
+              break;
+            case "e@gmail.com":
+              setTimeout(() => {
+                navigate("/users/profile/596cb162-4c3f-47e7-91e4-491761d03454");
+              }, 1000);
+              break;
+            case "a@gmail.com":
+              setTimeout(() => {
+                navigate("/users/profile/d3ddb1f7-22fa-42b3-bbe8-71dc29688ef2");
+              }, 1000);
+              break;
+          }
         } else {
           toast.error(response.message);
         }

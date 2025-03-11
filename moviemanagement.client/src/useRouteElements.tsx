@@ -85,13 +85,8 @@ export default function useRouteElements() {
     },
     // Auth Routes (Rejected when authenticated)
     {
-      element: <RejectedRoute />,
-      children: [
-        {
-          path: "/auth/*",
-          element: <AuthForm />,
-        },
-      ],
+      path: "/auth/*",
+      element: <AuthForm />,
     },
     // Protected Client Routes
     {
@@ -123,6 +118,13 @@ export default function useRouteElements() {
             },
           ],
         },
+      ],
+    },
+
+    // Protected User Routes
+    {
+      element: <ProtectedRoute />,
+      children: [
         {
           path: "/users",
           children: [

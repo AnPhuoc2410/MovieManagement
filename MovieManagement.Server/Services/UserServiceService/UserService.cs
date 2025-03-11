@@ -141,32 +141,24 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<UserDto.UserResponse> UpdateUserAsync(Guid id,
-            UserDto.UserRequest userDto)
+        public async Task UpdateUserAsync(Guid id, UserDto.UpdateRequest userDto)
         {
-            try
-            {
-                //Checking user is existing
-                var existingUser = await _unitOfWork.UserRepository.GetByIdAsync(id);
-                if (existingUser == null)
-                    throw new NotFoundException("User not found!");
+            // Check if the user exists
+            var existingUser = await _unitOfWork.UserRepository.GetByIdAsync(id) 
+                               ?? throw new NotFoundException("User not found!");
 
-                //password hasher
-                var passwordHasher = new PasswordHasher<User>();
-                existingUser.Password = passwordHasher.HashPassword(existingUser, userDto.Password);
+            // Validate username and email only if they are being changed
+            if (userDto.UserName != existingUser.UserName && await _unitOfWork.UserRepository.GetByUsername(userDto.UserName) != null)
+                throw new BadRequestException("Username already exists.");
 
-                // Map updated fields from userDto to existingUser
-                _mapper.Map(userDto, existingUser);
+            if (userDto.Email != existingUser.Email && await _unitOfWork.UserRepository.GetByEmail(userDto.Email) != null)
+                throw new BadRequestException("Email already exists.");
 
-                var updatedUser = await _unitOfWork.UserRepository.UpdateAsync(existingUser);
-                if (updatedUser == null)
-                    throw new DbUpdateException("Fail to update user.");
-                return _mapper.Map<UserDto.UserResponse>(updatedUser);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            // Map and update the user
+            _mapper.Map(userDto, existingUser);
+            await _unitOfWork.UserRepository.UpdateAsync(existingUser);
         }
+
+
     }
 }
