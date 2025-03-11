@@ -71,7 +71,7 @@ namespace MovieManagement.Server.Services.AuthorizationService
             try
             {
                 // Check if user already exists
-                var existingUser = await _userRepository.GetByEmail(dto.Email);
+                var existingUser = await _userRepository.GetUserByEmailAsync(dto.Email);
                 if (existingUser != null)
                 {
                     throw new Exception("Username or email already exists.");
