@@ -11,6 +11,7 @@ using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Services.JwtService;
 using MovieManagement.Server.Models.ResponseModel;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Services.UserService
 {

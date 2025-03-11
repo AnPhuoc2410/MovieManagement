@@ -110,5 +110,7 @@ namespace MovieManagement.Server.Services.CategoryService
                 throw new Exception("Couldn't access into database due to systems error.", ex);
             }
         }
+
+        
     }
 }

@@ -20,7 +20,7 @@ const MovieList = ({
   buttonText: string;
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
-  const moviesPerPage = 12;
+  const moviesPerPage = 8;
   const pagesVisited = currentPage * moviesPerPage;
 
   const displayMovies = movies

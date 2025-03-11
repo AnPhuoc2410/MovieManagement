@@ -4,6 +4,7 @@ using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.UserService;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Controllers
 {

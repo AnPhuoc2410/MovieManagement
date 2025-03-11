@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories.IRepositories;
+using MovieManagement.Server.Services.JwtService;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Repositories
 {

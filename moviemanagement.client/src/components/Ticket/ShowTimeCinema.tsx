@@ -82,7 +82,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
         const response = await axios.get(
           `https://localhost:7119/api/ShowTime/GetShowTimeByDates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}`
         );
-        const showtimes: ShowTime[] = response.data[apiKey] || [];
+        const showtimes: ShowTime[] = response.data.data[apiKey] || [];
 
         if (showtimes.length === 0) {
           setCinemas([]);

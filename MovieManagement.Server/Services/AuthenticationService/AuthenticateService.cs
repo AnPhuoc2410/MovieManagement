@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using MovieManagement.Server.Repositories.IRepositories;
 using MovieManagement.Server.Exceptions;
 using Microsoft.VisualBasic;
+using static MovieManagement.Server.Models.Enums.UserEnum;
+using System.Runtime.ConstrainedExecution;
 
 
 namespace MovieManagement.Server.Services.AuthorizationService
@@ -66,28 +68,42 @@ namespace MovieManagement.Server.Services.AuthorizationService
 
         public async Task<UserDto.UserResponse> Register(AuthDto.RegisterRequest dto)
         {
-            // Check if user already exists
-            var existingUser = await _userRepository.GetUserByEmailAsync(dto.Email);
-            if (existingUser != null)
+            try
             {
-                throw new Exception("Username or email already exists.");
+                // Check if user already exists
+                var existingUser = await _userRepository.GetByEmail(dto.Email);
+                if (existingUser != null)
+                {
+                    throw new Exception("Username or email already exists.");
+                }
+                var newUser = _mapper.Map<User>(dto);
+                //// Create new user entity
+                //var user = new User
+                //{
+                newUser.UserId = Guid.NewGuid();
+                newUser.UserName = dto.UserName;
+                newUser.FullName = dto.FullName;
+                newUser.Email = dto.Email;
+                newUser.Status = UserStatus.Active; // Active user
+                newUser.JoinDate = DateTime.UtcNow;
+                newUser.Address = dto.Address;
+                newUser.Avatar = "";
+                newUser.IDCard = "";
+                newUser.PhoneNumber = "";
+                newUser.Role = 0;
+                newUser.Point = 0;
+                //};
+                // Hash the password
+                var passwordHasher = new PasswordHasher<User>();
+                newUser.Password = passwordHasher.HashPassword(newUser, dto.Password);
+
+                // Save to database
+                return _mapper.Map<UserDto.UserResponse>(await _unitOfWork.UserRepository.CreateAsync(newUser));
             }
-
-            // Create new user entity
-            var user = new User
+            catch (Exception ex)
             {
-                UserId = Guid.NewGuid(),
-                UserName = dto.UserName,
-                Email = dto.Email,
-                Status = 1, // Active user
-                JoinDate = DateTime.UtcNow
-            };
-            // Hash the password
-            var passwordHasher = new PasswordHasher<User>();
-            user.Password = passwordHasher.HashPassword(user, dto.Password);
-
-            // Save to database
-            return _mapper.Map<UserDto.UserResponse>(await _userService.CreateUserAsync(_mapper.Map<UserDto.CreateUser>(user)));
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

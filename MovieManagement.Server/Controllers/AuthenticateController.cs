@@ -91,7 +91,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
-                    Message = "An error occurred while creating show time",
+                    Message = "An error occurred while creating user",
                     IsSuccess = false,
                     Reason = ex.Message
                 };

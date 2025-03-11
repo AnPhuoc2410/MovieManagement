@@ -11,19 +11,19 @@ namespace MovieManagement.Server.Models.Configurations
             builder.ToTable("MOVIE");
             builder.HasKey(x => x.MovieId);
             builder.Property(x => x.MovieId).HasDefaultValueSql("NEWID()");
-            builder.Property(x => x.MovieName).HasColumnType("varchar(50)");
+            builder.Property(x => x.MovieName).HasColumnType("nvarchar(100)");
             builder.Property(x => x.MovieName).IsRequired();
-            builder.Property(x => x.MovieName).HasMaxLength(50);
+            builder.Property(x => x.MovieName).HasMaxLength(100);
             builder.Property(x => x.MovieName).IsUnicode(true);
-            builder.Property(x => x.Image).HasColumnType("varchar(50)");
+            builder.Property(x => x.Image).HasColumnType("varchar(250)");
             builder.Property(x => x.Image).IsRequired();
-            builder.Property(x => x.Image).HasMaxLength(50);
-            builder.Property(x => x.Actors).HasColumnType("varchar(50)");
-            builder.Property(x => x.Director).HasColumnType("varchar(30)");
-            builder.Property(x => x.Rating).HasColumnType("varchar(30)");
-            builder.Property(x => x.Trailer).HasColumnType("varchar(50)");
-            builder.Property(x => x.Content).HasColumnType("varchar(500)");
-            
+            builder.Property(x => x.Image).HasMaxLength(500);
+            builder.Property(x => x.Actors).HasColumnType("nvarchar(250)");
+            builder.Property(x => x.Director).HasColumnType("nvarchar(50)");
+            builder.Property(x => x.Rating).HasColumnType("nvarchar(30)");
+            builder.Property(x => x.Trailer).HasColumnType("varchar(100)");
+            builder.Property(x => x.Content).HasColumnType("nvarchar(1000)");
+            builder.Property(x => x.IsDeleted).HasColumnType("bit");
 
 
         }

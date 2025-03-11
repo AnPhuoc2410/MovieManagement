@@ -9,14 +9,9 @@ namespace MovieManagement.Server.Models.Entities
     {
         public Guid CategoryId { get; set; }
 
-        public Guid MovieId { get; set; }
-
         public string Name { get; set; }
 
-        public string Description { get; set; }
-
-        public virtual Movie Movie { get; set; }
-
+        public virtual ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
 
     }
 }
