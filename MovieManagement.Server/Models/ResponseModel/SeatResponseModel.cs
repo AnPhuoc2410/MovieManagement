@@ -1,4 +1,5 @@
 ﻿using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.Enums;
 using Newtonsoft.Json;
 
 namespace MovieManagement.Server.Models.ResponseModel
@@ -19,6 +20,8 @@ namespace MovieManagement.Server.Models.ResponseModel
         public Guid SeatTypeId { get; set; }
 
         public bool IsActive { get; set; }
+
+        public SeatEnum.SeatStatus Status { get; set; }
 
         public virtual SeatType SeatType { get; set; }
 
