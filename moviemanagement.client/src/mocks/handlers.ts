@@ -1,19 +1,20 @@
 import { HttpHandler } from "msw";
 import {
-  handleGetBookingDetail,
-  handleGetCategoryList,
-  handleGetFilmDetail,
-  handleGetFilmList,
   handleGetNhanVien,
   handleGetNhanVienDetail,
-  handleGetRoom,
-  handleGetRoomDetail,
   handleGetThanhVien,
   handleGetThanhVienDetail,
-  handleLogin,
-  handleLogout,
-  handleSignup,
-} from "./routes";
+  handleGetUserDetail,
+} from "./routes/user.msw";
+import {
+  handleGetBookingDetail,
+  handleGetFilmDetail,
+  handleGetFilmList,
+  handleGetRoom,
+  handleGetRoomDetail,
+} from "./routes/room.msw";
+import { handleLogin, handleLogout, handleSignup } from "./routes/auth.msw";
+import { handleGetCategoryList } from "./routes/category.msw";
 
 export const handlers: HttpHandler[] = [
   handleGetThanhVien(),
@@ -36,4 +37,7 @@ export const handlers: HttpHandler[] = [
   handleGetFilmDetail("1"),
   handleGetFilmDetail("2"),
   handleGetCategoryList(),
+  handleGetUserDetail("09ace9f8-a25a-4c92-80a1-17c08ebef2e1"),
+  handleGetUserDetail("596cb162-4c3f-47e7-91e4-491761d03454"),
+  handleGetUserDetail("d3ddb1f7-22fa-42b3-bbe8-71dc29688ef2"),
 ];

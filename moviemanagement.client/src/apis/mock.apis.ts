@@ -12,7 +12,7 @@ import { Movie, QuanLyPhimType } from "../types/movie.types";
 import { Room } from "../types/room.types";
 import { ApiResponse } from "./api.config";
 import { Category } from "../types/category.types";
-import { UpdatePasswordDTO } from "../types/users.type";
+import { UpdatePasswordDTO, UserResponse } from "../types/users.type";
 
 export const fetchThanhVien = async (): Promise<ThanhVien[]> => {
   const response = await axios.get<ThanhVien[]>("/api/thanh-vien");
@@ -73,8 +73,9 @@ export const signUp = async (
   } catch (error: any) {
     return {
       message: error.response?.data?.message || "An unexpected error occurred.",
-      status_code: error.response?.status || 500,
-      is_success: false,
+      statusCode: error.response?.status || 500,
+      isSuccess: false,
+      reason: error.response?.data?.reason || null,
       data: null,
     };
   }
@@ -101,5 +102,10 @@ export const updateUserPassword = async (
   newPassword: UpdatePasswordDTO,
 ): Promise<ApiResponse<null>> => {
   const response = await axios.put("/api/auth/update-password", newPassword);
+  return response.data;
+};
+
+export const getUserDetail = async (id: string): Promise<UserResponse> => {
+  const response = await axios.get<UserResponse>(`/api/user/detail/${id}`);
   return response.data;
 };

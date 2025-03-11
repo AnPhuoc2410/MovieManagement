@@ -1,23 +1,32 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eiga Cinema</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
-  <link rel="manifest" href="/favicon/site.webmanifest" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eiga Cinema</title>
-</head>
-
-<body>
-  <div id="root"></div>
-  <script>
-    function displayConsoleMessage() {
-      console.clear();
-      console.log(`
+  <body>
+    <div id="root"></div>
+    <script>
+      function displayConsoleMessage() {
+        console.clear();
+        console.log(`
   ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠻⠟⠻⣿
   ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⣰⣿
   ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⠿⠿⢿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿
@@ -40,21 +49,23 @@
 ⠀⠑⠂⠤⠔⠒⠁⠀⠀⡎⠱⡃⠀⠀⡄⠀⠄⠀⠀⠠⠟⠉⡷⠁⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⠤⠤⠴⣄⡸⠤⣄⠴⠤⠴⠄⠼⠀⠀⠀⠀⠀⠀⠀⠀
 `);
-      console.log("“No Code No Bug.” – An Phuoc Dao");
-    }
-
-    // On page refresh (or load), display the message
-    displayConsoleMessage();
-
-    // Also listen for F12 key press to display the same message
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "F12") {
-        displayConsoleMessage();
+        console.log("“No Code No Bug.” – An Phuoc Dao");
       }
-    });
-  </script>
-  <script type="module" src="/src/main.tsx"></script>
-  <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
-</body>
 
+      // On page refresh (or load), display the message
+      displayConsoleMessage();
+
+      // Also listen for F12 key press to display the same message
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "F12") {
+          displayConsoleMessage();
+        }
+      });
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+    <script
+      src="https://widget.cloudinary.com/v2.0/global/all.js"
+      type="text/javascript"
+    ></script>
+  </body>
 </html>

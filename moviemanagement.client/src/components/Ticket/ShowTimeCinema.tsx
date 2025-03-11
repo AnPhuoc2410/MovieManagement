@@ -80,7 +80,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
     const fetchShowtimes = async () => {
       try {
         const response = await axios.get(
-          `https://localhost:7119/api/ShowTime/GetShowTimeByDates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}`
+          `https://localhost:7119/api/ShowTime/GetShowTimeByDates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}`,
         );
         const showtimes: ShowTime[] = response.data[apiKey] || [];
 
@@ -91,10 +91,9 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
 
         const dummyCinema: Cinema = {
           name: "Cinema Eiga",
-          address:
-            "S10.06 Origami, Vinhomes Grandpark, Thủ Đức, Hồ Chí Minh",
+          address: "S10.06 Origami, Vinhomes Grandpark, Thủ Đức, Hồ Chí Minh",
           times: showtimes.map((show) =>
-            format(new Date(show.startTime), "HH:mm")
+            format(new Date(show.startTime), "HH:mm"),
           ),
         };
 
@@ -192,7 +191,12 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
         </ToggleButtonGroup>
 
         {/* City Selection */}
-        <Grid container alignItems="center" justifyContent="space-between" mb={3}>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="space-between"
+          mb={3}
+        >
           <Grid item>
             <Typography variant="h4" fontWeight="bold">
               🎬 Danh Sách Rạp
