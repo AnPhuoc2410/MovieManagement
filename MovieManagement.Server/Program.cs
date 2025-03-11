@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services.AuthorizationService;
 using MovieManagement.Server.Services.JwtService;
@@ -12,6 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using VNPAY.NET;
 
 namespace MovieManagement.Server
 {
@@ -61,7 +63,7 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("LaazyConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
 
             // Đăng ký UnitOfWork
@@ -137,10 +139,13 @@ namespace MovieManagement.Server
             // Register the password hasher
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
+            // Đăng ký VnPayService
+            builder.Services.AddSingleton<IVnPayService, VnPayService>();
+
             //Enable role based and policy based authorization
             builder.Services.AddAuthorization();
 
-
+            
 
             var app = builder.Build();
 
@@ -175,6 +180,8 @@ namespace MovieManagement.Server
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
 
