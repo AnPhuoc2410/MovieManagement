@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import * as yup from "yup";
 import { useAuth } from "../../../contexts/AuthContext";
-import { login } from "../../../apis/auth.apis";
+import { login } from "../../../apis/mock.apis";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);

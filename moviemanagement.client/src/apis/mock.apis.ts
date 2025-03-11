@@ -3,6 +3,7 @@ import { XacNhanDatVe } from "../pages/admin/QuanLyDatVe/ChiTietDatVe";
 import { Employee } from "../pages/admin/QuanLyNhanVien/BangNhanVien";
 import { ThanhVien } from "../pages/admin/QuanLyThanhVien/BangThanhVien";
 import {
+  LoginRequest,
   LoginResponse,
   SignupRequest,
   SignupResponse,
@@ -43,11 +44,11 @@ export const fetchRoomDetail = async (id: string): Promise<Room> => {
   return response.data;
 };
 
-export const login = async (
-  username: string,
-  password: string,
-): Promise<LoginResponse> => {
-  const response = await axios.post("/api/login", { username, password });
+export const login = async (user: LoginRequest): Promise<LoginResponse> => {
+  const response = await axios.post("/api/login", {
+    email: user.email,
+    password: user.password,
+  });
   return response.data;
 };
 
