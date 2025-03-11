@@ -1,4 +1,3 @@
-
 export type Seat = {
   seatId: string;
   atRow: string;

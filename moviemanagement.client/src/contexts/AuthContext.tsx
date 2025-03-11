@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const initializeAuth = () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = getCookie("token");
         if (token) {
           // Validate token and set user
           setIsAuthenticated(true);

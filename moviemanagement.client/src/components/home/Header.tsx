@@ -2,6 +2,9 @@ import { AccountCircleOutlined, FastfoodOutlined } from "@mui/icons-material";
 import LocalActivityOutlinedIcon from "@mui/icons-material/LocalActivityOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
+import LogoutIcon from "@mui/icons-material/Logout";
+import SettingsIcon from "@mui/icons-material/Settings";
+import PersonIcon from "@mui/icons-material/Person";
 import {
   AppBar,
   Box,
@@ -11,16 +14,40 @@ import {
   TextField,
   Toolbar,
   Typography,
+  Menu,
+  MenuItem,
+  Avatar,
+  Divider,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import LanguageSelector from "../common/LanguageSelector";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Header: React.FC = () => {
+  const { isAuthenticated, authLogout } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
+
+  // Profile dropdown menu state
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    authLogout();
+    handleClose();
+    navigate("/");
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -109,7 +136,8 @@ const Header: React.FC = () => {
                 color: "black",
                 transition: "color 0.5s ease-in-out",
                 minWidth: "auto",
-                px: 2,
+                ml: { md: 1 },
+                px: { xs: 2, sm: 3 },
                 "&::before": {
                   content: '""',
                   position: "absolute",
@@ -150,7 +178,7 @@ const Header: React.FC = () => {
                 color: "white",
                 transition: "color 0.5s ease-in-out",
                 minWidth: "auto",
-                px: 2,
+                px: { xs: 1, md: 4 },
                 "&::before": {
                   content: '""',
                   position: "absolute",
@@ -183,13 +211,12 @@ const Header: React.FC = () => {
               sx={{
                 display: { xs: "none", md: "flex" },
                 alignItems: "center",
-                gap: 2,
                 flexGrow: 0,
                 flexShrink: 1,
                 justifyContent: "center",
                 borderRadius: 20,
                 border: "none",
-                ml: { md: 2, lg: 4 },
+                ml: { lg: 4 },
               }}
             >
               <TextField
@@ -198,7 +225,7 @@ const Header: React.FC = () => {
                 placeholder={t("search")}
                 sx={{
                   backgroundColor: "white",
-                  width: { md: "250px", lg: "300px" },
+                  width: { md: "200px", lg: "300px" },
                   border: 0,
                   borderRadius: "20px",
                   "& .MuiOutlinedInput-root": {
@@ -228,18 +255,100 @@ const Header: React.FC = () => {
               <MenuIcon />
             </IconButton>
 
-            {/* Login Button */}
-            <IconButton
-              color="inherit"
-              sx={{
-                display: { xs: "none", md: "flex" },
-                gap: 1,
-              }}
-              onClick={() => navigate("/auth/login")}
-            >
-              <AccountCircleOutlined />
-              <Typography>{t("login")}</Typography>
-            </IconButton>
+            {/* Conditional Login Button or Profile Dropdown */}
+            {isAuthenticated ? (
+              <>
+                <Box
+                  onClick={handleProfileClick}
+                  sx={{
+                    display: { xs: "none", md: "flex" },
+                    alignItems: "center",
+                    gap: 1,
+                    cursor: "pointer",
+                  }}
+                >
+                  <Avatar
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      bgcolor: "#834bff",
+                    }}
+                  >
+                    <PersonIcon fontSize="small" />
+                  </Avatar>
+                  <Typography>{t("user.profile.my_account")}</Typography>
+                </Box>
+
+                <Menu
+                  anchorEl={anchorEl}
+                  id="profile-menu"
+                  open={open}
+                  onClose={handleClose}
+                  onClick={handleClose}
+                  PaperProps={{
+                    elevation: 0,
+                    sx: {
+                      overflow: "visible",
+                      filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                      mt: 1.5,
+                      "& .MuiAvatar-root": {
+                        width: 32,
+                        height: 32,
+                        ml: -0.5,
+                        mr: 1,
+                      },
+                      "&:before": {
+                        content: '""',
+                        display: "block",
+                        position: "absolute",
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: "background.paper",
+                        transform: "translateY(-50%) rotate(45deg)",
+                        zIndex: 0,
+                      },
+                    },
+                  }}
+                  transformOrigin={{ horizontal: "right", vertical: "top" }}
+                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                >
+                  <MenuItem onClick={() => navigate("/profile")}>
+                    <PersonIcon fontSize="small" sx={{ mr: 2 }} />
+                    {t("user.profile.my_profile")}
+                  </MenuItem>
+                  <MenuItem onClick={() => navigate("/settings")}>
+                    <SettingsIcon fontSize="small" sx={{ mr: 2 }} />
+                    {t("user.profile.settings")}
+                  </MenuItem>
+                  <MenuItem onClick={() => navigate("/bookings")}>
+                    <LocalActivityOutlinedIcon
+                      fontSize="small"
+                      sx={{ mr: 2 }}
+                    />
+                    {t("user.profile.my_bookings")}
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem onClick={handleLogout}>
+                    <LogoutIcon fontSize="small" sx={{ mr: 2 }} />
+                    {t("user.profile.logout")}
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <IconButton
+                color="inherit"
+                sx={{
+                  display: { xs: "none", md: "flex" },
+                  gap: 1,
+                }}
+                onClick={() => navigate("/auth/login")}
+              >
+                <AccountCircleOutlined />
+                <Typography>{t("login")}</Typography>
+              </IconButton>
+            )}
 
             {/* Language Selector */}
             <LanguageSelector />

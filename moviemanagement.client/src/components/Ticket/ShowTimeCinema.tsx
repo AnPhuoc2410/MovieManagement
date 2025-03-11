@@ -256,8 +256,11 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                         variant="contained"
                         sx={{
                           backgroundColor:
-                            selectedTime === showtime.time ? "yellow" : "transparent",
-                          color: selectedTime === showtime.time ? "black" : "white",
+                            selectedTime === showtime.time
+                              ? "yellow"
+                              : "transparent",
+                          color:
+                            selectedTime === showtime.time ? "black" : "white",
                           border: "1px solid white",
                           fontWeight: "bold",
                           "&:hover": {

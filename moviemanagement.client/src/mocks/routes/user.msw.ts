@@ -6,7 +6,7 @@ export const handleGetUserDetail = (id: string) => {
   return http.get(`/api/user/detail/${id}`, () => {
     switch (id) {
       case "09ace9f8-a25a-4c92-80a1-17c08ebef2e1":
-        return HttpResponse.json<UserResponse>({
+        return HttpResponse.json({
           userId: "09ace9f8-a25a-4c92-80a1-17c08ebef2e1",
           userName: "string",
           avatar: "string",
@@ -21,6 +21,60 @@ export const handleGetUserDetail = (id: string) => {
           status: 1,
           role: 0,
           point: 0,
+          ticket: {
+            history: [
+              {
+                dateCreate: "01/01/2021",
+                movieName: "Tên phim 1",
+                plusPoint: 10,
+                minusPoint: 0,
+              },
+              {
+                dateCreate: "01/01/2021",
+                movieName: "Tên phim 2",
+                plusPoint: 10,
+                minusPoint: 0,
+              },
+              {
+                dateCreate: "01/01/2021",
+                movieName: "Tên phim 3",
+                plusPoint: 10,
+                minusPoint: 0,
+              },
+            ],
+            data: [
+              {
+                id: 1,
+                movieName: "Tên phim 1",
+                dateStart: "01/01/2021",
+                dateEnd: "02/01/2021",
+                time: "20:00",
+                room: "Phòng 1",
+                price: "100,000 VND",
+                status: "Đợi nhận vé",
+              },
+              {
+                id: 2,
+                movieName: "Tên phim 2",
+                dateStart: "01/01/2021",
+                dateEnd: "02/01/2021",
+                time: "20:00",
+                room: "Phòng 1",
+                price: "100,000 VND",
+                status: "Đã nhận vé",
+              },
+              {
+                id: 3,
+                movieName: "Tên phim 3",
+                dateStart: "01/01/2021",
+                dateEnd: "02/01/2021",
+                time: "20:00",
+                room: "Phòng 1",
+                price: "100,000 VND",
+                status: "Đợi nhận vé",
+              },
+            ],
+          },
         });
 
       case "596cb162-4c3f-47e7-91e4-491761d03454":
