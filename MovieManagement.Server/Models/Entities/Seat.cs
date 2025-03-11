@@ -6,14 +6,6 @@ using static MovieManagement.Server.Models.Enums.SeatEnum;
 namespace MovieManagement.Server.Models.Entities
 {
 
-    public enum SeatStatus
-    {
-        Available = 0,
-        Selected = 1,
-        Reserved = 2,
-        Booked = 3
-    }
-
     public class Seat
     {
         public Guid SeatId { get; set; }

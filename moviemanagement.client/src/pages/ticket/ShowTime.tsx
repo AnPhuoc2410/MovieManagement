@@ -18,7 +18,7 @@ const Ticket: React.FC = () => {
   const [showTicketPrice, setShowTicketPrice] = useState<boolean>(false);
 
   // You can still retrieve movieId from location or params if needed.
-  const movieId = "5CC368FD-5BFA-4B06-A88C-1E659A26C224";
+  const movieId = "b6d29d0d-4d39-45d9-8f09-4f997a65d8cf";
 
   const handleTicketSelection = (tickets: TicketType[]) => {
     // Validate that a showtime is selected
