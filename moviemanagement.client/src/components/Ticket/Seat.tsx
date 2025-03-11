@@ -58,7 +58,6 @@ const Seat: React.FC<SeatProps> = ({ roomId, selectedSeats, setSelectedSeats }) 
         </Typography>
       </Box>
 
-      {/* Legend moved off-screen */}
       {/* Legend (Positioned to the right) */}
       <Box
         sx={{

@@ -71,8 +71,8 @@ const Ticket: React.FC = () => {
       <Container
         maxWidth="xl"
         sx={{
-          pt: { xs: "64px", sm: "72px", md: "80px" },
-          pb: { xs: 4, sm: 6, md: 8 },
+          pt: { xs: "70px", sm: "80px", md: "90px" }, // Adjusted padding
+          pb: { xs: 5, sm: 6, md: 8 },
           px: { xs: 2, sm: 3, md: 4 },
           position: "relative",
         }}
@@ -108,7 +108,6 @@ const Ticket: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               gap: { xs: 2, sm: 3, md: 4 },
-
               pb: 4,
             }}
           >
