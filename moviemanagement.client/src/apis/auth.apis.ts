@@ -8,7 +8,7 @@ import { LogoutResponse } from "../types/auth.types";
 export const login = async (payload: LoginDTO) => {
   try {
     const response = await axios.post(
-      `${DYNAMIC_API_URL}/users/login`,
+      `${DYNAMIC_API_URL}/api/Authenticate/Login`,
       payload,
     );
     return response.data;

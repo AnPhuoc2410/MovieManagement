@@ -38,8 +38,8 @@ const MovieDetail: React.FC = () => {
   const handleCloseTrailer = () => setOpenTrailer(false);
 
   return (
-    <Box sx={{ backgroundColor: "#0B0D1A", minHeight: "50vh", color: "white" }}>
-      <Container maxWidth="lg" sx={{ mt: 13, color: "white" }}>
+    <Container sx={{ backgroundColor: "#0B0D1A", color: "white" }}>
+      <Container sx={{ mt: 12, color: "white" }}>
         <Grid container spacing={4} sx={{ alignItems: "stretch" }}>
           {/* Movie Poster */}
           <Grid item xs={12} md={4}>
@@ -245,7 +245,7 @@ const MovieDetail: React.FC = () => {
           />
         </Box>
       </Modal>
-    </Box>
+    </Container>
   );
 };
 
