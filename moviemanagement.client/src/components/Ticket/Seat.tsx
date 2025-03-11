@@ -59,33 +59,38 @@ const Seat: React.FC<SeatProps> = ({ roomId, selectedSeats, setSelectedSeats }) 
       </Box>
 
       {/* Legend moved off-screen */}
+      {/* Legend (Positioned to the right) */}
       <Box
         sx={{
-          display: { xs: "none", md: "block" },
           position: "absolute",
-          top: "200px",
-          left: "-150px",
+          top: "50%",
+          right: 20,
+          transform: "translateY(-50%)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          padding: 2,
+          borderRadius: 2,
         }}
       >
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <EventSeatIcon sx={{ color: "red" }} />
-            <Typography variant="body2">Đã Đặt</Typography>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <EventSeatIcon sx={{ color: "white" }} />
-            <Typography variant="body2">Ghế Trống</Typography>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <EventSeatIcon sx={{ color: "green" }} />
-            <Typography variant="body2">Đang Chọn</Typography>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <EventSeatIcon sx={{ color: "blue" }} />
-            <Typography variant="body2">Ghế VIP</Typography>
-          </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <EventSeatIcon sx={{ color: "red" }} />
+          <Typography variant="body2">Đã Đặt</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <EventSeatIcon sx={{ color: "white" }} />
+          <Typography variant="body2">Ghế Trống</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <EventSeatIcon sx={{ color: "green" }} />
+          <Typography variant="body2">Đang Chọn</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <EventSeatIcon sx={{ color: "blue" }} />
+          <Typography variant="body2">Ghế VIP</Typography>
         </Box>
       </Box>
+
 
       {/* Seat Grid centered on screen */}
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", p: 2 }}>
