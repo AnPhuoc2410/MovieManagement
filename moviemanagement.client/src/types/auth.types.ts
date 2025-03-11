@@ -4,7 +4,7 @@ export type AuthLoginData = Pick<
 >;
 
 export type LoginRequest = {
-  username: string;
+  email: string;
   password: string;
 };
 

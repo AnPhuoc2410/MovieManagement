@@ -18,7 +18,6 @@ namespace MovieManagement.Server.Services.UserService
 {
     public class UserService : IUserService
     {
-
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IJwtService _jwtService;
@@ -29,13 +28,13 @@ namespace MovieManagement.Server.Services.UserService
             _mapper = mapper;
             _jwtService = jwtService;
         }
-        
+
         public async Task<UserDto.UserResponse> CreateUserAsync(UserDto.CreateUser user)
         {
             try
             {
-
-                if(user.Role == Role.Admin) throw new Exception("Admin cannot be created by this method.");
+                if (user.Role == Role.Admin)
+                    throw new Exception("Admin cannot be created by this method.");
 
                 var newUser = _mapper.Map<User>(user);
                 var passwordHasher = new PasswordHasher<User>();
@@ -48,40 +47,36 @@ namespace MovieManagement.Server.Services.UserService
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("An error occurred while processing into the database.", ex);
+                throw new ApplicationException(
+                    "An error occurred while processing into the database.", ex);
             }
         }
 
         public async Task<bool> DeleteUserAsync(Guid id)
         {
-            try
-            {
-                var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
-                if (user == null)
-                    throw new NotFoundException("User not found!");
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
+            if (user == null)
+                throw new NotFoundException("User not found!");
 
-                return await _unitOfWork.UserRepository.DeleteAsync(id);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            if (user.Role != Role.Employee)
+                throw new BadRequestException("Cannot delete this user role");
+
+            return await _unitOfWork.UserRepository.SoftDeleteAsync(id);
         }
 
         public async Task<UserDto.UserResponse> ExtractTokenAsync(string token)
         {
-
             var jwtToken = _jwtService.ReadTokenWithoutValidation(token);
-            if(jwtToken == null)
+            if (jwtToken == null)
                 throw new Exception("Invalid token");
-            
-            var userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+            var userId = jwtToken.Claims
+                .FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
             var user = await _unitOfWork.UserRepository.GetByIdAsync(Guid.Parse(userId));
             if (user == null)
                 throw new NotFoundException("User not found!");
-            
-            return _mapper.Map<UserDto.UserResponse>(user);
 
+            return _mapper.Map<UserDto.UserResponse>(user);
         }
 
         public async Task<IEnumerable<UserDto.UserResponse>> GetAllUsersAsync()
@@ -130,7 +125,8 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page, int pageSize)
+        public async Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page,
+            int pageSize)
         {
             try
             {
@@ -145,7 +141,8 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<UserDto.UserResponse> UpdateUserAsync(Guid id, UserDto.UserRequest userDto)
+        public async Task<UserDto.UserResponse> UpdateUserAsync(Guid id,
+            UserDto.UserRequest userDto)
         {
             try
             {

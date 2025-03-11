@@ -15,11 +15,11 @@ import { Room } from "../types/room.types";
 export const handleLogin = () => {
   return http.post("/api/login", async ({ request }) => {
     const body = (await request.json()) as LoginRequest;
-    const { username, password } = body;
+    const { email, password } = body;
 
     if (
-      (username === "hoangdz1604@gmail.com" && password === "12345678") ||
-      (username === "admin" && password === "admin")
+      (email === "hoangdz1604@gmail.com" && password === "12345678") ||
+      (email === "admin" && password === "admin")
     ) {
       return HttpResponse.json<LoginResponse>({
         message: "Login successfully",
