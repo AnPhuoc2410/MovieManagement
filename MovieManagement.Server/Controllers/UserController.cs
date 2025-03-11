@@ -207,7 +207,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var users = await _userService.GetAllUsersAsync();
+                var users = await _userService.GetUserPageAsync(page, pageSize);
                 if (users == null)
                 {
                     var response = new ApiResponse<object>
