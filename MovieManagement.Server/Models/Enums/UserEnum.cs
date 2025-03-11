@@ -3,21 +3,20 @@
     public class UserEnum
     {
 
-        enum UserType
+        public enum Role
         {
-            Admin = 0,
-            Manager = 1,
-            Employee = 2,
-            Customer = 3
+            Member = 0,
+            Employee = 1,
+            Admin = 2
         }
 
-        enum UserStatus
+        public enum UserStatus
         {
             Inactive = 0,
             Active = 1
         }
 
-        enum UserGender
+        public enum UserGender
         {
             Male = 0,
             Female = 1

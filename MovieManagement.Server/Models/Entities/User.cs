@@ -1,17 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Models.Entities
 {
-
-    public enum Role
-    {
-        Admin = 0,
-        Manager = 1,
-        Employee = 2,
-        Member = 3
-    }
 
     public class User
     {
@@ -30,7 +23,7 @@ namespace MovieManagement.Server.Models.Entities
 
         public DateTime BirthDate { get; set; }
 
-        public int Gender { get; set; } // 0: Nam, 1: Nữ
+        public UserGender Gender { get; set; } // 0: Nam, 1: Nữ
 
         public string IDCard { get; set; }
 
@@ -40,7 +33,12 @@ namespace MovieManagement.Server.Models.Entities
 
         public string Address { get; set; }
 
-        public int Status { get; set; } // 0: Khóa, 1: Mở
+        /// <summary>
+        /// Trạng thái tài khoản
+        /// 0: Khóa
+        /// 1: Mở
+        /// </summary>
+        public UserStatus Status { get; set; }
 
         public Role Role { get; set; }
 

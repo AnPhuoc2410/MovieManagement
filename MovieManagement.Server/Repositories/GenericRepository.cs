@@ -72,7 +72,7 @@ namespace MovieManagement.Server.Repositories
         }
         public async Task<List<T>> GetPageAsync(int page, int pageSize)
         {
-            return await _context.Set<T>().Skip(page * pageSize).Take(pageSize).ToListAsync();
+            return await _context.Set<T>().Skip((page-1) * pageSize).Take(pageSize).ToListAsync();
         }
         public async Task<T> GetByComposeIdAsync(Guid id, Guid id2)
         {

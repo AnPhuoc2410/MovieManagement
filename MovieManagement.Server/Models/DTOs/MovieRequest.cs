@@ -1,13 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace MovieManagement.Server.Models.Entities
+﻿namespace MovieManagement.Server.Models.DTOs
 {
-    public class Movie
+    public class MovieRequest
     {
-        public Guid? MovieId { get; set; }
-
         public string MovieName { get; set; }
 
         public string Image { get; set; }
@@ -34,11 +28,7 @@ namespace MovieManagement.Server.Models.Entities
 
         public Guid UserId { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
-
-        public virtual ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
-
-        public virtual ICollection<ShowTime> Showtimes { get; set; } = new List<ShowTime>();
+        public ICollection<Guid> CategoriesIds { get; set; } = new List<Guid>();
 
     }
 }

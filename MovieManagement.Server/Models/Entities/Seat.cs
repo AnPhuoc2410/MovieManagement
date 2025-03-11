@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static MovieManagement.Server.Models.Enums.SeatEnum;
 
 namespace MovieManagement.Server.Models.Entities
 {
@@ -26,7 +27,7 @@ namespace MovieManagement.Server.Models.Entities
 
         public bool IsActive { get; set; }
 
-        public SeatStatus Status { get; set; }
+        public SeatStatus SeatStatus { get; set; }
 
         public virtual Room Room { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Models.ResponseModel;
 namespace MovieManagement.Server.Extensions
 {
@@ -9,11 +10,35 @@ namespace MovieManagement.Server.Extensions
         public AutoMapperProfiles()
         {
 
-            CreateMap<User, UserDto>();
-            CreateMap<User, UserDto.UserResponse>();
+            //User DTO <=> User Create
+            CreateMap<User, UserDto.CreateUser>();
             CreateMap<UserDto.CreateUser, User>()
                 .ForMember(dest => dest.Bills, opt => opt.Ignore())
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()));
+
+            //List User Response For Admin  
+            CreateMap<User, UserResponse>();
+            CreateMap<UserResponse, User>()
+                .ForMember(dest => dest.Password, opt => opt.Ignore())
+                .ForMember(dest => dest.JoinDate, opt => opt.Ignore())
+                .ForMember(dest => dest.IDCard, opt => opt.Ignore())
+                .ForMember(dest => dest.BirthDate, opt => opt.Ignore())
+                .ForMember(dest => dest.Address, opt => opt.Ignore());
+
+            //Create User By OAuth
+            CreateMap<User, OAuthRequest>();
+            CreateMap<OAuthRequest, User>()
+                .ForMember(dest => dest.Password, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()));
+            //User DTO <=> User Respone
+            CreateMap<User, UserDto.UserResponse>();
+            CreateMap<UserDto.UserResponse, User>();
+
+            //User DTO <=> Register Request
+            CreateMap<AuthDto.RegisterRequest, User>();
+            CreateMap<User, AuthDto.RegisterRequest>();
+
+            CreateMap<User, UserDto>();
 
             CreateMap<Promotion, PromotionDto>();
             CreateMap<PromotionDto, Promotion>();
@@ -39,6 +64,11 @@ namespace MovieManagement.Server.Extensions
             CreateMap<Movie, MovieDto>();
             CreateMap<MovieDto, Movie>();
 
+            CreateMap<Movie, MoviePreview>();
+            CreateMap<MoviePreview, Movie>();
+
+            CreateMap<MovieRequest, Movie>();
+
             CreateMap<Category, CategoryDto>();
             CreateMap<CategoryDto, Category>();
 
@@ -55,9 +85,10 @@ namespace MovieManagement.Server.Extensions
             CreateMap<AuthDto.LoginRequest, AuthDto.LoginResponse>();
             CreateMap<AuthDto.LoginResponse, AuthDto.LoginRequest>();
 
-            CreateMap<AuthDto.RegisterRequest, User>();
-            CreateMap<User, AuthDto.RegisterRequest>();
 
+
+
+            CreateMap<UserDto.UserRequest, User>();
         }
     }
 }

@@ -90,7 +90,6 @@ namespace MovieManagement.Server.Services.PromotionService
 
                 // Update the promotion in the repository and return the updated entity
                 var updatedPromotion = await _unitOfWork.PromotionRepository.UpdateAsync(existingPromotion);
-
                 return _mapper.Map<PromotionDto>(updatedPromotion);
 
 

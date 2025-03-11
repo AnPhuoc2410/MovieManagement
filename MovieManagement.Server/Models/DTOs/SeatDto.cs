@@ -1,4 +1,6 @@
-﻿namespace MovieManagement.Server.Models.DTOs
+﻿using static MovieManagement.Server.Models.Enums.SeatEnum;
+
+namespace MovieManagement.Server.Models.DTOs
 {
     public class SeatDto
     {
@@ -14,6 +16,6 @@
 
         public bool IsActive { get; set; }
 
-        public Entities.SeatStatus Status { get; set; }
+        public SeatStatus SeatStatus { get; set; }
     }
 }

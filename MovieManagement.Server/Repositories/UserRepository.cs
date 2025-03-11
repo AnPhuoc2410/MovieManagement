@@ -1,12 +1,9 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
-using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories.IRepositories;
 using MovieManagement.Server.Services.JwtService;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Repositories
 {
@@ -19,21 +16,15 @@ namespace MovieManagement.Server.Repositories
 
         }
 
-        public async Task<bool> ChangeUserPasswordByEmail(string email, string newPassword)
+        public async Task<bool> ChangeUserPasswordByEmailAsync(string email, string newPassword)
         {
             var user = await _context.Users
                             .Where(user => user.Email == email)
                             .OrderBy(user => user.JoinDate)
                             .LastOrDefaultAsync();
-            if (user == null)
-            {
-                return false;
-            }
-            var passwordHasher = new PasswordHasher<User>();
-            user.Password = passwordHasher.HashPassword(user, user.Password);
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
-            return true;
+            return user!=null;
         }
 
         public Task<List<User>> GetUserByRoleAsync(Role role)
@@ -63,29 +54,24 @@ namespace MovieManagement.Server.Repositories
             return user != null;
         }
 
-        public async Task<User> GetByEmail(string email)
+        public async Task<bool> ResetUserPasswordByUserIdAsync(Guid userId, string currentPassword, string newPassword)
         {
             var user = await _context.Users
-                .Where(u => u.Email == email && u.Status == 1)
-                .FirstOrDefaultAsync();
-
-            return user;
+                            .Where(user => user.UserId == userId)
+                            .OrderBy(user => user.JoinDate)
+                            .LastOrDefaultAsync();
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return user!=null;
         }
 
-        public async Task<User> GetByIdAsync(Guid id)
+        public async Task<User> GetUserByEmailAsync(string email)
         {
-
             var user = await _context.Users
-                .Where(u => u.UserId == id)
-                .FirstOrDefaultAsync();
-            
-            if(user == null)
-            {
-                return null;
-            }
-
+                 .Where(user => user.Email == email)
+                 .OrderBy(user => user.JoinDate)
+                 .LastOrDefaultAsync();
             return user;
-
         }
     }
 }
