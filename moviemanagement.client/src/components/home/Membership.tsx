@@ -1,25 +1,101 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import ScrollFloat from "../shared/ScrollFloat";
 
 const Membership: React.FC = () => {
   const { t } = useTranslation();
+
+  // For debugging - remove after fixing
+  console.log("Current translations:", {
+    title: t("membership.title"),
+    friendTitle: t("membership.friend.title"),
+    friendDesc: t("membership.friend.description"),
+  });
+
+  const membershipData = {
+    friend: {
+      image:
+        "https://api-website.cinestar.com.vn/media/wysiwyg/CMSPage/Member/Desktop519x282_CMember.webp",
+      title: t("membership.friend.title"),
+      description: t("membership.friend.description"),
+      buttonText: t("membership.friend.button"),
+    },
+    vip: {
+      image:
+        "https://th.bing.com/th/id/OIP.CP-HZNN3E_pb7X5HezrMbAHaE1?rs=1&pid=ImgDetMain",
+      title: t("membership.vip.title"),
+      description: t("membership.vip.description"),
+      buttonText: t("membership.vip.button"),
+    },
+  };
+
+  const MembershipCard = ({
+    data,
+    type,
+  }: {
+    data: typeof membershipData.friend | typeof membershipData.vip;
+    type: "friend" | "vip";
+  }) => (
+    <Box
+      sx={{
+        padding: 3,
+        borderRadius: 2,
+        textAlign: "left",
+        maxWidth: 500,
+      }}
+    >
+      <img
+        src={data.image}
+        alt={data.title}
+        style={{ width: "100%", borderRadius: 8 }}
+      />
+      <Typography variant="h4" fontWeight="bold" sx={{ mt: 2 }}>
+        {data.title}
+      </Typography>
+      <Typography variant="body2" sx={{ opacity: 0.8 }}>
+        {data.description}
+      </Typography>
+      <Button
+        variant="contained"
+        color={type === "friend" ? "warning" : "primary"}
+        sx={{
+          backgroundColor: "yellow",
+          color: "black",
+          width: "200px",
+          mt: 2,
+        }}
+      >
+        {data.buttonText}
+      </Button>
+    </Box>
+  );
+
   return (
     <Box
       sx={{
         backgroundImage:
-          "url('https://i.pinimg.com/736x/49/f9/6e/49f96e0d81fcaf0224b434a51d6ff7de.jpg')",
+          "url('https://cinestar.com.vn/_next/image/?url=%2Fassets%2Fimages%2Fbg-cfriends.webp&w=1920&q=75')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         color: "white",
         textAlign: "center",
-        padding: 4,
+        padding: 20,
         width: "100%",
         position: "relative",
       }}
     >
       <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
-        {t("membership")}
+        <ScrollFloat
+          component="div"
+          animationDuration={1}
+          ease="back.inOut(2)"
+          scrollStart="center bottom+=50%"
+          scrollEnd="bottom bottom-=40%"
+          stagger={0.07}
+        >
+          {t("membership.title")}
+        </ScrollFloat>
       </Typography>
 
       <Box
@@ -31,57 +107,8 @@ const Membership: React.FC = () => {
           flexWrap: "wrap",
         }}
       >
-        {/* Friend Card */}
-        <Box
-          sx={{
-            backgroundColor: "#1A1C2A",
-            padding: 3,
-            borderRadius: 2,
-            textAlign: "center",
-            maxWidth: 320,
-          }}
-        >
-          <img
-            src="https://api-website.cinestar.com.vn/media/wysiwyg/CMSPage/Member/Desktop519x282_CMember.webp"
-            alt="Friend"
-            style={{ width: "100%", borderRadius: 8 }}
-          />
-          <Typography variant="h6" fontWeight="bold" sx={{ mt: 2 }}>
-            THÀNH VIÊN FRIEND
-          </Typography>
-          <Typography variant="body2" sx={{ opacity: 0.8 }}>
-            Thẻ Friend nhiều ưu đãi cho thành viên mới
-          </Typography>
-          <Button variant="contained" color="warning" sx={{ mt: 2 }}>
-            TÌM HIỂU NGAY
-          </Button>
-        </Box>
-
-        {/* VIP Card */}
-        <Box
-          sx={{
-            backgroundColor: "#1A1C2A",
-            padding: 3,
-            borderRadius: 2,
-            textAlign: "center",
-            maxWidth: 320,
-          }}
-        >
-          <img
-            src="https://th.bing.com/th/id/OIP.CP-HZNN3E_pb7X5HezrMbAHaE1?rs=1&pid=ImgDetMain"
-            alt="VIP"
-            style={{ width: "100%", borderRadius: 8 }}
-          />
-          <Typography variant="h6" fontWeight="bold" sx={{ mt: 2 }}>
-            THÀNH VIÊN VIP
-          </Typography>
-          <Typography variant="body2" sx={{ opacity: 0.8 }}>
-            Thẻ VIP mang đến sự ưu đãi độc quyền
-          </Typography>
-          <Button variant="contained" color="warning" sx={{ mt: 2 }}>
-            TÌM HIỂU NGAY
-          </Button>
-        </Box>
+        <MembershipCard data={membershipData.friend} type="friend" />
+        <MembershipCard data={membershipData.vip} type="vip" />
       </Box>
     </Box>
   );

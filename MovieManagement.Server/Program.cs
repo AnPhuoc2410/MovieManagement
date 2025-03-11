@@ -1,14 +1,19 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Services.AuthorizationService;
 using MovieManagement.Server.Services.JwtService;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MovieManagement.Server
 {
@@ -47,10 +52,9 @@ namespace MovieManagement.Server
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "0"));
-                options.AddPolicy("Manager", policy => policy.RequireClaim("Role", "1"));
-                options.AddPolicy("Employee", policy => policy.RequireClaim("Role", "2"));
-                options.AddPolicy("Customer", policy => policy.RequireClaim("Role", "3"));
+                options.AddPolicy("Member", policy => policy.RequireClaim("Role", "0"));
+                options.AddPolicy("Employee", policy => policy.RequireClaim("Role", "1"));
+                options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "2"));
             });
 
             // Đăng ký JwtService
@@ -59,31 +63,21 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("LaazyConnection"))
             );
-
-
-            // su dung Postgres option
-            //builder.Services.AddDbContext<AppDbContext>(options =>
-            //{
-            //    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"),
-            //        npgsqlOptionsAction: sqlOptions =>
-            //        {
-            //            sqlOptions.EnableRetryOnFailure(
-            //                maxRetryCount: 5,
-            //                maxRetryDelay: TimeSpan.FromSeconds(30),
-            //                errorCodesToAdd: null);
-
-            //            // Add this line to ensure UTC timestamps
-            //            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-            //        });
-            //});
 
             // Đăng ký UnitOfWork
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Đăng Ký GenericRepository, Repository và Service
             builder.Services.AddAllDependencies("Repository", "Service", "UnitOfWork");
+
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
 
             // Đăng ký AutoMapper
             builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
@@ -142,23 +136,11 @@ namespace MovieManagement.Server
                 c.IncludeXmlComments(xmlPath);
             });
 
+            // Register the password hasher
+            builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
-
-
-            //builder.Services.AddDbContext<AppDbContext>(options =>
-            //{
-            //    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"),
-            //        npgsqlOptionsAction: sqlOptions =>
-            //        {
-            //            sqlOptions.EnableRetryOnFailure(
-            //                maxRetryCount: 5,
-            //                maxRetryDelay: TimeSpan.FromSeconds(30),
-            //                errorCodesToAdd: null);
-
-            //            // Add this line to ensure UTC timestamps
-            //            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-            //        });
-            //});
+            //Enable role based and policy based authorization
+            builder.Services.AddAuthorization();
 
 
             builder.Services.AddAuthentication(options =>
@@ -202,6 +184,13 @@ namespace MovieManagement.Server
             app.UseWebSockets();
             app.UseRouting();
 
+
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

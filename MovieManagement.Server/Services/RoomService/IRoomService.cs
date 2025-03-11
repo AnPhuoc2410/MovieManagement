@@ -14,5 +14,7 @@ namespace MovieManagement.Server.Services.RoomService
         Task<RoomDto> UpdateRoomAsync(Guid roomId, RoomDto room);
         Task<bool> DeleteRoomAsync(Guid roomId);
 
+        Task<RoomResponseModel> GetRoomInfo(Guid roomId);
+
     }
 }

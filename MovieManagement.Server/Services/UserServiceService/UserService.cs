@@ -8,6 +8,7 @@ using MovieManagement.Server.Models.Entities;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Data;
 using System.Drawing;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Exceptions;
@@ -21,11 +22,13 @@ namespace MovieManagement.Server.Services.UserService
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IJwtService _jwtService;
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IJwtService jwtService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _jwtService = jwtService;
         }
 
         public async Task<bool> ChangeUserPasswordByUserId(Guid userId, string currentPassword, string newPassword)
@@ -90,6 +93,9 @@ namespace MovieManagement.Server.Services.UserService
         {
             try
             {
+
+                if(user.Role == Role.Admin) throw new Exception("Admin cannot be created by this method.");
+
                 var newUser = _mapper.Map<User>(user);
                 var passwordHasher = new PasswordHasher<User>();
                 newUser.Password = passwordHasher.HashPassword(newUser, user.Password);
@@ -97,7 +103,7 @@ namespace MovieManagement.Server.Services.UserService
                 var createdUser = await _unitOfWork.UserRepository.CreateAsync(newUser);
                 if (createdUser == null)
                     throw new Exception("Failed to create user.");
-                return _mapper.Map<UserDto>(createdUser);
+                return _mapper.Map<UserDto.UserResponse>(createdUser);
             }
             catch (Exception ex)
             {
@@ -121,14 +127,30 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<IEnumerable<UserResponse>> GetAllUsersAsync()
+        public async Task<UserDto.UserResponse> ExtractTokenAsync(string token)
+        {
+
+            var jwtToken = _jwtService.ReadTokenWithoutValidation(token);
+            if(jwtToken == null)
+                throw new Exception("Invalid token");
+            
+            var userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(Guid.Parse(userId));
+            if (user == null)
+                throw new NotFoundException("User not found!");
+            
+            return _mapper.Map<UserDto.UserResponse>(user);
+
+        }
+
+        public async Task<IEnumerable<UserDto.UserResponse>> GetAllUsersAsync()
         {
             try
             {
                 var users = await _unitOfWork.UserRepository.GetAllAsync();
                 if (users == null)
                     throw new NotFoundException("No users found!");
-                return _mapper.Map<List<UserResponse>>(users);
+                return _mapper.Map<List<UserDto.UserResponse>>(users);
             }
             catch (Exception ex)
             {
@@ -136,14 +158,14 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<UserDto> GetUserByIdAsync(Guid id)
+        public async Task<UserDto.UserResponse> GetUserByIdAsync(Guid id)
         {
             try
             {
                 var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
                 if (user == null)
                     throw new NotFoundException("User not found!");
-                return _mapper.Map<UserDto>(user);
+                return _mapper.Map<UserDto.UserResponse>(user);
             }
             catch (Exception ex)
             {
@@ -151,14 +173,30 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<IEnumerable<UserDto>> GetUserPageAsync(int page, int pageSize)
+        public async Task<List<UserDto.UserResponse>> GetUserByRoleAsync(Role role)
+        {
+            try
+            {
+                var usersList = await _unitOfWork.UserRepository.GetUserByRoleAsync(role);
+                if (usersList == null)
+                    throw new NotFoundException("Users not found!");
+
+                return _mapper.Map<List<UserDto.UserResponse>>(usersList);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error:", ex);
+            }
+        }
+
+        public async Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page, int pageSize)
         {
             try
             {
                 var users = await _unitOfWork.UserRepository.GetPageAsync(page, pageSize);
                 if (users == null)
                     throw new NotFoundException("Users not found!");
-                return _mapper.Map<List<UserDto>>(users);
+                return _mapper.Map<List<UserDto.UserResponse>>(users);
             }
             catch (Exception ex)
             {
@@ -166,7 +204,7 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<UserResponse> UpdateUserAsync(Guid id, UserDto userDto)
+        public async Task<UserDto.UserResponse> UpdateUserAsync(Guid id, UserDto.UserRequest userDto)
         {
             try
             {
@@ -190,7 +228,7 @@ namespace MovieManagement.Server.Services.UserService
                 var updatedUser = await _unitOfWork.UserRepository.UpdateAsync(existingUser);
                 if (updatedUser == null)
                     throw new DbUpdateException("Fail to update user.");
-                return _mapper.Map<UserResponse>(updatedUser);
+                return _mapper.Map<UserDto.UserResponse>(updatedUser);
             }
             catch (Exception ex)
             {

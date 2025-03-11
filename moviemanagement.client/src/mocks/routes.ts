@@ -130,16 +130,45 @@ export const handleGetThanhVien = () => {
         Email: "user2@example.com",
         SoDienThoai: "234-567-8901",
         DiaChi: "234 Maple Ave",
-      },
-      {
-        MaNhanVien: "3",
-        TenNhanVien: "user3",
-        SoCMND: "345678901",
-        Email: "user3@example.com",
-        SoDienThoai: "345-678-9012",
-        DiaChi: "345 Oak St",
+        HinhAnh:
+          "https://images.unsplash.com/photo-1736784287983-49e7bf277eb9?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       },
     ]);
+  });
+};
+
+export const handleGetThanhVienDetail = (id: string) => {
+  return http.get(`/api/thanh-vien/${id}`, () => {
+    switch (id) {
+      case "1":
+        return HttpResponse.json({
+          MaNhanVien: "1",
+          TenNhanVien: "John Doe",
+          SoCMND: "123456789",
+          Email: "john@example.com",
+          SoDienThoai: "0123456789",
+          DiaChi: "123 Street",
+          HinhAnh:
+            "https://images.unsplash.com/photo-1736784287983-49e7bf277eb9?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          TaiKhoan: "johndoe",
+          MatKhau: "password",
+          NgaySinh: "1990-01-01",
+          GioiTinh: "Male",
+        });
+      case "2":
+        return HttpResponse.json({
+          MaNhanVien: "2",
+          TenNhanVien: "user2",
+          SoCMND: "234567890",
+          Email: "user2@example.com",
+          SoDienThoai: "234-567-8901",
+          DiaChi: "234 Maple Ave",
+          HinhAnh:
+            "https://images.unsplash.com/photo-1736784287983-49e7bf277eb9?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        });
+      default:
+        return HttpResponse.error();
+    }
   });
 };
 
@@ -167,16 +196,45 @@ export const handleGetNhanVien = () => {
         Email: "user2@example.com",
         SoDienThoai: "234-567-8901",
         DiaChi: "234 Maple Ave",
-      },
-      {
-        MaNhanVien: "3",
-        TenNhanVien: "user3",
-        SoCMND: "345678901",
-        Email: "user3@example.com",
-        SoDienThoai: "345-678-9012",
-        DiaChi: "345 Oak St",
+        HinhAnh:
+          "https://images.unsplash.com/photo-1736784287983-49e7bf277eb9?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       },
     ]);
+  });
+};
+
+export const handleGetNhanVienDetail = (id: string) => {
+  return http.get(`/api/nhan-vien/${id}`, () => {
+    switch (id) {
+      case "1":
+        return HttpResponse.json<Employee>({
+          MaNhanVien: "1",
+          TenNhanVien: "John Doe",
+          SoCMND: "123456789",
+          Email: "john@example.com",
+          SoDienThoai: "0123456789",
+          DiaChi: "123 Street",
+          HinhAnh:
+            "https://images.unsplash.com/photo-1736784287983-49e7bf277eb9?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          TaiKhoan: "johndoe",
+          MatKhau: "password",
+          NgaySinh: "1990-01-01",
+          GioiTinh: "Male",
+        });
+      case "2":
+        return HttpResponse.json<Employee>({
+          MaNhanVien: "2",
+          TenNhanVien: "user2",
+          SoCMND: "234567890",
+          Email: "user2@example.com",
+          SoDienThoai: "234-567-8901",
+          DiaChi: "234 Maple Ave",
+          HinhAnh:
+            "https://images.unsplash.com/photo-1736784287983-49e7bf277eb9?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        });
+      default:
+        return HttpResponse.error();
+    }
   });
 };
 

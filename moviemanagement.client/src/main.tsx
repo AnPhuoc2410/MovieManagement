@@ -7,7 +7,7 @@ import { I18nextProvider } from "react-i18next";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
-import i18n from "./constants/i18n.ts";
+import i18n from "./i18n";
 import { AuthProvider } from "./contexts/AuthContext.tsx";
 import "./index.scss";
 import { worker } from "./mocks/browser";

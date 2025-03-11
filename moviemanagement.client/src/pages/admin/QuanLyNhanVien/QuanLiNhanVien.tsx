@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "react-query";
+import { useNavigate } from "react-router";
 import { fetchNhanVien } from "../../../apis/mock.apis";
-import LoadingSpinner from "../../../components/LoadingSpinner";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import EmployeeTable, { Employee } from "./BangNhanVien";
-import ChinhSuaNhanVien from "./ChinhSuaNhanVien";
 import XoaNhanVien from "./XoaNhanVien";
+import Loader from "../../../components/shared/Loading";
 
 const QuanLiNhanVien: React.FC = () => {
   const {
@@ -14,18 +14,17 @@ const QuanLiNhanVien: React.FC = () => {
     error,
   } = useQuery<Employee[]>("NhanVienData", fetchNhanVien);
 
+  const navigate = useNavigate();
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null,
   );
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleEdit = (id: string) => {
     console.log("Handling edit for ID:", id);
     const employee = danhSachNhanVien.find((emp) => emp.MaNhanVien === id);
     if (employee) {
-      setSelectedEmployee(employee);
-      setIsEditDialogOpen(true);
+      navigate(`/admin/ql-nhan-vien/${id}`);
     }
   };
 
@@ -47,7 +46,7 @@ const QuanLiNhanVien: React.FC = () => {
     setSelectedEmployee(null);
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <div>Failed to fetch data</div>;
 
   return (
@@ -56,15 +55,6 @@ const QuanLiNhanVien: React.FC = () => {
         employees={danhSachNhanVien}
         onEdit={handleEdit}
         onDelete={handleDelete}
-      />
-
-      <ChinhSuaNhanVien
-        isDialogOpen={isEditDialogOpen}
-        handleCloseDialog={() => {
-          setIsEditDialogOpen(false);
-          setSelectedEmployee(null);
-        }}
-        employeeData={selectedEmployee}
       />
 
       <XoaNhanVien

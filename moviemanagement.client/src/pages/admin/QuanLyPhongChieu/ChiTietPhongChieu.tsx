@@ -13,7 +13,7 @@ import {
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchRoomDetail } from "../../../apis/mock.apis";
-import LoadingSpinner from "../../../components/LoadingSpinner";
+import Loader from "../../../components/shared/Loading";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 
 const ChiTietPhongChieu = () => {
@@ -37,7 +37,7 @@ const ChiTietPhongChieu = () => {
     );
   }
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
 
   if (!room) {
     return (

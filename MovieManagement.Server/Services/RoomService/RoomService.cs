@@ -73,7 +73,7 @@ namespace MovieManagement.Server.Services.RoomService
             {
                 var newRoom = _mapper.Map<Room>(roomDto);
                 newRoom.RoomId = Guid.NewGuid();
-
+                newRoom.Total = newRoom.Row * newRoom.Column;
                 var createdRoom = await _unitOfWork.RoomRepository.CreateAsync(newRoom);
                 if (createdRoom == null)
                     throw new Exception("Failed to create room.");
@@ -94,6 +94,8 @@ namespace MovieManagement.Server.Services.RoomService
                 if (existingRoom == null)
                     throw new NotFoundException("Room not found!");
 
+                roomDto.Total = roomDto.Row * roomDto.Column;
+                roomDto.RoomId = roomId;
                 _mapper.Map(roomDto, existingRoom);
 
                 var updatedRoom = await _unitOfWork.RoomRepository.UpdateAsync(existingRoom);
@@ -120,6 +122,18 @@ namespace MovieManagement.Server.Services.RoomService
             {
                 throw new Exception("Couldn't access database due to system error.", ex);
             }
+        }
+
+        public async Task<RoomResponseModel> GetRoomInfo(Guid roomId)
+        {
+            var room = await _unitOfWork.RoomRepository.GetRoomInfo(roomId);
+            if (room == null)
+                throw new NotFoundException("Room not found!");
+
+            var response = _mapper.Map<RoomResponseModel>(room);
+
+            return response;
+
         }
 
     }

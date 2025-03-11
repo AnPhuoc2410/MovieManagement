@@ -39,6 +39,16 @@ namespace MovieManagement.Server.Services.ShowTimeService
             newShowTime.StartTime = new DateTime(newShowTime.StartTime.Year, newShowTime.StartTime.Month, newShowTime.StartTime.Day, newShowTime.StartTime.Hour, newShowTime.StartTime.Minute, 0);
             newShowTime.EndTime = newShowTime.StartTime.Add(TimeSpan.FromMinutes(movie.Duration));
 
+            if (newShowTime.StartTime < DateTime.Now)
+            {
+                throw new ApplicationException("Unable to create due to StartTime is in the past.");
+            }
+
+            if (movie.FromDate.Date > newShowTime.StartTime.Date || newShowTime.StartTime.Date > movie.ToDate.Date)
+            {
+                throw new ApplicationException("Unable to create due to StartTime is out of range.");
+            }
+
             var showTimesByRoom = await _unitOfWork.ShowtimeRepository.GetShowTimeByRoomIdAsync(showtime.RoomId);
 
 
@@ -57,11 +67,11 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 throw new ApplicationException("Unable to create due to other StartTime.");
             }
 
-            var createdShowTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.CreateAsync(newShowTime));
+            var createdShowTime = await _unitOfWork.ShowtimeRepository.CreateAsync(newShowTime);
 
 
 
-            return createdShowTime;
+            return _mapper.Map<ShowTimeDto>(createdShowTime);
         }
 
         public async Task<bool> DeleteShowtimeAsync(Guid showTimeId)
@@ -151,22 +161,31 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
         public async Task<Dictionary<DateTime, List<ShowTimeDto>>> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate)
         {
-            try
+            var movie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
+            if (movie == null)
             {
-                var showTimes = await _unitOfWork.ShowtimeRepository.GetShowTimeFromDateToDate(movieId, fromDate, toDate);
-                if (showTimes == null)
-                {
-                    throw new NotFoundException("ShowTime does not found!");
-                }
-                var dictionary = showTimes.GroupBy(st => st.StartTime.Date)
-                    .ToDictionary(g => g.Key, g => _mapper.Map<List<ShowTimeDto>>(g.ToList()));
+                throw new NotFoundException("Movie does not found!");
+            }
 
-                return dictionary;
-            }
-            catch (Exception ex)
+            if (fromDate.Date > toDate.Date)
             {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
+                throw new ApplicationException("Invalid time range.");
             }
+
+            if (movie.FromDate.Date > DateTime.Now.Date)
+            {
+                throw new ApplicationException("This movie schedule can not be leak.");
+            }
+
+            var showTimes = await _unitOfWork.ShowtimeRepository.GetShowTimeFromDateToDate(movieId, fromDate, toDate);
+            if (showTimes == null)
+            {
+                throw new NotFoundException("ShowTime does not found.");
+            }
+            var dictionary = showTimes.GroupBy(st => st.StartTime.Date)
+                .ToDictionary(g => g.Key, g => _mapper.Map<List<ShowTimeDto>>(g.ToList()));
+
+            return dictionary;
         }
 
 

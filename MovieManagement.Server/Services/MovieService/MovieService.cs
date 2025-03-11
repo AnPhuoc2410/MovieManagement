@@ -18,8 +18,6 @@ namespace MovieManagement.Server.Services.MovieService
             _mapper = mapper;
         }
 
-
-
         public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
         {
             try
@@ -76,6 +74,9 @@ namespace MovieManagement.Server.Services.MovieService
             {
                 movieDto.UserId = userId;
                 movieDto.MovieId = Guid.NewGuid();
+                movieDto.PostDate = new DateTime(movieDto.PostDate.Year, movieDto.PostDate.Month, movieDto.PostDate.Day, movieDto.PostDate.Hour, movieDto.PostDate.Minute, 0);
+                movieDto.FromDate = new DateTime(movieDto.FromDate.Year, movieDto.FromDate.Month, movieDto.FromDate.Day, movieDto.FromDate.Hour, movieDto.FromDate.Minute, 0);
+                movieDto.ToDate = new DateTime(movieDto.ToDate.Year, movieDto.ToDate.Month, movieDto.ToDate.Day, movieDto.ToDate.Hour, movieDto.ToDate.Minute, 0);
                 var createdMovie = await _unitOfWork.MovieRepository.CreateAsync(_mapper.Map<Movie>(movieDto));
                 if (createdMovie == null)
                     throw new NotFoundException("Movie cannot found!");

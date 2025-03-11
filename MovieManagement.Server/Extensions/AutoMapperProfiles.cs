@@ -11,7 +11,10 @@ namespace MovieManagement.Server.Extensions
         {
 
             CreateMap<User, UserDto>();
-            CreateMap<UserDto, User>();
+            CreateMap<User, UserDto.UserResponse>();
+            CreateMap<UserDto.CreateUser, User>()
+                .ForMember(dest => dest.Bills, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()));
 
             //List User Response For Admin  
             CreateMap<User, UserResponse>();
@@ -60,6 +63,13 @@ namespace MovieManagement.Server.Extensions
 
             CreateMap<SeatType, SeatTypeResponseModel>();
             CreateMap<SeatTypeResponseModel, SeatType>();
+
+
+            CreateMap<AuthDto.LoginRequest, AuthDto.LoginResponse>();
+            CreateMap<AuthDto.LoginResponse, AuthDto.LoginRequest>();
+
+            CreateMap<AuthDto.RegisterRequest, User>();
+            CreateMap<User, AuthDto.RegisterRequest>();
 
         }
     }

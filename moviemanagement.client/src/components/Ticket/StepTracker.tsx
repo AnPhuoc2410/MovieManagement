@@ -1,28 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Box,
-  Button,
   IconButton,
-  TextField,
   Toolbar,
   Typography,
+  Container,
   Stepper,
   Step,
   StepLabel,
 } from "@mui/material";
 import {
-  AccountCircle as AccountCircleIcon,
-  Search as SearchIcon,
-  ShoppingCart as ShoppingCartIcon,
-  Movie as MovieIcon,
-  EventSeat as EventSeatIcon,
-  Payment as PaymentIcon,
-  CheckCircle as CheckCircleIcon,
+  AccountCircleOutlined as AccountCircleOutlined,
+  MovieOutlined as MovieIcon,
+  EventSeatOutlined as EventSeatIcon,
+  PaymentOutlined as PaymentIcon,
+  CheckCircleOutline as CheckCircleIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "../common/LanguageSelector";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const steps = [
   { label: "Chọn Suất Chiếu", icon: <MovieIcon /> },
@@ -38,78 +36,126 @@ interface StepTrackerProps {
 const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const offset = window.scrollY;
+      if (offset > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <AppBar
       position="fixed"
-      sx={{ backgroundColor: "rgb(47, 39, 39)", padding: 1 }}
+      sx={{
+        backgroundColor: scrolled ? "rgba(0, 0, 0, 0.8)" : "transparent",
+        backdropFilter: scrolled ? "blur(8px)" : "none",
+        boxShadow: scrolled ? 2 : "none",
+        transition: "all 0.3s ease-in-out",
+        padding: { xs: 2, sm: 2.5, md: 3 },
+        margin: 0,
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1100,
+      }}
     >
-      <Toolbar
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        {/* Logo */}
-        <Box
+      <Container maxWidth="xl">
+        <Toolbar
+          disableGutters
           sx={{
             display: "flex",
-            mt: "calc(var(--template-frame-height, 0px) + 4px)",
-            justifyContent: "center",
+            justifyContent: "space-between",
             alignItems: "center",
-            gap: 2,
-            p: 1.5,
+            minHeight: { xs: "56px", sm: "64px", md: "72px" },
+            padding: 0,
+            margin: 0,
           }}
         >
+          {/* Logo */}
           <Box
-            component="img"
-            src="/favicon/apple-touch-icon.png"
-            alt="Eiga Logo"
-            sx={{ height: 50, cursor: "pointer" }}
-            onClick={() =>
-              setTimeout(() => {
-                navigate("/");
-              }, 1000)
-            }
-          />
-          <Typography variant="h6">Eiga Management</Typography>
-        </Box>
-        <Stepper
-          activeStep={currentStep - 1}
-          alternativeLabel
-          sx={{
-            flexGrow: 1,
-            alignItems: "center",
-            maxWidth: "75%",
-            "& .MuiStepLabel-label": { color: "gray" },
-            "& .MuiStepLabel-label.Mui-active": { color: "white !important" },
-            "& .MuiStepLabel-label.Mui-completed": {
-              color: "white !important",
-            },
-          }}
-        >
-          {steps.map((step, index) => (
-            <Step key={index}>
-              <StepLabel
-                StepIconComponent={() => (
-                  <Box sx={{ color: index < currentStep ? "#834bff" : "gray" }}>
-                    {step.icon}
-                  </Box>
-                )}
-              >
-                {step.label}
-              </StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-        <IconButton color="inherit" onClick={() => navigate("/auth")}>
-          <AccountCircleIcon />
-          <Typography>{t("login")}</Typography>
-        </IconButton>
+            onClick={() => navigate("/")}
+            sx={{
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <img
+              src="https://www.cinestar.com.vn/pictures/moi/9Logo/white-2018.png"
+              alt="Logo"
+              style={{
+                height: "40px",
+                objectFit: "contain",
+              }}
+            />
+          </Box>
+          <Stepper
+            activeStep={currentStep - 1}
+            alternativeLabel
+            sx={{
+              flexGrow: 1,
+              alignItems: "center",
+              maxWidth: "75%",
+              "& .MuiStepLabel-label": { color: "gray" },
+              "& .MuiStepLabel-label.Mui-active": { color: "white !important" },
+              "& .MuiStepLabel-label.Mui-completed": {
+                color: "white !important",
+              },
+            }}
+          >
+            {steps.map((step, index) => (
+              <Step key={index}>
+                <StepLabel
+                  StepIconComponent={() => (
+                    <Box
+                      sx={{ color: index < currentStep ? "#834bff" : "gray" }}
+                    >
+                      {step.icon}
+                    </Box>
+                  )}
+                >
+                  {step.label}
+                </StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+          <IconButton
+            sx={{
+              display: { xs: "flex", md: "none" },
+              color: "white",
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
 
-        <LanguageSelector />
-      </Toolbar>
+          {/* Login Button */}
+          <IconButton
+            color="inherit"
+            sx={{
+              display: { xs: "none", md: "flex" },
+              gap: 1,
+            }}
+            onClick={() => navigate("/auth/login")}
+          >
+            <AccountCircleOutlined />
+            <Typography>{t("login")}</Typography>
+          </IconButton>
+
+          {/* Language Selector */}
+          <LanguageSelector />
+        </Toolbar>
+      </Container>
     </AppBar>
   );
 };

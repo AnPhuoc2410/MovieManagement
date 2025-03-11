@@ -5,7 +5,7 @@ namespace MovieManagement.Server.Repositories.IRepositories
     public interface IShowtimeRepository : IGenericRepository<ShowTime>
     {
         Task<bool> CheckStartTimeAsync(DateTime startTime);
-        public Task<List<ShowTime>> GetShowTimeByRoomIdAsync(Guid roomId);
+        Task<List<ShowTime>> GetShowTimeByRoomIdAsync(Guid roomId);
         Task<List<ShowTime>> GetShowTimeFromDateToDate(Guid movieId, DateTime date1, DateTime date2);
     }
 }

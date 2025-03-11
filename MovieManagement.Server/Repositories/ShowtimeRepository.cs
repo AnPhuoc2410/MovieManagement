@@ -36,6 +36,7 @@ namespace MovieManagement.Server.Repositories
         {
             var showTimes = await _context.Showtimes
                 .Where(st => st.MovieId == movieId && st.StartTime.Date >= date1.Date && st.StartTime.Date <= date2.Date)
+                .OrderBy(st => st.StartTime)
                 .ToListAsync();
             return showTimes;
         }

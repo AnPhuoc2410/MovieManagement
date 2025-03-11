@@ -10,6 +10,10 @@ import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
 import MenuButton from "./MenuButton";
 import MenuContent from "./MenuContent";
 import CardAlert from "./CardAlert";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface SideMenuMobileProps {
   open: boolean | undefined;
@@ -20,6 +24,17 @@ export default function SideMenuMobile({
   open,
   toggleDrawer,
 }: SideMenuMobileProps) {
+  const navigate = useNavigate();
+  const { authLogout } = useAuth();
+  const { t } = useTranslation();
+
+  const handleLogout = async () => {
+    await authLogout();
+    toast.success("Đăng xuất thành công", { removeDelay: 2500 });
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
+  };
   return (
     <Drawer
       anchor="right"
@@ -68,9 +83,10 @@ export default function SideMenuMobile({
           <Button
             variant="outlined"
             fullWidth
+            onClick={handleLogout}
             startIcon={<LogoutRoundedIcon />}
           >
-            Logout
+            {t("auth.logout.title")}
           </Button>
         </Stack>
       </Stack>

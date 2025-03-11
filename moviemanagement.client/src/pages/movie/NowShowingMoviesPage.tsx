@@ -159,7 +159,7 @@ const NowShowingMoviesPage: React.FC = () => {
                   width: "100%",
                   maxHeight: "400px",
                   objectFit: "initial",
-                  borderRadius: "10px",
+                  borderRadius: "5px",
                 }}
               />
             </SwiperSlide>

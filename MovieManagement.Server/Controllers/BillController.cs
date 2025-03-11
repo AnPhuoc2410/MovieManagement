@@ -21,31 +21,33 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet("all")]
-        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GetAllBills()
         {
             try
             {
+                var response = new ApiResponse<IEnumerable<BillDto>>();
                 var bills = await _billService.GetAllBillsAsync();
                 if (bills == null)
                 {
-                    var response = new ApiResponseServices<IEnumerable<BillDto>>
-                    {
-                        StatusCode = 404,
-                        Message = "Bill not found",
-                        IsSuccess = false
-                    };
+                    response.StatusCode = 404;
+                    response.Message = "Bill not found";
+                    response.IsSuccess = false;
                     return NotFound(response);
                 }
-                return Ok(bills);
+                response.StatusCode = 200;
+                response.Message = "Get all bills successfully";
+                response.IsSuccess = true;
+                response.Data = bills;
+                return Ok(response);
             }
             catch (BadRequestException ex)
             {
-                var response = new ApiResponseServices<IEnumerable<BillDto>>
+                var response = new ApiResponse<IEnumerable<BillDto>>
                 {
                     StatusCode = 400,
                     Message = "Bad request from client side",
@@ -56,7 +58,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 401,
                     Message = "Unauthorized Access",
@@ -67,7 +69,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (Exception ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
                     Message = "An error occurred while creating show time",
@@ -78,11 +80,11 @@ namespace MovieManagement.Server.Controllers
             }
         }
         [HttpGet("page/{page:int}/pagesize{pageSize:int}")]
-        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GetBillPages(int page, int pageSize)
         {
             try
@@ -90,7 +92,7 @@ namespace MovieManagement.Server.Controllers
                 var bills = await _billService.GetBillPageAsync(page, pageSize);
                 if (bills == null)
                 {
-                    var response = new ApiResponseServices<object>
+                    var response = new ApiResponse<object>
                     {
                         StatusCode = 404,
                         Message = "Bill not found",
@@ -102,7 +104,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (BadRequestException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = "Bad request from client side",
@@ -113,7 +115,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 401,
                     Message = "Unauthorized Access",
@@ -124,7 +126,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (Exception ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
                     Message = "An error occurred while retrieving movie",
@@ -137,11 +139,11 @@ namespace MovieManagement.Server.Controllers
 
         [HttpGet]
         [Route("{billId:guid}")]
-        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<BillDto>> GetBillById(Guid billId)
         {
             try
@@ -149,7 +151,7 @@ namespace MovieManagement.Server.Controllers
                 var bill = await _billService.GetBillByIdAsync(billId);
                 if (bill == null)
                 {
-                    var response = new ApiResponseServices<object>
+                    var response = new ApiResponse<object>
                     {
                         StatusCode = 404,
                         Message = "Bill not found",
@@ -161,7 +163,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (BadRequestException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = "Bad request from client side",
@@ -172,7 +174,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 401,
                     Message = "Unauthorized Access",
@@ -183,7 +185,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (Exception ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
                     Message = "An error occurred while retrieving movie",
@@ -194,11 +196,11 @@ namespace MovieManagement.Server.Controllers
             }
         }
         [HttpGet("user/{userId:guid}")]
-        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetPurchasedTickets(Guid userId)
         {
             try
@@ -206,7 +208,7 @@ namespace MovieManagement.Server.Controllers
                 var purchasedTickets = await _billService.GetPurchasedTicketsAsync(userId);
                 if (purchasedTickets == null)
                 {
-                    var response = new ApiResponseServices<object>
+                    var response = new ApiResponse<object>
                     {
                         StatusCode = 404,
                         Message = "Bad request from client side",
@@ -218,7 +220,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (BadRequestException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = "Bad request from client side",
@@ -229,7 +231,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 401,
                     Message = "Unauthorized Access",
@@ -240,7 +242,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (Exception ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
                     Message = "An error occurred while creating Bill",
@@ -252,11 +254,11 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<BillDto>> CreateBill(Guid userId, [FromBody] BillDto billDto)
         {
             try
@@ -264,7 +266,7 @@ namespace MovieManagement.Server.Controllers
                 var newBill = await _billService.CreateBillAsync(userId, billDto);
                 if (newBill == null)
                 {
-                    var response = new ApiResponseServices<object>
+                    var response = new ApiResponse<object>
                     {
                         StatusCode = 404,
                         Message = "Bad request from client side",
@@ -276,7 +278,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (BadRequestException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = "Bad request from client side",
@@ -287,7 +289,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 401,
                     Message = "Unauthorized Access",
@@ -298,7 +300,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (Exception ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
                     Message = "An error occurred while creating Bill",
@@ -312,11 +314,11 @@ namespace MovieManagement.Server.Controllers
 
         [HttpPut]
         [Route("{billId:guid}")]
-        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<BillDto>> UpdateBill(Guid billId, [FromBody] BillDto billDto)
         {
             try
@@ -324,7 +326,7 @@ namespace MovieManagement.Server.Controllers
                 var updated = await _billService.UpdateBillAsync(billId, billDto);
                 if (updated == null)
                 {
-                    var response = new ApiResponseServices<object>
+                    var response = new ApiResponse<object>
                     {
                         StatusCode = 404,
                         Message = "Bill not found",
@@ -336,7 +338,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (BadRequestException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = "Bad request from client side",
@@ -347,7 +349,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 401,
                     Message = "Unauthorized Access",
@@ -358,7 +360,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (Exception ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
                     Message = "An error occurred while updating bill",
@@ -372,11 +374,11 @@ namespace MovieManagement.Server.Controllers
 
         [HttpDelete]
         [Route("{billId:guid}")]
-        [ProducesResponseType(typeof(ApiResponseServices<BillDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponseServices<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteBill(Guid billId)
         {
             try
@@ -384,7 +386,7 @@ namespace MovieManagement.Server.Controllers
                 bool isDeleted = await _billService.DeleteBillAsync(billId);
                 if (!isDeleted)
                 {
-                    var response = new ApiResponseServices<object>
+                    var response = new ApiResponse<object>
                     {
                         StatusCode = 404,
                         Message = "Bill not found",
@@ -396,7 +398,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (BadRequestException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = "Bad request from client side",
@@ -407,7 +409,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 401,
                     Message = "Unauthorized Access",
@@ -418,7 +420,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (Exception ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 500,
                     Message = "An error occurred while updating bill",

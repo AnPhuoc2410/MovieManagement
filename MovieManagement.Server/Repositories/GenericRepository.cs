@@ -113,5 +113,36 @@ namespace MovieManagement.Server.Repositories
             return true;
         }
 
+
+        #region Separating asigned entities and save operators        
+
+        public void PrepareCreate(T entity)
+        {
+            _context.Add(entity);
+        }
+
+        public void PrepareUpdate(T entity)
+        {
+            var tracker = _context.Attach(entity);
+            tracker.State = EntityState.Modified;
+        }
+
+        public void PrepareRemove(T entity)
+        {
+            _context.Remove(entity);
+        }
+
+        public int Save()
+        {
+            return _context.SaveChanges();
+        }
+
+        public async Task<int> SaveAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
+        #endregion Separating asign entity and save operators
+
     }
 }

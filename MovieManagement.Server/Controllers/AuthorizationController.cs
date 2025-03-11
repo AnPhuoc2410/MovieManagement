@@ -6,6 +6,7 @@ using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.EmailService;
 using MovieManagement.Server.Services.UserService;
 using System.Threading.Tasks;
+using MovieManagement.Server.Services.UserService;
 
 namespace MovieManagement.Server.Controllers
 {
@@ -14,9 +15,12 @@ namespace MovieManagement.Server.Controllers
     public class AuthorizationController : Controller
     {
         private readonly IEmailService _emailService;
-        public AuthorizationController(IEmailService emailService)
+        private readonly IUserService _userService;
+        public AuthorizationController(IEmailService emailService
+            , IUserService userService)
         {
             _emailService = emailService;
+            _userService = userService;
         }
 
         [HttpPost("OTP/Send")]
@@ -41,7 +45,7 @@ namespace MovieManagement.Server.Controllers
                 }
                 else
                 {
-                    var response = new ApiResponseServices<IEnumerable<OtpCodeDto>>
+                    var response = new ApiResponse<IEnumerable<OtpCodeDto>>
                     {
                         StatusCode = 404,
                         Message = "User not found",
@@ -67,7 +71,7 @@ namespace MovieManagement.Server.Controllers
                 bool isValid = await _emailService.ValidationOtp(request.Email, request.NewPassword, request.Code);
                 if (!isValid)
                 {
-                    var response = new ApiResponseServices<IEnumerable<OtpCodeDto>>
+                    var response = new ApiResponse<IEnumerable<OtpCodeDto>>
                     {
                         StatusCode = 404,
                         Message = "Otp not found",
@@ -87,7 +91,7 @@ namespace MovieManagement.Server.Controllers
             }
             catch (BadRequestException ex)
             {
-                var response = new ApiResponseServices<object>
+                var response = new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = "Bad request from client side",
@@ -101,5 +105,8 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        
+        
+        
     }
 }

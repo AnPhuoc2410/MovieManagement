@@ -57,5 +57,11 @@
         Task<bool> DeleteAsync(Guid id);
         Task<bool> DeleteAsync(T Entity);
         Task<bool> DeleteComposeAsync(Guid id, Guid id2);
+
+        void PrepareCreate(T entity);
+        void PrepareUpdate(T entity);
+        void PrepareRemove(T entity);
+        int Save();
+        Task<int> SaveAsync();
     }
 }

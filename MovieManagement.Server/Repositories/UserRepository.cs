@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
+using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories.IRepositories;
+using MovieManagement.Server.Services.JwtService;
 
 namespace MovieManagement.Server.Repositories
 {
@@ -13,6 +16,7 @@ namespace MovieManagement.Server.Repositories
         public UserRepository(AppDbContext context) : base(context)
         {
             _context = context;
+
         }
 
         public async Task<bool> ChangeUserPasswordByEmailAsync(string email, string newPassword)
@@ -24,6 +28,16 @@ namespace MovieManagement.Server.Repositories
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
             return user!=null;
+        }
+
+        public Task<List<User>> GetUserByRoleAsync(Role role)
+        {
+
+            var users = _context.Users
+                        .Where(user => user.Role == role)
+                        .ToListAsync();
+
+            return users;
         }
 
         public async Task<bool> IsExistingEmailAsync(string email)

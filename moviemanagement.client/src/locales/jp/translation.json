@@ -1,14 +1,140 @@
 {
   "translation": {
-    "search": "映画を検索する...",
+    "search": "映画を検索する, 映画館...",
+    "view_trailer": "予告編を見る",
     "book_ticket": "チケットを予約する",
     "book_snacks": "スナックを予約する",
     "login": "ログイン",
     "see_more": "もっと見る",
     "now_showing": "上映中",
     "upcoming": "近日公開",
-    "membership": "メンバーシップ",
     "promotions": "プロモーション",
-    "list_promotions": "もっと見るプロモーション"
+    "list_promotions": "もっと見るプロモーション",
+    "quick_booking": "クイック予約",
+    "book_now": "今すぐ予約",
+    "select_theater": "劇場を選択",
+    "select_movie": "映画を選択",
+    "select_date": "日付を選択",
+    "select_show_time": "上映時間を選択",
+    "select_theater1": "Hai Ba Trung 劇場 (ホーチミン市)",
+    "select_theater2": "学生劇場 (ホーチミン市)",
+    "select_theater3": "My Tho 劇場 (ビンズン省)",
+    "select_theater4": "Kien Giang 劇場 (Rach Soi)",
+    "select_theater5": "Lam Dong 劇場 (Duc Trong)",
+    "select_theater6": "Da Lat 劇場 (Da Lat City)",
+    "footer": {
+      "slogan": "幸せに、スターに",
+      "book_ticket": "チケット予約",
+      "book_snacks": "スナック予約",
+      "social_media": "ソーシャルメディア",
+      "language": "言語",
+      "account": {
+        "title": "アカウント",
+        "login": "ログイン",
+        "register": "登録",
+        "membership": "メンバーシップ"
+      },
+      "movies": {
+        "title": "映画",
+        "now_showing": "上映中",
+        "coming_soon": "近日公開",
+        "special_screening": "特別上映"
+      },
+      "theaters": {
+        "title": "劇場一覧",
+        "all_theaters": "全ての劇場",
+        "quoc_thanh": "クオックタイン劇場",
+        "hai_ba_trung": "ハイバーチュン劇場",
+        "binh_duong": "ビンズオン劇場",
+        "da_lat": "ダラット劇場"
+      },
+      "legal": {
+        "title": "法的情報",
+        "terms": "利用規約",
+        "privacy": "プライバシーポリシー",
+        "faq": "よくある質問",
+        "about_us": "会社概要",
+        "contact": "お問い合わせ"
+      },
+      "copyright": "© 2025 EIGA. 全著作権所有。",
+      "address": "S10.06 Origami, Vinhomes Grandpark"
+    },
+    "auth": {
+      "login": {
+        "title": "ログイン",
+        "username": "ユーザー名",
+        "password": "パスワード",
+        "forgot_password": "パスワードをお忘れですか？",
+        "login_button": "ログイン",
+        "processing": "処理中...",
+        "welcome": "お帰りなさい",
+        "subtitle": "続行するには資格情報を入力してください",
+        "no_account": "アカウントをお持ちでない方",
+        "signup_link": "新規登録",
+        "validation": {
+          "username_required": "ユーザー名を入力してください",
+          "password_required": "パスワードを入力してください",
+          "password_length": "パスワードは8文字以上である必要があります"
+        },
+        "remember_me": "ログイン情報を保存"
+      },
+      "signup": {
+        "title": "新規登録",
+        "steps": {
+          "account": "アカウント情報",
+          "personal": "個人情報",
+          "contact": "連絡先情報"
+        },
+        "fields": {
+          "username": "ユーザー名",
+          "password": "パスワード",
+          "fullname": "氏名",
+          "dob": "生年月日",
+          "gender": "性別",
+          "male": "男性",
+          "female": "女性",
+          "id_card": "身分証明書",
+          "email": "メールアドレス",
+          "address": "住所",
+          "phone": "電話番号"
+        },
+        "buttons": {
+          "back": "戻る",
+          "next": "次へ",
+          "signup": "登録",
+          "processing": "処理中..."
+        },
+        "have_account": "すでにアカウントをお持ちの方",
+        "login_link": "ログインする"
+      },
+      "logout": {
+        "title": "ログアウト",
+        "description": "ログアウトしますか？",
+        "cancel": "キャンセル",
+        "confirm": "確認"
+      }
+    },
+    "promotion": {
+      "detail": {
+        "loading": "読み込み中...",
+        "not_found": "プロモーションが見つかりません。",
+        "back": "戻る",
+        "period": "期間",
+        "book_now": "今すぐ予約"
+      }
+    },
+    "membership": {
+      "title": "メンバーシッププログラム",
+      "friend": {
+        "title": "フレンドメンバー",
+        "description": "新規メンバーに多くの特典を提供するフレンドカード",
+        "button": "今すぐ詳細を確認"
+      },
+      "vip": {
+        "title": "VIPメンバー",
+        "description": "独占的な特典を提供するVIPカード",
+        "button": "今すぐ詳細を確認"
+      }
+    }
   }
 }

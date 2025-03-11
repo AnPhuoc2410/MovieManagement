@@ -1,14 +1,140 @@
 {
   "translation": {
-    "search": "Tìm kiếm phim...",
+    "search": "Tìm phim, rạp...",
+    "view_trailer": "Xem Trailer",
     "book_ticket": "Đặt Vé",
     "book_snacks": "Đặt Bắp Nước",
     "login": "Đăng nhập",
     "see_more": "Xem Thêm",
-    "now_showing": "Phim Đang Chiếu",
-    "upcoming": "Phim Sắp Chiếu",
-    "membership": "Thẻ Thành Viên",
-    "promotions": "Khuyến Mãi",
-    "list_promotions": "Xem Thêm Khuyến Mãi"
+    "now_showing": "PHIM ĐANG CHIẾU",
+    "upcoming": "PHIM SẮP CHIẾU",
+    "promotions": "KHUYẾN MÃI",
+    "list_promotions": "TẤT CẢ ƯU ĐÃI",
+    "quick_booking": "ĐẶT VÉ NHANH",
+    "book_now": "ĐẶT NGAY",
+    "select_theater": "Chọn Rạp",
+    "select_movie": "Chọn Phim",
+    "select_date": "Chọn Ngày",
+    "select_show_time": "Chọn Suất",
+    "select_theater1": "Cinestar Hai Bà Trưng (TP.HCM)",
+    "select_theater2": "Cinestar Sinh Viên (TP.HCM)",
+    "select_theater3": "Cinestar Mỹ Tho (Bình Dương)",
+    "select_theater4": "Cinestar Kiên Giang (Rạch Sỏi)",
+    "select_theater5": "Cinestar Lâm Đồng (Đức Trọng)",
+    "select_theater6": "Cinestar Đà Lạt (TP.Đà Lạt)",
+    "footer": {
+      "slogan": "HẠNH PHÚC, TỎA SÁNG",
+      "book_ticket": "ĐẶT VÉ",
+      "book_snacks": "ĐẶT BẮP NƯỚC",
+      "social_media": "MẠNG XÃ HỘI",
+      "language": "Ngôn ngữ",
+      "account": {
+        "title": "TÀI KHOẢN",
+        "login": "Đăng nhập",
+        "register": "Đăng ký",
+        "membership": "Thành viên"
+      },
+      "movies": {
+        "title": "PHIM",
+        "now_showing": "Phim đang chiếu",
+        "coming_soon": "Phim sắp chiếu",
+        "special_screening": "Suất chiếu đặc biệt"
+      },
+      "theaters": {
+        "title": "HỆ THỐNG RẠP",
+        "all_theaters": "Tất cả hệ thống rạp",
+        "quoc_thanh": "Rạp Quốc Thanh",
+        "hai_ba_trung": "Rạp Hai Bà Trưng",
+        "binh_duong": "Rạp Bình Dương",
+        "da_lat": "Rạp Đà Lạt"
+      },
+      "legal": {
+        "title": "PHÁP LÝ",
+        "terms": "Điều khoản dịch vụ",
+        "privacy": "Chính sách bảo mật",
+        "faq": "Câu hỏi thường gặp",
+        "about_us": "Về chúng tôi",
+        "contact": "Liên hệ"
+      },
+      "copyright": "© 2025 EIGA. Bảo lưu mọi quyền.",
+      "address": "S10.06 Origami, Vinhomes Grandpark"
+    },
+    "auth": {
+      "login": {
+        "title": "Đăng nhập",
+        "username": "Tài khoản",
+        "password": "Mật khẩu",
+        "forgot_password": "Quên mật khẩu?",
+        "login_button": "Đăng nhập",
+        "processing": "Đang xử lý...",
+        "no_account": "Chưa có tài khoản?",
+        "signup_link": "Đăng ký ngay",
+        "welcome": "Chào mừng bạn trở lại!",
+        "subtitle": "Đăng nhập để tiếp tục",
+        "validation": {
+          "username_required": "Tài khoản không được để trống",
+          "password_required": "Mật khẩu không được để trống",
+          "password_length": "Mật khẩu phải có ít nhất 8 ký tự"
+        },
+        "remember_me": "Ghi nhớ đăng nhập"
+      },
+      "signup": {
+        "title": "Đăng ký tài khoản",
+        "steps": {
+          "account": "Chi tiết tài khoản",
+          "personal": "Thông tin cá nhân",
+          "contact": "Thông tin liên hệ"
+        },
+        "fields": {
+          "username": "Tài khoản",
+          "password": "Mật khẩu",
+          "fullname": "Họ và tên",
+          "dob": "Ngày sinh",
+          "gender": "Giới tính",
+          "male": "Nam",
+          "female": "Nữ",
+          "id_card": "CMND",
+          "email": "Email",
+          "address": "Địa chỉ",
+          "phone": "Số điện thoại"
+        },
+        "buttons": {
+          "back": "Quay lại",
+          "next": "Tiếp tục",
+          "signup": "Đăng ký",
+          "processing": "Đang xử lý..."
+        },
+        "have_account": "Đã có tài khoản?",
+        "login_link": "Đăng nhập ngay"
+      },
+      "logout": {
+        "title": "Đăng xuất",
+        "description": "Bạn có chắc chắn muốn đăng xuất?",
+        "cancel": "Hủy",
+        "confirm": "Xác nhận"
+      }
+    },
+    "promotion": {
+      "detail": {
+        "loading": "Đang tải...",
+        "not_found": "Không tìm thấy khuyến mãi.",
+        "back": "Quay lại",
+        "period": "Thời gian",
+        "book_now": "Đặt vé ngay"
+      }
+    },
+    "membership": {
+      "title": "CHƯƠNG TRÌNH THÀNH VIÊN",
+      "friend": {
+        "title": "THÀNH VIÊN FRIEND",
+        "description": "Thẻ Friend nhiều ưu đãi cho thành viên mới",
+        "button": "TÌM HIỂU NGAY"
+      },
+      "vip": {
+        "title": "THÀNH VIÊN VIP",
+        "description": "Thẻ VIP mang đến sự ưu đãi độc quyền",
+        "button": "TÌM HIỂU NGAY"
+      }
+    }
   }
 }
