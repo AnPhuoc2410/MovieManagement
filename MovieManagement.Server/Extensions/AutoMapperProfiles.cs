@@ -27,6 +27,9 @@ namespace MovieManagement.Server.Extensions
 
             //Create User By OAuth
             CreateMap<User, OAuthRequest>();
+            CreateMap<OAuthRequest, User>()
+                .ForMember(dest => dest.Password, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()));
 
             CreateMap<Promotion, PromotionDto>();
             CreateMap<PromotionDto, Promotion>();

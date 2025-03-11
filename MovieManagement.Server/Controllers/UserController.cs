@@ -145,17 +145,15 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet("role/{role}")]
-        [ProducesResponseType(typeof(ApiResponse<List<UserDto.UserResponse>>),
-            StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<List<UserDto.UserResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUserByRoleAsync(Role role)
         {
             var users = await _userService.GetUserByRoleAsync(role);
-            if (users == null || users.Count == 0)
+            if (users == null)
             {
                 return NotFound(new ApiResponse<object>
                 {

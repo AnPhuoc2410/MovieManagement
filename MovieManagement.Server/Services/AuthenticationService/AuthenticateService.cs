@@ -36,7 +36,7 @@ namespace MovieManagement.Server.Services.AuthorizationService
         {
 
             //Check user name
-            var user = await _userRepository.GetByEmail(dto.Email);
+            var user = await _userRepository.GetUserByEmailAsync(dto.Email);
             if (user == null)
             {
                 throw new UnauthorizedAccessException("Invalid username/email or password");
@@ -67,7 +67,7 @@ namespace MovieManagement.Server.Services.AuthorizationService
         public async Task<UserDto.UserResponse> Register(AuthDto.RegisterRequest dto)
         {
             // Check if user already exists
-            var existingUser = await _userRepository.GetByEmail(dto.Email);
+            var existingUser = await _userRepository.GetUserByEmailAsync(dto.Email);
             if (existingUser != null)
             {
                 throw new Exception("Username or email already exists.");

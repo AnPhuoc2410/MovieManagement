@@ -5,15 +5,12 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Data;
-using System.Drawing;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Exceptions;
-using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Services.JwtService;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Services.UserService
 {
@@ -74,6 +71,9 @@ namespace MovieManagement.Server.Services.UserService
         {
             try
             {
+                if(await _unitOfWork.UserRepository.IsExistingEmailAsync(account.Email))
+                    throw new Exception("Email already exists.");
+
                 var newUser = _mapper.Map<User>(account);
                 newUser.UserId = Guid.NewGuid();
                 newUser.JoinDate = DateTime.Now;
@@ -89,12 +89,11 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<UserDto> CreateUserAsync(UserDto user)
+        public async Task<UserDto.UserResponse> CreateUserAsync(UserDto.CreateUser user)
         {
             try
             {
-
-                if(user.Role == Role.Admin) throw new Exception("Admin cannot be created by this method.");
+                if (user.Role == Role.Admin) throw new Exception("Admin cannot be created by this method.");
 
                 var newUser = _mapper.Map<User>(user);
                 var passwordHasher = new PasswordHasher<User>();
