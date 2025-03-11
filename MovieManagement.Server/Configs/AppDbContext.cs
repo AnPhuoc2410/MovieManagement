@@ -33,7 +33,7 @@ namespace MovieManagement.Server.Data
             string connectionString = config.GetConnectionString(connectionStringName);
             return connectionString;
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(GetConnectionString("LaazyConnection"));
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection"));
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -262,6 +262,9 @@ namespace MovieManagement.Server.Migrations
                     b.Property<Guid>("RoomId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("SeatStatus")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("SeatTypeId")
                         .HasColumnType("uniqueidentifier");
 
