@@ -77,21 +77,61 @@ const Ticket: React.FC = () => {
           position: "relative",
         }}
       >
-        <Box sx={{ color: "white", mb: 3, mt: 2 }}>
-          {/* Movie details */}
-          <MovieDetail />
+        <Box
+          sx={{
+            display: "flex",
+            gap: { xs: 2, sm: 3, md: 4 },
+            color: "white",
+            position: "relative",
+            minHeight: "100vh",
+          }}
+        >
+          {/* Sticky StepTracker */}
+          <Box
+            sx={{
+              display: { xs: "none", md: "block" },
+              position: "sticky",
+              top: "100px",
+              alignSelf: "flex-start",
+              height: "fit-content",
+              width: "250px",
+              flexShrink: 0,
+            }}
+          >
+            <StepTracker currentStep={1} />
+          </Box>
 
-          {/* ShowTimeCinema component for picking date, time, and room */}
-          <ShowTimeCinema
-            movieId={movieId}
-            onRoomSelect={(roomId: string) => setRoomId(roomId)}
-            onSelectDate={(date: string) => setSelectedDate(date)}
-            onSelectTime={(time: string) => setSelectedTime(time)}
-            onShowtimeAvailability={(available: boolean) => setShowTicketPrice(available)}
-          />
+          {/* Main Content */}
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              gap: { xs: 2, sm: 3, md: 4 },
 
-        {/* Neu ko co ShowTime thi ko hien TicketPrice */}
-          {showTicketPrice && <TicketPrice onNext={handleTicketSelection} />}
+              pb: 4,
+            }}
+          >
+            {/* Show StepTracker on mobile */}
+            <Box sx={{ display: { xs: "block", md: "none" }, mb: 2 }}>
+              <StepTracker currentStep={1} />
+            </Box>
+
+            {/* Movie details */}
+            <MovieDetail />
+
+            {/* ShowTimeCinema component for picking date, time, and room */}
+            <ShowTimeCinema
+              movieId={movieId}
+              onRoomSelect={(roomId: string) => setRoomId(roomId)}
+              onSelectDate={(date: string) => setSelectedDate(date)}
+              onSelectTime={(time: string) => setSelectedTime(time)}
+              onShowtimeAvailability={(available: boolean) => setShowTicketPrice(available)}
+            />
+
+            {/* Neu ko co ShowTime thi ko hien TicketPrice */}
+            {showTicketPrice && <TicketPrice onNext={handleTicketSelection} />}
+          </Box>
         </Box>
       </Container>
       <Footer />
