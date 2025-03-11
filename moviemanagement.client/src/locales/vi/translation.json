@@ -116,6 +116,15 @@
         "confirm": "Xác nhận"
       }
     },
+    "user": {
+      "profile": {
+        "my_account": "Tài khoản của tôi",
+        "my_profile": "Hồ sơ của tôi",
+        "settings": "Cài đặt",
+        "my_bookings": "Vé của tôi",
+        "logout": "Đăng xuất"
+      }
+    },
     "promotion": {
       "detail": {
         "loading": "Đang tải...",

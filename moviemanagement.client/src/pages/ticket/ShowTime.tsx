@@ -125,7 +125,9 @@ const Ticket: React.FC = () => {
               onRoomSelect={(roomId: string) => setRoomId(roomId)}
               onSelectDate={(date: string) => setSelectedDate(date)}
               onSelectTime={(time: string) => setSelectedTime(time)}
-              onShowtimeAvailability={(available: boolean) => setShowTicketPrice(available)}
+              onShowtimeAvailability={(available: boolean) =>
+                setShowTicketPrice(available)
+              }
             />
 
             {/* Neu ko co ShowTime thi ko hien TicketPrice */}

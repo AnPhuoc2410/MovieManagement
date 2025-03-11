@@ -271,7 +271,8 @@ const PromotionsPage: React.FC = () => {
                           px: 4,
                           py: 1,
                           borderRadius: "25px",
-                          transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                          transition:
+                            "transform 0.3s ease, box-shadow 0.3s ease",
                           "&:hover": {
                             background:
                               "linear-gradient(90deg, #834bff 0%, #FF3232 100%)",

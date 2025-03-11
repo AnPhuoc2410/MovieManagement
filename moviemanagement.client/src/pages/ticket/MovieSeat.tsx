@@ -18,7 +18,9 @@ const MovieSeat: React.FC = () => {
   };
 
   // State to store selected seats
-  const [selectedSeats, setSelectedSeats] = useState<{ id: string; name: string }[]>([]);
+  const [selectedSeats, setSelectedSeats] = useState<
+    { id: string; name: string }[]
+  >([]);
 
   // Calculate the total number of seats that should be selected based on ticket quantities
   const maxSeats = (tickets || []).reduce(
@@ -32,7 +34,12 @@ const MovieSeat: React.FC = () => {
       return;
     }
     navigate("/ticket/payment", {
-      state: { selectedDate, selectedTime, tickets, seats: selectedSeats.map(seat => seat.name) },
+      state: {
+        selectedDate,
+        selectedTime,
+        tickets,
+        seats: selectedSeats.map((seat) => seat.name),
+      },
     });
   };
 
@@ -142,7 +149,7 @@ const MovieSeat: React.FC = () => {
                   sx={{
                     mt: 2,
                     textAlign: "center",
-                    color: "primary.light"
+                    color: "primary.light",
                   }}
                 >
                   {`Bạn cần chọn đúng ${maxSeats} ghế.`}
@@ -158,7 +165,7 @@ const MovieSeat: React.FC = () => {
                     px: 4,
                     py: 1,
                     fontSize: "1rem",
-                    borderRadius: 2
+                    borderRadius: 2,
                   }}
                 >
                   Tiếp tục

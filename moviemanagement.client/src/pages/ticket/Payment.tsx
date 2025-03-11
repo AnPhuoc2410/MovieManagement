@@ -187,7 +187,13 @@ const Payment: React.FC = () => {
             <Grid container spacing={4}>
               {/* Left Column: Movie Poster */}
               <Grid item xs={12} md={4}>
-                <Paper sx={{ p: 2, backgroundColor: "rgba(28, 28, 28, 0.8)", color: "white" }}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    backgroundColor: "rgba(28, 28, 28, 0.8)",
+                    color: "white",
+                  }}
+                >
                   <Box
                     component="img"
                     src="https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2Fwysiwyg%2FPosters%2F01-2025%2Fden-am-hon-poster.png&w=2048&q=75"
@@ -207,7 +213,12 @@ const Payment: React.FC = () => {
               <Grid item xs={12} md={8}>
                 {/* Combined Movie & Ticket Info */}
                 <Paper
-                  sx={{ p: 3, backgroundColor: "rgba(28, 28, 28, 0.8)", color: "white", mb: 3 }}
+                  sx={{
+                    p: 3,
+                    backgroundColor: "rgba(28, 28, 28, 0.8)",
+                    color: "white",
+                    mb: 3,
+                  }}
                 >
                   <Grid container spacing={3}>
                     {/* Thông Tin Phim */}
@@ -235,7 +246,8 @@ const Payment: React.FC = () => {
                         Thông Tin Vé
                       </Typography>
                       <Typography variant="body1" gutterBottom>
-                        <strong>Ghế:</strong> {seats.join(", ") || "Chưa chọn ghế"}
+                        <strong>Ghế:</strong>{" "}
+                        {seats.join(", ") || "Chưa chọn ghế"}
                       </Typography>
                       <Typography variant="body1" gutterBottom>
                         <strong>Giá:</strong>{" "}
@@ -265,7 +277,13 @@ const Payment: React.FC = () => {
                 </Paper>
 
                 {/* Customer Information Form */}
-                <Paper sx={{ p: 3, backgroundColor: "rgba(28, 28, 28, 0.8)", color: "white" }}>
+                <Paper
+                  sx={{
+                    p: 3,
+                    backgroundColor: "rgba(28, 28, 28, 0.8)",
+                    color: "white",
+                  }}
+                >
                   <Typography variant="h6" gutterBottom>
                     Thông Tin Khách Hàng
                   </Typography>
@@ -317,7 +335,9 @@ const Payment: React.FC = () => {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         error={phoneError}
-                        helperText={phoneError ? "Vui lòng nhập số điện thoại" : ""}
+                        helperText={
+                          phoneError ? "Vui lòng nhập số điện thoại" : ""
+                        }
                         InputLabelProps={{ style: { color: "white" } }}
                         sx={{ input: { color: "white" } }}
                       />
@@ -333,7 +353,7 @@ const Payment: React.FC = () => {
                         px: 4,
                         py: 1,
                         fontSize: "1rem",
-                        borderRadius: 2
+                        borderRadius: 2,
                       }}
                     >
                       Xác nhận đặt vé

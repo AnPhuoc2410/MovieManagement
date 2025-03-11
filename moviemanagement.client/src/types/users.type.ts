@@ -1,4 +1,5 @@
 import { Role } from "./roles.type";
+import { UserTicketHistory, UserTicketType } from "./ticketdetail.types";
 
 export type UserBase = {
   MaThanhVien: string;
@@ -44,7 +45,12 @@ export type UserProfile = Pick<
   | "phoneNumber"
   | "address"
   | "point"
->;
+> & {
+  ticket?: {
+    history?: UserTicketHistory[];
+    data?: UserTicketType[];
+  };
+};
 
 export type LoginDTO = {
   email: string;
