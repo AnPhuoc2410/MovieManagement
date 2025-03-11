@@ -24,6 +24,7 @@ interface ShowTimeCinemaProps {
   onRoomSelect: (roomId: string) => void;
   onSelectDate: (date: string) => void;
   onSelectTime: (time: string) => void;
+  onShowtimeAvailability: (available: boolean) => void;
 }
 
 const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
@@ -31,6 +32,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
   onRoomSelect,
   onSelectDate,
   onSelectTime,
+  onShowtimeAvailability,
 }) => {
   const today = new Date();
   const todayFormatted = format(today, "dd/MM");
@@ -75,13 +77,16 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
         const showtimes: ShowTime[] = response.data.data[apiKey] || [];
         if (showtimes.length === 0) {
           setCinemas([]);
+          onShowtimeAvailability(false); // No showtime available
           return;
         }
 
+        // At least one showtime is available.
+        onShowtimeAvailability(true);
+
         const dummyCinema: Cinema = {
           name: "Cinema Eiga",
-          address:
-            "S10.06 Origami, Vinhomes Grandpark, Thủ Đức, Hồ Chí Minh",
+          address: "S10.06 Origami, Vinhomes Grandpark, Thủ Đức, Hồ Chí Minh",
           times: showtimes.map((show) => ({
             time: format(new Date(show.startTime), "HH:mm"),
             roomId: show.roomId,
@@ -91,11 +96,12 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
         setCinemas([dummyCinema]);
       } catch (error) {
         console.error("Error fetching showtimes:", error);
+        onShowtimeAvailability(false); // In case of error, hide TicketPrice
       }
     };
 
     fetchShowtimes();
-  }, [selectedCity, selectedDate, days, movieId]);
+  }, [selectedCity, selectedDate, days, movieId, onShowtimeAvailability]);
 
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", color: "white", py: 5 }}>

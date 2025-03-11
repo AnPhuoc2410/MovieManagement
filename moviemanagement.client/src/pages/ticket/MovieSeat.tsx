@@ -17,7 +17,7 @@ const MovieSeat: React.FC = () => {
   };
 
   // State to store selected seats
-  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [selectedSeats, setSelectedSeats] = useState<{ id: string; name: string }[]>([]);
 
   // Calculate the total number of seats that should be selected based on ticket quantities
   const maxSeats = (tickets || []).reduce(
@@ -31,7 +31,7 @@ const MovieSeat: React.FC = () => {
       return;
     }
     navigate("/ticket/payment", {
-      state: { selectedDate, selectedTime, tickets, seats: selectedSeats },
+      state: { selectedDate, selectedTime, tickets, seats: selectedSeats.map(seat => seat.name) },
     });
   };
 

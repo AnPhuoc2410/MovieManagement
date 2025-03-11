@@ -13,15 +13,19 @@ const Ticket: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [roomId, setRoomId] = useState<string>("");
+  // New state to control the visibility of TicketPrice
+  const [showTicketPrice, setShowTicketPrice] = useState<boolean>(false);
 
   // You can still retrieve movieId from location or params if needed.
   const movieId = "5CC368FD-5BFA-4B06-A88C-1E659A26C224";
 
   const handleTicketSelection = (tickets: TicketType[]) => {
+    // Validate that a showtime is selected
     if (!selectedTime) {
       toast.error("Vui lòng chọn suất chiếu!");
       return;
     }
+    // Validate that at least one ticket is selected
     const totalTickets = tickets.reduce((sum, t) => sum + (t.quantity || 0), 0);
     if (totalTickets === 0) {
       toast.error("Vui lòng chọn ít nhất 1 vé!");
@@ -62,13 +66,13 @@ const Ticket: React.FC = () => {
             onRoomSelect={(roomId: string) => setRoomId(roomId)}
             onSelectDate={(date: string) => setSelectedDate(date)}
             onSelectTime={(time: string) => setSelectedTime(time)}
+            onShowtimeAvailability={(available: boolean) => setShowTicketPrice(available)}
           />
 
-          {/* TicketPrice for selecting ticket types/quantities */}
-          <TicketPrice onNext={handleTicketSelection} />
+        {/* Neu ko co ShowTime thi ko hien TicketPrice */}
+          {showTicketPrice && <TicketPrice onNext={handleTicketSelection} />}
         </Box>
       </Container>
-
       <Footer />
     </>
   );
