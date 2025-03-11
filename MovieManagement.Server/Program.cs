@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MovieManagement.Server
 {
@@ -141,8 +142,11 @@ namespace MovieManagement.Server
 
             //Enable role based and policy based authorization
             builder.Services.AddAuthorization();
-
-
+            
+            builder.Services.Configure<RouteOptions>(options =>
+            {
+                options.LowercaseUrls = true;  // Forces lowercase routes
+            });
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;

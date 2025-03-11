@@ -69,7 +69,7 @@ export default function NavbarBreadcrumbs() {
               : {}
           }
           component="a"
-          href={paths[index]}
+          // href={paths[index]}
         >
           {label}
         </Typography>

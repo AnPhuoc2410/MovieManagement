@@ -17,8 +17,37 @@ export type UserBase = {
   TrangThai: number;
 };
 
+export type UserResponse = {
+  userId: string;
+  userName: string;
+  avatar: string;
+  joinDate: string;
+  fullName: string;
+  birthDate: string;
+  gender: number;
+  idCard: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  status: number;
+  role: number;
+  point: number;
+};
+
+export type UserProfile = Pick<
+  UserResponse,
+  | "birthDate"
+  | "gender"
+  | "idCard"
+  | "fullName"
+  | "email"
+  | "phoneNumber"
+  | "address"
+  | "point"
+>;
+
 export type LoginDTO = {
-  username: string;
+  email: string;
   password: string;
   rememberMe?: boolean;
 };
@@ -82,39 +111,4 @@ export type UserStatus = "UNVERIFIED" | "VERIFIED" | "BANNED";
 export type UpdatePasswordDTO = {
   email: string;
   new_password: string;
-};
-
-export type UserResponse = {
-  id: number;
-  first_name: string;
-  last_name: string;
-  phone_number: string;
-  email: string;
-  address: string;
-  password: string;
-  is_active: number;
-  is_subscription: number;
-  status_name: UserStatus;
-  date_of_birth: string;
-  avatar_url: string;
-  google_account_id: number;
-  role_name: string;
-  account_balance: number;
-  created_at: string;
-  updated_at: string;
-};
-
-export type UpdateUserDTO = {
-  first_name: string | "";
-  last_name: string;
-  email: string;
-  phone_number: string;
-  password?: string;
-  confirm_password?: string;
-  address: string;
-  status: UserStatus;
-  date_of_birth: string;
-  avatar_url: string;
-  google_account_id: number;
-  balance_account: number;
 };
