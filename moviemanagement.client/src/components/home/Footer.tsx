@@ -15,8 +15,10 @@ import LocalActivityOutlinedIcon from "@mui/icons-material/LocalActivityOutlined
 import FacebookIcon from "@mui/icons-material/Facebook";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import InstagramIcon from "@mui/icons-material/Instagram";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Footer: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -148,37 +150,47 @@ const Footer: React.FC = () => {
               </IconButton>
             </Box>
           </Grid>
-
           {/* Account & Movies Section */}
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              {t("footer.account.title")}
-            </Typography>
-            {["login", "register", "membership"].map((item) => (
-              <Typography key={item} variant="body2" gutterBottom>
-                <Link href="#" color="inherit" sx={{ textDecoration: "none" }}>
-                  {t(`footer.account.${item}`)}
-                </Link>
+          {!isAuthenticated && (
+            <Grid item xs={12} sm={6} md={3}>
+              <Typography variant="h6" fontWeight="bold" gutterBottom>
+                {t("footer.account.title")}
               </Typography>
-            ))}
+              {["login", "register", "membership"].map((item) => (
+                <Typography key={item} variant="body2" gutterBottom>
+                  <Link
+                    href="#"
+                    color="inherit"
+                    sx={{ textDecoration: "none" }}
+                  >
+                    {t(`footer.account.${item}`)}
+                  </Link>
+                </Typography>
+              ))}
 
-            <Typography
-              variant="h6"
-              fontWeight="bold"
-              gutterBottom
-              sx={{ mt: 3 }}
-            >
-              {t("footer.movies.title")}
-            </Typography>
-            {["now_showing", "coming_soon", "special_screening"].map((item) => (
-              <Typography key={item} variant="body2" gutterBottom>
-                <Link href="#" color="inherit" sx={{ textDecoration: "none" }}>
-                  {t(`footer.movies.${item}`)}
-                </Link>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                gutterBottom
+                sx={{ mt: 3 }}
+              >
+                {t("footer.movies.title")}
               </Typography>
-            ))}
-          </Grid>
-
+              {["now_showing", "coming_soon", "special_screening"].map(
+                (item) => (
+                  <Typography key={item} variant="body2" gutterBottom>
+                    <Link
+                      href="#"
+                      color="inherit"
+                      sx={{ textDecoration: "none" }}
+                    >
+                      {t(`footer.movies.${item}`)}
+                    </Link>
+                  </Typography>
+                ),
+              )}
+            </Grid>
+          )}
           {/* Theaters Section */}
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
@@ -198,7 +210,6 @@ const Footer: React.FC = () => {
               </Typography>
             ))}
           </Grid>
-
           {/* Legal Section */}
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6" fontWeight="bold" gutterBottom>

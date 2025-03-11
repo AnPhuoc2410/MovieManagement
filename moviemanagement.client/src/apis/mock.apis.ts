@@ -8,11 +8,15 @@ import {
   SignupRequest,
   SignupResponse,
 } from "../types/auth.types";
+import { Category } from "../types/category.types";
 import { Movie, QuanLyPhimType } from "../types/movie.types";
 import { Room } from "../types/room.types";
+import {
+  UpdatePasswordDTO,
+  UserProfile,
+  UserResponse,
+} from "../types/users.type";
 import { ApiResponse } from "./api.config";
-import { Category } from "../types/category.types";
-import { UpdatePasswordDTO, UserResponse } from "../types/users.type";
 
 export const fetchThanhVien = async (): Promise<ThanhVien[]> => {
   const response = await axios.get<ThanhVien[]>("/api/thanh-vien");
@@ -105,7 +109,17 @@ export const updateUserPassword = async (
   return response.data;
 };
 
-export const getUserDetail = async (id: string): Promise<UserResponse> => {
-  const response = await axios.get<UserResponse>(`/api/user/detail/${id}`);
+export const getUserDetail = async (id: string): Promise<UserProfile> => {
+  const response = await axios.get<UserProfile>(`/api/user/detail/${id}`);
+  return response.data;
+};
+
+export const extractUserFromToken = async (
+  accessToken: string,
+): Promise<UserResponse> => {
+  const response = await axios.post<UserResponse>("/api/auth/extract-user", {
+    accessToken,
+  });
+
   return response.data;
 };

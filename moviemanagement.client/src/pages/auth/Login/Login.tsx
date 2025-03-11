@@ -61,12 +61,14 @@ export const Login = () => {
     onSubmit: async (values) => {
       setLoading(true);
       const toastId = toast.loading("Đang đăng nhập...");
+      const data = {
+        email: values.email,
+        password: values.password,
+      };
+      console.log("data", data);
 
       try {
-        const response = await login({
-          email: values.email,
-          password: values.password,
-        });
+        const response = await login(data);
         toast.dismiss(toastId);
 
         if (response.is_success) {

@@ -116,6 +116,15 @@
         "confirm": "確認"
       }
     },
+    "user": {
+      "profile": {
+        "my_account": "マイアカウント",
+        "my_profile": "マイプロフィール",
+        "settings": "設定",
+        "my_bookings": "予約",
+        "logout": "ログアウト"
+      }
+    },
     "promotion": {
       "detail": {
         "loading": "読み込み中...",

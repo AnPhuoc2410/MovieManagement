@@ -7,17 +7,25 @@ import type { Seat } from "../../types/seat.types";
 interface SeatProps {
   roomId: string;
   selectedSeats: { id: string; name: string }[];
-  setSelectedSeats: React.Dispatch<React.SetStateAction<{ id: string; name: string }[]>>;
+  setSelectedSeats: React.Dispatch<
+    React.SetStateAction<{ id: string; name: string }[]>
+  >;
 }
 
-const Seat: React.FC<SeatProps> = ({ roomId, selectedSeats, setSelectedSeats }) => {
+const Seat: React.FC<SeatProps> = ({
+  roomId,
+  selectedSeats,
+  setSelectedSeats,
+}) => {
   const [seats, setSeats] = useState<Seat[]>([]);
 
   // Fetch seat data based on roomId.
   useEffect(() => {
     const fetchSeats = async () => {
       try {
-        const response = await axios.get(`https://localhost:7119/api/Room/GetRoomInfo/${roomId}`);
+        const response = await axios.get(
+          `https://localhost:7119/api/Room/GetRoomInfo/${roomId}`,
+        );
         if (response.data.isSuccess) {
           setSeats(response.data.data.seats);
         }
@@ -33,15 +41,22 @@ const Seat: React.FC<SeatProps> = ({ roomId, selectedSeats, setSelectedSeats }) 
     const seatName = `${seat.atRow}${seat.atColumn}`;
     const seatInfo = { id: seat.seatId, name: seatName };
 
-    if (selectedSeats.some(s => s.id === seat.seatId)) {
-      setSelectedSeats(selectedSeats.filter(s => s.id !== seat.seatId));
+    if (selectedSeats.some((s) => s.id === seat.seatId)) {
+      setSelectedSeats(selectedSeats.filter((s) => s.id !== seat.seatId));
     } else {
       setSelectedSeats([...selectedSeats, seatInfo]);
     }
   };
 
   return (
-    <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pb: 4, position: "relative" }}>
+    <Box
+      sx={{
+        backgroundColor: "#0B0D1A",
+        color: "white",
+        pb: 4,
+        position: "relative",
+      }}
+    >
       {/* Screen Display */}
       <Box sx={{ textAlign: "center", mb: 2 }}>
         <Box
@@ -90,21 +105,42 @@ const Seat: React.FC<SeatProps> = ({ roomId, selectedSeats, setSelectedSeats }) 
         </Box>
       </Box>
 
-
       {/* Seat Grid centered on screen */}
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", p: 2 }}>
-        <Box sx={{ maxWidth: 600, display: "flex", flexDirection: "column", gap: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          p: 2,
+        }}
+      >
+        <Box
+          sx={{
+            maxWidth: 600,
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+          }}
+        >
           {Object.entries(
-            seats.reduce((acc, seat) => {
-              // Group seats by row
-              if (!acc[seat.atRow]) acc[seat.atRow] = [];
-              acc[seat.atRow].push(seat);
-              return acc;
-            }, {} as Record<string, Seat[]>)
+            seats.reduce(
+              (acc, seat) => {
+                // Group seats by row
+                if (!acc[seat.atRow]) acc[seat.atRow] = [];
+                acc[seat.atRow].push(seat);
+                return acc;
+              },
+              {} as Record<string, Seat[]>,
+            ),
           ).map(([row, rowSeats]) => (
-            <Box key={row} sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
+            <Box
+              key={row}
+              sx={{ display: "flex", justifyContent: "center", gap: 4 }}
+            >
               {rowSeats.map((seat) => {
-                const isSelected = selectedSeats.some(s => s.id === seat.seatId);
+                const isSelected = selectedSeats.some(
+                  (s) => s.id === seat.seatId,
+                );
                 const isBought = seat.status === 3; // Booked
                 const isVip = seat.seatType.typeName === "VIP";
 
@@ -151,7 +187,13 @@ const Seat: React.FC<SeatProps> = ({ roomId, selectedSeats, setSelectedSeats }) 
                       },
                     }}
                   >
-                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                      }}
+                    >
                       <EventSeatIcon sx={{ color: iconColor }} />
                       <Typography variant="body2" align="center">
                         {seat.atRow}

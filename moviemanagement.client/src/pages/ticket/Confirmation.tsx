@@ -1,5 +1,13 @@
 import React from "react";
-import { Box, Container, Typography, Grid, Paper, Button, Divider } from "@mui/material";
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Paper,
+  Button,
+  Divider,
+} from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
@@ -112,7 +120,13 @@ const Confirmation: React.FC = () => {
             <Grid container spacing={4}>
               {/* Left Column: Movie Poster */}
               <Grid item xs={12} md={4}>
-                <Paper sx={{ p: 2, backgroundColor: "rgba(28, 28, 28, 0.7)", borderRadius: 2 }}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    backgroundColor: "rgba(28, 28, 28, 0.7)",
+                    borderRadius: 2,
+                  }}
+                >
                   <Box
                     component="img"
                     src="https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2Fwysiwyg%2FPosters%2F01-2025%2Fden-am-hon-poster.png&w=2048&q=75"
@@ -122,7 +136,7 @@ const Confirmation: React.FC = () => {
                       borderRadius: 1,
                       objectFit: "cover",
                       maxHeight: 500,
-                      boxShadow: "0 8px 16px rgba(0,0,0,0.3)"
+                      boxShadow: "0 8px 16px rgba(0,0,0,0.3)",
                     }}
                   />
                 </Paper>
@@ -135,7 +149,7 @@ const Confirmation: React.FC = () => {
                     backgroundColor: "rgba(28, 28, 28, 0.7)",
                     color: "white",
                     mb: 3,
-                    borderRadius: 2
+                    borderRadius: 2,
                   }}
                 >
                   <Typography
@@ -146,7 +160,9 @@ const Confirmation: React.FC = () => {
                     Thông Tin Đặt Vé
                   </Typography>
 
-                  <Divider sx={{ mb: 3, borderColor: "rgba(255,255,255,0.1)" }} />
+                  <Divider
+                    sx={{ mb: 3, borderColor: "rgba(255,255,255,0.1)" }}
+                  />
 
                   <Grid container spacing={3}>
                     {/* Thông Tin Phim */}
@@ -158,7 +174,7 @@ const Confirmation: React.FC = () => {
                           color: "primary.light",
                           fontSize: "1rem",
                           fontWeight: "bold",
-                          pb: 1
+                          pb: 1,
                         }}
                       >
                         Thông Tin Phim
@@ -186,7 +202,7 @@ const Confirmation: React.FC = () => {
                           color: "primary.light",
                           fontSize: "1rem",
                           fontWeight: "bold",
-                          pb: 1
+                          pb: 1,
                         }}
                       >
                         Thông Tin Vé
@@ -220,7 +236,9 @@ const Confirmation: React.FC = () => {
                     </Grid>
                   </Grid>
 
-                  <Divider sx={{ my: 3, borderColor: "rgba(255,255,255,0.1)" }} />
+                  <Divider
+                    sx={{ my: 3, borderColor: "rgba(255,255,255,0.1)" }}
+                  />
 
                   {/* Customer Information */}
                   <Box>
@@ -231,7 +249,7 @@ const Confirmation: React.FC = () => {
                         color: "primary.light",
                         fontSize: "1rem",
                         fontWeight: "bold",
-                        pb: 1
+                        pb: 1,
                       }}
                     >
                       Thông Tin Khách Hàng
@@ -271,10 +289,12 @@ const Confirmation: React.FC = () => {
                       textTransform: "none",
                       fontWeight: "bold",
                       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
-                      background: "linear-gradient(45deg, #1a237e 0%, #3949ab 100%)",
+                      background:
+                        "linear-gradient(45deg, #1a237e 0%, #3949ab 100%)",
                       "&:hover": {
-                        background: "linear-gradient(45deg, #283593 0%, #5c6bc0 100%)",
-                      }
+                        background:
+                          "linear-gradient(45deg, #283593 0%, #5c6bc0 100%)",
+                      },
                     }}
                   >
                     Về Trang Chủ
@@ -295,21 +315,22 @@ const Confirmation: React.FC = () => {
                 borderLeft: "4px solid #4caf50",
                 borderRadius: 1,
                 mb: 3,
-                maxWidth: { xs: '100%', md: '80%' },
-                mx: 'auto',
-                position: 'relative',
-                overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                '&::before': {
+                maxWidth: { xs: "100%", md: "80%" },
+                mx: "auto",
+                position: "relative",
+                overflow: "hidden",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                "&::before": {
                   content: '""',
-                  position: 'absolute',
+                  position: "absolute",
                   top: 0,
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  background: 'radial-gradient(circle at top right, rgba(76, 175, 80, 0.15), transparent 70%)',
+                  background:
+                    "radial-gradient(circle at top right, rgba(76, 175, 80, 0.15), transparent 70%)",
                   zIndex: 0,
-                }
+                },
               }}
             >
               <CheckCircleOutlineIcon
@@ -318,7 +339,7 @@ const Confirmation: React.FC = () => {
                   mr: 2,
                   color: "#4caf50",
                   filter: "drop-shadow(0 0 6px rgba(76, 175, 80, 0.4))",
-                  zIndex: 1
+                  zIndex: 1,
                 }}
               />
               <Box sx={{ flex: 1, zIndex: 1 }}>
@@ -335,10 +356,11 @@ const Confirmation: React.FC = () => {
                 <Typography
                   variant="body2"
                   sx={{
-                    color: "rgba(255, 255, 255, 0.8)"
+                    color: "rgba(255, 255, 255, 0.8)",
                   }}
                 >
-                  Cảm ơn bạn đã đặt vé. Vui lòng kiểm tra email để xem thông tin vé.
+                  Cảm ơn bạn đã đặt vé. Vui lòng kiểm tra email để xem thông tin
+                  vé.
                 </Typography>
               </Box>
             </Paper>

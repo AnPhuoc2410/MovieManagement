@@ -317,7 +317,6 @@ const MovieDetail: React.FC = () => {
         </Box>
       </Modal>
     </Box>
-
   );
 };
 

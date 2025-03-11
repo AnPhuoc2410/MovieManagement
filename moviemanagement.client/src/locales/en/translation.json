@@ -117,6 +117,15 @@
         "confirm": "Confirm"
       }
     },
+    "user": {
+      "profile": {
+        "my_account": "My Account",
+        "my_profile": "My Profile",
+        "settings": "Settings",
+        "my_bookings": "My Bookings",
+        "logout": "Logout"
+      }
+    },
     "promotion": {
       "detail": {
         "loading": "Loading...",

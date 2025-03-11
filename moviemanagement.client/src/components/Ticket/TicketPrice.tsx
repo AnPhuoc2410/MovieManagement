@@ -26,7 +26,6 @@ interface TicketPriceProps {
 }
 
 const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
-
   const initialTickets: TicketType[] = [
     {
       id: "seat_normal",

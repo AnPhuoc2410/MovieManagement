@@ -13,7 +13,12 @@ import {
   handleGetRoom,
   handleGetRoomDetail,
 } from "./routes/room.msw";
-import { handleLogin, handleLogout, handleSignup } from "./routes/auth.msw";
+import {
+  handleExtractToken,
+  handleLogin,
+  handleLogout,
+  handleSignup,
+} from "./routes/auth.msw";
 import { handleGetCategoryList } from "./routes/category.msw";
 
 export const handlers: HttpHandler[] = [
@@ -31,6 +36,9 @@ export const handlers: HttpHandler[] = [
   handleSignup(),
   handleLogout(
     "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsImVtYWlsIjoiaG9hbmdkejE2MDRAZ21haWwuY29tIiwic3ViIjoiaG9hbmdkejE2MDRAZ21haWwuY29tIiwiZXhwIjoxNzQzNzczNTQ2fQ.N9P8pbirVxDlr1XP-AI5uCU_lDNw3uhZSCzWxnxNhVo",
+  ),
+  handleExtractToken(
+    "mJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsImVtYWlsIjoiaG9hbmdkejE2MDRAZ21haWwuY29tIiwic3ViIjoiaG9hbmdkejE2MDRAZ21haWwuY29tIiwiZXhwIjoxNzQzNzczNTQ2fQ.N9P8pbirVxDlr1XP-AI5uCU_lDNw3uhZSCzWxnxNhVo",
   ),
   handleGetBookingDetail("BV00001"),
   handleGetFilmList("all"),

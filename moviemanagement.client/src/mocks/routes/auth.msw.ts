@@ -90,6 +90,44 @@ export const handleLogin = () => {
   });
 };
 
+export const handleExtractToken = (at: string) => {
+  return http.post("/api/auth/extract-token", async ({ request }) => {
+    const body = (await request.json()) as { accessToken: string };
+    const { accessToken } = body;
+
+    if (accessToken === at) {
+      return HttpResponse.json({
+        message: "Token extracted successfully",
+        status_code: 200,
+        is_success: true,
+        data: {
+          userId: "09ace9f8-a25a-4c92-80a1-17c08ebef2e1",
+          userName: "string",
+          avatar: "string",
+          joinDate: "2025-03-11T07:52:07.528",
+          fullName: "Luu Cao Hoang",
+          birthDate: "2025-03-11T07:52:07.528",
+          gender: 0,
+          idCard: "string",
+          email: "m@gmail.com",
+          phoneNumber: "string",
+          address: "string",
+          status: 1,
+          role: 0,
+          point: 0,
+        },
+      });
+    } else {
+      return HttpResponse.json({
+        message: "Token is invalid",
+        status_code: 400,
+        is_success: false,
+        reason: "Bad token",
+      });
+    }
+  });
+};
+
 export const handleLogout = (token: string) => {
   return http.post("/api/auth/logout", async ({ request }) => {
     const body = (await request.json()) as LogoutRequest;
