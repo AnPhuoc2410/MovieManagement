@@ -64,20 +64,26 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
   }, [today, t, i18n.language]);
 
   // Memoized handleDateChange function
-  const handleDateChange = useCallback((e: any, newDate: string) => {
-    if (newDate) {
-      setSelectedDate(newDate);
-      onSelectDate(newDate);
-      setSelectedTime(null); // Reset time when date changes
-    }
-  }, [onSelectDate]);
+  const handleDateChange = useCallback(
+    (e: any, newDate: string) => {
+      if (newDate) {
+        setSelectedDate(newDate);
+        onSelectDate(newDate);
+        setSelectedTime(null); // Reset time when date changes
+      }
+    },
+    [onSelectDate],
+  );
 
   // Memoized time selection handler
-  const handleTimeSelect = useCallback((time: string, roomId: string) => {
-    setSelectedTime(time);
-    onSelectTime(time);
-    onRoomSelect(roomId);
-  }, [onSelectTime, onRoomSelect]);
+  const handleTimeSelect = useCallback(
+    (time: string, roomId: string) => {
+      setSelectedTime(time);
+      onSelectTime(time);
+      onRoomSelect(roomId);
+    },
+    [onSelectTime, onRoomSelect],
+  );
 
   // Fetch showtimes with caching
   useEffect(() => {
@@ -315,7 +321,9 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                                 ? "yellow"
                                 : "transparent",
                             color:
-                              selectedTime === showtime.time ? "black" : "white",
+                              selectedTime === showtime.time
+                                ? "black"
+                                : "white",
                             border: "1px solid white",
                             fontWeight: "bold",
                             "&:hover": {
@@ -323,7 +331,9 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                               color: "black",
                             },
                           }}
-                          onClick={() => handleTimeSelect(showtime.time, showtime.roomId)}
+                          onClick={() =>
+                            handleTimeSelect(showtime.time, showtime.roomId)
+                          }
                         >
                           {showtime.time}
                         </Button>

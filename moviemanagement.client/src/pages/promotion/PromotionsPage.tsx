@@ -185,7 +185,12 @@ const PromotionsPage: React.FC = () => {
                 }}
               >
                 {/* Image Section */}
-                <Grid item xs={12} md={6} sx={{ display: "flex", justifyContent: "center" }}>
+                <Grid
+                  item
+                  xs={12}
+                  md={6}
+                  sx={{ display: "flex", justifyContent: "center" }}
+                >
                   <CardMedia
                     component="img"
                     image={promotion.image || "/images/default-promotion.jpg"} // Fallback image

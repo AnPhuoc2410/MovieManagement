@@ -1,4 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { getCookie } from "../utils/cookieUtils.ts";
 
 const api = axios.create({
   baseURL: "https://localhost:7119/api/",
@@ -8,7 +9,7 @@ const api = axios.create({
 const handleBefore = (
   config: InternalAxiosRequestConfig,
 ): InternalAxiosRequestConfig => {
-  const token = localStorage.getItem("token");
+  const token = getCookie("access_token");
   if (token) {
     config.headers.set("Authorization", `Bearer ${token}`);
   }

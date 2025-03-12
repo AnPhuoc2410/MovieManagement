@@ -99,7 +99,7 @@
           "id_card": "ID Card",
           "email": "Email",
           "address": "Address",
-          "phone": "Phone Number"
+          "phone_number": "Phone Number"
         },
         "buttons": {
           "back": "Back",
