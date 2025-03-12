@@ -16,6 +16,16 @@ import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+
+export interface TicketType {
+  id: string;
+  name: string;
+  type: string;
+  price: number;
+  quantity: number;
+}
 
 interface TicketPriceProps {
   onNext?: (selectedSeats: SeatType[]) => void;
@@ -82,7 +92,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
         variant="h4"
         sx={{ fontWeight: "bold", textTransform: "uppercase", mb: 4 }}
       >
-        Chọn Loại Vé
+        {t("ticket_price.ticket_selection")}
       </Typography>
 
       <Box
@@ -196,7 +206,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
             }}
             onClick={handleNext}
           >
-            Tiếp tục
+          {t("ticket_price.next")}
           </Button>
         </Box>
       )}

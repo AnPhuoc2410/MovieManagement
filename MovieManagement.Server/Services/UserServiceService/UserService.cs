@@ -101,6 +101,8 @@ namespace MovieManagement.Server.Services.UserService
                 var passwordHasher = new PasswordHasher<User>();
                 newUser.Password = passwordHasher.HashPassword(newUser, user.Password);
                 newUser.UserId = Guid.NewGuid();
+                newUser.JoinDate = DateTime.Now;
+                newUser.Status = UserStatus.Active;
                 var createdUser = await _unitOfWork.UserRepository.CreateAsync(newUser);
                 if (createdUser == null)
                     throw new Exception("Failed to create user.");

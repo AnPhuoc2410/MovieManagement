@@ -18,6 +18,7 @@ import { vi as viLocale } from "date-fns/locale";
 import axios from "axios";
 import { ShowTime } from "../../types/showtime.types";
 import { Cinema } from "../../types/cinema.types";
+import { useTranslation } from "react-i18next";
 
 interface ShowTimeCinemaProps {
   movieId: string;
@@ -45,6 +46,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [cinemas, setCinemas] = useState<Cinema[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   const days = useMemo(() => {
     return Array.from({ length: 4 }, (_, i) => {
@@ -154,7 +156,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
           mb={2}
           sx={{ letterSpacing: "1px", textTransform: "uppercase" }}
         >
-          Lịch Chiếu & Rạp
+          {t("showtime_cinema.title.showtime_list")}
         </Typography>
 
         {/* Date Selection - memoized rendering */}
@@ -208,7 +210,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                       fontWeight: "bold",
                     }}
                   >
-                    Today
+                    {t("showtime_cinema.title.now_day")}
                   </Typography>
                 )}
                 <Box textAlign="center">
@@ -236,7 +238,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
         >
           <Grid item>
             <Typography variant="h4" fontWeight="bold">
-              🎬 Danh Sách Rạp
+              🎬 {t("showtime_cinema.title.theater_list")}
             </Typography>
           </Grid>
           <Grid item>
@@ -254,13 +256,20 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                   backgroundColor: "transparent",
                 }}
               >
-                <MenuItem value="hcm">Hồ Chí Minh</MenuItem>
-                <MenuItem value="hn">Hà Nội</MenuItem>
-                <MenuItem value="dn">Đà Nẵng</MenuItem>
+                <MenuItem value="hcm">{t("showtime.location.HCM")}</MenuItem>
+                <MenuItem value="hn">{t("showtime.location.HaNoi")}</MenuItem>
+                <MenuItem value="dn">{t("showtime.location.DaNang")}</MenuItem>
               </Select>
             </FormControl>
           </Grid>
         </Grid>
+
+        {/* Loading state */}
+        {isLoading && (
+          <Typography textAlign="center" sx={{ py: 2 }}>
+            {t("showtime_cinema.title.loading_showtime")}
+          </Typography>
+        )}
 
         {/* Cinema List or No Showtime Message - conditionally rendered */}
         {!isLoading && (
@@ -320,7 +329,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
               ))
             ) : (
               <Typography variant="body1" textAlign="center" sx={{ py: 5 }}>
-                Không có suất chiếu cho ngày được chọn.
+                {t("showtime_cinema.title.no_showtime")}
               </Typography>
             )}
           </Box>
