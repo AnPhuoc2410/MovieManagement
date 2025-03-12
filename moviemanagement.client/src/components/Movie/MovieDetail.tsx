@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 
 const MovieDetail: React.FC = () => {
   const location = useLocation();
-  const { movieId } = location.state;
+  const movieId  = location.state?.movieId;
   const [movie, setMovie] = useState<Movie>();
   const [openTrailer, setOpenTrailer] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
