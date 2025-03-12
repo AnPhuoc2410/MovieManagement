@@ -141,20 +141,20 @@ export const handleSignup = () => {
   return http.post("/api/signup", async ({ request }) => {
     const body = (await request.json()) as SignupRequest;
     const {
-      username,
+      userName,
       password,
-      fullname,
-      dob,
+      fullName,
+      birthDate,
       gender,
-      cmnd,
+      idCard,
       email,
       address,
-      phone,
+      phoneNumber,
     } = body;
 
     // Simulate an existing user check (replace with actual database checks in production)
     if (
-      username === "hoangdz1604@gmail.com" ||
+      userName === "hoangdz1604@gmail.com" ||
       email === "hoangdz1604@gmail.com"
     ) {
       return HttpResponse.json({

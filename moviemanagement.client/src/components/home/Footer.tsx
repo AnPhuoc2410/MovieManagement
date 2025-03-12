@@ -64,6 +64,7 @@ const Footer: React.FC = () => {
                 fontWeight: "bold",
                 position: "relative",
                 overflow: "hidden",
+                mb: { xs: 1, sm: 2 },
                 bgcolor: "yellow",
                 color: "black",
                 transition: "color 0.5s ease-in-out",
@@ -93,7 +94,13 @@ const Footer: React.FC = () => {
               }}
               startIcon={<LocalActivityOutlinedIcon />}
             >
-              <span>{t("footer.book_ticket")}</span>
+              <Button
+                sx={{
+                  color: "black",
+                }}
+              >
+                {t("footer.book_ticket")}
+              </Button>
             </Button>
             <Button
               onClick={() => navigate("/")}
@@ -133,9 +140,15 @@ const Footer: React.FC = () => {
               }}
               startIcon={<FastfoodOutlined />}
             >
-              <span>{t("footer.book_snacks")}</span>
+              <Button
+                sx={{
+                  color: "black",
+                }}
+              >
+                {t("footer.book_snacks")}
+              </Button>
             </Button>
-            <Typography variant="subtitle2" gutterBottom>
+            <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>
               {t("footer.social_media")}:
             </Typography>
             <Box sx={{ display: "flex", gap: 1 }}>

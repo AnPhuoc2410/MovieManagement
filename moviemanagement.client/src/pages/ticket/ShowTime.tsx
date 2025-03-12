@@ -36,28 +36,34 @@ const Ticket: React.FC = () => {
     setShowTicketPrice(available);
   }, []);
 
-  const handleTicketSelection = useCallback((tickets: TicketType[]) => {
-    // Validate that a showtime is selected
-    if (!selectedTime) {
-      toast.error("Vui lòng chọn suất chiếu!");
-      return;
-    }
-    // Validate that at least one ticket is selected
-    const totalTickets = tickets.reduce((sum, t) => sum + (t.quantity || 0), 0);
-    if (totalTickets === 0) {
-      toast.error("Vui lòng chọn ít nhất 1 vé!");
-      return;
-    }
-    navigate("/ticket/movie-seat", {
-      state: {
-        movieId,
-        roomId,
-        selectedDate,
-        selectedTime,
-        tickets,
-      },
-    });
-  }, [movieId, navigate, roomId, selectedDate, selectedTime]);
+  const handleTicketSelection = useCallback(
+    (tickets: TicketType[]) => {
+      // Validate that a showtime is selected
+      if (!selectedTime) {
+        toast.error("Vui lòng chọn suất chiếu!");
+        return;
+      }
+      // Validate that at least one ticket is selected
+      const totalTickets = tickets.reduce(
+        (sum, t) => sum + (t.quantity || 0),
+        0,
+      );
+      if (totalTickets === 0) {
+        toast.error("Vui lòng chọn ít nhất 1 vé!");
+        return;
+      }
+      navigate("/ticket/movie-seat", {
+        state: {
+          movieId,
+          roomId,
+          selectedDate,
+          selectedTime,
+          tickets,
+        },
+      });
+    },
+    [movieId, navigate, roomId, selectedDate, selectedTime],
+  );
 
   return (
     <Box
