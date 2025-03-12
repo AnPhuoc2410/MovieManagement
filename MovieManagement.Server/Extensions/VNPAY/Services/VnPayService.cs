@@ -159,5 +159,10 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
                 throw new ArgumentException("Không tìm thấy BaseUrl, TmnCode, HashSecret, hoặc CallbackUrl");
             }
         }
+
+        private void HandleSuccessfulPayment(PaymentResult paymentResult)
+        {
+            // Thực hiện hành động sau khi thanh toán thành công tại đây
+        }
     }
 }
