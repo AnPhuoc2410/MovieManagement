@@ -9,7 +9,7 @@ using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
     public class UserController : Controller
     {

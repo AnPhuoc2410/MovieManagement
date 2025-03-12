@@ -64,7 +64,18 @@ namespace MovieManagement.Server.Repositories
             await _context.SaveChangesAsync();
             return user!=null;
         }
-        
+
+        public User GetUserByEmail(string email)
+        {
+            
+            var user = _context.Users
+                .Where(user => user.Email == email)
+                .OrderBy(user => user.JoinDate)
+                .LastOrDefault();
+            return user;
+            
+        }
+
         public async Task<User> GetByUsername(string username)
         {
             var user = await _context.Users
@@ -73,6 +84,17 @@ namespace MovieManagement.Server.Repositories
 
             return user;
         }
+        
+        public User GetUserByUniqueFields(string email, string idCard, string phoneNumber, string userName)
+        {
+            return _context.Users
+                .Where(user => user.Email == email || 
+                               user.IDCard == idCard || 
+                               user.PhoneNumber == phoneNumber || 
+                               user.UserName == userName)
+                .FirstOrDefault();
+        }
+
 
         public bool IsExistingEmailOrUsernameOrPhoneOrIdNumber(string email, string username, string phone,
             string idNumber)

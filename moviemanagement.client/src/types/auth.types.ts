@@ -1,3 +1,6 @@
+import { ApiResponse } from "../apis/api.config";
+import { UserResponse } from "./users.type";
+
 export type AuthLoginData = Pick<TokenResponse, "accessToken" | "expires">;
 
 export type LoginRequest = {
@@ -29,28 +32,16 @@ export type LogoutResponse = {
   isSuccess: boolean;
 };
 
-/*      username: "",
-      password: "",
-      fullname: "",
-      dob: "",
-      gender: "",
-      cmnd: "",
-      email: "",
-      address: "",
-      phone: "", */
-
 export type SignupRequest = {
-  username: string;
+  userName: string;
   password: string;
-  fullname: string;
-  dob: string;
+  fullName: string;
+  birthDate: string;
   gender: string;
-  cmnd: string;
+  idCard: string;
   email: string;
   address: string;
-  phone: string;
+  phoneNumber: string;
 };
 
-export type SignupResponse = {
-  data: null;
-};
+export type SignupResponse = ApiResponse<UserResponse>;

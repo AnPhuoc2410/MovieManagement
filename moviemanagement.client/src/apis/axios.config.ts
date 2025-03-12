@@ -1,5 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import {getCookie} from "../utils/cookieUtils.ts";
+import { getCookie } from "../utils/cookieUtils.ts";
 
 const api = axios.create({
   baseURL: "https://localhost:7119/api/",

@@ -1,52 +1,52 @@
 import axios from "axios";
-import { LoginDTO, UserRegisterDTO, UserResponse } from "../types/users.type";
-import { DYNAMIC_API_URL } from "../constants/endPoints";
-import { handleAxiosError } from "../utils/errors.utils";
-import { ERROR_MESSAGE } from "../constants/message";
-import { LogoutResponse } from "../types/auth.types";
-import api from "./axios.config";
+import {
+  LoginRequest,
+  LoginResponse,
+  LogoutResponse,
+  SignupRequest,
+  SignupResponse,
+} from "../types/auth.types";
+import { UserResponse } from "../types/users.type";
 import { ApiResponse } from "./api.config";
+import api from "./axios.config";
 
-export const login = async (payload: LoginDTO) => {
+export const login = async (user: LoginRequest): Promise<LoginResponse> => {
   try {
-    const response = await axios.post(
-      `${DYNAMIC_API_URL}/api/Authenticate/Login`,
-      payload,
-    );
-    return response.data;
-  } catch (error) {
-    handleAxiosError(
-      error,
-      ERROR_MESSAGE.UNEXPECTED_ERROR,
-      true,
-      ERROR_MESSAGE.LOGIN_ERROR,
-    );
-    return null;
-  }
-};
-
-export const register = async (payload: UserRegisterDTO) => {
-  try {
-    const response = await axios.post(`${DYNAMIC_API_URL}/users/register`, {
-      first_name: payload.first_name || "",
-      last_name: payload.last_name || "",
-      email: payload.email || "",
-      password: payload.password || "",
-      confirm_password: payload.confirm_password || "",
-      address: payload.address || "", // Optional
-      date_of_birth: payload.date_of_birth || "", // Optional
-      google_account_id: payload.google_account_id || 0, // Default value
-      status: payload.status || "UNVERIFIED", // Default value for status
-      role_id: payload.role_id || 1, // Default value for role_id
+    const response = await api.post("/auth/login", {
+      email: user.email,
+      password: user.password,
     });
     return response.data;
   } catch (error) {
-    handleAxiosError(
-      error,
-      ERROR_MESSAGE.UNEXPECTED_ERROR,
-      true,
-      ERROR_MESSAGE.REGISTER_ERROR,
-    );
+    console.log(`Login error: ${error}`);
+    throw error;
+  }
+};
+
+export const signup = async (
+  payload: SignupRequest,
+): Promise<SignupResponse> => {
+  try {
+    const response = await api.post(`/auth/register`, payload);
+    return response.data;
+  } catch (error: unknown) {
+    console.log(`Signup error: ${error}`);
+
+    // Type guard for axios error
+    if (axios.isAxiosError(error) && error.response?.data) {
+      return error.response.data as SignupResponse;
+    }
+
+    // Create a default error response
+    const errorResponse: SignupResponse = {
+      message: "An unexpected error occurred",
+      statusCode: 500,
+      isSuccess: false,
+      reason: error instanceof Error ? error.message : "Unknown error",
+      data: null,
+    };
+
+    return errorResponse;
   }
 };
 
@@ -67,7 +67,7 @@ export const doLogout = async (token: string): Promise<LogoutResponse> => {
 export const doExtractUserFromToken = async (
   token: string,
 ): Promise<ApiResponse<UserResponse>> => {
-  const res = await api.post("/authenticate/extract-token", {
+  const res = await api.post("/auth/extract-token", {
     accessToken: token,
   });
   return res.data;

@@ -19,7 +19,6 @@ import {
   IconButton,
   InputAdornment,
   Link,
-  Paper,
   Radio,
   RadioGroup,
   Step,
@@ -30,11 +29,12 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import * as yup from "yup";
-import { signUp } from "../../../apis/mock.apis";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import * as yup from "yup";
+import { signup } from "../../../apis/auth.apis";
+import AuthForm from "../AuthForm";
 
 const textFieldStyle = {
   mb: 3,
@@ -133,23 +133,23 @@ export const Signup = () => {
   ];
 
   const validationSchema = yup.object({
-    username: yup
+    userName: yup
       .string()
-      .required(t("auth.login.validation.username_required")),
+      .required(t("auth.login.validation.userName_required")),
     password: yup
       .string()
       .min(8, t("auth.login.validation.password_length"))
       .required(t("auth.login.validation.password_required")),
-    fullname: yup.string().required(t("auth.signup.fields.fullname")),
-    dob: yup.date().required(t("auth.signup.fields.dob")),
+    fullName: yup.string().required(t("auth.signup.fields.fullName")),
+    birthDate: yup.date().required(t("auth.signup.fields.birthDate")),
     gender: yup.string().required(t("auth.signup.fields.gender")),
-    cmnd: yup.string().required(t("auth.signup.fields.id_card")),
+    idCard: yup.string().required(t("auth.signup.fields.id_card")),
     email: yup
       .string()
       .email("Invalid email")
       .required(t("auth.signup.fields.email")),
     address: yup.string().required(t("auth.signup.fields.address")),
-    phone: yup.string().required(t("auth.signup.fields.phone")),
+    phoneNumber: yup.string().required(t("auth.signup.fields.phoneNumber")),
   });
 
   const handleClickShowPassword = () => {
@@ -166,15 +166,15 @@ export const Signup = () => {
 
   const formik = useFormik({
     initialValues: {
-      username: "",
+      userName: "",
       password: "",
-      fullname: "",
-      dob: "",
+      fullName: "",
+      birthDate: "",
       gender: "",
-      cmnd: "",
+      idCard: "",
       email: "",
       address: "",
-      phone: "",
+      phoneNumber: "",
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -182,21 +182,30 @@ export const Signup = () => {
       const toastId = toast.loading("Đang xác thực người dùng...");
 
       try {
-        const response = await signUp(values);
+        const response = await signup(values);
 
+        // Always dismiss the loading toast first
         toast.dismiss(toastId);
 
         if (response.isSuccess) {
-          toast.success("Đăng ký tài khoản thành công!");
+          toast.success("Đăng ký tài khoản thành công!", {
+            duration: 3000, // Stay visible for 3 seconds
+          });
+
           setTimeout(() => {
-            navigate("/auth/login");
+            navigate("/");
           }, 1000);
         } else {
-          toast.error(response.message);
+          // Make sure error toast stays visible longer
+          toast.error(response.reason || response.message, {
+            duration: 5000, // Stay visible for 5 seconds
+          });
         }
       } catch (error) {
         toast.dismiss(toastId);
-        toast.error("Đã xảy ra lỗi không mong muốn.");
+        toast.error("Đã xảy ra lỗi không mong muốn.", {
+          duration: 5000, // Stay visible for 5 seconds
+        });
       } finally {
         setLoading(false);
       }
@@ -204,29 +213,29 @@ export const Signup = () => {
   });
 
   const isStepOneComplete = () => {
-    const hasErrors = Boolean(formik.errors.username || formik.errors.password);
-    const isTouched = formik.touched.username || formik.touched.password;
-    const hasValues = Boolean(formik.values.username && formik.values.password);
+    const hasErrors = Boolean(formik.errors.userName || formik.errors.password);
+    const isTouched = formik.touched.userName || formik.touched.password;
+    const hasValues = Boolean(formik.values.userName && formik.values.password);
     return hasValues && (!isTouched || !hasErrors);
   };
 
   const isStepTwoComplete = () => {
     const hasErrors = Boolean(
-      formik.errors.fullname ||
-        formik.errors.dob ||
+      formik.errors.fullName ||
+        formik.errors.birthDate ||
         formik.errors.gender ||
-        formik.errors.cmnd,
+        formik.errors.idCard,
     );
     const isTouched =
-      formik.touched.fullname ||
-      formik.touched.dob ||
+      formik.touched.fullName ||
+      formik.touched.birthDate ||
       formik.touched.gender ||
-      formik.touched.cmnd;
+      formik.touched.idCard;
     const hasValues = Boolean(
-      formik.values.fullname &&
-        formik.values.dob &&
+      formik.values.fullName &&
+        formik.values.birthDate &&
         formik.values.gender &&
-        formik.values.cmnd,
+        formik.values.idCard,
     );
     return hasValues && (!isTouched || !hasErrors);
   };
@@ -246,14 +255,14 @@ export const Signup = () => {
           <Box>
             <TextField
               fullWidth
-              id="username"
-              name="username"
+              id="userName"
+              name="userName"
               label={t("auth.signup.fields.username")}
-              value={formik.values.username}
+              value={formik.values.userName}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.username && Boolean(formik.errors.username)}
-              helperText={formik.touched.username && formik.errors.username}
+              error={formik.touched.userName && Boolean(formik.errors.userName)}
+              helperText={formik.touched.userName && formik.errors.userName}
               sx={textFieldStyle}
               InputProps={{
                 startAdornment: (
@@ -302,14 +311,14 @@ export const Signup = () => {
           <Box>
             <TextField
               fullWidth
-              id="fullname"
-              name="fullname"
+              id="fullName"
+              name="fullName"
               label={t("auth.signup.fields.fullname")}
-              value={formik.values.fullname}
+              value={formik.values.fullName}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.fullname && Boolean(formik.errors.fullname)}
-              helperText={formik.touched.fullname && formik.errors.fullname}
+              error={formik.touched.fullName && Boolean(formik.errors.fullName)}
+              helperText={formik.touched.fullName && formik.errors.fullName}
               sx={textFieldStyle}
               InputProps={{
                 startAdornment: (
@@ -321,16 +330,18 @@ export const Signup = () => {
             />
             <TextField
               fullWidth
-              id="dob"
-              name="dob"
+              id="birthDate"
+              name="birthDate"
               label={t("auth.signup.fields.dob")}
               type="date"
               InputLabelProps={{ shrink: true }}
-              value={formik.values.dob}
+              value={formik.values.birthDate}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.dob && Boolean(formik.errors.dob)}
-              helperText={formik.touched.dob && formik.errors.dob}
+              error={
+                formik.touched.birthDate && Boolean(formik.errors.birthDate)
+              }
+              helperText={formik.touched.birthDate && formik.errors.birthDate}
               sx={textFieldStyle}
               InputProps={{
                 startAdornment: (
@@ -362,14 +373,14 @@ export const Signup = () => {
             </FormControl>
             <TextField
               fullWidth
-              id="cmnd"
-              name="cmnd"
+              id="idCard"
+              name="idCard"
               label={t("auth.signup.fields.id_card")}
-              value={formik.values.cmnd}
+              value={formik.values.idCard}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.cmnd && Boolean(formik.errors.cmnd)}
-              helperText={formik.touched.cmnd && formik.errors.cmnd}
+              error={formik.touched.idCard && Boolean(formik.errors.idCard)}
+              helperText={formik.touched.idCard && formik.errors.idCard}
               sx={textFieldStyle}
               InputProps={{
                 startAdornment: (
@@ -424,14 +435,18 @@ export const Signup = () => {
             />
             <TextField
               fullWidth
-              id="phone"
-              name="phone"
-              label={t("auth.signup.fields.phone")}
-              value={formik.values.phone}
+              id="phoneNumber"
+              name="phoneNumber"
+              label={t("auth.signup.fields.phone_number")}
+              value={formik.values.phoneNumber}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.phone && Boolean(formik.errors.phone)}
-              helperText={formik.touched.phone && formik.errors.phone}
+              error={
+                formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)
+              }
+              helperText={
+                formik.touched.phoneNumber && formik.errors.phoneNumber
+              }
               sx={textFieldStyle}
               InputProps={{
                 startAdornment: (

@@ -150,6 +150,16 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
+        public UserDto.UserResponse GetUserByEmail(string email)
+        {
+            
+            var user = _unitOfWork.UserRepository.GetUserByEmail(email);
+            if (user == null)
+                throw new NotFoundException("User not found!");
+            return _mapper.Map<UserDto.UserResponse>(user);
+            
+        }
+
         public async Task<List<UserDto.UserResponse>> GetUserByRoleAsync(Role role)
         {
             try

@@ -1,34 +1,26 @@
-﻿using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic.FileIO;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.RequestModel;
-using MovieManagement.Server.Repositories.IRepositories;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.AuthorizationService;
 using MovieManagement.Server.Services.EmailService;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using MovieManagement.Server.Services.UserService;
 
 namespace MovieManagement.Server.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class AuthenticateController : Controller
+    [Route("api/auth")]
+    public class AuthController : Controller
     {
-        private readonly IUserRepository _userRepository;
         private readonly IUserService _userService;
         private readonly IAuthenticateService _authenticateService;
         private readonly IEmailService _emailService;
 
-        public AuthenticateController(IUserRepository userRepository, IUserService userService, IAuthenticateService authenticateService, IEmailService emailService)
+        public AuthController(IUserService userService, IAuthenticateService authenticateService,
+            IEmailService emailService)
         {
-
-            _userRepository = userRepository;
             _authenticateService = authenticateService;
             _emailService = emailService;
             _userService = userService;
@@ -38,25 +30,16 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserDto.UserResponse>> Register([FromBody] AuthDto.RegisterRequest registerDto)
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
+        public IActionResult Signup([FromBody] AuthDto.RegisterRequest registerDto)
         {
+            
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            
             try
             {
-                var existingUser = await _userRepository.GetUserByEmailAsync(registerDto.Email);
-                if (existingUser != null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 409,
-                        Message = "User already exists",
-                        IsSuccess = false,
-                        Reason = "A user with the same email already exists."
-                    };
-                    return Conflict(response);
-                }
-
-                var newUser = await _authenticateService.Register(registerDto);
+                var newUser = _authenticateService.Register(registerDto);
                 var successResponse = new ApiResponse<UserDto.UserResponse>
                 {
                     StatusCode = 200,
@@ -66,12 +49,23 @@ namespace MovieManagement.Server.Controllers
                 };
                 return Ok(successResponse);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (MalformedLineException ex)
             {
                 var response = new ApiResponse<object>
                 {
                     StatusCode = 400,
                     Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return BadRequest(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 401, // Updated to 401 Unauthorized instead of 400
+                    Message = "Unauthorized access",
                     IsSuccess = false,
                     Reason = ex.Message
                 };
@@ -158,7 +152,8 @@ namespace MovieManagement.Server.Controllers
         [HttpPost("OTP/Send")]
         [ProducesResponseType(typeof(ApiResponse<OtpCodeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> SendOtp([FromBody] SendOtpRequest request)
         {
             try
@@ -196,12 +191,14 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<OtpCodeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest request)
         {
             try
             {
-                bool isValid = await _emailService.ValidationOtp(request.Email, request.NewPassword, request.Code);
+                bool isValid = await _emailService.ValidationOtp(request.Email, request.NewPassword,
+                    request.Code);
                 if (!isValid)
                 {
                     var response = new ApiResponse<IEnumerable<OtpCodeDto>>
@@ -239,16 +236,19 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
         [HttpPost("ResetPassword")]
         [ProducesResponseType(typeof(ApiResponse<ResetPasswordRequest>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ResetUserPassword([FromBody] ResetPasswordRequest request)
         {
             try
             {
-                bool isValid = await _userService.ChangeUserPasswordByUserId(request.UserId, request.CurrentPassword, request.NewPassword);
+                bool isValid = await _userService.ChangeUserPasswordByUserId(request.UserId,
+                    request.CurrentPassword, request.NewPassword);
                 if (!isValid)
                 {
                     var response = new ApiResponse<IEnumerable<ResetPasswordRequest>>
@@ -354,7 +354,7 @@ namespace MovieManagement.Server.Controllers
         //    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         //    return Redirect("/");
         //}
-        
+
         /// <summary>
         /// Extract User Data From Token
         /// </summary>

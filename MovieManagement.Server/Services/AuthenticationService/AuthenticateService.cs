@@ -15,11 +15,11 @@ using Microsoft.VisualBasic;
 using static MovieManagement.Server.Models.Enums.UserEnum;
 using System.Runtime.ConstrainedExecution;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.VisualBasic.FileIO;
 
 
 namespace MovieManagement.Server.Services.AuthorizationService
 {
-
     public class AuthenticateService : IAuthenticateService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -27,7 +27,9 @@ namespace MovieManagement.Server.Services.AuthorizationService
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
         private readonly IJwtService _jwtService;
-        public AuthenticateService(IUnitOfWork unitOfWork, IMapper mapper, IUserService userService, IJwtService jwtService, IUserRepository userRepository)
+
+        public AuthenticateService(IUnitOfWork unitOfWork, IMapper mapper, IUserService userService,
+            IJwtService jwtService, IUserRepository userRepository)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -35,9 +37,9 @@ namespace MovieManagement.Server.Services.AuthorizationService
             _jwtService = jwtService;
             _userRepository = userRepository;
         }
+
         public async Task<AuthDto.LoginResponse> Login(AuthDto.LoginRequest dto)
         {
-
             //Check user name
             var user = await _userRepository.GetUserByEmailAsync(dto.Email);
             if (user == null)
@@ -62,54 +64,62 @@ namespace MovieManagement.Server.Services.AuthorizationService
             var tokenResponse = new TokenDto.TokenResponse();
             tokenResponse.AccessToken = token;
             tokenResponse.Expires = DateTime.UtcNow.AddMinutes(60);
-            
+
             return new AuthDto.LoginResponse
             {
                 Token = tokenResponse
             };
-
-
         }
 
-        public async Task<UserDto.UserResponse> Register(AuthDto.RegisterRequest dto)
+        public UserDto.UserResponse Register(AuthDto.RegisterRequest dto)
         {
-            try
+            // Check if any of the unique fields already exist
+            var existingUser = _userRepository.GetUserByUniqueFields(dto.Email, dto.IDCard, dto.PhoneNumber, dto.UserName);
+            if (existingUser != null)
             {
-                // Check if user already exists
-                var existingUser = await _userRepository.GetUserByEmailAsync(dto.Email);
-                if (existingUser != null)
+                if (existingUser.Email == dto.Email)
                 {
-                    throw new Exception("Username or email already exists.");
+                    throw new MalformedLineException("Email already exists.");
                 }
-                var newUser = _mapper.Map<User>(dto);
-                //// Create new user entity
-                //var user = new User
-                //{
-                newUser.UserId = Guid.NewGuid();
-                newUser.UserName = dto.UserName;
-                newUser.FullName = dto.FullName;
-                newUser.Email = dto.Email;
-                newUser.Status = UserStatus.Active; // Active user
-                newUser.JoinDate = DateTime.UtcNow;
-                newUser.Address = dto.Address;
-                newUser.Avatar = "";
-                newUser.IDCard = "";
-                newUser.PhoneNumber = "";
-                newUser.Role = 0;
-                newUser.Point = 0;
-                //};
-                // Hash the password
-                var passwordHasher = new PasswordHasher<User>();
-                newUser.Password = passwordHasher.HashPassword(newUser, dto.Password);
+                if (existingUser.IDCard == dto.IDCard)
+                {
+                    throw new MalformedLineException("ID card already exists.");
+                }
+                if (existingUser.PhoneNumber == dto.PhoneNumber)
+                {
+                    throw new MalformedLineException("Phone number already exists.");
+                }
+                if (existingUser.UserName == dto.UserName)
+                {
+                    throw new MalformedLineException("Username already exists.");
+                }
+            }
 
-                // Save to database
-                return _mapper.Map<UserDto.UserResponse>(await _unitOfWork.UserRepository.CreateAsync(newUser));
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            var newUser = _mapper.Map<User>(dto);
+            newUser.UserName = dto.UserName.Trim();
+            newUser.FullName = dto.FullName.Trim();
+            
+            if (newUser.BirthDate > DateTime.Now) throw new BadRequestException("Birthdate is invalid");
+            newUser.BirthDate = dto.BirthDate;
+            
+            newUser.Email = dto.Email.Trim();
+            newUser.Gender = dto.Gender;
+            newUser.Status = UserStatus.Active; // Active user
+            newUser.JoinDate = DateTime.UtcNow;
+            newUser.Address = dto.Address;
+            newUser.Avatar = "https://images.dog.ceo/breeds/pembroke/n02113023_1258.jpg";
+            newUser.IDCard = dto.IDCard;
+            newUser.PhoneNumber = dto.PhoneNumber;
+            newUser.Role = 0; //Default role is Member
+            newUser.Point = 0;
+
+            // Hash the password
+            newUser.Password = new PasswordHasher<User>().HashPassword(newUser, dto.Password);
+
+            // Save to database
+            return _mapper.Map<UserDto.UserResponse>(_unitOfWork.UserRepository.Create(newUser));
         }
+
         public async Task<UserDto.UserResponse> ExtractTokenAsync(string token)
         {
             var jwtToken = _jwtService.ReadTokenWithoutValidation(token);
@@ -125,5 +135,4 @@ namespace MovieManagement.Server.Services.AuthorizationService
             return _mapper.Map<UserDto.UserResponse>(user);
         }
     }
-    
 }
