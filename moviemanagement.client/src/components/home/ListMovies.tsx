@@ -12,7 +12,6 @@ import ScrollFloat from "../shared/ScrollFloat";
 import "./ListMovies.css";
 import PlayCircleOutlineOutlinedIcon from "@mui/icons-material/PlayCircleOutlineOutlined";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import toast from "react-hot-toast";
 import api from "../../apis/axios.config";
 import Loader from "../shared/Loading";
 
@@ -97,7 +96,7 @@ const MovieSlider = ({
                 </Box>
               </Box>
               <Typography variant="h6" className="movie-title">
-                {movie.name}
+                {movie.movieName}
               </Typography>
               <Box
                 sx={{

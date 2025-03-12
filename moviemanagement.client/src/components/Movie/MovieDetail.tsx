@@ -70,7 +70,7 @@ const MovieDetail: React.FC = () => {
               <Box
                 component="img"
                 src={movie?.image}
-                alt={movie?.name}
+                alt={movie?.movieName}
                 sx={{
                   width: "100%",
                   height: "100%",
@@ -94,7 +94,7 @@ const MovieDetail: React.FC = () => {
                 mb={2}
                 fontFamily={"JetBrains Mono"}
               >
-                {movie?.name}
+                {movie?.movieName}
               </Typography>
 
               <Box sx={{ mb: 3, fontWeight: "bold" }}>
