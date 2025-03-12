@@ -4,6 +4,7 @@ export type SeatType = {
   seatTypeId: string; // Guid in C#
   typeName: string;
   price: number; // decimal in C#
+  quantity: number; // int in C#
   isActive: boolean; // bool in C#
   seats: Seat[]; // ICollection in C# (as an array)
 };

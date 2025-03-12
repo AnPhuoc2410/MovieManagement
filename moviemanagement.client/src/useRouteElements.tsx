@@ -118,7 +118,7 @@ export default function useRouteElements() {
         {
           path: "/ticket",
           children: [
-            { path: ":id", element: <ClientPages.Ticket.Booking /> },
+            { path: ":movieId", element: <ClientPages.Ticket.Booking /> },
             { path: "movie-seat", element: <ClientPages.Ticket.Seat /> },
             { path: "payment", element: <ClientPages.Ticket.Payment /> },
             {

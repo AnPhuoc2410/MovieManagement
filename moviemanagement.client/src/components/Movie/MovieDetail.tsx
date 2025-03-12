@@ -1,6 +1,4 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import TranslateIcon from "@mui/icons-material/Translate";
 import {
   Box,
   Button,
@@ -10,17 +8,15 @@ import {
   Modal,
   Typography,
 } from "@mui/material";
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import api from "../../apis/axios.config";
-import toast from "react-hot-toast";
-import Loader from "../shared/Loading";
-import { Movie } from "../../types/movie.types";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
+import api from "../../apis/axios.config";
+import { Movie } from "../../types/movie.types";
+import Loader from "../shared/Loading";
 
 const MovieDetail: React.FC = () => {
-  const location = useLocation();
-  const movieId = location.state?.movieId;
+  const { movieId } = useParams();
   const [movie, setMovie] = useState<Movie>();
   const [openTrailer, setOpenTrailer] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -35,7 +31,6 @@ const MovieDetail: React.FC = () => {
       console.log("Movie detail:", response.data);
     } catch (error: any) {
       console.error("Failed to fetch movie:", error);
-      toast.error(error.message);
     } finally {
       console.log(movieId + "haha");
       setLoading(false);
@@ -69,28 +64,6 @@ const MovieDetail: React.FC = () => {
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", minHeight: "50vh", color: "white" }}>
       <Container maxWidth="lg" sx={{ mt: 13, color: "white" }}>
-        {!movieId || !movie ? (
-          <>
-            <Typography
-              variant="h4"
-              sx={{ textAlign: "center", mb: 4, fontWeight: "bold" }}
-            >
-              {t("oops")}
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                textAlign: "center",
-                m: 4,
-                p: 4,
-                border: 2,
-                color: "Highlight",
-              }}
-            >
-              Phim không tồn tại.
-            </Typography>
-          </>
-        ) : (
           <Grid container spacing={4} sx={{ alignItems: "stretch" }}>
             {/* Movie Poster */}
             <Grid item xs={12} md={4}>
@@ -213,7 +186,7 @@ const MovieDetail: React.FC = () => {
                 <Button
                   variant="outlined"
                   size="large"
-                  onClick={() => handleOpenTrailer(movie?.trailer)}
+                  onClick={() => movie?.trailer && handleOpenTrailer(movie.trailer)}
                   sx={{
                     color: "white",
                     borderColor: "#e67e22",
@@ -280,7 +253,7 @@ const MovieDetail: React.FC = () => {
               </Box>
             </Grid>
           </Grid>
-        )}
+
       </Container>
 
       {/* Thêm Modal cho trailer */}

@@ -69,7 +69,7 @@ namespace MovieManagement.Server.Services.UserService
         {
             try
             {
-                if(await _unitOfWork.UserRepository.IsExistingEmailAsync(account.Email))
+                if (await _unitOfWork.UserRepository.IsExistingEmailAsync(account.Email))
                     throw new Exception("Email already exists.");
 
                 var newUser = _mapper.Map<User>(account);
@@ -93,18 +93,18 @@ namespace MovieManagement.Server.Services.UserService
             if (user.Role == Role.Admin)
                 throw new BadRequestException("Admin cannot be created by this method.");
 
-            if(_unitOfWork.UserRepository.IsExistingEmailOrUsernameOrPhoneOrIdNumber(user.Email, 
+            if (_unitOfWork.UserRepository.IsExistingEmailOrUsernameOrPhoneOrIdNumber(user.Email,
                    user.UserName, user.PhoneNumber, user.IDCard))
                 throw new BadRequestException("Email, username, phone number or ID number already exists.");
-            
+
             var newUser = _mapper.Map<User>(user);
             newUser.Password = new PasswordHasher<User>().HashPassword(newUser, user.Password);
-            
+
             var createdUser = await _unitOfWork.UserRepository.CreateAsync(newUser);
-            
+
             if (createdUser == null)
                 throw new BadRequestException("Failed to create user.");
-            
+
             return _mapper.Map<UserDto.UserResponse>(createdUser);
         }
 
@@ -152,12 +152,12 @@ namespace MovieManagement.Server.Services.UserService
 
         public UserDto.UserResponse GetUserByEmail(string email)
         {
-            
+
             var user = _unitOfWork.UserRepository.GetUserByEmail(email);
             if (user == null)
                 throw new NotFoundException("User not found!");
             return _mapper.Map<UserDto.UserResponse>(user);
-            
+
         }
 
         public async Task<List<UserDto.UserResponse>> GetUserByRoleAsync(Role role)
@@ -195,7 +195,7 @@ namespace MovieManagement.Server.Services.UserService
         public async Task UpdateUserAsync(Guid id, UserDto.UpdateRequest userDto)
         {
             // Check if the user exists
-            var existingUser = await _unitOfWork.UserRepository.GetByIdAsync(id) 
+            var existingUser = await _unitOfWork.UserRepository.GetByIdAsync(id)
                                ?? throw new NotFoundException("User not found!");
 
             // Validate username and email only if they are being changed

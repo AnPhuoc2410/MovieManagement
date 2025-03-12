@@ -18,6 +18,7 @@ import { vi as viLocale } from "date-fns/locale";
 import axios from "axios";
 import { ShowTime } from "../../types/showtime.types";
 import { Cinema } from "../../types/cinema.types";
+import { useTranslation } from "react-i18next";
 
 interface ShowTimeCinemaProps {
   movieId: string;
@@ -45,18 +46,22 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [cinemas, setCinemas] = useState<Cinema[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { t, i18n } = useTranslation();
 
-  // Memoized days array - only recalculated if today changes
   const days = useMemo(() => {
     return Array.from({ length: 4 }, (_, i) => {
       const date = addDays(today, i);
+      const dayName = format(date, "EEEE", {
+        locale: i18n.language === "vi" ? viLocale : undefined,
+      });
+
       return {
         date,
         formatted: format(date, "dd/MM"),
-        label: format(date, "EEEE", { locale: viLocale }),
+        label: t(`${dayName.toLowerCase()}`),
       };
     });
-  }, [today]);
+  }, [today, t, i18n.language]);
 
   // Memoized handleDateChange function
   const handleDateChange = useCallback(
@@ -161,7 +166,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
           mb={2}
           sx={{ letterSpacing: "1px", textTransform: "uppercase" }}
         >
-          Lịch Chiếu & Rạp
+          {t("showtime_cinema.title.showtime_list")}
         </Typography>
 
         {/* Date Selection - memoized rendering */}
@@ -201,7 +206,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                 }}
               >
                 {isToday && (
-                  <Typography
+                    <Typography
                     variant="caption"
                     sx={{
                       position: "absolute",
@@ -213,10 +218,11 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                       borderRadius: "4px",
                       px: 0.5,
                       fontWeight: "bold",
+                      whiteSpace: "nowrap",
                     }}
-                  >
-                    Today
-                  </Typography>
+                    >
+                    {t("showtime_cinema.title.now_day")}
+                    </Typography>
                 )}
                 <Box textAlign="center">
                   <Typography
@@ -243,7 +249,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
         >
           <Grid item>
             <Typography variant="h4" fontWeight="bold">
-              🎬 Danh Sách Rạp
+              🎬 {t("showtime_cinema.title.theater_list")}
             </Typography>
           </Grid>
           <Grid item>
@@ -261,9 +267,9 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                   backgroundColor: "transparent",
                 }}
               >
-                <MenuItem value="hcm">Hồ Chí Minh</MenuItem>
-                <MenuItem value="hn">Hà Nội</MenuItem>
-                <MenuItem value="dn">Đà Nẵng</MenuItem>
+                <MenuItem value="hcm">{t("showtime_cinema.location.HCM")}</MenuItem>
+                <MenuItem value="hn">{t("showtime_cinema.location.HaNoi")}</MenuItem>
+                <MenuItem value="dn">{t("showtime_cinema.location.DaNang")}</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -272,7 +278,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
         {/* Loading state */}
         {isLoading && (
           <Typography textAlign="center" sx={{ py: 2 }}>
-            Đang tải lịch chiếu...
+            {t("showtime_cinema.title.loading_showtime")}
           </Typography>
         )}
 
@@ -338,7 +344,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
               ))
             ) : (
               <Typography variant="body1" textAlign="center" sx={{ py: 5 }}>
-                Không có suất chiếu cho ngày được chọn.
+                {t("showtime_cinema.title.no_showtime")}
               </Typography>
             )}
           </Box>
