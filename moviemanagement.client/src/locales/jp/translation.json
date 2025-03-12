@@ -146,6 +146,41 @@
         "description": "独占的な特典を提供するVIPカード",
         "button": "今すぐ詳細を確認"
       }
+    },
+    "showtime_cinema": {
+      "title":{
+        "showtime_list" : "上映時間と劇場",
+        "now_day" : "今日",
+        "theater_list" : "劇場一覧"
+      },
+      "location":{
+        "HaNoi" : "ハノイ",
+        "HCM" : "ホーチミン",
+        "DaNang" : "ダナン"
+      },
+      "notification":{
+        "loading_showtime" : "上映時間を読み込んでいます...",
+        "no_showtime" : "選択した日付には上映時間がありません"
+      },
+      "error":{
+        "select_show_time" : "上映時間を選択してください！",
+        "select_ticket" : "チケットを少なくとも1つ選択してください！"
+      }
+    },
+    "ticket_price":{
+      "ticket_selection": "チケットタイプ",
+      "ticket_type": {
+        "couple" :"ダブルシート",
+        "single" : "シングルシート",
+        "vip" : "贅沢シート"
+      },
+      "next" :"次へ"
+    },
+    "step_tracker":{
+      "select_show_time" : "上映時間を選択",
+      "select_seat" : "座席を選択",
+      "payment" : "支払い",
+      "success" : "成功"
     }
   }
 }

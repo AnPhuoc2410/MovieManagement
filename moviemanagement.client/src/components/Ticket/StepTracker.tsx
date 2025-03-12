@@ -6,12 +6,15 @@ import {
 } from "@mui/icons-material";
 import { Box, Step, StepLabel, Stepper } from "@mui/material";
 import React from "react";
+import { useTranslation } from "react-i18next";
+
+const { t } = useTranslation();
 
 const steps = [
-  { label: "Chọn Suất Chiếu", icon: <MovieIcon /> },
-  { label: "Chọn Ghế", icon: <EventSeatIcon /> },
-  { label: "Thanh Toán", icon: <PaymentIcon /> },
-  { label: "Thanh Công", icon: <CheckCircleIcon /> },
+  { label: t("step_tracker.select_show_time"), icon: <MovieIcon /> },
+  { label: t("step_tracker.select_seat"), icon: <EventSeatIcon /> },
+  { label: t("step_tracker.Payment"), icon: <PaymentIcon /> },
+  { label: t("step_tracker.Success"), icon: <CheckCircleIcon /> },
 ];
 
 interface StepTrackerProps {

@@ -146,6 +146,41 @@
         "description": "Thẻ VIP mang đến sự ưu đãi độc quyền",
         "button": "TÌM HIỂU NGAY"
       }
+    },
+    "showtime_cinema": {
+      "title":{
+        "showtime_list" : "Lịch chiếu và Rạp",
+        "now_day" : "Hôm nay",
+        "theater_list" : "Danh sách rạp"
+      },
+      "location":{
+        "HaNoi" : "Hà Nội",
+        "HCM" : "Hồ Chí Minh",
+        "DaNang" : "Đà Nẵng"
+      },
+      "notification":{
+        "loading_showtime" : "Đang tải danh sách lịch chiếu...",
+        "no_showtime" : "Ngày bạn chọn không có lịch chiếu"
+      },
+      "error":{
+        "select_show_time" : "Xin vui lòng, chọn lịch chiếu",
+        "select_ticket" : "Xin vui lòng, chọn ít nhât một vé"
+      }
+    },
+    "ticket_price":{
+      "ticket_selection": "Chọn loại vé",
+      "ticket_type": {
+        "couple" : "Ghế đôi",
+        "single" : "Ghế đơn",
+        "vip" : "Ghế VIP"
+      },
+      "next" :"Tiếp tục"
+    },
+    "step_tracker":{
+      "select_show_time" : "Chọn lịch chiếu",
+      "select_seat" : "Chọn ghế",
+      "payment" : "Thanh toán",
+      "success" : "Thành công"
     }
   }
 }

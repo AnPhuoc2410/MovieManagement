@@ -8,6 +8,7 @@ import TicketPrice, { TicketType } from "../../components/Ticket/TicketPrice";
 import Footer from "../../components/home/Footer";
 import toast from "react-hot-toast";
 import Header from "../../components/home/Header";
+import { useTranslation } from "react-i18next";
 
 const Ticket: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const Ticket: React.FC = () => {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [roomId, setRoomId] = useState<string>("");
   const [showTicketPrice, setShowTicketPrice] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   // You can still retrieve movieId from location or params if needed.
   const movieId = "b6d29d0d-4d39-45d9-8f09-4f997a65d8cf";

@@ -11,6 +11,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 export interface TicketType {
   id: string;
@@ -26,24 +27,26 @@ interface TicketPriceProps {
 }
 
 const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
+  const { t } = useTranslation();
+
   const initialTickets: TicketType[] = [
     {
       id: "seat_normal",
-      name: "Ghế Đơn",
+      name: t("ticket_price.ticket_type.single"),
       type: "Đơn",
       price: 75000,
       quantity: 0,
     },
     {
       id: "seat_double",
-      name: "Ghế Đôi",
+      name: t("ticket_price.ticket_type.couple"),
       type: "Đôi",
       price: 140000,
       quantity: 0,
     },
     {
       id: "seat_vip",
-      name: "Ghế VIP",
+      name:  t("ticket_price.ticket_type.vip"),
       type: "VIP",
       price: 145000,
       quantity: 0,
@@ -114,7 +117,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
           color: "white",
         }}
       >
-        Chọn Loại Vé
+        {t("ticket_price.ticket_selection")}
       </Typography>
 
       {/* Ticket Cards */}
@@ -220,7 +223,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
       {onNext && (
         <Box sx={{ mt: 4, textAlign: "center" }}>
           <Button variant="contained" color="primary" onClick={handleNext}>
-            Tiếp tục
+          {t("ticket_price.next")}
           </Button>
         </Box>
       )}

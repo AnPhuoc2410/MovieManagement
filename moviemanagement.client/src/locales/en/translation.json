@@ -147,6 +147,41 @@
         "description": "VIP card brings exclusive privileges",
         "button": "LEARN MORE"
       }
+    },
+    "showtime_cinema": {
+      "title":{
+        "showtime_list" : "Showtime a Theaters",
+        "now_day" : "Now Day",
+        "theater_list" : "Theater list"
+      },
+      "location":{
+        "HaNoi" : "Ha Noi",
+        "HCM" : "Ho Chi Minh City",
+        "DaNang" : "Da Nang"
+      },
+      "notification":{
+        "loading_showtime" : "Loading Showtime",
+        "no_showtime" : "There are no showtimes for the selected date"
+      },
+      "error":{
+        "select_show_time" : "Please select show time!",
+        "select_ticket" : "Please select at least one ticket!"
+      }
+    },
+    "ticket_price":{
+      "ticket_selection": "Select Ticket Type",
+      "ticket_type": {
+        "couple" : "Couple Seat",
+        "single" : "Single Seat",
+        "vip" : "VIP Seat"
+      },
+      "next" :"Continue"
+    },
+    "step_tracker":{
+      "select_show_time" : "Select showtimes",
+      "select_seat" : "Select seat",
+      "payment" : "Payment",
+      "success" : "Success"
     }
   }
 }
