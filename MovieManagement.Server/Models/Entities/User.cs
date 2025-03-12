@@ -38,9 +38,9 @@ namespace MovieManagement.Server.Models.Entities
         /// 0: Khóa
         /// 1: Mở
         /// </summary>
-        public UserStatus Status { get; set; }
+        public UserStatus Status { get; set; } = UserStatus.Active;
 
-        public Role Role { get; set; }
+        public Role Role { get; set; } = Role.Member;
 
         public decimal Point { get; set; }
 

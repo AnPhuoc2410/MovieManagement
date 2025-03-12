@@ -85,13 +85,22 @@ export default function useRouteElements() {
     },
     // Auth Routes (Rejected when authenticated)
     {
-      path: "/auth/*",
-      element: <AuthForm />,
+      element: <RejectedRoute />,
+      children: [
+        {
+          path: "/auth/*",
+          element: <AuthForm />,
+        },
+      ],
     },
     // Protected Client Routes
     {
-      element: <RejectedRoute />,
+      element: <ProtectedRoute />,
       children: [
+        {
+          path: "/users/profile/:userId",
+          element: <ClientPages.User.Profile />,
+        },
         {
           path: "/promotions",
           children: [
@@ -121,18 +130,6 @@ export default function useRouteElements() {
       ],
     },
 
-    // Protected User Routes
-    {
-      element: <ProtectedRoute />,
-      children: [
-        {
-          path: "/users",
-          children: [
-            { path: "profile/:userId", element: <ClientPages.User.Profile /> },
-          ],
-        },
-      ],
-    },
     // Protected Admin Routes
     {
       element: <ProtectedRoute />,

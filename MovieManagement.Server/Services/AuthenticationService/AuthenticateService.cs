@@ -14,6 +14,7 @@ using MovieManagement.Server.Exceptions;
 using Microsoft.VisualBasic;
 using static MovieManagement.Server.Models.Enums.UserEnum;
 using System.Runtime.ConstrainedExecution;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 
 namespace MovieManagement.Server.Services.AuthorizationService
@@ -58,9 +59,13 @@ namespace MovieManagement.Server.Services.AuthorizationService
             //Method create Token
             var token = _jwtService.GenerateToken(user.UserId, user.UserName, user.Role.ToString());
 
+            var tokenResponse = new TokenDto.TokenResponse();
+            tokenResponse.AccessToken = token;
+            tokenResponse.Expires = DateTime.UtcNow.AddMinutes(60);
+            
             return new AuthDto.LoginResponse
             {
-                Token = token
+                Token = tokenResponse
             };
 
 
@@ -105,5 +110,20 @@ namespace MovieManagement.Server.Services.AuthorizationService
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<UserDto.UserResponse> ExtractTokenAsync(string token)
+        {
+            var jwtToken = _jwtService.ReadTokenWithoutValidation(token);
+            if (jwtToken == null)
+                throw new BadRequestException("Invalid token");
+
+            var userId = jwtToken.Claims
+                .FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(Guid.Parse(userId));
+            if (user == null)
+                throw new NotFoundException("User not found!");
+
+            return _mapper.Map<UserDto.UserResponse>(user);
+        }
     }
+    
 }

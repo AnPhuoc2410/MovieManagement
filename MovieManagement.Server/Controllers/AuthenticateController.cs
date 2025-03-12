@@ -11,6 +11,7 @@ using MovieManagement.Server.Services.AuthorizationService;
 using MovieManagement.Server.Services.EmailService;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using MovieManagement.Server.Services.UserService;
 
 namespace MovieManagement.Server.Controllers
@@ -23,6 +24,7 @@ namespace MovieManagement.Server.Controllers
         private readonly IUserService _userService;
         private readonly IAuthenticateService _authenticateService;
         private readonly IEmailService _emailService;
+
         public AuthenticateController(IUserRepository userRepository, IUserService userService, IAuthenticateService authenticateService, IEmailService emailService)
         {
 
@@ -33,11 +35,11 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost("Register")]
-        [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Register([FromBody] AuthDto.RegisterRequest registerDto)
+        public async Task<ActionResult<UserDto.UserResponse>> Register([FromBody] AuthDto.RegisterRequest registerDto)
         {
             try
             {
@@ -80,7 +82,7 @@ namespace MovieManagement.Server.Controllers
                 var response = new ApiResponse<object>
                 {
                     StatusCode = 404,
-                    Message = "Show time not found",
+                    Message = ex.Message,
                     IsSuccess = false,
                     Reason = ex.Message
                 };
@@ -352,5 +354,36 @@ namespace MovieManagement.Server.Controllers
         //    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         //    return Redirect("/");
         //}
+        
+        /// <summary>
+        /// Extract User Data From Token
+        /// </summary>
+        /// <response code="200">Token extracted successfully</response>
+        /// <response code="401">Invalid token</response>
+        // [Authorize(Policy = "Admin")]
+        // [Authorize(Policy = "Employee")]
+        // [Authorize(Policy = "Member")]
+        [HttpPost("extract-token")]
+        public async Task<IActionResult> ExtractToken([FromBody] TokenDto.TokenRequest tokenRequest)
+        {
+            var userData = await _authenticateService.ExtractTokenAsync(tokenRequest.AccessToken);
+            if (userData == null)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = "User not found",
+                    IsSuccess = false
+                });
+            }
+
+            return Ok(new ApiResponse<object>
+            {
+                StatusCode = 200,
+                Message = "Token extracted successfully",
+                IsSuccess = true,
+                Data = userData
+            });
+        }
     }
 }

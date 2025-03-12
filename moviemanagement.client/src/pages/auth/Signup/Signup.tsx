@@ -186,7 +186,7 @@ export const Signup = () => {
 
         toast.dismiss(toastId);
 
-        if (response.is_success) {
+        if (response.isSuccess) {
           toast.success("Đăng ký tài khoản thành công!");
           setTimeout(() => {
             navigate("/auth/login");
