@@ -42,5 +42,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
         /// <param name="collections">Thông tin các tham số trả về từ VNPAY qua callback.</param>
         /// <returns></returns>
         PaymentResult GetPaymentResult(IQueryCollection parameters);
+
+        void HandleSuccessfulPayment(PaymentResult paymentResult);
     }
 }

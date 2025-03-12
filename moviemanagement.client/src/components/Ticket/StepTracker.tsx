@@ -1,5 +1,6 @@
 import {
   Cancel,
+  CancelOutlined,
   CheckCircleOutline as CheckCircleIcon,
   EventSeatOutlined as EventSeatIcon,
   MovieOutlined as MovieIcon,
@@ -12,14 +13,22 @@ const steps = [
   { label: "Chọn Suất Chiếu", icon: <MovieIcon /> },
   { label: "Chọn Ghế", icon: <EventSeatIcon /> },
   { label: "Thanh Toán", icon: <PaymentIcon /> },
-  { label: "Thành Công", icon: <CheckCircleIcon /> },
 ];
 
 interface StepTrackerProps {
   currentStep: number;
+  paymentStatus?: "success" | "failure";
 }
 
-const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
+const StepTracker: React.FC<StepTrackerProps> = ({
+  currentStep,
+  paymentStatus,
+}) => {
+  const finalStep =
+    paymentStatus === "success"
+      ? { label: "Thành Công", icon: <CheckCircleIcon /> }
+      : { label: "Hủy Thanh Toán", icon: <CancelOutlined sx={{ color: 'red' }} /> };
+
   return (
     <Box
       sx={{
@@ -70,7 +79,7 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
           },
         }}
       >
-        {steps.map((step, index) => (
+        {[...steps, finalStep].map((step, index) => (
           <Step key={index}>
             <StepLabel
               StepIconComponent={() => (
