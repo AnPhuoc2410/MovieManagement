@@ -1,10 +1,13 @@
 ﻿using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Identity;
 using MimeKit;
+using MimeKit.Text;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Services.JwtService;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
@@ -14,12 +17,54 @@ namespace MovieManagement.Server.Services.EmailService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
+        private readonly IJwtService _jwtService;
 
-        public EmailService(IUnitOfWork unitOfWork, IConfiguration configuration)
+        public EmailService(IUnitOfWork unitOfWork, IConfiguration configuration, IJwtService jwtService)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            _jwtService = jwtService;
         }
+
+        public async Task<bool> sendAuthenticateEmail(string userEmail)
+        {
+            try
+            {
+                //Checking user existing
+                var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(userEmail);
+                if (user == null)
+                    throw new NotFoundException("User cannot found!");
+
+                //Generate jwt token
+                var token = _jwtService.GenerateToken(user.UserId, user.UserName, user.Role.ToString());
+
+                //Create activation link with jwt token
+                var activationLink = $"{_configuration["BackEnd:BaseURL"]}/activate?token={token}";
+
+                //Create email
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(_configuration["AuthenticateAccount:Username"]));
+                email.To.Add(MailboxAddress.Parse(userEmail));
+                email.Subject = "Activate your account";
+                email.Body = new TextPart(TextFormat.Html)
+                {
+                    Text = $"<p>Click the link below to activate your account:</p> <a href='{activationLink}'>Activate Account</a>"
+                };
+
+                //Send email
+                using var smtp = new SmtpClient();
+                smtp.Connect(_configuration["AuthenticateAccount:Host"], 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate(_configuration["AuthenticateAccount:Username"], _configuration["AuthenticateAccount:Password"]);
+                smtp.Send(email);
+                smtp.Disconnect(true);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot send email because of this error " + ex.Message);
+            }
+        }
+
         public async Task<bool> SendOtpEmail(string userEmail)
         {
             try
@@ -62,7 +107,7 @@ namespace MovieManagement.Server.Services.EmailService
             {
                 //Checking user is existing by email
                 var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
-                if(user == null)
+                if (user == null)
                     throw new NotFoundException("User cannot found!");
 
                 //Checking validation user

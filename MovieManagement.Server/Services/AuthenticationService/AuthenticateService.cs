@@ -22,23 +22,19 @@ namespace MovieManagement.Server.Services.AuthorizationService
     public class AuthenticateService : IAuthenticateService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly IUserService _userService;
         private readonly IJwtService _jwtService;
-        public AuthenticateService(IUnitOfWork unitOfWork, IMapper mapper, IUserService userService, IJwtService jwtService, IUserRepository userRepository)
+        public AuthenticateService(IUnitOfWork unitOfWork, IMapper mapper, IJwtService jwtService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _userService = userService;
             _jwtService = jwtService;
-            _userRepository = userRepository;
         }
         public async Task<AuthDto.LoginResponse> Login(AuthDto.LoginRequest dto)
         {
 
             //Check user name
-            var user = await _userRepository.GetUserByEmailAsync(dto.Email);
+            var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(dto.Email);
             if (user == null)
             {
                 throw new UnauthorizedAccessException("Invalid username/email or password");
@@ -71,15 +67,13 @@ namespace MovieManagement.Server.Services.AuthorizationService
             try
             {
                 // Check if user already exists
-                var existingUser = await _userRepository.GetUserByEmailAsync(dto.Email);
+                var existingUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(dto.Email);
                 if (existingUser != null)
                 {
                     throw new Exception("Username or email already exists.");
                 }
                 var newUser = _mapper.Map<User>(dto);
                 //// Create new user entity
-                //var user = new User
-                //{
                 newUser.UserId = Guid.NewGuid();
                 newUser.UserName = dto.UserName;
                 newUser.FullName = dto.FullName;
@@ -92,7 +86,7 @@ namespace MovieManagement.Server.Services.AuthorizationService
                 newUser.PhoneNumber = "";
                 newUser.Role = 0;
                 newUser.Point = 0;
-                //};
+                
                 // Hash the password
                 var passwordHasher = new PasswordHasher<User>();
                 newUser.Password = passwordHasher.HashPassword(newUser, dto.Password);
