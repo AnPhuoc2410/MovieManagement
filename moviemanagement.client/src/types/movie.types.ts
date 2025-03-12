@@ -4,7 +4,7 @@ import { ShowTime } from "./showtime.types";
 
 export type Movie = {
   movieId: string; // Guid in C#
-  name: string;
+  movieName: string;
   image: string;
   postDate: Date; // DateTime in C#
   fromDate: Date; // DateTime in C#
@@ -23,7 +23,7 @@ export type Movie = {
 
 export type QuanLyPhimType = Pick<
   Movie,
-  "movieId" | "name" | "postDate" | "director" | "duration" | "version"
+  "movieId" | "movieName" | "postDate" | "director" | "duration" | "version"
 >;
 
 export interface QuanLyPhimColumn extends TableData {

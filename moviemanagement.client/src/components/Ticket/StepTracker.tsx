@@ -1,4 +1,5 @@
 import {
+  Cancel,
   CheckCircleOutline as CheckCircleIcon,
   EventSeatOutlined as EventSeatIcon,
   MovieOutlined as MovieIcon,
@@ -11,7 +12,7 @@ const steps = [
   { label: "Chọn Suất Chiếu", icon: <MovieIcon /> },
   { label: "Chọn Ghế", icon: <EventSeatIcon /> },
   { label: "Thanh Toán", icon: <PaymentIcon /> },
-  { label: "Thanh Công", icon: <CheckCircleIcon /> },
+  { label: "Thành Công", icon: <CheckCircleIcon /> },
 ];
 
 interface StepTrackerProps {

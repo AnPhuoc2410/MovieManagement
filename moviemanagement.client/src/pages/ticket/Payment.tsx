@@ -13,6 +13,9 @@ import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import toast from "react-hot-toast";
+import { ca } from "date-fns/locale";
+import axios from "axios";
+import api from "../../apis/axios.config";
 
 const Payment: React.FC = () => {
   const location = useLocation();
@@ -54,7 +57,7 @@ const Payment: React.FC = () => {
   const [idNumberError, setIdNumberError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     let hasError = false;
     if (!fullName.trim()) {
       setFullNameError(true);
@@ -82,21 +85,30 @@ const Payment: React.FC = () => {
     }
     if (hasError) return;
 
-    toast.success("Đặt vé thành công!");
-    navigate("/ticket/confirmation", {
-      state: {
-        movieTitle,
-        screen,
-        showDate,
-        showTime,
-        seats,
-        total,
-        fullName,
-        email,
-        idNumber,
-        phone,
-      },
-    });
+    try {
+      const response = await api.get(`vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}`);
+      window.location.href = response.data;
+    } catch (error) {
+      console.error(error);
+      toast.error("Đặt vé thất bại!");
+      return;
+    }
+
+    // toast.success("Đặt vé thành công!");
+    // navigate("/ticket/confirmation", {
+    //   state: {
+    //     movieTitle,
+    //     screen,
+    //     showDate,
+    //     showTime,
+    //     seats,
+    //     total,
+    //     fullName,
+    //     email,
+    //     idNumber,
+    //     phone,
+    //   },
+    // });
   };
 
   return (
