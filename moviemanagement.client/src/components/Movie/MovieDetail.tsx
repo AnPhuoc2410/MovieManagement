@@ -1,6 +1,4 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import TranslateIcon from "@mui/icons-material/Translate";
 import {
   Box,
   Button,
@@ -10,13 +8,12 @@ import {
   Modal,
   Typography,
 } from "@mui/material";
-import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import api from "../../apis/axios.config";
-import toast from "react-hot-toast";
-import Loader from "../shared/Loading";
-import { Movie } from "../../types/movie.types";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
+import api from "../../apis/axios.config";
+import { Movie } from "../../types/movie.types";
+import Loader from "../shared/Loading";
 
 const MovieDetail: React.FC = () => {
   const { movieId } = useParams();

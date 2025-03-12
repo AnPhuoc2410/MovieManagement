@@ -5,7 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import MovieDetail from "../../components/Movie/MovieDetail";
 import ShowTimeCinema from "../../components/Ticket/ShowTimeCinema";
 import StepTracker from "../../components/Ticket/StepTracker";
-import TicketPrice, { TicketType } from "../../components/Ticket/TicketPrice";
+import TicketPrice from "../../components/Ticket/TicketPrice";
+import { SeatType } from "../../types/seattype.types"; // Import SeatType correctly
 import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import { useTranslation } from "react-i18next";
@@ -37,7 +38,7 @@ const Ticket: React.FC = () => {
   }, []);
 
   const handleTicketSelection = useCallback(
-    (tickets: TicketType[]) => {
+    (tickets: SeatType[]) => {  // ✅ Use SeatType instead of TicketType
       if (!selectedTime) {
         toast.error("Vui lòng chọn suất chiếu!");
         return;

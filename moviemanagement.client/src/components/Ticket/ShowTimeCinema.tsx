@@ -262,13 +262,6 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
           </Grid>
         </Grid>
 
-        {/* Loading state */}
-        {isLoading && (
-          <Typography textAlign="center" sx={{ py: 2 }}>
-            Đang tải lịch chiếu...
-          </Typography>
-        )}
-
         {/* Cinema List or No Showtime Message - conditionally rendered */}
         {!isLoading && (
           <Box sx={{ borderRadius: "12px" }}>
