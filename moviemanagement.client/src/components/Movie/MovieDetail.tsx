@@ -121,7 +121,7 @@ const MovieDetail: React.FC = () => {
                 mb={2}
                 fontFamily={"JetBrains Mono"}
               >
-                {movie?.name}
+                {movie?.movieName}
               </Typography>
 
               <Box sx={{ mb: 3, fontWeight: "bold" }}>

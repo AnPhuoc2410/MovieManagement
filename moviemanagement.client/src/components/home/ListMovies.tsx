@@ -97,7 +97,7 @@ const MovieSlider = ({
                 </Box>
               </Box>
               <Typography variant="h6" className="movie-title">
-                {movie.name}
+                {movie.movieName}
               </Typography>
               <Box
                 sx={{
