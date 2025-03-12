@@ -74,6 +74,18 @@ namespace MovieManagement.Server.Repositories
             return user;
         }
 
+        public bool IsExistingEmailOrUsernameOrPhoneOrIdNumber(string email, string username, string phone,
+            string idNumber)
+        {
+            
+            var user = _context.Users
+                .Where(user => user.Email == email || user.UserName == username || user.PhoneNumber == phone || user.IDCard == idNumber)
+                .OrderBy(user => user.JoinDate)
+                .LastOrDefault();
+            return user != null;
+            
+        }
+
         public async Task<User> GetUserByEmailAsync(string email)
         {
             var user = await _context.Users

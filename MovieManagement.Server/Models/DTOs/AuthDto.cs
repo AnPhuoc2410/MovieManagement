@@ -11,7 +11,7 @@
 
         public class LoginResponse // For output
         {
-            public string Token { get; set; }
+            public TokenDto.TokenResponse Token { get; set; }
         }
 
         public class RegisterRequest

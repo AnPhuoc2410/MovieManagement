@@ -53,34 +53,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Create authData with token details
     const authData: AuthLoginData = {
-      access_token: userData.access_token,
-      token_type: userData.token_type,
+      accessToken: userData.accessToken,
       expires: userData.expires,
-      is_mobile: userData.is_mobile,
     };
 
     // Set user data in the state
     setUser(authData);
 
     // Set cookies for necessary tokens and user data
-    setCookie("access_token", userData.access_token, 1); // Set to expire in 1 day
+    setCookie("accessToken", userData.accessToken, 1); // Set to expire in 1 day
   };
 
   const authLogout = async () => {
-    const token = getCookie("access_token");
+    const token = getCookie("accessToken");
     if (token) {
       await doLogout(token);
     }
     setIsAuthenticated(false);
     setUser(null);
-    eraseCookie("access_token");
-    eraseCookie("token_type");
+    eraseCookie("accessToken");
     eraseCookie("expires");
-    eraseCookie("is_mobile");
     navigate("/");
   };
 
-  const getToken = () => getCookie("access_token");
+  const getToken = () => getCookie("accessToken");
 
   return (
     <AuthContext.Provider

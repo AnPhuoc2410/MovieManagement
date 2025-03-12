@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
@@ -184,28 +185,7 @@ namespace MovieManagement.Server.Controllers
             });
         }
 
-        [HttpPost("extract-token")]
-        public async Task<IActionResult> ExtractToken([FromBody] TokenDto.TokenRequest tokenRequest)
-        {
-            var userData = await _userService.ExtractTokenAsync(tokenRequest.AccessToken);
-            if (userData == null)
-            {
-                return Unauthorized(new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Invalid token",
-                    IsSuccess = false
-                });
-            }
-
-            return Ok(new ApiResponse<object>
-            {
-                StatusCode = 200,
-                Message = "Token extracted successfully",
-                IsSuccess = true,
-                Data = userData
-            });
-        }
+        
 
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
         [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
@@ -231,65 +211,6 @@ namespace MovieManagement.Server.Controllers
                 }
 
                 return Ok(users);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
-        
-        [HttpPost]
-        [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserDto>> CreateUserAsync(UserDto.CreateUser userDto)
-        {
-            try
-            {
-                var newUser = await _userService.CreateUserAsync(userDto);
-                if (newUser == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "User not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-
-                return Ok(newUser);
             }
             catch (BadRequestException ex)
             {
@@ -391,7 +312,8 @@ namespace MovieManagement.Server.Controllers
         /// <response code="400">Bad request from client side</response>
         /// <response code="401" >Unauthorized Access</response>
         /// <response code="500">Internal Server Error</response>
-        /// 
+        ///
+        // [Authorize(Policy = "Admin")]
         [HttpDelete("{empId:guid}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]

@@ -1,9 +1,11 @@
 import axios from "axios";
-import { LoginDTO, UserRegisterDTO } from "../types/users.type";
+import { LoginDTO, UserRegisterDTO, UserResponse } from "../types/users.type";
 import { DYNAMIC_API_URL } from "../constants/endPoints";
 import { handleAxiosError } from "../utils/errors.utils";
 import { ERROR_MESSAGE } from "../constants/message";
 import { LogoutResponse } from "../types/auth.types";
+import api from "./axios.config";
+import { ApiResponse } from "./api.config";
 
 export const login = async (payload: LoginDTO) => {
   try {
@@ -60,4 +62,13 @@ export const doLogout = async (token: string): Promise<LogoutResponse> => {
   );
 
   return response.data;
+};
+
+export const doExtractUserFromToken = async (
+  token: string,
+): Promise<ApiResponse<UserResponse>> => {
+  const res = await api.post("/authenticate/extract-token", {
+    accessToken: token,
+  });
+  return res.data;
 };

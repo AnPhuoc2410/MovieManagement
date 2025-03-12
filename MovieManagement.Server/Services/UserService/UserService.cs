@@ -19,13 +19,11 @@ namespace MovieManagement.Server.Services.UserService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IJwtService _jwtService;
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IJwtService jwtService)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _jwtService = jwtService;
         }
 
         public async Task<bool> ChangeUserPasswordByUserId(Guid userId, string currentPassword, string newPassword)
@@ -92,25 +90,22 @@ namespace MovieManagement.Server.Services.UserService
 
         public async Task<UserDto.UserResponse> CreateUserAsync(UserDto.CreateUser user)
         {
-            try
-            {
-                if (user.Role == Role.Admin)
-                    throw new Exception("Admin cannot be created by this method.");
+            if (user.Role == Role.Admin)
+                throw new BadRequestException("Admin cannot be created by this method.");
 
-                var newUser = _mapper.Map<User>(user);
-                var passwordHasher = new PasswordHasher<User>();
-                newUser.Password = passwordHasher.HashPassword(newUser, user.Password);
-                newUser.UserId = Guid.NewGuid();
-                var createdUser = await _unitOfWork.UserRepository.CreateAsync(newUser);
-                if (createdUser == null)
-                    throw new Exception("Failed to create user.");
-                return _mapper.Map<UserDto.UserResponse>(createdUser);
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException(
-                    "An error occurred while processing into the database.", ex);
-            }
+            if(_unitOfWork.UserRepository.IsExistingEmailOrUsernameOrPhoneOrIdNumber(user.Email, 
+                   user.UserName, user.PhoneNumber, user.IDCard))
+                throw new BadRequestException("Email, username, phone number or ID number already exists.");
+            
+            var newUser = _mapper.Map<User>(user);
+            newUser.Password = new PasswordHasher<User>().HashPassword(newUser, user.Password);
+            
+            var createdUser = await _unitOfWork.UserRepository.CreateAsync(newUser);
+            
+            if (createdUser == null)
+                throw new BadRequestException("Failed to create user.");
+            
+            return _mapper.Map<UserDto.UserResponse>(createdUser);
         }
 
         public async Task<bool> DeleteUserAsync(Guid id)
@@ -123,21 +118,6 @@ namespace MovieManagement.Server.Services.UserService
                 throw new BadRequestException("Cannot delete this user role");
 
             return await _unitOfWork.UserRepository.SoftDeleteAsync(id);
-        }
-
-        public async Task<UserDto.UserResponse> ExtractTokenAsync(string token)
-        {
-            var jwtToken = _jwtService.ReadTokenWithoutValidation(token);
-            if (jwtToken == null)
-                throw new Exception("Invalid token");
-
-            var userId = jwtToken.Claims
-                .FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(Guid.Parse(userId));
-            if (user == null)
-                throw new NotFoundException("User not found!");
-
-            return _mapper.Map<UserDto.UserResponse>(user);
         }
 
         public async Task<IEnumerable<UserDto.UserResponse>> GetAllUsersAsync()
