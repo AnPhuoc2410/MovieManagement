@@ -176,6 +176,7 @@
       },
       "next" :"次へ"
     },
+    "seat": "座席",
     "step_tracker":{
       "select_show_time" : "上映時間を選択",
       "select_seat" : "座席を選択",

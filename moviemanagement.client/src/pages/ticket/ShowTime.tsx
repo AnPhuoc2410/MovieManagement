@@ -19,7 +19,6 @@ const Ticket: React.FC = () => {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [roomId, setRoomId] = useState<string>("");
   const [showTicketPrice, setShowTicketPrice] = useState<boolean>(false);
-  const { t } = useTranslation();
 
   // Memoized callbacks
   const handleRoomSelect = useCallback((roomId: string) => {
@@ -39,7 +38,7 @@ const Ticket: React.FC = () => {
   }, []);
 
   const handleTicketSelection = useCallback(
-    (tickets: SeatType[]) => {  // ✅ Use SeatType instead of TicketType
+    (tickets: SeatType[]) => {
       if (!selectedTime) {
         toast.error("Vui lòng chọn suất chiếu!");
         return;

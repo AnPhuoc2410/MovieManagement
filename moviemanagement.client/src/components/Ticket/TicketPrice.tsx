@@ -16,16 +16,7 @@ import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-
-export interface TicketType {
-  id: string;
-  name: string;
-  type: string;
-  price: number;
-  quantity: number;
-}
 
 interface TicketPriceProps {
   onNext?: (selectedSeats: SeatType[]) => void;
@@ -33,6 +24,7 @@ interface TicketPriceProps {
 
 const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
   const [seatTypes, setSeatTypes] = useState<SeatType[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchSeatTypes = async () => {
@@ -73,7 +65,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
   const handleNext = () => {
     const selectedSeats = seatTypes.filter((seat) => seat.quantity > 0);
     if (selectedSeats.length === 0) {
-      toast.error("Vui lòng chọn ít nhất một ghế.");
+      toast.error("Vui lòng chọn ít nhất một vé.");
       return;
     }
     if (onNext) onNext(selectedSeats);
@@ -100,8 +92,8 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
           width: "100%",
           maxWidth: "900px",
           margin: "0 auto",
-          overflow: "hidden", // Prevents Swiper from leaking outside
-          position: "relative", // Ensures it's properly positioned
+          overflow: "hidden",
+          position: "relative",
         }}
       >
         <Swiper
@@ -138,7 +130,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
               >
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    Ghế {seat.typeName}
+                    {t("seat")} {seat.typeName}
                   </Typography>
 
                   <Typography

@@ -8,20 +8,19 @@ import { Box, Step, StepLabel, Stepper } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-const { t } = useTranslation();
-
-const steps = [
-  { label: t("step_tracker.select_show_time"), icon: <MovieIcon /> },
-  { label: t("step_tracker.select_seat"), icon: <EventSeatIcon /> },
-  { label: t("step_tracker.Payment"), icon: <PaymentIcon /> },
-  { label: t("step_tracker.Success"), icon: <CheckCircleIcon /> },
-];
-
 interface StepTrackerProps {
   currentStep: number;
 }
 
 const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
+  const { t } = useTranslation();
+  const steps = [
+    { label: t("step_tracker.select_show_time"), icon: <MovieIcon /> },
+    { label: t("step_tracker.select_seat"), icon: <EventSeatIcon /> },
+    { label: t("step_tracker.payment"), icon: <PaymentIcon /> },
+    { label: t("step_tracker.success"), icon: <CheckCircleIcon /> },
+  ];
+
   return (
     <Box
       sx={{

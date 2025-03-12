@@ -176,6 +176,7 @@
       },
       "next" :"Tiếp tục"
     },
+    "seat": "Ghế",
     "step_tracker":{
       "select_show_time" : "Chọn lịch chiếu",
       "select_seat" : "Chọn ghế",

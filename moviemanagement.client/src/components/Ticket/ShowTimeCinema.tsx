@@ -46,18 +46,22 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [cinemas, setCinemas] = useState<Cinema[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const days = useMemo(() => {
     return Array.from({ length: 4 }, (_, i) => {
       const date = addDays(today, i);
+      const dayName = format(date, "EEEE", {
+        locale: i18n.language === "vi" ? viLocale : undefined,
+      });
+
       return {
         date,
         formatted: format(date, "dd/MM"),
-        label: format(date, "EEEE", { locale: viLocale }),
+        label: t(`${dayName.toLowerCase()}`),
       };
     });
-  }, [today]);
+  }, [today, t, i18n.language]);
 
   // Memoized handleDateChange function
   const handleDateChange = useCallback((e: any, newDate: string) => {
@@ -196,7 +200,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                 }}
               >
                 {isToday && (
-                  <Typography
+                    <Typography
                     variant="caption"
                     sx={{
                       position: "absolute",
@@ -208,10 +212,11 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                       borderRadius: "4px",
                       px: 0.5,
                       fontWeight: "bold",
+                      whiteSpace: "nowrap",
                     }}
-                  >
+                    >
                     {t("showtime_cinema.title.now_day")}
-                  </Typography>
+                    </Typography>
                 )}
                 <Box textAlign="center">
                   <Typography
@@ -256,9 +261,9 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                   backgroundColor: "transparent",
                 }}
               >
-                <MenuItem value="hcm">{t("showtime.location.HCM")}</MenuItem>
-                <MenuItem value="hn">{t("showtime.location.HaNoi")}</MenuItem>
-                <MenuItem value="dn">{t("showtime.location.DaNang")}</MenuItem>
+                <MenuItem value="hcm">{t("showtime_cinema.location.HCM")}</MenuItem>
+                <MenuItem value="hn">{t("showtime_cinema.location.HaNoi")}</MenuItem>
+                <MenuItem value="dn">{t("showtime_cinema.location.DaNang")}</MenuItem>
               </Select>
             </FormControl>
           </Grid>

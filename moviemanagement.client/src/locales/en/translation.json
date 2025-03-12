@@ -177,6 +177,7 @@
       },
       "next" :"Continue"
     },
+    "seat": "Seat",
     "step_tracker":{
       "select_show_time" : "Select showtimes",
       "select_seat" : "Select seat",
