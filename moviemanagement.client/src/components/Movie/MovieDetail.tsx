@@ -14,7 +14,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import api from "../../apis/axios.config";
 import toast from "react-hot-toast";
-import LoadingSpinner from "../LoadingSpinner";
+import Loader from "../shared/Loading";
 import { Movie } from "../../types/movie.types";
 import { useTranslation } from "react-i18next";
 
@@ -30,7 +30,7 @@ const MovieDetail: React.FC = () => {
   const fetchMovieById = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`Movie/GetById/${movieId}`);
+      const response = await api.get(`Movie/${movieId}`);
       setMovie(response.data);
       console.log("Movie detail:", response.data);
     } catch (error: any) {
@@ -65,7 +65,7 @@ const MovieDetail: React.FC = () => {
     return new Date(dateString).toLocaleDateString("vi-VN", options);
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <Loader />;
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", minHeight: "50vh", color: "white" }}>
       <Container maxWidth="lg" sx={{ mt: 13, color: "white" }}>
@@ -316,7 +316,7 @@ const MovieDetail: React.FC = () => {
           />
         </Box>
       </Modal>
-    </Container>
+    </Box>
   );
 };
 

@@ -58,7 +58,7 @@ export default function Promotions({
     async function fetchPromotions() {
       try {
         const response = await axios.get(
-          "https://localhost:7119/api/Promotions/GetAll",
+          "https://localhost:7119/api/promotions/all",
         );
         setPromotions(response.data);
       } catch (error) {
@@ -127,7 +127,7 @@ export default function Promotions({
 
       // Create new promotion
       const response = await axios.post(
-        "https://localhost:7119/api/Promotions/CreateAsync",
+        "https://localhost:7119/api/promotions",
         payload,
         { headers: { "Content-Type": "application/json" } },
       );
@@ -143,7 +143,7 @@ export default function Promotions({
   const handleDelete = async (promotionId: string) => {
     try {
       await axios.delete(
-        `https://localhost:7119/api/Promotions/Delete/${promotionId}`,
+        `https://localhost:7119/api/promotions/${promotionId}`,
         {
           headers: { "Content-Type": "application/json" },
         },

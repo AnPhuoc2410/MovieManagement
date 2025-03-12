@@ -12,6 +12,7 @@ namespace MovieManagement.Server.Repositories.IRepositories
         public Task<bool> ChangeUserPasswordByEmailAsync(string email, string newPassword);
         public Task<bool> ResetUserPasswordByUserIdAsync(Guid userId, string currentPassword, string newPassword);
         Task<User> GetUserByEmailAsync(string email);
+        Task<User> GetByUsername(string username);
     }
 
 }

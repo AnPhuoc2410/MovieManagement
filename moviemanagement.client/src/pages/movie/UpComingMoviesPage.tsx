@@ -192,11 +192,12 @@ const UpComingMoviesPage: React.FC = () => {
         }}
       >
         {/* Movie List */}
-        <Box 
-          sx={{ 
-            position: "relative", 
+        <Box
+          sx={{
+            position: "relative",
             zIndex: 1,
-            "& .MuiTypography-h4": {  // Add styling for the title
+            "& .MuiTypography-h4": {
+              // Add styling for the title
               color: "white",
               fontWeight: "bold",
               textTransform: "uppercase",
@@ -215,10 +216,10 @@ const UpComingMoviesPage: React.FC = () => {
             },
           }}
         >
-          <MovieList 
-            movies={upComingMovies} 
+          <MovieList
+            movies={upComingMovies}
             title="PHIM SẮP CHIẾU"
-            buttonText="TÌM HIỂU THÊM" 
+            buttonText="TÌM HIỂU THÊM"
           />
         </Box>
       </Container>

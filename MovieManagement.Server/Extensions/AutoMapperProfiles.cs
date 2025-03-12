@@ -15,7 +15,11 @@ namespace MovieManagement.Server.Extensions
             CreateMap<UserDto.CreateUser, User>()
                 .ForMember(dest => dest.Bills, opt => opt.Ignore())
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()));
-
+            
+            CreateMap<UserDto.UpdateRequest, User>()
+                .ForMember(dest => dest.Bills, opt => opt.Ignore())  // Ignore fields that shouldn't be updated
+                .ForMember(dest => dest.UserId, opt => opt.Ignore());
+            
             //List User Response For Admin  
             CreateMap<User, UserResponse>();
             CreateMap<UserResponse, User>()

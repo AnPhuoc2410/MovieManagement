@@ -62,6 +62,7 @@
     "auth": {
       "login": {
         "title": "ログイン",
+        "email": "メールアドレス",
         "username": "ユーザー名",
         "password": "パスワード",
         "forgot_password": "パスワードをお忘れですか？",
@@ -72,6 +73,7 @@
         "no_account": "アカウントをお持ちでない方",
         "signup_link": "新規登録",
         "validation": {
+          "email_required": "メールアドレスを入力してください",
           "username_required": "ユーザー名を入力してください",
           "password_required": "パスワードを入力してください",
           "password_length": "パスワードは8文字以上である必要があります"
@@ -112,6 +114,15 @@
         "description": "ログアウトしますか？",
         "cancel": "キャンセル",
         "confirm": "確認"
+      }
+    },
+    "user": {
+      "profile": {
+        "my_account": "マイアカウント",
+        "my_profile": "マイプロフィール",
+        "settings": "設定",
+        "my_bookings": "予約",
+        "logout": "ログアウト"
       }
     },
     "promotion": {

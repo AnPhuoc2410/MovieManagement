@@ -1,9 +1,10 @@
+import { Seat } from "./seat.types";
+
 export interface Room {
   roomId: string;
-  name: string;
+  name: string | null;
   row: number;
   column: number;
   total: number;
-  //seats: Seat[];
-  //showtimes: ShowTime[];
+  seats: Seat[];
 }

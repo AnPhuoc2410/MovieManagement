@@ -5,6 +5,7 @@ using static MovieManagement.Server.Models.Enums.SeatEnum;
 
 namespace MovieManagement.Server.Models.Entities
 {
+
     public class Seat
     {
         public Guid SeatId { get; set; }

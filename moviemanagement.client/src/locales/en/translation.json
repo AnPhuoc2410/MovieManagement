@@ -64,6 +64,7 @@
       "login": {
         "title": "Login",
         "username": "Username",
+        "email": "Email",
         "password": "Password",
         "forgot_password": "Forgot password?",
         "login_button": "Login",
@@ -73,6 +74,7 @@
         "welcome": "Welcome back",
         "subtitle": "Please enter your credentials to continue",
         "validation": {
+          "email_required": "Email is required",
           "username_required": "Username is required",
           "password_required": "Password is required",
           "password_length": "Password must be at least 8 characters"
@@ -113,6 +115,15 @@
         "description": "Are you sure you want to logout?",
         "cancel": "Cancel",
         "confirm": "Confirm"
+      }
+    },
+    "user": {
+      "profile": {
+        "my_account": "My Account",
+        "my_profile": "My Profile",
+        "settings": "Settings",
+        "my_bookings": "My Bookings",
+        "logout": "Logout"
       }
     },
     "promotion": {

@@ -17,7 +17,6 @@ namespace MovieManagement.Server.Services.UserService
 {
     public class UserService : IUserService
     {
-
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IJwtService _jwtService;
@@ -90,10 +89,14 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
+
         public async Task<UserDto.UserResponse> CreateUserAsync(UserDto.CreateUser user)
         {
             try
             {
+                if (user.Role == Role.Admin)
+                    throw new Exception("Admin cannot be created by this method.");
+
                 var newUser = _mapper.Map<User>(user);
                 var passwordHasher = new PasswordHasher<User>();
                 newUser.Password = passwordHasher.HashPassword(newUser, user.Password);
@@ -107,40 +110,36 @@ namespace MovieManagement.Server.Services.UserService
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("An error occurred while processing into the database.", ex);
+                throw new ApplicationException(
+                    "An error occurred while processing into the database.", ex);
             }
         }
 
         public async Task<bool> DeleteUserAsync(Guid id)
         {
-            try
-            {
-                var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
-                if (user == null)
-                    throw new NotFoundException("User not found!");
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
+            if (user == null)
+                throw new NotFoundException("User not found!");
 
-                return await _unitOfWork.UserRepository.DeleteAsync(id);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            if (user.Role != Role.Employee)
+                throw new BadRequestException("Cannot delete this user role");
+
+            return await _unitOfWork.UserRepository.SoftDeleteAsync(id);
         }
 
         public async Task<UserDto.UserResponse> ExtractTokenAsync(string token)
         {
-
             var jwtToken = _jwtService.ReadTokenWithoutValidation(token);
-            if(jwtToken == null)
+            if (jwtToken == null)
                 throw new Exception("Invalid token");
-            
-            var userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+            var userId = jwtToken.Claims
+                .FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
             var user = await _unitOfWork.UserRepository.GetByIdAsync(Guid.Parse(userId));
             if (user == null)
                 throw new NotFoundException("User not found!");
-            
-            return _mapper.Map<UserDto.UserResponse>(user);
 
+            return _mapper.Map<UserDto.UserResponse>(user);
         }
 
         public async Task<IEnumerable<UserDto.UserResponse>> GetAllUsersAsync()
@@ -189,7 +188,8 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page, int pageSize)
+        public async Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page,
+            int pageSize)
         {
             try
             {
@@ -204,34 +204,24 @@ namespace MovieManagement.Server.Services.UserService
             }
         }
 
-        public async Task<UserDto.UserResponse> UpdateUserAsync(Guid id, UserDto.UserRequest userDto)
+        public async Task UpdateUserAsync(Guid id, UserDto.UpdateRequest userDto)
         {
-            try
-            {
-                //Checking user is existing
-                var existingUser = await _unitOfWork.UserRepository.GetByIdAsync(id);
-                if (existingUser == null)
-                    throw new NotFoundException("User not found!");
+            // Check if the user exists
+            var existingUser = await _unitOfWork.UserRepository.GetByIdAsync(id) 
+                               ?? throw new NotFoundException("User not found!");
 
+            // Validate username and email only if they are being changed
+            if (userDto.UserName != existingUser.UserName && await _unitOfWork.UserRepository.GetByUsername(userDto.UserName) != null)
+                throw new BadRequestException("Username already exists.");
 
-                // Map updated fields from userDto to existingUser
-                existingUser = _mapper.Map(userDto, existingUser);
+            if (userDto.Email != existingUser.Email && await _unitOfWork.UserRepository.GetUserByEmailAsync(userDto.Email) != null)
+                throw new BadRequestException("Email already exists.");
 
-                //add again the id to the userDto
-                existingUser.UserId = id;
-
-                //password hasher
-                var passwordHasher = new PasswordHasher<User>();
-                existingUser.Password = passwordHasher.HashPassword(existingUser, userDto.Password);
-                var updatedUser = await _unitOfWork.UserRepository.UpdateAsync(existingUser);
-                if (updatedUser == null)
-                    throw new DbUpdateException("Fail to update user.");
-                return _mapper.Map<UserDto.UserResponse>(updatedUser);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            // Map and update the user
+            _mapper.Map(userDto, existingUser);
+            await _unitOfWork.UserRepository.UpdateAsync(existingUser);
         }
+
+
     }
 }

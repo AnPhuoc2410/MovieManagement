@@ -38,7 +38,7 @@ const PromotionDetail: React.FC = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://localhost:7119/api/Promotions/GetById/${id}`)
+        .get(`https://localhost:7119/api/promotions/${id}`)
         .then((response) => {
           setPromotion(response.data);
           setLoading(false);

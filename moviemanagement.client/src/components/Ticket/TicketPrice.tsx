@@ -26,13 +26,12 @@ interface TicketPriceProps {
 }
 
 const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
-  // Sample ticket data
   const initialTickets: TicketType[] = [
     {
       id: "seat_normal",
       name: "Ghế Đơn",
       type: "Đơn",
-      price: 70000,
+      price: 75000,
       quantity: 0,
     },
     {

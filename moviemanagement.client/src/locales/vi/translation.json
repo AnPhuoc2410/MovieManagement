@@ -62,6 +62,7 @@
     "auth": {
       "login": {
         "title": "Đăng nhập",
+        "email": "Email",
         "username": "Tài khoản",
         "password": "Mật khẩu",
         "forgot_password": "Quên mật khẩu?",
@@ -72,6 +73,7 @@
         "welcome": "Chào mừng bạn trở lại!",
         "subtitle": "Đăng nhập để tiếp tục",
         "validation": {
+          "email_required": "Email không được để trống",
           "username_required": "Tài khoản không được để trống",
           "password_required": "Mật khẩu không được để trống",
           "password_length": "Mật khẩu phải có ít nhất 8 ký tự"
@@ -112,6 +114,15 @@
         "description": "Bạn có chắc chắn muốn đăng xuất?",
         "cancel": "Hủy",
         "confirm": "Xác nhận"
+      }
+    },
+    "user": {
+      "profile": {
+        "my_account": "Tài khoản của tôi",
+        "my_profile": "Hồ sơ của tôi",
+        "settings": "Cài đặt",
+        "my_bookings": "Vé của tôi",
+        "logout": "Đăng xuất"
       }
     },
     "promotion": {

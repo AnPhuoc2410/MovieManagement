@@ -64,6 +64,15 @@ namespace MovieManagement.Server.Repositories
             await _context.SaveChangesAsync();
             return user!=null;
         }
+        
+        public async Task<User> GetByUsername(string username)
+        {
+            var user = await _context.Users
+                .Where(u => u.UserName == username && u.Status != 0)
+                .FirstOrDefaultAsync();
+
+            return user;
+        }
 
         public async Task<User> GetUserByEmailAsync(string email)
         {

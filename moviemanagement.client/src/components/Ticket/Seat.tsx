@@ -1,32 +1,63 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
-import WeekendIcon from "@mui/icons-material/Weekend";
-
-// Define rows (A-F) and columns (1-7)
-const rows = ["A", "B", "C", "D", "E", "F"];
-const cols = [1, 2, 3, 4, 5, 6, 7];
+import axios from "axios";
+import type { Seat } from "../../types/seat.types";
 
 interface SeatProps {
-  selectedSeats: string[];
-  setSelectedSeats: React.Dispatch<React.SetStateAction<string[]>>;
+  roomId: string;
+  selectedSeats: { id: string; name: string }[];
+  setSelectedSeats: React.Dispatch<
+    React.SetStateAction<{ id: string; name: string }[]>
+  >;
 }
 
-const Seat: React.FC<SeatProps> = ({ selectedSeats, setSelectedSeats }) => {
-  // Example static arrays for bought and VIP seats
-  const boughtSeats = ["A1", "B2", "C2", "D2", "A7", "A6", "C5", "C6", "C7"];
-  const vipSeats = ["C3", "C4", "D3", "D4"];
+const Seat: React.FC<SeatProps> = ({
+  roomId,
+  selectedSeats,
+  setSelectedSeats,
+}) => {
+  const [seats, setSeats] = useState<Seat[]>([]);
 
-  const handleSeatClick = (seat: string) => {
-    if (selectedSeats.includes(seat)) {
-      setSelectedSeats(selectedSeats.filter((s) => s !== seat));
+  // Fetch seat data based on roomId.
+  useEffect(() => {
+    const fetchSeats = async () => {
+      try {
+        const response = await axios.get(
+          `https://localhost:7119/api/Room/GetRoomInfo/${roomId}`,
+        );
+        if (response.data.isSuccess) {
+          setSeats(response.data.data.seats);
+        }
+      } catch (error) {
+        console.error("Error fetching seat data:", error);
+      }
+    };
+    fetchSeats();
+  }, [roomId]);
+
+  // Toggle the selected seat when a seat button is clicked.
+  const handleSeatClick = (seat: Seat) => {
+    const seatName = `${seat.atRow}${seat.atColumn}`;
+    const seatInfo = { id: seat.seatId, name: seatName };
+
+    if (selectedSeats.some((s) => s.id === seat.seatId)) {
+      setSelectedSeats(selectedSeats.filter((s) => s.id !== seat.seatId));
     } else {
-      setSelectedSeats([...selectedSeats, seat]);
+      setSelectedSeats([...selectedSeats, seatInfo]);
     }
   };
 
   return (
-    <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pb: 4 }}>
+    <Box
+      sx={{
+        backgroundColor: "#0B0D1A",
+        color: "white",
+        pb: 4,
+        position: "relative",
+      }}
+    >
+      {/* Screen Display */}
       <Box sx={{ textAlign: "center", mb: 2 }}>
         <Box
           sx={{
@@ -42,120 +73,138 @@ const Seat: React.FC<SeatProps> = ({ selectedSeats, setSelectedSeats }) => {
         </Typography>
       </Box>
 
+      {/* Legend (Positioned to the right) */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          right: 20,
+          transform: "translateY(-50%)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          padding: 2,
+          borderRadius: 2,
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <EventSeatIcon sx={{ color: "red" }} />
+          <Typography variant="body2">Đã Đặt</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <EventSeatIcon sx={{ color: "white" }} />
+          <Typography variant="body2">Ghế Trống</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <EventSeatIcon sx={{ color: "green" }} />
+          <Typography variant="body2">Đang Chọn</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <EventSeatIcon sx={{ color: "blue" }} />
+          <Typography variant="body2">Ghế VIP</Typography>
+        </Box>
+      </Box>
+
+      {/* Seat Grid centered on screen */}
       <Box
         sx={{
           display: "flex",
           justifyContent: "center",
-          gap: 4,
           alignItems: "center",
+          p: 2,
         }}
       >
-        {/* Legend on the Left */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {/* Booked */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <EventSeatIcon sx={{ color: "red" }} />
-            <Typography variant="body2">Đã Đặt</Typography>
-          </Box>
-          {/* Available */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <EventSeatIcon sx={{ color: "white" }} />
-            <Typography variant="body2">Ghế Trống</Typography>
-          </Box>
-          {/* Selected */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <EventSeatIcon sx={{ color: "green" }} />
-            <Typography variant="body2">Đang Chọn</Typography>
-          </Box>
-          {/* VIP */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <EventSeatIcon sx={{ color: "blue" }} />
-            <Typography variant="body2">Ghế VIP</Typography>
-          </Box>
-        </Box>
+        <Box
+          sx={{
+            maxWidth: 600,
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+          }}
+        >
+          {Object.entries(
+            seats.reduce(
+              (acc, seat) => {
+                // Group seats by row
+                if (!acc[seat.atRow]) acc[seat.atRow] = [];
+                acc[seat.atRow].push(seat);
+                return acc;
+              },
+              {} as Record<string, Seat[]>,
+            ),
+          ).map(([row, rowSeats]) => (
+            <Box
+              key={row}
+              sx={{ display: "flex", justifyContent: "center", gap: 4 }}
+            >
+              {rowSeats.map((seat) => {
+                const isSelected = selectedSeats.some(
+                  (s) => s.id === seat.seatId,
+                );
+                const isBought = seat.status === 3; // Booked
+                const isVip = seat.seatType.typeName === "VIP";
 
-        {/* Seat Grid on the Right */}
-        <Box sx={{ maxWidth: 600 }}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {rows.map((row, rowIndex) => (
-              <Box
-                key={row}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: 3,
-                }}
-              >
-                {cols.map((col) => {
-                  const seatLabel = `${row}${col}`;
-                  const isSelected = selectedSeats.includes(seatLabel);
-                  const isBought = boughtSeats.includes(seatLabel);
-                  const isVip = vipSeats.includes(seatLabel);
+                // Set default styles
+                let iconColor = "white";
+                let backgroundColor = "transparent";
+                let disabled = false;
 
-                  let iconColor = "white";
-                  let backgroundColor = "transparent";
-                  let disabled = false;
+                if (isSelected) {
+                  iconColor = "green";
+                  backgroundColor = "rgba(0, 255, 0, 0.2)";
+                } else if (isBought) {
+                  iconColor = "red";
+                  backgroundColor = "rgba(255, 0, 0, 0.2)";
+                  disabled = true;
+                } else if (isVip) {
+                  iconColor = "blue";
+                  backgroundColor = "rgba(0, 0, 255, 0.2)";
+                }
 
-                  if (isSelected) {
-                    iconColor = "green";
-                    backgroundColor = "rgba(0, 255, 0, 0.2)";
-                  } else if (isBought) {
-                    iconColor = "red";
-                    backgroundColor = "rgba(255, 0, 0, 0.2)";
-                    disabled = true;
-                  } else if (isVip) {
-                    iconColor = "blue";
-                    backgroundColor = "rgba(0, 0, 255, 0.2)";
-                  }
-
-                  return (
-                    <Button
-                      key={seatLabel}
-                      variant="outlined"
-                      disabled={disabled}
-                      onClick={() => handleSeatClick(seatLabel)}
-                      sx={{
-                        minWidth: "50px",
-                        minHeight: "50px",
+                return (
+                  <Button
+                    key={seat.seatId}
+                    variant="outlined"
+                    disabled={disabled}
+                    onClick={() => handleSeatClick(seat)}
+                    sx={{
+                      minWidth: "50px",
+                      minHeight: "50px",
+                      backgroundColor,
+                      color: "white",
+                      whiteSpace: "normal",
+                      p: 0.5,
+                      fontSize: "0.7rem",
+                      textTransform: "none",
+                      "&:hover": {
+                        backgroundColor: isSelected
+                          ? "rgba(0, 255, 0, 0.4)"
+                          : "rgba(255,255,255,0.2)",
+                      },
+                      "&.Mui-disabled": {
                         backgroundColor,
                         color: "white",
-                        whiteSpace: "normal",
-                        p: 0.5,
-                        fontSize: "0.7rem",
-                        textTransform: "none",
-                        "&:hover": {
-                          backgroundColor: isSelected
-                            ? "rgba(0, 255, 0, 0.4)"
-                            : "rgba(255,255,255,0.2)",
-                        },
-                        "&.Mui-disabled": {
-                          backgroundColor,
-                          color: "white",
-                        },
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
                       }}
                     >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                        }}
-                      >
-                        {rowIndex === rows.length - 1 ? (
-                          <WeekendIcon sx={{ color: iconColor }} />
-                        ) : (
-                          <EventSeatIcon sx={{ color: iconColor }} />
-                        )}
-                        <Typography variant="body2" align="center">
-                          {seatLabel}
-                        </Typography>
-                      </Box>
-                    </Button>
-                  );
-                })}
-              </Box>
-            ))}
-          </Box>
+                      <EventSeatIcon sx={{ color: iconColor }} />
+                      <Typography variant="body2" align="center">
+                        {seat.atRow}
+                        {seat.atColumn}
+                      </Typography>
+                    </Box>
+                  </Button>
+                );
+              })}
+            </Box>
+          ))}
         </Box>
       </Box>
     </Box>

@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import * as yup from "yup";
 import { useAuth } from "../../../contexts/AuthContext";
-import { login } from "../../../apis/auth.apis";
+import { login } from "../../../apis/mock.apis";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,16 +28,14 @@ export const Login = () => {
   const { t } = useTranslation();
 
   const validationSchema = yup.object({
-    username: yup
-      .string()
-      .required(t("auth.login.validation.username_required")),
+    email: yup.string().required(t("auth.login.validation.email_required")),
     password: yup
       .string()
       .test(
         "is-valid-password",
         t("auth.login.validation.password_length"),
         (value, context) => {
-          if (context.parent.username === "admin" && value === "admin") {
+          if (context.parent.email === "admin" && value === "admin") {
             return true;
           }
           return value !== undefined && value.length >= 8;
@@ -56,19 +54,21 @@ export const Login = () => {
 
   const formik = useFormik({
     initialValues: {
-      username: "",
+      email: "",
       password: "",
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       setLoading(true);
       const toastId = toast.loading("Đang đăng nhập...");
+      const data = {
+        email: values.email,
+        password: values.password,
+      };
+      console.log("data", data);
 
       try {
-        const response = await login({
-          username: values.username,
-          password: values.password,
-        });
+        const response = await login(data);
         toast.dismiss(toastId);
 
         if (response.is_success) {
@@ -83,9 +83,36 @@ export const Login = () => {
           });
 
           toast.success("Đăng nhập thành công! Đang chuyển hướng...");
-          setTimeout(() => {
-            navigate("/admin/thong-ke");
-          }, 1000);
+
+          console.log("value email", values.email);
+
+          switch (values.email) {
+            case "admin":
+              setTimeout(() => {
+                navigate("/admin/thong-ke");
+              }, 1000);
+              break;
+            case "hoangdz1604@gmail.com":
+              setTimeout(() => {
+                navigate("/admin/thong-ke");
+              }, 1000);
+              break;
+            case "m@gmail.com":
+              setTimeout(() => {
+                navigate("/users/profile/09ace9f8-a25a-4c92-80a1-17c08ebef2e1");
+              }, 1000);
+              break;
+            case "e@gmail.com":
+              setTimeout(() => {
+                navigate("/users/profile/596cb162-4c3f-47e7-91e4-491761d03454");
+              }, 1000);
+              break;
+            case "a@gmail.com":
+              setTimeout(() => {
+                navigate("/users/profile/d3ddb1f7-22fa-42b3-bbe8-71dc29688ef2");
+              }, 1000);
+              break;
+          }
         } else {
           toast.error(response.message);
         }
@@ -144,14 +171,14 @@ export const Login = () => {
 
       <TextField
         fullWidth
-        id="username"
-        name="username"
-        label={t("auth.login.username")}
-        value={formik.values.username}
+        id="email"
+        name="email"
+        label={t("auth.login.email")}
+        value={formik.values.email}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        error={formik.touched.username && Boolean(formik.errors.username)}
-        helperText={formik.touched.username && formik.errors.username}
+        error={formik.touched.email && Boolean(formik.errors.email)}
+        helperText={formik.touched.email && formik.errors.email}
         sx={textFieldStyle}
         InputProps={{
           startAdornment: (
