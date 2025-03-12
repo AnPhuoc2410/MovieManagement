@@ -1,25 +1,25 @@
-import React, { useState, useCallback } from "react";
-import { Box, Container } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import StepTracker from "../../components/Ticket/StepTracker";
+import { Box, Container, Typography } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router-dom";
 import MovieDetail from "../../components/Movie/MovieDetail";
 import ShowTimeCinema from "../../components/Ticket/ShowTimeCinema";
+import StepTracker from "../../components/Ticket/StepTracker";
 import TicketPrice, { TicketType } from "../../components/Ticket/TicketPrice";
 import Footer from "../../components/home/Footer";
-import toast from "react-hot-toast";
 import Header from "../../components/home/Header";
+import { useTranslation } from "react-i18next";
 
 const Ticket: React.FC = () => {
   const navigate = useNavigate();
+  const { movieId } = useParams();
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [roomId, setRoomId] = useState<string>("");
   const [showTicketPrice, setShowTicketPrice] = useState<boolean>(false);
 
-  // You can still retrieve movieId from location or params if needed.
-  const movieId = "b6d29d0d-4d39-45d9-8f09-4f997a65d8cf";
-
-  // Memoize callbacks to prevent unnecessary rerenders
+  // Memoized callbacks
   const handleRoomSelect = useCallback((roomId: string) => {
     setRoomId(roomId);
   }, []);
@@ -36,28 +36,62 @@ const Ticket: React.FC = () => {
     setShowTicketPrice(available);
   }, []);
 
-  const handleTicketSelection = useCallback((tickets: TicketType[]) => {
-    // Validate that a showtime is selected
-    if (!selectedTime) {
-      toast.error("Vui lòng chọn suất chiếu!");
-      return;
-    }
-    // Validate that at least one ticket is selected
-    const totalTickets = tickets.reduce((sum, t) => sum + (t.quantity || 0), 0);
-    if (totalTickets === 0) {
-      toast.error("Vui lòng chọn ít nhất 1 vé!");
-      return;
-    }
-    navigate("/ticket/movie-seat", {
-      state: {
-        movieId,
-        roomId,
-        selectedDate,
-        selectedTime,
-        tickets,
-      },
-    });
-  }, [movieId, navigate, roomId, selectedDate, selectedTime]);
+  const handleTicketSelection = useCallback(
+    (tickets: TicketType[]) => {
+      if (!selectedTime) {
+        toast.error("Vui lòng chọn suất chiếu!");
+        return;
+      }
+      const totalTickets = tickets.reduce((sum, t) => sum + (t.quantity || 0), 0);
+      if (totalTickets === 0) {
+        toast.error("Vui lòng chọn ít nhất 1 vé!");
+        return;
+      }
+      navigate("/ticket/movie-seat", {
+        state: {
+          movieId,
+          roomId,
+          selectedDate,
+          selectedTime,
+          tickets,
+        },
+      });
+    },
+    [movieId, navigate, roomId, selectedDate, selectedTime]
+  );
+
+  if (!movieId) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          color: "white",
+          backgroundColor: "#0B0D1A",
+        }}
+      >
+        <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
+          {t("oops")}
+        </Typography>
+        <Typography
+          variant="h6"
+          sx={{
+            p: 4,
+            border: 2,
+            borderColor: "red",
+            color: "red",
+            borderRadius: 2,
+          }}
+        >
+          Phim không tồn tại.
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box

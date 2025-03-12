@@ -46,7 +46,6 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
   const [cinemas, setCinemas] = useState<Cinema[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Memoized days array - only recalculated if today changes
   const days = useMemo(() => {
     return Array.from({ length: 4 }, (_, i) => {
       const date = addDays(today, i);
