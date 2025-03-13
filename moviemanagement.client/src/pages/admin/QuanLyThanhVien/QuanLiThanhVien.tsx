@@ -40,11 +40,6 @@ const QuanLiThanhVien: React.FC = () => {
     navigate(`/admin/ql-thanh-vien/${id}`);
   };
 
-  const handleDelete = (id: string) => {
-    // Implement delete logic
-    console.log("Delete user:", id);
-  };
-
   const columns: ColumnDef<UserResponse>[] = [
     ...defaultUserColumns,
     {
@@ -60,7 +55,6 @@ const QuanLiThanhVien: React.FC = () => {
         data={users}
         columns={columns}
         onEdit={handleEdit}
-        onDelete={handleDelete}
         isLoading={isLoading}
       />
     </ManagementPageLayout>

@@ -162,7 +162,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             }
         }
 
-        private void HandleSuccessfulPayment(PaymentResult paymentResult)
+        public void HandleSuccessfulPayment(PaymentResult paymentResult)
         {
             // Thực hiện hành động sau khi thanh toán thành công tại đây
         }
