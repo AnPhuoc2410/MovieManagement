@@ -17,12 +17,12 @@ const Ticket: React.FC = () => {
   const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [roomId, setRoomId] = useState<string>("");
+  const [showTimeId, setShowTimeId] = useState<string>("");
   const [showTicketPrice, setShowTicketPrice] = useState<boolean>(false);
 
   // Memoized callbacks
-  const handleRoomSelect = useCallback((roomId: string) => {
-    setRoomId(roomId);
+  const handleRoomSelect = useCallback((showTimeId: string) => {
+    setShowTimeId(showTimeId);
   }, []);
 
   const handleDateSelect = useCallback((date: string) => {
@@ -51,14 +51,14 @@ const Ticket: React.FC = () => {
       navigate("/ticket/movie-seat", {
         state: {
           movieId,
-          roomId,
+          showTimeId,
           selectedDate,
           selectedTime,
           tickets,
         },
       });
     },
-    [movieId, navigate, roomId, selectedDate, selectedTime]
+    [movieId, navigate, showTimeId, selectedDate, selectedTime]
   );
 
   if (!movieId) {

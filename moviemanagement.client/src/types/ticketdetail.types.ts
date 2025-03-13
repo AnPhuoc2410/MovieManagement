@@ -2,14 +2,15 @@ import { Bill } from "./bill.types";
 import { Seat } from "./seat.types";
 import { ShowTime } from "./showtime.types";
 
-export type TicketDetail = {
-  billId: string;
+export interface TicketDetail {
+  ticketId: string;
   seatId: string;
-  showTimeId: string;
-  bill: Bill;
+  version: string;
+  status: number;
   seat: Seat;
   showTime: ShowTime;
-};
+  bill: Bill;
+}
 
 export type UserTicketType = {
   id: string;
