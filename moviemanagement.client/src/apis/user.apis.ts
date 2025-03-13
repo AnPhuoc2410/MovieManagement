@@ -16,3 +16,11 @@ export const fetchUserByRole = async (
   );
   return response.data;
 };
+
+export const doInActiveUser = async (id: string) => {
+  const response = await api.delete(`/users/${id}`);
+  if (response.status === 204) {
+    return true;
+  }
+  return false;
+};

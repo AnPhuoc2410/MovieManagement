@@ -1,8 +1,7 @@
-﻿using System.Net;
+using System.Net;
 
 namespace MovieManagement.Server.Exceptions
 {
-    // all the Error or Bad request will using there Exception below
     public class ApiException : Exception
     {
         public HttpStatusCode StatusCode { get; }
@@ -37,6 +36,14 @@ namespace MovieManagement.Server.Exceptions
         {
         }
     }
+    public class BusinessException : Exception
+    {
+        public BusinessException(string message) : base(message) { }
+    }
 
-    
+    public class ValidationException : Exception
+    {
+        public ValidationException(string message) : base(message) { }
+    }
+
 }

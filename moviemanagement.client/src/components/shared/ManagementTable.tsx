@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Avatar,
+  Chip,
   IconButton,
   Paper,
   Table,
@@ -56,10 +57,7 @@ export const defaultUserColumns: ColumnDef<UserResponse>[] = [
     align: "center",
     width: "80px",
     renderCell: (item) => (
-      <Avatar 
-        src={item.avatar || "/default-avatar.png"} 
-        alt={item.fullName}
-      />
+      <Avatar src={item.avatar || "/default-avatar.png"} alt={item.fullName} />
     ),
   },
   {
@@ -87,9 +85,19 @@ export const defaultUserColumns: ColumnDef<UserResponse>[] = [
     headerName: "Status",
     align: "center",
     renderCell: (item) => (
-      <span style={{ color: item.status === 1 ? "green" : "red" }}>
-        {item.status === 1 ? "Active" : "Inactive"}
-      </span>
+      <Chip
+        label={item.status === 1 ? "Active" : "Inactive"}
+        sx={{
+          backgroundColor: item.status === 1 ? "#4caf50" : "#f44336",
+          color: "white",
+          fontWeight: "bold",
+          borderRadius: "16px",
+          padding: "0 8px",
+          minWidth: "80px",
+          minHeight: "32px",
+          textAlign: "center",
+        }}
+      />
     ),
   },
 ];
@@ -105,7 +113,6 @@ function ManagementTable<T extends TableData>({
     align: "center",
     headerName: "Actions",
     width: "120px",
-    backgroundColor: "#FFA09B",
   },
 }: ManagementTableProps<T>) {
   if (isLoading) return <Loader />;
@@ -117,7 +124,6 @@ function ManagementTable<T extends TableData>({
         align={column.align}
         style={{ width: column.width }}
         sx={{
-          backgroundColor: "#FFA09B", // Change to your preferred color
           fontWeight: "bold", // Optional: make the text bold
         }}
       >
@@ -155,17 +161,29 @@ function ManagementTable<T extends TableData>({
         <IconButton
           color="primary"
           onClick={() =>
-            onEdit(item.userId || item.roomId || item.MaNhanVien || item.movieId || "")
+            onEdit(
+              item.userId ||
+                item.roomId ||
+                item.MaNhanVien ||
+                item.movieId ||
+                "",
+            )
           }
         >
           <Edit />
         </IconButton>
       )}
-      {onDelete && (
+      {onDelete && item.status === 1 && (
         <IconButton
           color="secondary"
           onClick={() =>
-            onDelete(item.userId || item.roomId || item.MaNhanVien || item.movieId || "")
+            onDelete(
+              item.userId ||
+                item.roomId ||
+                item.MaNhanVien ||
+                item.movieId ||
+                "",
+            )
           }
         >
           <Delete />
@@ -196,7 +214,11 @@ function ManagementTable<T extends TableData>({
         </TableHead>
         <TableBody>
           {data.map((item) => (
-            <TableRow key={item.userId || item.roomId || item.MaNhanVien || item.movieId}>
+            <TableRow
+              key={
+                item.userId || item.roomId || item.MaNhanVien || item.movieId
+              }
+            >
               {renderRowCells(item)}
             </TableRow>
           ))}
