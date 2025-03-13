@@ -22,7 +22,7 @@ import { useTranslation } from "react-i18next";
 
 interface ShowTimeCinemaProps {
   movieId: string;
-  onRoomSelect: (roomId: string) => void;
+  onRoomSelect: (showTimeId: string) => void;
   onSelectDate: (date: string) => void;
   onSelectTime: (time: string) => void;
   onShowtimeAvailability: (available: boolean) => void;
@@ -77,10 +77,10 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
 
   // Memoized time selection handler
   const handleTimeSelect = useCallback(
-    (time: string, roomId: string) => {
+    (time: string, showTimeId: string) => {
       setSelectedTime(time);
       onSelectTime(time);
-      onRoomSelect(roomId);
+      onRoomSelect(showTimeId);
     },
     [onSelectTime, onRoomSelect],
   );
@@ -125,7 +125,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
           address: "S10.06 Origami, Vinhomes Grandpark, Thủ Đức, Hồ Chí Minh",
           times: showtimes.map((show) => ({
             time: format(new Date(show.startTime), "HH:mm"),
-            roomId: show.roomId,
+            showTimeId: show.showTimeId,
           })),
         };
 
@@ -206,7 +206,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                 }}
               >
                 {isToday && (
-                    <Typography
+                  <Typography
                     variant="caption"
                     sx={{
                       position: "absolute",
@@ -220,9 +220,9 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                       fontWeight: "bold",
                       whiteSpace: "nowrap",
                     }}
-                    >
+                  >
                     {t("showtime_cinema.title.now_day")}
-                    </Typography>
+                  </Typography>
                 )}
                 <Box textAlign="center">
                   <Typography
@@ -332,7 +332,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                             },
                           }}
                           onClick={() =>
-                            handleTimeSelect(showtime.time, showtime.roomId)
+                            handleTimeSelect(showtime.time, showtime.showTimeId)
                           }
                         >
                           {showtime.time}

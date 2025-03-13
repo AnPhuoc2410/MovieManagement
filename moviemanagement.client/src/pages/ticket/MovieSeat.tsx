@@ -1,7 +1,7 @@
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Seat from "../../components/Ticket/Seat";
+import SeatCinema from "../../components/Ticket/SeatCinema";
 import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
@@ -10,8 +10,8 @@ import toast from "react-hot-toast";
 const MovieSeat: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { roomId, selectedTime, selectedDate, tickets } = location.state || {
-    roomId: "",
+  const { showTimeId, selectedTime, selectedDate, tickets } = location.state || {
+    showTimeId: "", // Changed from showtimeId to showTimeId
     selectedTime: "Not selected",
     selectedDate: "Not selected",
     tickets: [],
@@ -19,7 +19,7 @@ const MovieSeat: React.FC = () => {
 
   // State to store selected seats
   const [selectedSeats, setSelectedSeats] = useState<
-    { id: string; name: string }[]
+    { id: string; name: string; version: string }[]
   >([]);
 
   // Calculate the total number of seats that should be selected based on ticket quantities
@@ -138,8 +138,8 @@ const MovieSeat: React.FC = () => {
                   boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.25)",
                 }}
               >
-                <Seat
-                  roomId={roomId}
+                <SeatCinema
+                  showTimeId={showTimeId} // Changed from showtimeId to showTimeId
                   selectedSeats={selectedSeats}
                   setSelectedSeats={setSelectedSeats}
                 />

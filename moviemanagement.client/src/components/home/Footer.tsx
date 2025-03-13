@@ -55,12 +55,13 @@ const Footer: React.FC = () => {
             <Typography variant="body2" sx={{ mb: 2 }}>
               {t("footer.slogan")}
             </Typography>
+            {/* Fix for first button */}
             <Button
               onClick={() => navigate("/")}
               variant="contained"
               fullWidth
               sx={{
-                display: { xs: "none", md: "flex" },
+                display: "flex",
                 fontWeight: "bold",
                 position: "relative",
                 overflow: "hidden",
@@ -68,7 +69,8 @@ const Footer: React.FC = () => {
                 bgcolor: "yellow",
                 color: "black",
                 transition: "color 0.5s ease-in-out",
-                minWidth: "auto",
+                width: "auto",
+                maxWidth: "180px",
                 px: 2,
                 "&::before": {
                   content: '""',
@@ -94,27 +96,24 @@ const Footer: React.FC = () => {
               }}
               startIcon={<LocalActivityOutlinedIcon />}
             >
-              <Button
-                sx={{
-                  color: "black",
-                }}
-              >
-                {t("footer.book_ticket")}
-              </Button>
+              {t("footer.book_ticket")}
             </Button>
+
+            {/* Fix for second button */}
             <Button
               onClick={() => navigate("/")}
               variant="contained"
               fullWidth
               sx={{
-                display: { xs: "none", md: "flex" },
+                display: "flex",
                 fontWeight: "bold",
                 position: "relative",
                 overflow: "hidden",
                 bgcolor: "#834bff",
                 color: "white",
                 transition: "color 0.5s ease-in-out",
-                minWidth: "auto",
+                width: "auto",
+                maxWidth: "180px",
                 px: 2,
                 "&::before": {
                   content: '""',
@@ -140,13 +139,7 @@ const Footer: React.FC = () => {
               }}
               startIcon={<FastfoodOutlined />}
             >
-              <Button
-                sx={{
-                  color: "black",
-                }}
-              >
-                {t("footer.book_snacks")}
-              </Button>
+              {t("footer.book_snacks")}
             </Button>
             <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>
               {t("footer.social_media")}:
