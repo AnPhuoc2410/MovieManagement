@@ -6,7 +6,6 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { Employee } from "./BangNhanVien";
 import { UserResponse } from "../../../types/users.type";
 
 interface XoaNhanVienProps {

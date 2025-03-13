@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
-import { fetchUserByRole, Role } from "../../../apis/user.apis";
+import { doInActiveUser, fetchUserByRole, Role } from "../../../apis/user.apis";
 import ManagementTable, {
   ColumnDef,
   defaultUserColumns,
@@ -56,8 +56,10 @@ const QuanLiNhanVien: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (selectedEmployee) {
       try {
-        // Implement delete API call here
-        console.log("Deleting employee:", selectedEmployee.userId);
+        const res = await doInActiveUser(selectedEmployee.userId);
+        if (res) {
+          toast.success("Employee deleted successfully");
+        }
       } catch (error) {
         toast.error("Failed to delete employee");
       }
