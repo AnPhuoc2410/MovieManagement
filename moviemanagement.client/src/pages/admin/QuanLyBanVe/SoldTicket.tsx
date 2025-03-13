@@ -18,7 +18,6 @@ import ShowTimeCinema from "../../../components/Ticket/ShowTimeCinema";
 import TicketPrice, {
   TicketType,
 } from "../../../components/Ticket/TicketPrice";
-import { format } from "date-fns";
 import toast from "react-hot-toast";
 
 interface BuyTicketProps {

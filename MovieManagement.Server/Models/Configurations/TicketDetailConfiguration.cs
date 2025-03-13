@@ -9,9 +9,10 @@ namespace MovieManagement.Server.Models.Configurations
         public void Configure(EntityTypeBuilder<TicketDetail> builder)
         {
             builder.ToTable("TICKETDETAIL");
-            builder.HasKey(x => new { x.BillId, x.SeatId, x.ShowTimeId });
-            //builder.Property(x => x.SeatId).IsRequired();
-            //builder.Property(x => x.Price).IsRequired();
+            builder.HasKey(x => x.TicketId);
+            builder.Property(x => x.TicketId).HasDefaultValueSql("NEWID()");
+            builder.Property(x => x.Version).IsRowVersion();
+            builder.Property(x => x.BillId).IsRequired(false);
             builder.HasOne(x => x.Bill)
                 .WithMany(x => x.TicketDetails)
                 .HasForeignKey(x => x.BillId);

@@ -95,7 +95,7 @@ export default function useRouteElements() {
     },
     // Protected Client Routes
     {
-      element: <ProtectedRoute />,
+      element: <RejectedRoute />,
       children: [
         {
           path: "/users/profile/:userId",

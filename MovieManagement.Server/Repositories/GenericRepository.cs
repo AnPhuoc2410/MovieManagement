@@ -203,6 +203,18 @@ namespace MovieManagement.Server.Repositories
             return await _context.SaveChangesAsync();
         }
 
+        //public void CancelAllPreparedUpdates<T>() where T : class
+        //{
+        //    var modifiedEntries = _context.ChangeTracker.Entries<T>()
+        //                                  .Where(e => e.State == EntityState.Modified)
+        //                                  .ToList();
+
+        //    foreach (var entry in modifiedEntries)
+        //    {
+        //        entry.State = EntityState.Unchanged;
+        //    }
+        //}
+
         #endregion Separating asign entity and save operators
 
     }
