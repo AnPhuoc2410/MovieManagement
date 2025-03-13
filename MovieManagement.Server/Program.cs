@@ -15,6 +15,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Extensions.VNPAY.Services;
 
 namespace MovieManagement.Server
 {
@@ -64,7 +65,7 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("LaazyConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("PhuocConnection"))
             );
 
             // Đăng ký UnitOfWork
@@ -142,7 +143,10 @@ namespace MovieManagement.Server
 
             //Enable role based and policy based authorization
             builder.Services.AddAuthorization();
-            
+
+            // Đăng ký VnPayService
+            builder.Services.AddSingleton<IVnPayService, VnPayService>();
+
             builder.Services.Configure<RouteOptions>(options =>
             {
                 options.LowercaseUrls = true;  // Forces lowercase routes
@@ -201,6 +205,7 @@ namespace MovieManagement.Server
             app.UseCors("AllowReactApp");
 
             app.MapFallbackToFile("/index.html");
+            app.UseHttpsRedirection();
 
             app.Run();
         }
