@@ -86,7 +86,16 @@ const Payment: React.FC = () => {
     if (hasError) return;
 
     try {
-      const response = await api.get(`vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}`);
+      const data = {
+        totalTicket: tickets.length,
+        amount: total,
+        promotionId: "",
+      };
+      const billResponse = await api.post(`bill?userId=${"16223053-AE9B-4A5F-AADE-437781C2A8A5"}`, data);
+      console.log(billResponse.data);
+      const response = await api.get(
+        `vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}`,
+      );
       window.location.href = response.data;
     } catch (error) {
       console.error(error);
