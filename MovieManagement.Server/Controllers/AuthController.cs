@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.FileIO;
+using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.RequestModel;
@@ -17,12 +18,14 @@ namespace MovieManagement.Server.Controllers
         private readonly IUserService _userService;
         private readonly IAuthenticateService _authenticateService;
         private readonly IEmailService _emailService;
+        private readonly IUnitOfWork _unitOfWork;
 
         public AuthController(IUserService userService, IAuthenticateService authenticateService,
-            IEmailService emailService)
+            IEmailService emailService, IUnitOfWork unitOfWork)
         {
             _authenticateService = authenticateService;
             _emailService = emailService;
+            _unitOfWork = unitOfWork;
             _userService = userService;
         }
 
@@ -32,14 +35,14 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ApiResponse<object>),
             StatusCodes.Status500InternalServerError)]
-        public IActionResult Signup([FromBody] AuthDto.RegisterRequest registerDto)
+        public async Task<IActionResult> Signup([FromBody] AuthDto.RegisterRequest registerDto)
         {
             
             if (!ModelState.IsValid) return BadRequest(ModelState);
             
             try
             {
-                var existingUser = await _userRepository.GetUserByEmailAsync(registerDto.Email);
+                var existingUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(registerDto.Email);
                 if (existingUser != null)
                 {
                     var response = new ApiResponse<object>
@@ -509,27 +512,27 @@ namespace MovieManagement.Server.Controllers
         // [Authorize(Policy = "Admin")]
         // [Authorize(Policy = "Employee")]
         // [Authorize(Policy = "Member")]
-        [HttpPost("extract-token")]
-        public async Task<IActionResult> ExtractToken([FromBody] TokenDto.TokenRequest tokenRequest)
-        {
-            var userData = await _authenticateService.ExtractTokenAsync(tokenRequest.AccessToken);
-            if (userData == null)
-            {
-                return BadRequest(new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "User not found",
-                    IsSuccess = false
-                });
-            }
+        //[HttpPost("extract-token")]
+        //public async Task<IActionResult> ExtractToken([FromBody] TokenDto.TokenRequest tokenRequest)
+        //{
+        //    var userData = await _authenticateService.ExtractTokenAsync(tokenRequest.AccessToken);
+        //    if (userData == null)
+        //    {
+        //        return BadRequest(new ApiResponse<object>
+        //        {
+        //            StatusCode = 400,
+        //            Message = "User not found",
+        //            IsSuccess = false
+        //        });
+        //    }
 
-            return Ok(new ApiResponse<object>
-            {
-                StatusCode = 200,
-                Message = "Token extracted successfully",
-                IsSuccess = true,
-                Data = userData
-            });
-        }
+        //    return Ok(new ApiResponse<object>
+        //    {
+        //        StatusCode = 200,
+        //        Message = "Token extracted successfully",
+        //        IsSuccess = true,
+        //        Data = userData
+        //    });
+        //}
     }
 }

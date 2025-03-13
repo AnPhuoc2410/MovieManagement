@@ -5,7 +5,6 @@ namespace MovieManagement.Server.Services.AuthorizationService
     public interface IAuthenticateService
     {
         Task<AuthDto.LoginResponse> Login(AuthDto.LoginRequest dto);
-        UserDto.UserResponse Register(AuthDto.RegisterRequest dto);
-        Task<UserDto.UserResponse> ExtractTokenAsync(string token);
+        Task<UserDto.UserResponse> Register(AuthDto.RegisterRequest dto);
     }
 }

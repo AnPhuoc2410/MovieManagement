@@ -14,12 +14,11 @@ using MovieManagement.Server.Exceptions;
 using Microsoft.VisualBasic;
 using static MovieManagement.Server.Models.Enums.UserEnum;
 using System.Runtime.ConstrainedExecution;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.VisualBasic.FileIO;
 
 
 namespace MovieManagement.Server.Services.AuthorizationService
 {
+
     public class AuthenticateService : IAuthenticateService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -31,9 +30,9 @@ namespace MovieManagement.Server.Services.AuthorizationService
             _mapper = mapper;
             _jwtService = jwtService;
         }
-
         public async Task<AuthDto.LoginResponse> Login(AuthDto.LoginRequest dto)
         {
+
             //Check user name
             var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(dto.Email);
             if (user == null)
@@ -42,7 +41,7 @@ namespace MovieManagement.Server.Services.AuthorizationService
             }
 
             //Check if user status active
-            if(user.Status == UserStatus.Inactive)
+            if (user.Status == UserStatus.Inactive)
             {
                 throw new UnauthorizedAccessException("User is not active!");
             }
@@ -60,27 +59,25 @@ namespace MovieManagement.Server.Services.AuthorizationService
             //Method create Token
             var token = _jwtService.GenerateToken(user.UserId, user.UserName, user.Role.ToString());
 
-            var tokenResponse = new TokenDto.TokenResponse();
-            tokenResponse.AccessToken = token;
-            tokenResponse.Expires = DateTime.UtcNow.AddMinutes(60);
-
+            //Create TokenResponse
             return new AuthDto.LoginResponse
             {
-                Token = tokenResponse
+                Token = new TokenDto.TokenResponse
+                {
+                    AccessToken = token
+                }
             };
         }
 
-        public UserDto.UserResponse Register(AuthDto.RegisterRequest dto)
+        public async Task<UserDto.UserResponse> Register(AuthDto.RegisterRequest dto)
         {
-            // Check if any of the unique fields already exist
-            var existingUser = _userRepository.GetUserByUniqueFields(dto.Email, dto.IDCard, dto.PhoneNumber, dto.UserName);
-            if (existingUser != null)
+            try
             {
                 // Check if user already exists
                 var existingUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(dto.Email);
                 if (existingUser != null)
                 {
-                    throw new MalformedLineException("Email already exists.");
+                    throw new Exception("Username or email already exists.");
                 }
                 var newUser = _mapper.Map<User>(dto);
                 //// Create new user entity
@@ -96,7 +93,7 @@ namespace MovieManagement.Server.Services.AuthorizationService
                 newUser.PhoneNumber = "";
                 newUser.Role = 0;
                 newUser.Point = 0;
-                
+
                 // Hash the password
                 var passwordHasher = new PasswordHasher<User>();
                 newUser.Password = passwordHasher.HashPassword(newUser, dto.Password);

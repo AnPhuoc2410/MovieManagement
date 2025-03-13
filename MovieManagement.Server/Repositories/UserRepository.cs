@@ -111,7 +111,7 @@ namespace MovieManagement.Server.Repositories
         public async Task<User> GetUserByEmailAsync(string email)
         {
             var user = await _context.Users
-                 .Where(user => user.Email == email && user.Status != 0)
+                 .Where(user => user.Email == email)
                  .OrderBy(user => user.JoinDate)
                  .LastOrDefaultAsync();
             return user;

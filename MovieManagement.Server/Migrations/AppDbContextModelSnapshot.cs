@@ -375,7 +375,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Avatar")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR(MAX)");
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
