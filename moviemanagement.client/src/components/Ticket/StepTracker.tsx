@@ -19,18 +19,18 @@ const StepTracker: React.FC<StepTrackerProps> = ({
   currentStep,
   paymentStatus,
 }) => {
-  const finalStep =
-    paymentStatus === "success"
-      ? { label: "Thành Công", icon: <CheckCircleIcon /> }
-      : { label: "Hủy Thanh Toán", icon: <CancelOutlined sx={{ color: 'red' }} /> };
 
   const { t } = useTranslation();
   const steps = [
     { label: t("step_tracker.select_show_time"), icon: <MovieIcon /> },
     { label: t("step_tracker.select_seat"), icon: <EventSeatIcon /> },
     { label: t("step_tracker.payment"), icon: <PaymentIcon /> },
-    { label: t("step_tracker.success"), icon: <CheckCircleIcon /> },
+    // { label: t("step_tracker.success"), icon: <CheckCircleIcon /> },
   ];
+  const finalStep =
+    paymentStatus === "success"
+      ? { label: "Thành Công", icon: <CheckCircleIcon /> }
+      : { label: "Hủy Thanh Toán", icon: <CancelOutlined sx={{ color: 'red' }} /> };
 
   return (
     <Box
