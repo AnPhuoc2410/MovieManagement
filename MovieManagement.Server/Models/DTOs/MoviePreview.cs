@@ -9,5 +9,7 @@
         public string Image { get; set; }
 
         public string Trailer { get; set; }
+
+        public DateTime PostDate { get; set; }
     }
 }
