@@ -99,7 +99,7 @@
           "id_card": "ID Card",
           "email": "Email",
           "address": "Address",
-          "phone": "Phone Number"
+          "phone_number": "Phone Number"
         },
         "buttons": {
           "back": "Back",
@@ -123,7 +123,24 @@
         "my_profile": "My Profile",
         "settings": "Settings",
         "my_bookings": "My Bookings",
-        "logout": "Logout"
+        "logout": "Logout",
+        "account_info": "Account Information",
+        "cumulative_points": "Cumulative Points",
+        "booked_tickets": "Booked Tickets",
+        "history": "History",
+        "change_password": "Change Password",
+        "admin_panel": "Admin Panel",
+        "admin": "Admin"
+      },
+      "field": {
+        "full_name": "Full Name",
+        "dob": "Date of Birth",
+        "male": "Male",
+        "female": "Female",
+        "email": "Email",
+        "id_card": "ID Card",
+        "phone": "Phone Number",
+        "address": "Address"
       }
     },
     "promotion": {
@@ -146,6 +163,51 @@
         "title": "VIP MEMBER",
         "description": "VIP card brings exclusive privileges",
         "button": "LEARN MORE"
+      }
+    },
+    "showtime_cinema": {
+      "title":{
+        "showtime_list" : "Showtime a Theaters",
+        "now_day" : "Now Day",
+        "theater_list" : "Theater list",
+        "no_showtime" : "No showtime"
+      },
+      "location": {
+        "HaNoi": "Ha Noi",
+        "HCM": "Ho Chi Minh City",
+        "DaNang": "Da Nang"
+      },
+      "notification": {
+        "loading_showtime": "Loading Showtime",
+        "no_showtime": "There are no showtimes for the selected date"
+      },
+      "error": {
+        "select_show_time": "Please select show time!",
+        "select_ticket": "Please select at least one ticket!"
+      }
+    },
+    "ticket_price": {
+      "ticket_selection": "Select Ticket Type",
+      "ticket_type": {
+        "couple": "Couple Seat",
+        "single": "Single Seat",
+        "vip": "VIP Seat"
+      },
+      "next": "Continue"
+    },
+    "seat": "Seat",
+    "step_tracker": {
+      "select_show_time": "Select showtimes",
+      "select_seat": "Select seat",
+      "payment": "Payment",
+      "success": "Success"
+    },
+    "common": {
+      "button": {
+        "action": {
+          "update": "Update",
+          "cancel": "Cancel"
+        }
       }
     }
   }

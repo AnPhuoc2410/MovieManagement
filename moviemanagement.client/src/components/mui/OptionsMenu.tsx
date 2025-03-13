@@ -1,49 +1,54 @@
-import * as React from "react";
-import { styled } from "@mui/material/styles";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import Divider, { dividerClasses } from "@mui/material/Divider";
+import { listClasses } from "@mui/material/List";
+import ListItemIcon, { listItemIconClasses } from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MuiMenuItem from "@mui/material/MenuItem";
 import { paperClasses } from "@mui/material/Paper";
-import { listClasses } from "@mui/material/List";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemIcon, { listItemIconClasses } from "@mui/material/ListItemIcon";
-import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
-import MenuButton from "./MenuButton";
+import { styled } from "@mui/material/styles";
+import { Fragment, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import toast from "react-hot-toast";
 import { useAuth } from "../../contexts/AuthContext";
+import MenuButton from "./MenuButton";
 
 const MenuItem = styled(MuiMenuItem)({
   margin: "2px 0",
 });
 
-export default function OptionsMenu() {
+interface OptionsMenuProps {
+  userId: string | undefined; // Accept userId as a prop
+}
+
+export default function OptionsMenu({ userId }: OptionsMenuProps) {
   const navigate = useNavigate();
   const { authLogout } = useAuth();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const { t } = useTranslation();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
   const handleNavigateToUserProfile = () => {
-    navigate("/users/profile/1");
+    if (userId) {
+      navigate(`/users/profile/${userId}`);
+    }
   };
 
   const handleLogout = async () => {
     await authLogout();
-    toast.success("Đăng xuất thành công", { removeDelay: 2500 });
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <MenuButton
         aria-label="Open menu"
         onClick={handleClick}
@@ -71,11 +76,9 @@ export default function OptionsMenu() {
           },
         }}
       >
-        <MenuItem onClick={handleNavigateToUserProfile}>Hồ sơ</MenuItem>
-        {/* <MenuItem onClick={handleClose}>Tài khoản của tôi</MenuItem> */}
-        {/* <Divider /> */}
-        {/* <MenuItem onClick={handleClose}>Thêm tài khoản mới</MenuItem> */}
-        {/* <MenuItem onClick={handleClose}>Cài đặt</MenuItem> */}
+        <MenuItem onClick={handleNavigateToUserProfile}>
+          {t("user.profile.my_profile")}
+        </MenuItem>
         <Divider />
         <MenuItem
           onClick={handleClose}
@@ -88,12 +91,14 @@ export default function OptionsMenu() {
             gap: "8px",
           }}
         >
-          <ListItemText onClick={handleLogout}>Đăng xuất</ListItemText>
+          <ListItemText onClick={handleLogout}>
+            {t("user.profile.logout")}
+          </ListItemText>
           <ListItemIcon>
             <LogoutRoundedIcon fontSize="small" />
           </ListItemIcon>
         </MenuItem>
       </Menu>
-    </React.Fragment>
+    </Fragment>
   );
 }

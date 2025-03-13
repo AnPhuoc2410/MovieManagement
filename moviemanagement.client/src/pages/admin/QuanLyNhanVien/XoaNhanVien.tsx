@@ -7,12 +7,13 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { Employee } from "./BangNhanVien";
+import { UserResponse } from "../../../types/users.type";
 
 interface XoaNhanVienProps {
   isDialogOpen: boolean;
   handleCloseDialog: () => void;
   handleConfirmDelete: () => void;
-  employeeData: Employee | null;
+  employeeData: UserResponse | null;
 }
 
 const XoaNhanVien = ({
@@ -28,8 +29,8 @@ const XoaNhanVien = ({
       <DialogTitle>Xác nhận xóa nhân viên</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Bạn có chắc chắn muốn xóa nhân viên {employeeData.TenNhanVien}? Hành
-          động này không thể hoàn tác.
+          Bạn có chắc chắn muốn xóa nhân viên {employeeData.fullName}? Hành động
+          này không thể hoàn tác.
         </DialogContentText>
       </DialogContent>
       <DialogActions>

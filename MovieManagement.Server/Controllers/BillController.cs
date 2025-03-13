@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
+using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.BillService;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -259,11 +260,11 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BillDto>> CreateBill(Guid userId, [FromBody] BillDto billDto)
+        public async Task<ActionResult<BillDto>> CreateBill(Guid userId, [FromBody] BillRequest billRequest)
         {
             try
             {
-                var newBill = await _billService.CreateBillAsync(userId, billDto);
+                var newBill = await _billService.CreateBillAsync(userId, billRequest);
                 if (newBill == null)
                 {
                     var response = new ApiResponse<object>
@@ -319,11 +320,11 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BillDto>> UpdateBill(Guid billId, [FromBody] BillDto billDto)
+        public async Task<ActionResult<BillDto>> UpdateBill(Guid billId, [FromBody] BillRequest billRequest)
         {
             try
             {
-                var updated = await _billService.UpdateBillAsync(billId, billDto);
+                var updated = await _billService.UpdateBillAsync(billId, billRequest);
                 if (updated == null)
                 {
                     var response = new ApiResponse<object>

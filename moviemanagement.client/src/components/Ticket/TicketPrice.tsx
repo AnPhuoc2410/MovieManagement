@@ -1,226 +1,238 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import api from "../../apis/axios.config";
+import { SeatType } from "../../types/seattype.types";
 import {
   Box,
-  Grid,
-  Typography,
-  IconButton,
   Button,
-  SxProps,
-  Theme,
+  IconButton,
+  Typography,
+  Card,
+  CardContent,
 } from "@mui/material";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import { Pagination } from "swiper/modules";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import toast from "react-hot-toast";
-
-export interface TicketType {
-  id: string;
-  name: string;
-  type: string;
-  price: number;
-  quantity: number;
-}
+import { useTranslation } from "react-i18next";
 
 interface TicketPriceProps {
-  onNext?: (selectedTickets: TicketType[]) => void;
-  sx?: SxProps<Theme>;
+  onNext?: (selectedSeats: SeatType[]) => void;
 }
 
-const TicketPrice: React.FC<TicketPriceProps> = ({ onNext, sx }) => {
-  const initialTickets: TicketType[] = [
-    {
-      id: "seat_normal",
-      name: "Ghế Đơn",
-      type: "Đơn",
-      price: 75000,
-      quantity: 0,
-    },
-    {
-      id: "seat_double",
-      name: "Ghế Đôi",
-      type: "Đôi",
-      price: 140000,
-      quantity: 0,
-    },
-    {
-      id: "seat_vip",
-      name: "Ghế VIP",
-      type: "VIP",
-      price: 145000,
-      quantity: 0,
-    },
-  ];
+const currencyFormatMap: Record<string, { locale: string, currency: string }> = {
+  en: { locale: 'en-US', currency: 'USD' },
+  jp: { locale: 'ja-JP', currency: 'JPY' },
+  vi: { locale: 'vi-VN', currency: 'VND' }
+};
 
-  const [tickets, setTickets] = useState<TicketType[]>(initialTickets);
+const exchangeRates = {
+  VND: 1,
+  USD: 0.000039,
+  JPY: 0.0058
+};
+
+const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
+  const [seatTypes, setSeatTypes] = useState<SeatType[]>([]);
+  const { t, i18n } = useTranslation();
+  const [currencyFormat, setCurrencyFormat] = useState({ locale: 'vi-VN', currency: 'VND' });
+
+
+  useEffect(() => {
+    const currentLang = i18n.language;
+    const languageKey = currentLang.substring(0, 2); // Get first 2 chars (e.g., "en" from "en-US")
+    setCurrencyFormat(currencyFormatMap[languageKey] || currencyFormatMap.vi);
+  }, [i18n.language]); // This will trigger when language changes
+
+  useEffect(() => {
+    const fetchSeatTypes = async () => {
+      try {
+        const response = await api.get(`seattype/all`);
+        const seatData = response.data.map((seat: SeatType) => ({
+          ...seat,
+          quantity: 0,
+        }));
+        setSeatTypes(seatData);
+      } catch (error) {
+        console.error("Error fetching seat types:", error);
+        toast.error(t("errors.fetch_seats_failed"));
+      }
+    };
+
+    fetchSeatTypes();
+  }, [t]);
 
   const increment = (id: string) => {
-    setTickets((prevTickets) => {
-      const selectedTicket = prevTickets.find((ticket) => ticket.id === id);
-      if (!selectedTicket) return prevTickets;
-      const isOtherTypeSelected = prevTickets.some(
-        (t) => t.type !== selectedTicket.type && t.quantity > 0,
-      );
-
-      if (isOtherTypeSelected) {
-        toast.error("Chỉ chọn 1 loại vé cùng loại!");
-        return prevTickets;
-      }
-      return prevTickets.map((ticket) =>
-        ticket.id === id
-          ? { ...ticket, quantity: ticket.quantity + 1 }
-          : ticket,
-      );
-    });
-  };
-
-  const decrement = (id: string) => {
-    setTickets((prevTickets) =>
-      prevTickets.map((ticket) =>
-        ticket.id === id && ticket.quantity > 0
-          ? { ...ticket, quantity: ticket.quantity - 1 }
-          : ticket,
-      ),
+    setSeatTypes((prevSeats) =>
+      prevSeats.map((seat) =>
+        seat.seatTypeId === id ? { ...seat, quantity: seat.quantity + 1 } : seat
+      )
     );
   };
 
+  const decrement = (id: string) => {
+    setSeatTypes((prevSeats) =>
+      prevSeats.map((seat) =>
+        seat.seatTypeId === id && seat.quantity > 0
+          ? { ...seat, quantity: seat.quantity - 1 }
+          : seat
+      )
+    );
+  };
+
+  const convertPrice = (priceInVND: number, targetCurrency: string) => {
+    if (targetCurrency === 'VND') return priceInVND;
+    return priceInVND * exchangeRates[targetCurrency as keyof typeof exchangeRates];
+  };
+
+  const formatPrice = (price: number) => {
+    // Convert the VND price to the target currency
+    const convertedPrice = convertPrice(price, currencyFormat.currency);
+
+    // For JPY, round to whole number as yen doesn't use decimals
+    const adjustedPrice = currencyFormat.currency === 'JPY' ? Math.round(convertedPrice) : convertedPrice;
+
+    return adjustedPrice.toLocaleString(currencyFormat.locale, {
+      style: "currency",
+      currency: currencyFormat.currency,
+    });
+  };
   const handleNext = () => {
-    const selected = tickets.filter((t) => t.quantity > 0);
-    if (onNext) onNext(selected);
+    const selectedSeats = seatTypes.filter((seat) => seat.quantity > 0);
+    if (selectedSeats.length === 0) {
+      toast.error("Vui lòng chọn ít nhất một vé.");
+      return;
+    }
+    if (onNext) onNext(selectedSeats);
   };
 
   return (
     <Box
       sx={{
-        background: `
-              radial-gradient(circle at 20% 30%, rgba(78, 46, 131, 0.4) 0%, rgba(78, 46, 131, 0) 50%),
-              radial-gradient(circle at 75% 15%, rgba(33, 64, 154, 0.4) 0%, rgba(33, 64, 154, 0) 50%),
-              linear-gradient(135deg, #0B0D1A 0%, #1A1E3C 50%, #3A1155 100%)
-            `,
+        background: "linear-gradient(135deg, #1A1E3C 0%, #3A1155 100%)",
         color: "white",
-        position: "relative",
-        zIndex: 1,
-        padding: { xs: 4, sm: 6, md: 8, lg: 10 },
-        overflow: "hidden",
+        padding: { xs: 3, sm: 5, md: 6 },
+        textAlign: "center",
       }}
     >
-      {/* Title */}
       <Typography
         variant="h4"
-        sx={{
-          textTransform: "uppercase",
-          mt: 3,
-          mb: 4,
-          fontWeight: "bold",
-          textAlign: "center",
-          color: "white",
-        }}
+        sx={{ fontWeight: "bold", textTransform: "uppercase", mb: 4 }}
       >
-        Chọn Loại Vé
+        {t("ticket_price.ticket_selection")}
       </Typography>
 
-      {/* Ticket Cards */}
-      <Grid
-        container
-        spacing={3}
-        justifyContent="center"
+      <Box
         sx={{
-          paddingLeft: "10%",
-          paddingRight: "10%",
+          width: "100%",
+          maxWidth: "900px",
+          margin: "0 auto",
+          overflow: "hidden",
+          position: "relative",
         }}
       >
-        {tickets.map((ticket) => (
-          <Grid item xs={12} sm={6} md={4} key={ticket.id}>
-            <Box
-              sx={{
-                border: "1px solid rgba(255,255,255,0.3)",
-                borderRadius: 2,
-                p: 3,
-                backgroundColor: "rgba(255,255,255,0.05)",
-                textAlign: "left",
-                color: "white",
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
-              }}
-            >
-              <Typography
-                variant="h6"
+        <Swiper
+          slidesPerView={1}
+          spaceBetween={50}
+          pagination={{ clickable: true }}
+          breakpoints={{
+            600: { slidesPerView: 2 },
+            900: { slidesPerView: 3 },
+          }}
+          autoplay={{ delay: 1000 }}
+          loop={true}
+          modules={[Pagination]}
+          style={{
+            width: "100%",
+            margin: "0 auto",
+            paddingBottom: "10px",
+          }}
+        >
+          {seatTypes.map((seat) => (
+            <SwiperSlide key={seat.seatTypeId}>
+              <Card
                 sx={{
-                  textTransform: "uppercase",
-                  fontWeight: "bold",
+                  backgroundColor: "rgba(255,255,255,0.08)",
+                  color: "white",
+                  borderRadius: 2,
+                  textAlign: "center",
+                  p: 3,
+                  "&:hover": {
+                    transform: "scale(1.05)",
+                    transition: "0.3s ease-in-out",
+                  },
                 }}
               >
-                {ticket.name}
-              </Typography>
+                <CardContent>
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    {t("seat")} {seat.typeName}
+                  </Typography>
 
-              <Typography
-                variant="body1"
-                sx={{
-                  color: "#FFC107",
-                  textTransform: "uppercase",
-                }}
-              >
-                {ticket.type}
-              </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{ color: "#FFC107", fontWeight: "bold", mb: 1 }}
+                  >
+                    {formatPrice(seat.price)}
+                  </Typography>
 
-              <Typography
-                variant="body2"
-                sx={{
-                  fontSize: "1rem",
-                  fontWeight: 500,
-                }}
-              >
-                {ticket.price.toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })}
-              </Typography>
+                  {/* Quantity Controls */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      mt: 2,
+                    }}
+                  >
+                    <IconButton
+                      onClick={() => decrement(seat.seatTypeId)}
+                      sx={{
+                        color: seat.quantity > 0 ? "#FFC107" : "gray",
+                        "&:hover": { color: "#FFC107" },
+                      }}
+                      disabled={seat.quantity === 0}
+                    >
+                      <RemoveIcon />
+                    </IconButton>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-evenly",
-                  width: "120px",
-                  border: "2px solid #A0AEC0",
-                  borderRadius: "8px",
-                  backgroundColor: "#A0AEC0",
-                  px: 1,
-                }}
-              >
-                <IconButton
-                  onClick={() => decrement(ticket.id)}
-                  sx={{ color: "black" }} // Change icon color for contrast
-                >
-                  <RemoveIcon />
-                </IconButton>
+                    <Typography
+                      variant="h6"
+                      sx={{ fontWeight: "bold", mx: 2, minWidth: "30px" }}
+                    >
+                      {seat.quantity}
+                    </Typography>
 
-                <Typography
-                  variant="body1"
-                  sx={{
-                    mx: 1,
-                    textAlign: "center",
-                    minWidth: "20px",
-                    color: "black",
-                  }}
-                >
-                  {ticket.quantity}
-                </Typography>
-                <IconButton
-                  onClick={() => increment(ticket.id)}
-                  sx={{ color: "black" }}
-                >
-                  <AddIcon />
-                </IconButton>
-              </Box>
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
-
+                    <IconButton
+                      onClick={() => increment(seat.seatTypeId)}
+                      sx={{ color: "white", "&:hover": { color: "#FFC107" } }}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  </Box>
+                </CardContent>
+              </Card>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </Box>
+      {/* Next Button */}
       {onNext && (
-        <Box sx={{ mt: 4, textAlign: "center" }}>
-          <Button variant="contained" color="primary" onClick={handleNext}>
-            Tiếp tục
+        <Box sx={{ mt: 4 }}>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#FFC107",
+              color: "black",
+              fontWeight: "bold",
+              px: 4,
+              py: 1.5,
+              "&:hover": { backgroundColor: "#FFA000" },
+            }}
+            onClick={handleNext}
+          >
+            {t("ticket_price.next")}
           </Button>
         </Box>
       )}

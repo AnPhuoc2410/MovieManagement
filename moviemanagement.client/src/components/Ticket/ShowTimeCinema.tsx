@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Container,
   Typography,
@@ -18,6 +18,7 @@ import { vi as viLocale } from "date-fns/locale";
 import axios from "axios";
 import { ShowTime } from "../../types/showtime.types";
 import { Cinema } from "../../types/cinema.types";
+import { useTranslation } from "react-i18next";
 
 interface ShowTimeCinemaProps {
   movieId: string;
@@ -26,6 +27,9 @@ interface ShowTimeCinemaProps {
   onSelectTime: (time: string) => void;
   onShowtimeAvailability: (available: boolean) => void;
 }
+
+// Cache object to store fetched data
+const showtimesCache = new Map<string, Cinema[]>();
 
 const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
   movieId,
@@ -41,26 +45,47 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
   const [selectedCity, setSelectedCity] = useState<string>("hcm");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [cinemas, setCinemas] = useState<Cinema[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { t, i18n } = useTranslation();
 
-  // Generate an array of 4 days: today plus the next 3 days.
-  const days = Array.from({ length: 4 }, (_, i) => {
-    const date = addDays(today, i);
-    return {
-      date,
-      formatted: format(date, "dd/MM"),
-      label: format(date, "EEEE", { locale: viLocale }),
-    };
-  });
+  const days = useMemo(() => {
+    return Array.from({ length: 4 }, (_, i) => {
+      const date = addDays(today, i);
+      const dayName = format(date, "EEEE", {
+        locale: i18n.language === "vi" ? viLocale : undefined,
+      });
 
-  // When the user selects a date, update both local and parent state.
-  const handleDateChange = (e: any, newDate: string) => {
-    if (newDate) {
-      setSelectedDate(newDate);
-      onSelectDate(newDate);
-    }
-  };
+      return {
+        date,
+        formatted: format(date, "dd/MM"),
+        label: t(`${dayName.toLowerCase()}`),
+      };
+    });
+  }, [today, t, i18n.language]);
 
-  // Fetch showtimes when city or date changes.
+  // Memoized handleDateChange function
+  const handleDateChange = useCallback(
+    (e: any, newDate: string) => {
+      if (newDate) {
+        setSelectedDate(newDate);
+        onSelectDate(newDate);
+        setSelectedTime(null); // Reset time when date changes
+      }
+    },
+    [onSelectDate],
+  );
+
+  // Memoized time selection handler
+  const handleTimeSelect = useCallback(
+    (time: string, roomId: string) => {
+      setSelectedTime(time);
+      onSelectTime(time);
+      onRoomSelect(roomId);
+    },
+    [onSelectTime, onRoomSelect],
+  );
+
+  // Fetch showtimes with caching
   useEffect(() => {
     const selectedDay = days.find((day) => day.formatted === selectedDate);
     if (!selectedDay) return;
@@ -69,20 +94,31 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
     const toDate = format(addDays(selectedDay.date, 1), "yyyy-MM-dd");
     const apiKey = `${fromDate}T00:00:00`;
 
+    // Create a cache key based on movie, date and city
+    const cacheKey = `${movieId}_${fromDate}_${selectedCity}`;
+
     const fetchShowtimes = async () => {
+      // Check if we have cached data
+      if (showtimesCache.has(cacheKey)) {
+        const cachedCinemas = showtimesCache.get(cacheKey)!;
+        setCinemas(cachedCinemas);
+        onShowtimeAvailability(cachedCinemas.length > 0);
+        return;
+      }
+
+      setIsLoading(true);
       try {
         const response = await axios.get(
-          `https://localhost:7119/api/ShowTime/GetShowTimeByDates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}`,
+          `https://localhost:7119/api/showtime/getshowtimebydates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}`,
         );
         const showtimes: ShowTime[] = response.data.data[apiKey] || [];
+
         if (showtimes.length === 0) {
           setCinemas([]);
-          onShowtimeAvailability(false); // No showtime available
+          showtimesCache.set(cacheKey, []);
+          onShowtimeAvailability(false);
           return;
         }
-
-        // At least one showtime is available.
-        onShowtimeAvailability(true);
 
         const dummyCinema: Cinema = {
           name: "Cinema Eiga",
@@ -93,15 +129,31 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
           })),
         };
 
-        setCinemas([dummyCinema]);
+        const cinemaResult = [dummyCinema];
+        setCinemas(cinemaResult);
+        showtimesCache.set(cacheKey, cinemaResult);
+        onShowtimeAvailability(true);
       } catch (error) {
         console.error("Error fetching showtimes:", error);
-        onShowtimeAvailability(false); // In case of error, hide TicketPrice
+        onShowtimeAvailability(false);
+        setCinemas([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchShowtimes();
+    // Debounce the fetch to avoid multiple simultaneous calls
+    const timerId = setTimeout(() => {
+      fetchShowtimes();
+    }, 100);
+
+    return () => clearTimeout(timerId);
   }, [selectedCity, selectedDate, days, movieId, onShowtimeAvailability]);
+
+  // Only update parent about availability when cinemas state changes
+  useEffect(() => {
+    onShowtimeAvailability(cinemas.length > 0);
+  }, [cinemas.length, onShowtimeAvailability]);
 
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", color: "white", py: 5 }}>
@@ -114,10 +166,10 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
           mb={2}
           sx={{ letterSpacing: "1px", textTransform: "uppercase" }}
         >
-          Lịch Chiếu & Rạp
+          {t("showtime_cinema.title.showtime_list")}
         </Typography>
 
-        {/* Date Selection */}
+        {/* Date Selection - memoized rendering */}
         <ToggleButtonGroup
           value={selectedDate}
           exclusive
@@ -154,7 +206,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                 }}
               >
                 {isToday && (
-                  <Typography
+                    <Typography
                     variant="caption"
                     sx={{
                       position: "absolute",
@@ -166,10 +218,11 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                       borderRadius: "4px",
                       px: 0.5,
                       fontWeight: "bold",
+                      whiteSpace: "nowrap",
                     }}
-                  >
-                    Today
-                  </Typography>
+                    >
+                    {t("showtime_cinema.title.now_day")}
+                    </Typography>
                 )}
                 <Box textAlign="center">
                   <Typography
@@ -196,14 +249,14 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
         >
           <Grid item>
             <Typography variant="h4" fontWeight="bold">
-              🎬 Danh Sách Rạp
+              🎬 {t("showtime_cinema.title.theater_list")}
             </Typography>
           </Grid>
           <Grid item>
             <FormControl>
               <Select
                 value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
+                onChange={(e) => setSelectedCity(e.target.value as string)}
                 sx={{
                   border: "2px solid yellow",
                   color: "yellow",
@@ -214,82 +267,91 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                   backgroundColor: "transparent",
                 }}
               >
-                <MenuItem value="hcm">Hồ Chí Minh</MenuItem>
-                <MenuItem value="hn">Hà Nội</MenuItem>
-                <MenuItem value="dn">Đà Nẵng</MenuItem>
+                <MenuItem value="hcm">{t("showtime_cinema.location.HCM")}</MenuItem>
+                <MenuItem value="hn">{t("showtime_cinema.location.HaNoi")}</MenuItem>
+                <MenuItem value="dn">{t("showtime_cinema.location.DaNang")}</MenuItem>
               </Select>
             </FormControl>
           </Grid>
         </Grid>
 
-        {/* Cinema List or No Showtime Message */}
-        <Box sx={{ borderRadius: "12px" }}>
-          {cinemas.length > 0 ? (
-            cinemas.map((cinema, index) => (
-              <Card
-                key={index}
-                sx={{
-                  backgroundColor: "#834bff",
-                  color: "white",
-                  borderRadius: "12px",
-                  p: 2,
-                  mb: 2,
-                }}
-              >
-                <CardContent>
-                  <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    color="yellow"
-                    mb={1}
-                    fontFamily="JetBrains Mono"
-                  >
-                    {cinema.name}
-                  </Typography>
-                  <Typography variant="body2" mb={2}>
-                    {cinema.address}
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                    {cinema.times.map((showtime, idx) => (
-                      <Button
-                        key={idx}
-                        variant="contained"
-                        sx={{
-                          backgroundColor:
-                            selectedTime === showtime.time
-                              ? "yellow"
-                              : "transparent",
-                          color:
-                            selectedTime === showtime.time ? "black" : "white",
-                          border: "1px solid white",
-                          fontWeight: "bold",
-                          "&:hover": {
-                            backgroundColor: "yellow",
-                            color: "black",
-                          },
-                        }}
-                        onClick={() => {
-                          setSelectedTime(showtime.time);
-                          onSelectTime(showtime.time);
-                          onRoomSelect(showtime.roomId);
-                        }}
-                      >
-                        {showtime.time}
-                      </Button>
-                    ))}
-                  </Box>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            <Typography variant="body1" textAlign="center" sx={{ py: 5 }}>
-              Không có suất chiếu cho ngày được chọn.
-            </Typography>
-          )}
-        </Box>
+        {/* Loading state */}
+        {isLoading && (
+          <Typography textAlign="center" sx={{ py: 2 }}>
+            {t("showtime_cinema.title.loading_showtime")}
+          </Typography>
+        )}
+
+        {/* Cinema List or No Showtime Message - conditionally rendered */}
+        {!isLoading && (
+          <Box sx={{ borderRadius: "12px" }}>
+            {cinemas.length > 0 ? (
+              cinemas.map((cinema, index) => (
+                <Card
+                  key={index}
+                  sx={{
+                    backgroundColor: "#834bff",
+                    color: "white",
+                    borderRadius: "12px",
+                    p: 2,
+                    mb: 2,
+                  }}
+                >
+                  <CardContent>
+                    <Typography
+                      variant="h6"
+                      fontWeight="bold"
+                      color="yellow"
+                      mb={1}
+                      fontFamily="JetBrains Mono"
+                    >
+                      {cinema.name}
+                    </Typography>
+                    <Typography variant="body2" mb={2}>
+                      {cinema.address}
+                    </Typography>
+                    <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                      {cinema.times.map((showtime, idx) => (
+                        <Button
+                          key={idx}
+                          variant="contained"
+                          sx={{
+                            backgroundColor:
+                              selectedTime === showtime.time
+                                ? "yellow"
+                                : "transparent",
+                            color:
+                              selectedTime === showtime.time
+                                ? "black"
+                                : "white",
+                            border: "1px solid white",
+                            fontWeight: "bold",
+                            "&:hover": {
+                              backgroundColor: "yellow",
+                              color: "black",
+                            },
+                          }}
+                          onClick={() =>
+                            handleTimeSelect(showtime.time, showtime.roomId)
+                          }
+                        >
+                          {showtime.time}
+                        </Button>
+                      ))}
+                    </Box>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <Typography variant="body1" textAlign="center" sx={{ py: 5 }}>
+                {t("showtime_cinema.title.no_showtime")}
+              </Typography>
+            )}
+          </Box>
+        )}
       </Container>
     </Box>
   );
 };
 
-export default ShowTimeCinema;
+export default React.memo(ShowTimeCinema);

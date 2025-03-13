@@ -16,8 +16,8 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import * as yup from "yup";
+import { login } from "../../../apis/auth.apis";
 import { useAuth } from "../../../contexts/AuthContext";
-import { login } from "../../../apis/mock.apis";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -61,58 +61,26 @@ export const Login = () => {
     onSubmit: async (values) => {
       setLoading(true);
       const toastId = toast.loading("Đang đăng nhập...");
-      const data = {
-        email: values.email,
-        password: values.password,
-      };
-      console.log("data", data);
 
       try {
-        const response = await login(data);
+        const response = await login(values);
         toast.dismiss(toastId);
 
-        if (response.is_success) {
-          // Extract token data from the nested structure
+        if (response.isSuccess) {
           const tokenData = response.data.token;
 
-          authLogin({
-            access_token: tokenData.access_token,
-            token_type: tokenData.token_type,
+          // Login and extract user details through auth context
+          const userDetails = await authLogin({
+            accessToken: tokenData.accessToken,
             expires: tokenData.expires,
-            is_mobile: tokenData.is_mobile,
           });
 
-          toast.success("Đăng nhập thành công! Đang chuyển hướng...");
+          toast.success(`Xin chào ${userDetails?.fullName}`);
 
-          console.log("value email", values.email);
-
-          switch (values.email) {
-            case "admin":
-              setTimeout(() => {
-                navigate("/admin/thong-ke");
-              }, 1000);
-              break;
-            case "hoangdz1604@gmail.com":
-              setTimeout(() => {
-                navigate("/admin/thong-ke");
-              }, 1000);
-              break;
-            case "m@gmail.com":
-              setTimeout(() => {
-                navigate("/users/profile/09ace9f8-a25a-4c92-80a1-17c08ebef2e1");
-              }, 1000);
-              break;
-            case "e@gmail.com":
-              setTimeout(() => {
-                navigate("/users/profile/596cb162-4c3f-47e7-91e4-491761d03454");
-              }, 1000);
-              break;
-            case "a@gmail.com":
-              setTimeout(() => {
-                navigate("/users/profile/d3ddb1f7-22fa-42b3-bbe8-71dc29688ef2");
-              }, 1000);
-              break;
-          }
+          // Navigate based on extracted role
+          setTimeout(() => {
+            navigate("/");
+          }, 1000);
         } else {
           toast.error(response.message);
         }

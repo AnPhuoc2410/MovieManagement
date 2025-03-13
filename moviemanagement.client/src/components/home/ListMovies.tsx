@@ -12,9 +12,9 @@ import ScrollFloat from "../shared/ScrollFloat";
 import "./ListMovies.css";
 import PlayCircleOutlineOutlinedIcon from "@mui/icons-material/PlayCircleOutlineOutlined";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import toast from "react-hot-toast";
 import api from "../../apis/axios.config";
 import Loader from "../shared/Loading";
+import { format, parseISO } from "date-fns";
 
 const MovieSlider = ({
   movies,
@@ -54,29 +54,56 @@ const MovieSlider = ({
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={20}
-        slidesPerView={4}
+        slidesPerView={1} // Default for small screens
+        breakpoints={{
+          480: { slidesPerView: 2 },
+          768: { slidesPerView: 3 },
+          1024: { slidesPerView: 4 },
+        }}
         navigation
         pagination={{ clickable: true }}
         autoplay={{ delay: 3000 }}
         loop
         style={{ width: "100%", paddingBottom: "20px" }}
       >
+
         {movies.map((movie, index) => (
           <SwiperSlide key={index}>
             <Box className="movie-card">
               <Box className="movie-image-container">
-                <img
-                  src={movie.image}
-                  alt={movie.title}
-                  className="movie-image"
-                />
+                <Box
+                  sx={{
+                    position: "relative",
+                    overflow: "hidden",
+                    borderRadius: "8px",
+                    backgroundColor: "#222",
+                    height: { xs: "200px", sm: "250px", md: "300px" },
+                    width: "100%",
+                  }}
+                >
+                  <img
+                    src={movie.image}
+                    alt={movie.title}
+                    className="movie-image"
+                    loading="lazy"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      filter: "blur(10px)",
+                      transition: "filter 0.5s ease-in-out",
+                    }}
+                    onLoad={(e) => (e.currentTarget.style.filter = "none")}
+                  />
+                </Box>
+
                 <Box className="date-tag-container">
                   <Chip
                     icon={<CalendarTodayIcon />}
                     label={
                       <Box className="date-content">
-                        <span className="month">APR</span>
-                        <span className="full-date">04.04.2024</span>
+                        <span className="month">{format(parseISO(movie.postDate), "MMM")}</span>
+                        <span className="full-date">{format(parseISO(movie.postDate), "dd, yyyy")}</span>
                       </Box>
                     }
                     className="publish-date-tag"
@@ -96,8 +123,22 @@ const MovieSlider = ({
                   />
                 </Box>
               </Box>
-              <Typography variant="h6" className="movie-title">
-                {movie.name}
+              <Typography
+                variant="h6"
+                className="movie-title"
+                sx={{
+                  height: "3em",
+                  mb: 1,
+                  mt: 1,
+                  width: "100%",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                }}
+              >
+                {movie.movieName}
               </Typography>
               <Box
                 sx={{
@@ -114,17 +155,17 @@ const MovieSlider = ({
                     backgroundColor: "transparent",
                     color: "#FFFFFF",
                     display: "flex",
-                    alignItems: "center", // Vertically center the icon and text
+                    alignItems: "center",
                     gap: 1,
-                    whiteSpace: "nowrap", // Prevents text from wrapping
-                    minWidth: "fit-content", // Ensures the button resizes based on content
+                    whiteSpace: "nowrap",
+                    minWidth: "fit-content",
                   }}
                   onClick={() => onOpenTrailer(movie.trailer)}
                 >
                   <PlayCircleOutlineOutlinedIcon />
                   <span
                     style={{
-                      textDecoration: "underline", // Add underline only to the text
+                      textDecoration: "underline",
                     }}
                   >
                     {t("view_trailer")}
@@ -139,15 +180,17 @@ const MovieSlider = ({
                     color: "black",
                     fontWeight: "bold",
                     width: "120px",
+                    transition: "transform 0.3s ease, background-color 0.3s ease",
+                    "&:hover": {
+                      backgroundColor: "#FFD700",
+                      transform: "scale(1.1)",
+                    },
                   }}
-                  onClick={() =>
-                    navigate(`/ticket/${movie.movieId}`, {
-                      state: { movieId: movie.movieId },
-                    })
-                  }
+                  onClick={() => navigate(`/ticket/${movie.movieId}`)}
                 >
                   {t("book_ticket")}
                 </Button>
+
               </Box>
             </Box>
           </SwiperSlide>
@@ -205,13 +248,12 @@ const ListMovies: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get(
-        `Movie/GetMoviesNowShowing/page/${page}/pageSize/${pageSize}`,
+        `movie/getmoviesnowshowing/page/${page}/pagesize/${pageSize}`,
       );
       console.log("Now showing movies:", response.data);
       setNowShowingMovies(response.data);
     } catch (error) {
       console.error("Error fetching now showing movies:", error);
-      toast.error("Failed to fetch now showing movies");
     } finally {
       setLoading(false);
     }
@@ -221,13 +263,12 @@ const ListMovies: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get(
-        `Movie/GetMoviesUpcoming/page/${page}/pageSize/${pageSize}`,
+        `movie/getmoviesupcoming/page/${page}/pagesize/${pageSize}`,
       );
       console.log("Upcoming movies:", response.data);
       setUpcomingMovies(response.data);
     } catch (error) {
       console.error("Error fetching upcoming movies:", error);
-      toast.error("Failed to fetch upcoming movies");
     } finally {
       setLoading(false);
     }
@@ -296,12 +337,13 @@ const ListMovies: React.FC = () => {
       <Modal
         open={openTrailer}
         onClose={handleCloseTrailer}
-        aria-labelledby="trailer-modal"
+        closeAfterTransition
+        keepMounted
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          bgcolor: "rgba(61, 14, 97, 0.95)",
+          bgcolor: "rgba(0, 0, 0, 0.8)",
         }}
       >
         <Box
@@ -313,6 +355,28 @@ const ListMovies: React.FC = () => {
             bgcolor: "transparent",
           }}
         >
+          {/* Close Button */}
+          <Button
+            sx={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              color: "white",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              borderRadius: "50%",
+              minWidth: "40px",
+              height: "40px",
+              zIndex: 10,
+              "&:hover": {
+                backgroundColor: "rgba(255,0,0,0.7)",
+              },
+            }}
+            onClick={handleCloseTrailer}
+          >
+            ✖
+          </Button>
+
+          {/* Trailer Video */}
           {trailerUrl && (
             <iframe
               width="100%"
@@ -320,9 +384,14 @@ const ListMovies: React.FC = () => {
               src={`${trailerUrl}`}
               title="Movie Trailer"
               frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allow="autoplay; encrypted-media; picture-in-picture"
               allowFullScreen
-              style={{ position: "absolute", top: 0, left: 0 }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                borderRadius: "10px",
+              }}
             />
           )}
         </Box>

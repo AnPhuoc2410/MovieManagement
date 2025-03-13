@@ -35,7 +35,10 @@ const extractPublicId = (url: string): string => {
   return "";
 };
 
-const CloudinaryImage: React.FC<CloudinaryImageProps> = ({ imageUrl, hd = false }) => {
+const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
+  imageUrl,
+  hd = false,
+}) => {
   if (!imageUrl) {
     console.warn("Missing image URL for CloudinaryImage component.");
     return null;

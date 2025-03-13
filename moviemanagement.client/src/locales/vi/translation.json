@@ -122,7 +122,24 @@
         "my_profile": "Hồ sơ của tôi",
         "settings": "Cài đặt",
         "my_bookings": "Vé của tôi",
-        "logout": "Đăng xuất"
+        "logout": "Đăng xuất",
+        "account_info": "Thông tin tài khoản",
+        "cumulative_points": "Điểm tích lũy",
+        "booked_tickets": "Vé đã đặt",
+        "history": "Lịch sử",
+        "change_password": "Đổi mật khẩu",
+        "admin_panel": "Quản lí hệ thống",
+        "admin": "Quản trị viên"
+      },
+      "field": {
+        "full_name": "Họ và tên",
+        "dob": "Ngày sinh",
+        "male": "Nam",
+        "female": "Nữ",
+        "email": "Email",
+        "id_card": "Số CMND",
+        "phone": "Số điện thoại",
+        "address": "Địa chỉ"
       }
     },
     "promotion": {
@@ -145,6 +162,51 @@
         "title": "THÀNH VIÊN VIP",
         "description": "Thẻ VIP mang đến sự ưu đãi độc quyền",
         "button": "TÌM HIỂU NGAY"
+      }
+    },
+    "showtime_cinema": {
+      "title":{
+        "showtime_list" : "Lịch chiếu và Rạp",
+        "now_day" : "Hôm nay",
+        "theater_list" : "Danh sách rạp",
+        "no_showtime" : "Không có lịch chiếu"
+      },
+      "location": {
+        "HaNoi": "Hà Nội",
+        "HCM": "Hồ Chí Minh",
+        "DaNang": "Đà Nẵng"
+      },
+      "notification": {
+        "loading_showtime": "Đang tải danh sách lịch chiếu...",
+        "no_showtime": "Ngày bạn chọn không có lịch chiếu"
+      },
+      "error": {
+        "select_show_time": "Xin vui lòng, chọn lịch chiếu",
+        "select_ticket": "Xin vui lòng, chọn ít nhât một vé"
+      }
+    },
+    "ticket_price": {
+      "ticket_selection": "Chọn loại vé",
+      "ticket_type": {
+        "couple": "Ghế đôi",
+        "single": "Ghế đơn",
+        "vip": "Ghế VIP"
+      },
+      "next": "Tiếp tục"
+    },
+    "seat": "Ghế",
+    "step_tracker": {
+      "select_show_time": "Chọn lịch chiếu",
+      "select_seat": "Chọn ghế",
+      "payment": "Thanh toán",
+      "success": "Thành công"
+    },
+    "common": {
+      "button": {
+        "action": {
+          "update": "Cập nhật",
+          "cancel": "Hủy"
+        }
       }
     }
   }

@@ -20,7 +20,7 @@ namespace MovieManagement.Server.Models.Entities
 
         public bool IsActive { get; set; }
 
-        public SeatEnum.SeatStatus SeatStatus { get; set; }
+        public SeatStatus SeatStatus { get; set; }
 
         public virtual Room Room { get; set; }
 

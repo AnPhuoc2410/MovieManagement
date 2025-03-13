@@ -1,4 +1,6 @@
 import {
+  Cancel,
+  CancelOutlined,
   CheckCircleOutline as CheckCircleIcon,
   EventSeatOutlined as EventSeatIcon,
   MovieOutlined as MovieIcon,
@@ -6,19 +8,30 @@ import {
 } from "@mui/icons-material";
 import { Box, Step, StepLabel, Stepper } from "@mui/material";
 import React from "react";
-
-const steps = [
-  { label: "Chọn Suất Chiếu", icon: <MovieIcon /> },
-  { label: "Chọn Ghế", icon: <EventSeatIcon /> },
-  { label: "Thanh Toán", icon: <PaymentIcon /> },
-  { label: "Thanh Công", icon: <CheckCircleIcon /> },
-];
+import { useTranslation } from "react-i18next";
 
 interface StepTrackerProps {
   currentStep: number;
+  paymentStatus?: "success" | "failure";
 }
 
-const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
+const StepTracker: React.FC<StepTrackerProps> = ({
+  currentStep,
+  paymentStatus,
+}) => {
+
+  const { t } = useTranslation();
+  const steps = [
+    { label: t("step_tracker.select_show_time"), icon: <MovieIcon /> },
+    { label: t("step_tracker.select_seat"), icon: <EventSeatIcon /> },
+    { label: t("step_tracker.payment"), icon: <PaymentIcon /> },
+    // { label: t("step_tracker.success"), icon: <CheckCircleIcon /> },
+  ];
+  const finalStep =
+    paymentStatus === "success"
+      ? { label: "Thành Công", icon: <CheckCircleIcon /> }
+      : { label: "Hủy Thanh Toán", icon: <CancelOutlined sx={{ color: 'red' }} /> };
+
   return (
     <Box
       sx={{
@@ -69,7 +82,7 @@ const StepTracker: React.FC<StepTrackerProps> = ({ currentStep }) => {
           },
         }}
       >
-        {steps.map((step, index) => (
+        {[...steps, finalStep].map((step, index) => (
           <Step key={index}>
             <StepLabel
               StepIconComponent={() => (
