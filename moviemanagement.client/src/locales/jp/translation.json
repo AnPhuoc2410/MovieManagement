@@ -165,10 +165,11 @@
       }
     },
     "showtime_cinema": {
-      "title": {
-        "showtime_list": "上映時間と劇場",
-        "now_day": "今日",
-        "theater_list": "劇場一覧"
+      "title":{
+        "showtime_list" : "上映時間と劇場",
+        "now_day" : "今日",
+        "theater_list" : "劇場一覧",
+        "no_showtime" : "上映時間がありません"
       },
       "location": {
         "HaNoi": "ハノイ",

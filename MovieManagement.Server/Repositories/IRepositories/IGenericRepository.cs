@@ -69,5 +69,6 @@
         void PrepareRemove(T entity);
         int Save();
         Task<int> SaveAsync();
+        //void CancelAllPreparedUpdates<T>();
     }
 }

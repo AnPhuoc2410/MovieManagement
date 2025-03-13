@@ -89,6 +89,9 @@ namespace MovieManagement.Server.Extensions
             CreateMap<AuthDto.LoginRequest, AuthDto.LoginResponse>();
             CreateMap<AuthDto.LoginResponse, AuthDto.LoginRequest>();
 
+            CreateMap<TicketDetail, TicketDetailResponseModel>();
+            //CreateMap<TicketDetailResponseModel, TicketDetail>();
+
 
 
 

@@ -301,7 +301,7 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.ShowTime", b =>
                 {
-                    b.Property<Guid?>("ShowTimeId")
+                    b.Property<Guid>("ShowTimeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -328,7 +328,12 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.TicketDetail", b =>
                 {
-                    b.Property<Guid>("BillId")
+                    b.Property<Guid>("TicketId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid?>("BillId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("SeatId")
@@ -337,7 +342,18 @@ namespace MovieManagement.Server.Migrations
                     b.Property<Guid>("ShowTimeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("BillId", "SeatId", "ShowTimeId");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("TicketId");
+
+                    b.HasIndex("BillId");
 
                     b.HasIndex("SeatId");
 
@@ -486,9 +502,7 @@ namespace MovieManagement.Server.Migrations
                 {
                     b.HasOne("MovieManagement.Server.Models.Entities.Bill", "Bill")
                         .WithMany("TicketDetails")
-                        .HasForeignKey("BillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BillId");
 
                     b.HasOne("MovieManagement.Server.Models.Entities.Seat", "Seat")
                         .WithMany("TicketDetail")

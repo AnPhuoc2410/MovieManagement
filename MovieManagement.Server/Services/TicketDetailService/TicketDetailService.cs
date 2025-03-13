@@ -5,6 +5,9 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Models.ResponseModel;
+using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Services.TicketDetailServices
 {
@@ -24,6 +27,8 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             try
             {
                 var newTicketDetail = _mapper.Map<TicketDetail>(ticketDetail);
+                newTicketDetail.TicketId = Guid.NewGuid();
+                newTicketDetail.Version = new byte[8];
                 var createdTicketDetail = await _unitOfWork.TicketDetailRepository.CreateAsync(newTicketDetail);
                 if (createdTicketDetail == null)
                     throw new Exception("Failed to create ticket detail.");
@@ -82,36 +87,52 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 
         public async Task<TicketDetailDto> UpdateTicketDetailAsync(Guid id, TicketDetailDto ticketDetail)
         {
-            try
-            {
-                var existingTicketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id);
-                if (existingTicketDetail == null)
-                    throw new NotFoundException("Ticket detail not found");
-                var updatedTicketDetail = await _unitOfWork.TicketDetailRepository.UpdateAsync(_mapper.Map<TicketDetail>(ticketDetail));
-                if (updatedTicketDetail == null)
-                    throw new DbUpdateException("Fail to update ticket detail.");
+            var existingTicketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id);
+            if (existingTicketDetail == null)
+                throw new NotFoundException("Ticket detail not found");
+            var updatedTicketDetail = await _unitOfWork.TicketDetailRepository.UpdateAsync(_mapper.Map<TicketDetail>(ticketDetail));
+            if (updatedTicketDetail == null)
+                throw new DbUpdateException("Fail to update ticket detail.");
 
-                return _mapper.Map<TicketDetailDto>(updatedTicketDetail);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            return _mapper.Map<TicketDetailDto>(updatedTicketDetail);
         }
 
         public async Task<bool> DeleteTicketDetailAsync(Guid id)
         {
-            try
+            var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id);
+            if (ticketDetail == null)
+                throw new NotFoundException("Ticket detail not found!");
+            return await _unitOfWork.TicketDetailRepository.DeleteAsync(id);
+        }
+
+        public async Task<IEnumerable<TicketDetailResponseModel>> GetTicketByShowTimeId(Guid showTimeId)
+        {
+
+            var ticketDetails = await _unitOfWork.TicketDetailRepository.GetTicketByShowTimeId(showTimeId);
+            if (ticketDetails == null)
+                throw new NotFoundException("Ticket details not found!");
+            return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
+        }
+
+        public async Task<IEnumerable<TicketDetailResponseModel>> UpdateTicketToPending(List<TicketDetailRequest> Tickets)
+        {
+            List<TicketDetail> ticketDetails = new List<TicketDetail>();
+            foreach (var t in Tickets)
             {
-                var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id);
-                if (ticketDetail == null)
-                    throw new NotFoundException("Ticket detail not found!");
-                return await _unitOfWork.TicketDetailRepository.DeleteAsync(id);
+                var current = await _unitOfWork.TicketDetailRepository.GetTicketByIdAndVersion(t.TicketId, t.Version);
+                if (current == null)
+                    throw new NotFoundException("Version conflicted.");
+                if (current.Status != TicketStatus.Created)
+                    throw new BadRequestException($"Ticket is on other status.");
+                current.Status = TicketStatus.Pending;
+                _unitOfWork.TicketDetailRepository.PrepareUpdate(current);
+                ticketDetails.Add(current);
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+
+            var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
+            if (checker != Tickets.Count())
+                throw new DbUpdateException("Fail to update ticket detail.");
+            return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
         }
 
     }
