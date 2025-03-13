@@ -36,10 +36,6 @@ export default function OptionsMenu() {
 
   const handleLogout = async () => {
     await authLogout();
-    toast.success("Đăng xuất thành công", { removeDelay: 2500 });
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
   };
 
   return (

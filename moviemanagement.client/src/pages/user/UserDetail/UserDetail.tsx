@@ -37,14 +37,15 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { getUserDetail } from "../../../apis/mock.apis";
-import { SampleMemberProfiles } from "../../../data/user.data";
+import { useAuth } from "../../../contexts/AuthContext";
 import { UserProfile } from "../../../types/users.type";
 import Header from "../../../components/home/Header";
 import Footer from "../../../components/home/Footer";
+import { useTranslation } from "react-i18next";
 
 export default function UserDetail() {
   const { userId } = useParams();
+  const { userDetails } = useAuth();
   const navigate = useNavigate();
   const [tabValue, setTabValue] = useState(0);
   const [showPassword, setShowPassword] = useState({
@@ -54,6 +55,7 @@ export default function UserDetail() {
   });
   const [successMessage, setSuccessMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  const { t } = useTranslation();
 
   const [passwords, setPasswords] = useState({
     oldPassword: "",
@@ -77,29 +79,23 @@ export default function UserDetail() {
   });
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (userId) {
-        const userData = await getUserDetail(userId);
-        if (userData) {
-          setProfile({
-            fullName: userData.fullName,
-            birthDate: userData.birthDate,
-            gender: userData.gender,
-            email: userData.email,
-            idCard: userData.idCard,
-            phoneNumber: userData.phoneNumber,
-            address: userData.address,
-            point: userData.point,
-            ticket: {
-              history: userData.ticket?.history,
-              data: userData.ticket?.data,
-            },
-          });
-        }
-      }
-    };
-    fetchUserData();
-  }, [userId]);
+    if (userDetails && userId === userDetails.userId) {
+      setProfile({
+        fullName: userDetails.fullName,
+        birthDate: userDetails.birthDate,
+        gender: userDetails.gender,
+        email: userDetails.email,
+        idCard: userDetails.idCard,
+        phoneNumber: userDetails.phoneNumber,
+        address: userDetails.address,
+        point: userDetails.point,
+        ticket: {
+          history: [],
+          data: [],
+        },
+      });
+    }
+  }, [userDetails, userId]);
 
   interface ShowPasswordState {
     old: boolean;
@@ -142,10 +138,6 @@ export default function UserDetail() {
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
-  };
-
-  const getCurrentUserData = () => {
-    return SampleMemberProfiles[Number(userId)] || SampleMemberProfiles[0];
   };
 
   const handleTogglePasswordVisibility = (field: keyof ShowPasswordState) => {
@@ -214,6 +206,9 @@ export default function UserDetail() {
           position: "relative",
         }}
       >
+        <Typography textAlign="center" variant="h3" sx={{ mt: 3 }}>
+          {t("user.profile.my_profile")}
+        </Typography>
         <Box
           sx={{
             display: "flex",
@@ -223,7 +218,7 @@ export default function UserDetail() {
             minHeight: "100vh",
           }}
         >
-          <Grid container spacing={3} sx={{ mt: 5 }}>
+          <Grid container spacing={3} sx={{ mt: 3 }}>
             {/* Left Sidebar */}
             <Grid item xs={12} md={3}>
               <Paper
@@ -250,7 +245,7 @@ export default function UserDetail() {
                 >
                   <Avatar
                     alt={profile.fullName}
-                    src="/api/placeholder/100/100"
+                    src={userDetails?.avatar || "/api/placeholder/100/100"}
                     sx={{ width: 100, height: 100, mb: 2 }}
                   />
                 </Badge>
@@ -262,15 +257,6 @@ export default function UserDetail() {
                 >
                   {profile.fullName}
                 </Typography>
-
-                <Box
-                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
-                >
-                  <CardMembershipIcon color="primary" fontSize="small" />
-                  <Typography variant="body2" color="text.secondary">
-                    {getCurrentUserData().MaThanhVien}
-                  </Typography>
-                </Box>
 
                 <Box
                   sx={{
@@ -285,7 +271,7 @@ export default function UserDetail() {
                   }}
                 >
                   <Typography variant="body2" fontWeight="medium">
-                    Điểm tích lũy: {profile.point}
+                    {t("user.profile.cumulative_points")}: {profile.point}
                   </Typography>
                 </Box>
 
@@ -304,7 +290,7 @@ export default function UserDetail() {
                       />
                     </ListItemIcon>
                     <ListItemText
-                      primary="Thông tin tài khoản"
+                      primary={t("user.profile.account_info")}
                       primaryTypographyProps={{
                         fontWeight: tabValue === 0 ? "bold" : "normal",
                         color: tabValue === 0 ? "primary" : "text.secondary",
@@ -324,7 +310,7 @@ export default function UserDetail() {
                       />
                     </ListItemIcon>
                     <ListItemText
-                      primary="Lịch sử"
+                      primary={t("user.profile.history")}
                       primaryTypographyProps={{
                         fontWeight: tabValue === 1 ? "bold" : "normal",
                         color: tabValue === 1 ? "primary" : "text.secondary",
@@ -344,7 +330,7 @@ export default function UserDetail() {
                       />
                     </ListItemIcon>
                     <ListItemText
-                      primary="Vé đã đặt"
+                      primary={t("user.profile.booked_tickets")}
                       primaryTypographyProps={{
                         fontWeight: tabValue === 2 ? "bold" : "normal",
                         color: tabValue === 2 ? "primary" : "text.secondary",
@@ -364,7 +350,7 @@ export default function UserDetail() {
                       />
                     </ListItemIcon>
                     <ListItemText
-                      primary="Thay đổi mật khẩu"
+                      primary={t("user.profile.change_password")}
                       primaryTypographyProps={{
                         fontWeight: tabValue === 3 ? "bold" : "normal",
                         color: tabValue === 3 ? "primary" : "text.secondary",
@@ -381,7 +367,7 @@ export default function UserDetail() {
                       <LogoutIcon />
                     </ListItemIcon>
                     <ListItemText
-                      primary="Đăng xuất"
+                      primary={t("user.profile.logout")}
                       primaryTypographyProps={{
                         fontWeight: "bold",
                         color: "error.main",
@@ -403,17 +389,17 @@ export default function UserDetail() {
                   textColor="primary"
                   variant="fullWidth"
                 >
-                  <Tab label="Thông tin tài khoản" />
-                  <Tab label="Lịch sử" />
-                  <Tab label="Vé đã đặt" />
-                  <Tab label="Thay đổi mật khẩu" />
+                  <Tab label={t("user.profile.account_info")} />
+                  <Tab label={t("user.profile.history")} />
+                  <Tab label={t("user.profile.booked_tickets")} />
+                  <Tab label={t("user.profile.change_password")} />
                 </Tabs>
 
                 {/* Tab Panels */}
                 {tabValue === 0 && (
                   <Box sx={{ mt: 3 }}>
                     <TextField
-                      label="Họ và tên"
+                      label={t("user.field.full_name")}
                       name="fullName"
                       value={profile.fullName}
                       onChange={handleProfileChange}
@@ -421,7 +407,7 @@ export default function UserDetail() {
                       sx={{ mb: 2 }}
                     />
                     <TextField
-                      label="Ngày sinh"
+                      label={t("user.field.dob")}
                       name="dob"
                       value={profile.birthDate}
                       onChange={handleProfileChange}
@@ -438,16 +424,16 @@ export default function UserDetail() {
                       <FormControlLabel
                         value="male"
                         control={<Radio />}
-                        label="Nam"
+                        label={t("user.field.male")}
                       />
                       <FormControlLabel
                         value="female"
                         control={<Radio />}
-                        label="Nữ"
+                        label={t("user.field.female")}
                       />
                     </RadioGroup>
                     <TextField
-                      label="Email"
+                      label={t("user.field.email")}
                       name="email"
                       value={profile.email}
                       onChange={handleProfileChange}
@@ -455,7 +441,7 @@ export default function UserDetail() {
                       sx={{ mb: 2 }}
                     />
                     <TextField
-                      label="Số CMND"
+                      label={t("user.field.id_card")}
                       name="idCard"
                       value={profile.idCard}
                       onChange={handleProfileChange}
@@ -463,7 +449,7 @@ export default function UserDetail() {
                       sx={{ mb: 2 }}
                     />
                     <TextField
-                      label="Số điện thoại"
+                      label={t("user.field.phone")}
                       name="phone"
                       value={profile.phoneNumber}
                       onChange={handleProfileChange}
@@ -471,7 +457,7 @@ export default function UserDetail() {
                       sx={{ mb: 2 }}
                     />
                     <TextField
-                      label="Địa chỉ"
+                      label={t("user.field.address")}
                       name="address"
                       value={profile.address}
                       onChange={handleProfileChange}
@@ -485,7 +471,7 @@ export default function UserDetail() {
                         startIcon={<SaveIcon />}
                         onClick={handleUpdateProfile}
                       >
-                        Cập nhật
+                        {t("common.button.action.update")}
                       </Button>
                     </Box>
                   </Box>
