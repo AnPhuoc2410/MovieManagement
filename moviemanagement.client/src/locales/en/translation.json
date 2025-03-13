@@ -152,7 +152,8 @@
       "title":{
         "showtime_list" : "Showtime a Theaters",
         "now_day" : "Now Day",
-        "theater_list" : "Theater list"
+        "theater_list" : "Theater list",
+        "no_showtime" : "No showtime"
       },
       "location":{
         "HaNoi" : "Ha Noi",

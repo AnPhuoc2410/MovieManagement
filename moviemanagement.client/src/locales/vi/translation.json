@@ -151,7 +151,8 @@
       "title":{
         "showtime_list" : "Lịch chiếu và Rạp",
         "now_day" : "Hôm nay",
-        "theater_list" : "Danh sách rạp"
+        "theater_list" : "Danh sách rạp",
+        "no_showtime" : "Không có lịch chiếu"
       },
       "location":{
         "HaNoi" : "Hà Nội",
