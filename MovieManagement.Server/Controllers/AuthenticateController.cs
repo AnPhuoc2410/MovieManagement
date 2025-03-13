@@ -285,6 +285,137 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
+
+        [HttpPost("send-authenticate-email")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> SendAuthenticateEmail(string userEmail)
+        {
+            try
+            {
+                bool authenticate = await _emailService.SendOtpEmail(userEmail);
+                if (!authenticate)
+                {
+                    var failResponse = new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "Failed to send authenticate email",
+                        IsSuccess = false
+                    };
+                    return BadRequest(failResponse);
+                }
+
+                var successResponse = new ApiResponse<object>
+                {
+                    StatusCode = 200,
+                    Message = "Authenticate email send successfully",
+                    IsSuccess = true
+                };
+                return Ok(successResponse);
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (NotFoundException ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = "Email not found",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return NotFound(response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while sending email",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
+        [HttpPost("activate-account")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ActivateAccount([FromQuery] string email, string otp)
+        {
+            try
+            {
+                bool activate = await _emailService.ActivateAccount(email, otp);
+                if (!activate)
+                {
+                    var failResponse = new ApiResponse<object>
+                    {
+                        StatusCode = 400,
+                        Message = "Failed to activate account",
+                        IsSuccess = false
+                    };
+                    return BadRequest(failResponse);
+                }
+
+                var successResponse = new ApiResponse<object>
+                {
+                    StatusCode = 200,
+                    Message = "Activated successfully",
+                    IsSuccess = true
+                };
+                return Ok(successResponse);
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 400,
+                    Message = "Bad request from client side",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status401Unauthorized, response);
+            }
+            catch (NotFoundException ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 404,
+                    Message = "User not found",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return NotFound(response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while activate account",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
         //[HttpPost("GoogleAuth/Login")]
         //public async Task<IActionResult> Login()
         //{

@@ -6,7 +6,6 @@ namespace MovieManagement.Server.Services.EmailService
     {
         public Task<bool> SendOtpEmail(string email);
         public Task<bool> ValidationOtp(string email, string password, string otp);
-
-        public Task<bool> sendAuthenticateEmail (string userEmail); 
+        public Task<bool> ActivateAccount(string email, string otp);
     }
 }

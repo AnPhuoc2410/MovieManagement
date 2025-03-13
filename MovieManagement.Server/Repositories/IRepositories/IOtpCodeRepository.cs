@@ -6,5 +6,6 @@ namespace MovieManagement.Server.Repositories.IRepositories
     {
         public Task<OtpCode> CreateOtpCode(string email);
         public Task<OtpCode> GetOtpCode(string email, string otp);
+        public Task<OtpCode> DeleteOtpCode(string email);
     }
 }

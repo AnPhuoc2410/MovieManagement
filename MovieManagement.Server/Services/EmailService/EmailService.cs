@@ -9,7 +9,10 @@ using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services.JwtService;
 using System.Collections.Concurrent;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Services.EmailService
 {
@@ -26,42 +29,81 @@ namespace MovieManagement.Server.Services.EmailService
             _jwtService = jwtService;
         }
 
-        public async Task<bool> sendAuthenticateEmail(string userEmail)
+        //public async Task<bool> sendAuthenticateEmail(string userEmail)
+        //{
+        //    try
+        //    {
+        //        //Checking user existing
+        //        var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(userEmail);
+        //        if (user == null)
+        //            throw new NotFoundException("User cannot found!");
+
+        //        //Generate jwt token
+        //        var token = _jwtService.GenerateToken(user.UserId, user.UserName, user.Role.ToString());
+
+        //        //Create activation link with jwt token
+        //        var activationLink = $"{_configuration["BackEnd:BaseURL"]}/activate?token={token}";
+
+        //        //Create email
+        //        var email = new MimeMessage();
+        //        email.From.Add(MailboxAddress.Parse(_configuration["AuthenticateAccount:Username"]));
+        //        email.To.Add(MailboxAddress.Parse(userEmail));
+        //        email.Subject = "Activate your account";
+        //        email.Body = new TextPart(TextFormat.Html)
+        //        {
+        //            Text = $"<p>Click the link below to activate your account:</p> <a href='{activationLink}'>Activate Account</a>"
+        //        };
+
+        //        //Send email
+        //        using var smtp = new SmtpClient();
+        //        smtp.Connect(_configuration["AuthenticateAccount:Host"], 587, SecureSocketOptions.StartTls);
+        //        smtp.Authenticate(_configuration["AuthenticateAccount:Username"], _configuration["AuthenticateAccount:Password"]);
+        //        smtp.Send(email);
+        //        smtp.Disconnect(true);
+        //        return true;
+        //    }
+        //    catch (Exception ex)    
+        //    {
+        //        throw new Exception("Cannot send email because of this error " + ex.Message);
+        //    }
+        //}
+
+        public async Task<bool> ActivateAccount(string email, string otp)
         {
             try
             {
-                //Checking user existing
-                var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(userEmail);
+                //Checking user is existing by email
+                var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
                 if (user == null)
                     throw new NotFoundException("User cannot found!");
 
-                //Generate jwt token
-                var token = _jwtService.GenerateToken(user.UserId, user.UserName, user.Role.ToString());
+                // Ensure the user is not already active
+                if (user.Status == UserStatus.Active)
+                    throw new InvalidOperationException("Account is already activated.");
 
-                //Create activation link with jwt token
-                var activationLink = $"{_configuration["BackEnd:BaseURL"]}/activate?token={token}";
+                //Checking validation user
+                var otpRecord = await _unitOfWork.OtpCodeRepository.GetOtpCode(email, otp);
+                if (otpRecord == null)
+                    throw new NotFoundException("User's OTP code is invalid");
+                if (otpRecord.IsUsed == 1)
+                    throw new Exception("This OTP is used!");
+                if (otpRecord.ExpiredTime < DateTime.UtcNow)
+                    throw new Exception("This OTP is expired!");
 
-                //Create email
-                var email = new MimeMessage();
-                email.From.Add(MailboxAddress.Parse(_configuration["AuthenticateAccount:Username"]));
-                email.To.Add(MailboxAddress.Parse(userEmail));
-                email.Subject = "Activate your account";
-                email.Body = new TextPart(TextFormat.Html)
-                {
-                    Text = $"<p>Click the link below to activate your account:</p> <a href='{activationLink}'>Activate Account</a>"
-                };
+                //Xac nhan da su dung OTP
+                otpRecord.IsUsed = 1;
 
-                //Send email
-                using var smtp = new SmtpClient();
-                smtp.Connect(_configuration["AuthenticateAccount:Host"], 587, SecureSocketOptions.StartTls);
-                smtp.Authenticate(_configuration["AuthenticateAccount:Username"], _configuration["AuthenticateAccount:Password"]);
-                smtp.Send(email);
-                smtp.Disconnect(true);
+                // Activate the user
+                user.Status = UserStatus.Active;
+                await _unitOfWork.UserRepository.UpdateAsync(user);
+                await _unitOfWork.OtpCodeRepository.DeleteOtpCode(email);
+                await _unitOfWork.CompleteAsync();
+
                 return true;
             }
             catch (Exception ex)
             {
-                throw new Exception("Cannot send email because of this error " + ex.Message);
+                throw new Exception("Cannot send email because this error: " + ex.Message);
             }
         }
 

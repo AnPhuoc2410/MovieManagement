@@ -78,7 +78,7 @@ namespace MovieManagement.Server.Services.AuthorizationService
                 newUser.UserName = dto.UserName;
                 newUser.FullName = dto.FullName;
                 newUser.Email = dto.Email;
-                newUser.Status = UserStatus.Active; // Active user
+                newUser.Status = UserStatus.Inactive; // Active user
                 newUser.JoinDate = DateTime.UtcNow;
                 newUser.Address = dto.Address;
                 newUser.Avatar = "";
