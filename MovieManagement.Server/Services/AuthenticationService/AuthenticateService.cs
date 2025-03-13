@@ -40,6 +40,11 @@ namespace MovieManagement.Server.Services.AuthorizationService
                 throw new UnauthorizedAccessException("Invalid username/email or password");
             }
 
+            //Check if user status active
+            if(user.Status == UserStatus.Inactive)
+            {
+                throw new UnauthorizedAccessException("User is not active!");
+            }
             // Use PasswordHasher to verify the password
             var passwordHasher = new PasswordHasher<User>();
 
@@ -90,6 +95,7 @@ namespace MovieManagement.Server.Services.AuthorizationService
                 // Hash the password
                 var passwordHasher = new PasswordHasher<User>();
                 newUser.Password = passwordHasher.HashPassword(newUser, dto.Password);
+
 
                 // Save to database
                 return _mapper.Map<UserDto.UserResponse>(await _unitOfWork.UserRepository.CreateAsync(newUser));
