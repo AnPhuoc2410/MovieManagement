@@ -128,7 +128,9 @@
         "cumulative_points": "Cumulative Points",
         "booked_tickets": "Booked Tickets",
         "history": "History",
-        "change_password": "Change Password"
+        "change_password": "Change Password",
+        "admin_panel": "Admin Panel",
+        "admin": "Admin"
       },
       "field": {
         "full_name": "Full Name",

@@ -1,23 +1,32 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Loader from "../components/shared/Loading/LoadingScreen";
 
-export function ProtectedRoute() {
-  const { isAuthenticated, isInitialized } = useAuth();
+export const ProtectedRoute = ({ requireAdmin = false }) => {
+  const { isAuthenticated, userDetails } = useAuth();
+  const location = useLocation();
 
-  if (!isInitialized) {
-    return <Loader />;
+  if (!isAuthenticated) {
+    // Redirect to login if not authenticated
+    return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/auth/login" />;
-}
-
-export function RejectedRoute() {
-  const { isAuthenticated, isInitialized } = useAuth();
-
-  if (!isInitialized) {
-    return <Loader />;
+  // Check if route requires admin and user is not admin
+  if (requireAdmin && userDetails?.role !== 2) {
+    // Redirect non-admin users to home
+    return <Navigate to="/" replace />;
   }
 
-  return !isAuthenticated ? <Outlet /> : <Navigate to="/" />;
-}
+  return <Outlet />;
+};
+
+export const RejectedRoute = () => {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  return !isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate to={location.state?.from ?? "/"} replace />
+  );
+};

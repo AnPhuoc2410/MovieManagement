@@ -127,7 +127,9 @@
         "cumulative_points": "累積ポイント",
         "booked_tickets": "予約済みチケット",
         "history": "履歴",
-        "change_password": "パスワード変更"
+        "change_password": "パスワード変更",
+        "admin_panel": "管理者パネル",
+        "admin": "管理者"
       },
       "field": {
         "full_name": "氏名",
