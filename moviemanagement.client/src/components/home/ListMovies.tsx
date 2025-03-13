@@ -12,7 +12,6 @@ import ScrollFloat from "../shared/ScrollFloat";
 import "./ListMovies.css";
 import PlayCircleOutlineOutlinedIcon from "@mui/icons-material/PlayCircleOutlineOutlined";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import toast from "react-hot-toast";
 import api from "../../apis/axios.config";
 import Loader from "../shared/Loading";
 
@@ -97,7 +96,7 @@ const MovieSlider = ({
                 </Box>
               </Box>
               <Typography variant="h6" className="movie-title">
-                {movie.name}
+                {movie.movieName}
               </Typography>
               <Box
                 sx={{
@@ -141,9 +140,7 @@ const MovieSlider = ({
                     width: "120px",
                   }}
                   onClick={() =>
-                    navigate(`/ticket/${movie.movieId}`, {
-                      state: { movieId: movie.movieId },
-                    })
+                    navigate(`/ticket/${movie.movieId}`)
                   }
                 >
                   {t("book_ticket")}
@@ -205,13 +202,12 @@ const ListMovies: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get(
-        `Movie/GetMoviesNowShowing/page/${page}/pageSize/${pageSize}`,
+        `movie/getmoviesnowshowing/page/${page}/pagesize/${pageSize}`,
       );
       console.log("Now showing movies:", response.data);
       setNowShowingMovies(response.data);
     } catch (error) {
       console.error("Error fetching now showing movies:", error);
-      toast.error("Failed to fetch now showing movies");
     } finally {
       setLoading(false);
     }
@@ -221,13 +217,12 @@ const ListMovies: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get(
-        `Movie/GetMoviesUpcoming/page/${page}/pageSize/${pageSize}`,
+        `movie/getmoviesupcoming/page/${page}/pagesize/${pageSize}`,
       );
       console.log("Upcoming movies:", response.data);
       setUpcomingMovies(response.data);
     } catch (error) {
       console.error("Error fetching upcoming movies:", error);
-      toast.error("Failed to fetch upcoming movies");
     } finally {
       setLoading(false);
     }

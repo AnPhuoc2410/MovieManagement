@@ -22,7 +22,6 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             _mapper = mapper;
         }
 
-
         public async Task<TicketDetailDto> CreateTicketDetailAsync(TicketDetailDto ticketDetail)
         {
             try

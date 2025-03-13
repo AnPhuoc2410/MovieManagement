@@ -17,6 +17,7 @@ import {
   UserResponse,
 } from "../types/users.type";
 import { ApiResponse } from "./api.config";
+import api from "./axios.config";
 
 export const fetchThanhVien = async (): Promise<ThanhVien[]> => {
   const response = await axios.get<ThanhVien[]>("/api/thanh-vien");
@@ -49,7 +50,7 @@ export const fetchRoomDetail = async (id: string): Promise<Room> => {
 };
 
 export const login = async (user: LoginRequest): Promise<LoginResponse> => {
-  const response = await axios.post("/api/login", {
+  const response = await api.post("/authenticate/login", {
     email: user.email,
     password: user.password,
   });
