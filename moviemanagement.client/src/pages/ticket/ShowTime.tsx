@@ -6,7 +6,7 @@ import MovieDetail from "../../components/Movie/MovieDetail";
 import ShowTimeCinema from "../../components/Ticket/ShowTimeCinema";
 import StepTracker from "../../components/Ticket/StepTracker";
 import TicketPrice from "../../components/Ticket/TicketPrice";
-import { SeatType } from "../../types/seattype.types"; // Import SeatType correctly
+import { SeatType } from "../../types/seattype.types";
 import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import { useTranslation } from "react-i18next";
