@@ -20,9 +20,10 @@ const Confirmation: React.FC = () => {
   const navigate = useNavigate();
 
   // Extract details from location.state (with defaults)
-  const { selectedTime, selectedDate } = location.state || {
+  const { selectedTime, selectedDate, paymentStatus } = location.state || {
     selectedTime: "Not selected",
     selectedDate: "Not selected",
+    paymentStatus: "success",
   };
 
   const {
@@ -99,7 +100,7 @@ const Confirmation: React.FC = () => {
               flexShrink: 0,
             }}
           >
-            <StepTracker currentStep={4} />
+            <StepTracker currentStep={4} paymentStatus={paymentStatus} />
           </Box>
 
           {/* Main Content */}

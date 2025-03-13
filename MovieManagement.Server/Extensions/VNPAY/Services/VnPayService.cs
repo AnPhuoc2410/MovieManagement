@@ -3,6 +3,7 @@ using System.Globalization;
 using MovieManagement.Server.Extensions.VNPAY.Enums;
 using MovieManagement.Server.Extensions.VNPAY.Models;
 using MovieManagement.Server.Extensions.VNPAY.Utilities;
+using MovieManagement.Server.Services.BillService;
 
 namespace MovieManagement.Server.Extensions.VNPAY.Services
 {
@@ -14,6 +15,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
         private string _baseUrl;
         private string _version;
         private string _orderType;
+        private readonly IBillService _billService;
 
         public void Initialize(string tmnCode,
             string hashSecret,
