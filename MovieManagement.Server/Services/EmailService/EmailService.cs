@@ -92,6 +92,9 @@ namespace MovieManagement.Server.Services.EmailService
                     throw new Exception("Password cannot change!");
 
                 await _unitOfWork.OtpCodeRepository.UpdateAsync(otpRecord);
+
+                await _unitOfWork.OtpCodeRepository.DeleteOtpCodeAsync(email);
+
                 await _unitOfWork.CompleteAsync();
                 return true;
             }

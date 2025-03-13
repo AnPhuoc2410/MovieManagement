@@ -35,6 +35,9 @@ namespace MovieManagement.Server.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("MinusPoint")
+                        .HasColumnType("numeric(10,2)");
+
                     b.Property<decimal>("Point")
                         .HasColumnType("numeric(10,2)");
 
@@ -359,7 +362,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Avatar")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR(MAX)");
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");

@@ -14,6 +14,7 @@ namespace MovieManagement.Server.Models.Entities
         public DateTime CreatedDate { get; set; }
 
         public decimal Point { get; set; }
+        public decimal MinusPoint { get; set; }
 
         public int TotalTicket { get; set; }
 

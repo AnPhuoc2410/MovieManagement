@@ -13,6 +13,7 @@ namespace MovieManagement.Server.Models.Configurations
             builder.Property(x => x.BillId).HasDefaultValueSql("NEWID()");
             builder.Property(x => x.CreatedDate).IsRequired();
             builder.Property(x => x.Point).HasColumnType("numeric(10,2)");
+            builder.Property(x => x.MinusPoint).HasColumnType("numeric(10,2)");
             builder.Property(x => x.TotalTicket).IsRequired();
             builder.Property(x => x.Amount).HasColumnType("numeric(10,2)");
             builder.Property(x => x.Status).IsRequired();

@@ -32,5 +32,14 @@ namespace MovieManagement.Server.Repositories
             var otpRecord = await _context.OtpCodes.Where(o => o.Email == email && o.Code == code).FirstOrDefaultAsync();
             return otpRecord;
         }
+
+        public async Task<bool> DeleteOtpCodeAsync(string email)
+        {
+            var otp = await _context.OtpCodes.Where(o => o.Email == email).FirstOrDefaultAsync();
+            if (otp == null) return false;
+            _context.Remove(otp);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

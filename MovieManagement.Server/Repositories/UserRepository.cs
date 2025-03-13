@@ -3,6 +3,7 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories.IRepositories;
 using MovieManagement.Server.Services.JwtService;
+using System.Threading.Tasks;
 using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Repositories
@@ -16,6 +17,23 @@ namespace MovieManagement.Server.Repositories
 
         }
 
+        public async Task<User?> GetUserProfile(Guid userId)
+        {
+            return await _context.Users
+                .Where(u => u.UserId == userId)
+                .Include(u => u.Bills)
+                    .ThenInclude(b => b.TicketDetails)
+                        .ThenInclude(t => t.ShowTime)
+                            .ThenInclude(s => s.Movie)
+                .Include(u => u.Bills)
+                    .ThenInclude(b => b.TicketDetails)
+                        .ThenInclude(t => t.Seat)
+                            .ThenInclude(s => s.Room)
+                        .ThenInclude(s => s.Seats)
+                            .ThenInclude(s => s.SeatType)
+                .OrderByDescending(u => u.JoinDate).FirstOrDefaultAsync();
+        }
+
         public async Task<bool> ChangeUserPasswordByEmailAsync(string email, string newPassword)
         {
             var user = await _context.Users
@@ -24,7 +42,7 @@ namespace MovieManagement.Server.Repositories
                             .LastOrDefaultAsync();
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
-            return user!=null;
+            return user != null;
         }
 
         public Task<List<User>> GetUserByRoleAsync(Role role)
@@ -62,18 +80,18 @@ namespace MovieManagement.Server.Repositories
                             .LastOrDefaultAsync();
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
-            return user!=null;
+            return user != null;
         }
 
         public User GetUserByEmail(string email)
         {
-            
+
             var user = _context.Users
                 .Where(user => user.Email == email)
                 .OrderBy(user => user.JoinDate)
                 .LastOrDefault();
             return user;
-            
+
         }
 
         public async Task<User> GetByUsername(string username)
@@ -84,13 +102,13 @@ namespace MovieManagement.Server.Repositories
 
             return user;
         }
-        
+
         public User GetUserByUniqueFields(string email, string idCard, string phoneNumber, string userName)
         {
             return _context.Users
-                .Where(user => user.Email == email || 
-                               user.IDCard == idCard || 
-                               user.PhoneNumber == phoneNumber || 
+                .Where(user => user.Email == email ||
+                               user.IDCard == idCard ||
+                               user.PhoneNumber == phoneNumber ||
                                user.UserName == userName)
                 .FirstOrDefault();
         }
@@ -99,13 +117,13 @@ namespace MovieManagement.Server.Repositories
         public bool IsExistingEmailOrUsernameOrPhoneOrIdNumber(string email, string username, string phone,
             string idNumber)
         {
-            
+
             var user = _context.Users
                 .Where(user => user.Email == email || user.UserName == username || user.PhoneNumber == phone || user.IDCard == idNumber)
                 .OrderBy(user => user.JoinDate)
                 .LastOrDefault();
             return user != null;
-            
+
         }
 
         public async Task<User> GetUserByEmailAsync(string email)
