@@ -5,6 +5,7 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.RequestModel;
 
 namespace MovieManagement.Server.Services.BillService
 {
@@ -74,7 +75,7 @@ namespace MovieManagement.Server.Services.BillService
                 throw new ApplicationException("An error occurred while processing into Database", ex);
             }
         }
-        public async Task<BillDto> UpdateBillAsync(Guid billId, BillDto billDto)
+        public async Task<BillDto> UpdateBillAsync(Guid billId, BillRequest request)
         {
             try
             {
@@ -82,7 +83,7 @@ namespace MovieManagement.Server.Services.BillService
                 if (existingBill == null)
                     throw new NotFoundException("Bill cannot found!");
 
-                _mapper.Map(billDto, existingBill);
+                existingBill = _mapper.Map(request, existingBill);
                 var updatedBill = await _unitOfWork.BillRepository.UpdateAsync(existingBill);
                 if (updatedBill == null)
                     throw new DbUpdateException("Bill cannot update!");

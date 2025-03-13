@@ -53,6 +53,9 @@ namespace MovieManagement.Server.Extensions
             CreateMap<Room, RoomDto>();
             CreateMap<RoomDto, Room>();
 
+            //User Request Bill 
+            CreateMap<Bill, BillRequest>();
+            CreateMap<BillRequest, Bill>();
             CreateMap<Bill, BillDto>();
             CreateMap<BillDto, Bill>();
 
