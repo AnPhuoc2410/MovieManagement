@@ -73,15 +73,7 @@ export default function useRouteElements() {
     // Public Routes
     {
       path: "/",
-      element: (
-        <SplashCursor
-          SPLAT_RADIUS={0.2}
-          SPLAT_FORCE={6000}
-          COLOR_UPDATE_SPEED={10}
-        >
-          <Home />
-        </SplashCursor>
-      ),
+      element: <Home />,
     },
     // Auth Routes (Rejected when authenticated)
     {
@@ -97,10 +89,6 @@ export default function useRouteElements() {
     {
       element: <RejectedRoute />,
       children: [
-        {
-          path: "/users/profile/:userId",
-          element: <ClientPages.User.Profile />,
-        },
         {
           path: "/promotions",
           children: [
@@ -129,7 +117,6 @@ export default function useRouteElements() {
         },
       ],
     },
-
     // Protected Admin Routes
     {
       element: <ProtectedRoute />,
@@ -188,6 +175,12 @@ export default function useRouteElements() {
                 },
               ],
             },
+          ],
+        },
+        {
+          path: "/users",
+          children: [
+            { path: "profile/:userId", element: <ClientPages.User.Profile /> },
           ],
         },
       ],

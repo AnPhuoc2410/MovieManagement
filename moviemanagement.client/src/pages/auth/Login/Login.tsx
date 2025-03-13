@@ -16,9 +16,8 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import * as yup from "yup";
-import { useAuth } from "../../../contexts/AuthContext";
 import { login } from "../../../apis/auth.apis";
-import { doExtractUserFromToken } from "../../../apis/auth.apis";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -62,40 +61,26 @@ export const Login = () => {
     onSubmit: async (values) => {
       setLoading(true);
       const toastId = toast.loading("Đang đăng nhập...");
-      const data = {
-        email: values.email,
-        password: values.password,
-      };
 
       try {
-        const response = await login(data);
+        const response = await login(values);
         toast.dismiss(toastId);
 
         if (response.isSuccess) {
-          // Extract token data from the nested structure
           const tokenData = response.data.token;
 
-          // Login through auth context
-          authLogin({
+          // Login and extract user details through auth context
+          const userDetails = await authLogin({
             accessToken: tokenData.accessToken,
             expires: tokenData.expires,
           });
 
-          toast.success("Đăng nhập thành công! Đang chuyển hướng...");
+          toast.success(`Xin chào ${userDetails?.fullName}`);
 
-          // Extract user ID from token and redirect to user profile
-          const extractTokenResponse = await doExtractUserFromToken(
-            tokenData.accessToken,
-          );
-
-          console.log(
-            "Extracted user ID:",
-            JSON.stringify(extractTokenResponse, null, 2),
-          );
-
-          // Redirect to user profile with extracted user ID
+          // Navigate based on extracted role
           setTimeout(() => {
-            navigate(`/users/profile/${extractTokenResponse.data?.userId}`);
+            if (userDetails?.role === 2) navigate("/admin/thong-ke");
+            else navigate("/");
           }, 1000);
         } else {
           toast.error(response.message);

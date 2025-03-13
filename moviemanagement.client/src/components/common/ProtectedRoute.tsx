@@ -11,10 +11,10 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   redirectPath = ROUTING_PATH.AUTH,
 }) => {
-  const { isLoggedIn } = useAuth();
+  const { isAuthenticated } = useAuth();
   const token = getUserCookieToken();
 
-  if (!isLoggedIn && !token) {
+  if (!isAuthenticated && !token) {
     return <Navigate to={redirectPath} replace />;
   }
 
