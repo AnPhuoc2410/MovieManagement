@@ -320,6 +320,12 @@ const Header: React.FC = () => {
                     <PersonIcon fontSize="small" sx={{ mr: 2 }} />
                     {t("user.profile.my_profile")}
                   </MenuItem>
+                  {userDetails?.role === 2 && (
+                    <MenuItem onClick={() => navigate("/admin/thong-ke")}>
+                      <PersonIcon fontSize="small" sx={{ mr: 2 }} />
+                      {t("user.profile.admin_panel")}
+                    </MenuItem>
+                  )}
                   <MenuItem>
                     <SettingsIcon fontSize="small" sx={{ mr: 2 }} />
                     {t("user.profile.settings")}

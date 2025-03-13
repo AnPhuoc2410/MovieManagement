@@ -1,48 +1,67 @@
-import { useState } from "react";
-import { useQuery } from "react-query";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
-import { fetchThanhVien } from "../../../apis/mock.apis";
+import { fetchUserByRole, Role } from "../../../apis/user.apis";
+import ManagementTable, {
+  ColumnDef,
+  defaultUserColumns,
+} from "../../../components/shared/ManagementTable";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
-import MemberTable, { ThanhVien } from "./BangThanhVien";
+import { UserResponse } from "../../../types/users.type";
+import { useQuery } from "react-query";
 
 const QuanLiThanhVien: React.FC = () => {
   const navigate = useNavigate();
+
   const {
-    data: danhSachThanhVien = [],
+    data: users,
     isLoading,
     error,
-  } = useQuery<ThanhVien[]>(
-    "thanhVienData", // Cache key
-    fetchThanhVien,
-  );
+  } = useQuery({
+    queryKey: ["users", "members"],
+    queryFn: async () => {
+      const response = await fetchUserByRole(Role.Member);
+      if (!response.isSuccess || !response.data) {
+        throw new Error(response.message || "Failed to fetch members");
+      }
+      return response.data;
+    },
+  });
 
-  const [selectedEmployee, setSelectedEmployee] = useState<ThanhVien | null>(
-    null,
-  );
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  useEffect(() => {
+    if (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to load employees",
+      );
+    }
+  }, [error]);
 
   const handleEdit = (id: string) => {
-    console.log("Handling edit for ID:", id);
-    const employee = danhSachThanhVien.find((emp) => emp.MaNhanVien === id);
-    if (employee) {
-      navigate(`/admin/ql-thanh-vien/${id}`);
-    }
+    navigate(`/admin/ql-thanh-vien/${id}`);
   };
 
   const handleDelete = (id: string) => {
-    console.log("Handling delete for ID:", id);
-    const employee = danhSachThanhVien.find((emp) => emp.MaNhanVien === id);
-    if (employee) {
-      setSelectedEmployee(employee);
-    }
+    // Implement delete logic
+    console.log("Delete user:", id);
   };
+
+  const columns: ColumnDef<UserResponse>[] = [
+    ...defaultUserColumns,
+    {
+      field: "point",
+      headerName: "Points",
+      align: "center",
+    },
+  ];
 
   return (
     <ManagementPageLayout>
-      <MemberTable
-        employees={danhSachThanhVien}
+      <ManagementTable
+        data={users}
+        columns={columns}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        isLoading={isLoading}
       />
     </ManagementPageLayout>
   );

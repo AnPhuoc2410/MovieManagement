@@ -258,6 +258,25 @@ export default function UserDetail() {
                   {profile.fullName}
                 </Typography>
 
+                {userDetails?.role === 2 && (
+                  <Box
+                    sx={{
+                      bgcolor: "primary.dark",
+                      color: "primary.contrastText",
+                      borderRadius: 2,
+                      py: 1,
+                      px: 2,
+                      mb: 1,
+                      width: "50%",
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography variant="body2" fontWeight="medium">
+                      {t("user.profile.admin")}
+                    </Typography>
+                  </Box>
+                )}
+
                 <Box
                   sx={{
                     bgcolor: "primary.light",

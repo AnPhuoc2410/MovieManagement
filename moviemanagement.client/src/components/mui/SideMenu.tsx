@@ -1,4 +1,3 @@
-import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Avatar from "@mui/material/Avatar";
 import MuiDrawer, { drawerClasses } from "@mui/material/Drawer";
@@ -9,6 +8,9 @@ import Typography from "@mui/material/Typography";
 import MenuContent from "./MenuContent";
 import OptionsMenu from "./OptionsMenu";
 import { useNavigate } from "react-router";
+import { useAuth } from "../../contexts/AuthContext";
+import { useEffect, useState } from "react";
+import { UserResponse } from "../../types/users.type";
 
 const drawerWidth = 240;
 
@@ -25,6 +27,17 @@ const Drawer = styled(MuiDrawer)({
 
 export default function SideMenu() {
   const navigate = useNavigate();
+  const { userDetails } = useAuth();
+  const [user, setUser] = useState<Pick<UserResponse, "email" | "fullName">>({
+    email: "",
+    fullName: "",
+  });
+
+  useEffect(() => {
+    if (userDetails) {
+      setUser(userDetails);
+    }
+  }, [userDetails]);
 
   return (
     <Drawer
@@ -91,13 +104,13 @@ export default function SideMenu() {
             variant="body2"
             sx={{ fontWeight: 500, lineHeight: "16px" }}
           >
-            Đào Admin
+            {user.fullName}
           </Typography>
           <Typography variant="caption" sx={{ color: "text.secondary" }}>
-            admin@email.com
+            {user.email}
           </Typography>
         </Box>
-        <OptionsMenu />
+        <OptionsMenu userId={userDetails?.userId} />
       </Stack>
     </Drawer>
   );

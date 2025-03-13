@@ -79,8 +79,7 @@ export const Login = () => {
 
           // Navigate based on extracted role
           setTimeout(() => {
-            if (userDetails?.role === 2) navigate("/admin/thong-ke");
-            else navigate("/");
+            navigate("/");
           }, 1000);
         } else {
           toast.error(response.message);
