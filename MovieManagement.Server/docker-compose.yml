@@ -1,0 +1,59 @@
+networks:
+    mvm_network:
+        driver: bridge
+
+services:
+  # post_management.api:
+  #   container_name: postmanagement-api
+  #   image: ${DOCKER_REGISTRY-}postmanagementapi
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "0.0.0.0:7119:7119"
+  #   depends_on:
+  #     post_management.db:
+  #       condition: service_healthy
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_URLS=http://+:7119
+  #     - ConnectionStrings__PostgresConnection=Host=post_management.db;Database=fsa_mvm;Username=db_user;Password=Iloveyou3000!;Port=5432
+  #     - EXTERNAL_API_HOST=localhost:7119
+  #   networks:
+  #     - mvm_network
+  #   volumes:
+  #     - post_management.images:/app/Images
+
+  post_management.db:
+    container_name: mvm_db
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: Iloveyou3000!
+      POSTGRES_DB: fsa_mvm
+    ports:
+      - "0.0.0.0:5432:5432"
+    networks:
+      - mvm_network
+    volumes:
+      - post_management.db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U db_user -d PostManagementDB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    ports:
+      - "0.0.0.0:5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    networks:
+      - mvm_network
+
+volumes:
+  post_management.db_data:
+  post_management.images:
