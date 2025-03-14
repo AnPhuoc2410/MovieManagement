@@ -8,7 +8,6 @@
 *.suo
 *.user
 *.userosscache
-*.sln.docstates
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -372,7 +371,6 @@ FodyWeavers.xsd
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
 *.sw?
 
 .env
