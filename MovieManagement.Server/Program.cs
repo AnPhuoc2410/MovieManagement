@@ -195,7 +195,6 @@ namespace MovieManagement.Server
             app.UseHttpsRedirection();
 
             //Enable Websocket support
-            app.UseWebSockets();
             app.UseRouting();
 
 

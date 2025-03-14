@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
-import axios from "axios";
+import { Box, Button, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { SeatType } from "../../types/seattype.types";
-import { Seat } from "../../types/seat.types";
+import api from "../../apis/axios.config";
 import { TicketDetail } from "../../types/ticketdetail.types";
+import { SelectedSeat } from "../../types/selectedseat.types";
 
 interface SeatProps {
   showTimeId: string; // Changed from showtimeId to showTimeId for consistency
   selectedSeats: { id: string; name: string; version: string }[];
   setSelectedSeats: React.Dispatch<
-    React.SetStateAction<{ id: string; name: string; version: string }[]>
+    React.SetStateAction<{ id: string; name: string; version: string; ticketId: string }[]>
   >;
 }
 
@@ -28,9 +27,8 @@ const SeatCinema: React.FC<SeatProps> = ({
     const fetchSeats = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          `https://localhost:7119/api/ticketdetail/getbyroomid/${showTimeId}` // Updated endpoint URL
-        );
+        const response = await api.get(`ticketdetail/getbyroomid/${showTimeId}`);
+        console.log("showTimeID:", showTimeId);
         if (response.data && response.data.data) {
           setSeats(response.data.data);
         } else {
@@ -45,16 +43,23 @@ const SeatCinema: React.FC<SeatProps> = ({
     fetchSeats();
   }, [showTimeId]);
 
-  // Toggle seat selection
+  // Handle seat click event
   const handleSeatClick = (ticket: TicketDetail) => {
     const seatName = `${ticket.seat.atRow}${ticket.seat.atColumn}`;
-    const seatInfo = { id: ticket.seatId, name: seatName, version: ticket.version };
+    const seatInfo: SelectedSeat = {
+      id: ticket.seatId,
+      name: seatName,
+      version: ticket.version,
+      ticketId: ticket.ticketId
+    };
 
-    if (selectedSeats.some((s) => s.id === ticket.seatId)) {
-      setSelectedSeats(selectedSeats.filter((s) => s.id !== ticket.seatId));
-    } else {
-      setSelectedSeats([...selectedSeats, seatInfo]);
-    }
+    setSelectedSeats((prevSeats) => {
+      if (prevSeats.some((s) => s.id === ticket.seatId)) {
+        return prevSeats.filter((s) => s.id !== ticket.seatId);
+      } else {
+        return [...prevSeats, seatInfo];
+      }
+    });
   };
 
   return (
@@ -109,6 +114,10 @@ const SeatCinema: React.FC<SeatProps> = ({
           <Typography variant="body2">Đang Chọn</Typography>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <EventSeatIcon sx={{ color: "yellow" }} />
+          <Typography variant="body2">Đang Thanh Toán</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <EventSeatIcon sx={{ color: "blue" }} />
           <Typography variant="body2">Ghế VIP</Typography>
         </Box>
@@ -150,8 +159,10 @@ const SeatCinema: React.FC<SeatProps> = ({
                 const isSelected = selectedSeats.some(
                   (s) => s.id === ticket.seatId
                 );
-                const isBought = ticket.status !== 0; // Booked or Reserved
+                const isPending = ticket.status === 1; // Pending
+                const isBought = ticket.status === 2; // Booked or Reserved
                 const isVip = ticket.seat.seatType.typeName === "VIP";
+
 
                 // Set default styles
                 let iconColor = "white";
@@ -168,6 +179,10 @@ const SeatCinema: React.FC<SeatProps> = ({
                 } else if (isVip) {
                   iconColor = "blue";
                   backgroundColor = "rgba(0, 0, 255, 0.2)";
+                } else if (isPending) {
+                  iconColor = "yellow";
+                  backgroundColor = "rgba(255, 255, 0, 0.2)";
+                  disabled = true;
                 }
 
                 return (

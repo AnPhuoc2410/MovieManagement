@@ -6,12 +6,13 @@ import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import toast from "react-hot-toast";
+import api from "../../apis/axios.config";
 
 const MovieSeat: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { showTimeId, selectedTime, selectedDate, tickets } = location.state || {
-    showTimeId: "", // Changed from showtimeId to showTimeId
+    showTimeId: "",
     selectedTime: "Not selected",
     selectedDate: "Not selected",
     tickets: [],
@@ -19,7 +20,7 @@ const MovieSeat: React.FC = () => {
 
   // State to store selected seats
   const [selectedSeats, setSelectedSeats] = useState<
-    { id: string; name: string; version: string }[]
+    { id: string; name: string; version: string; ticketId: string }[]
   >([]);
 
   // Calculate the total number of seats that should be selected based on ticket quantities
@@ -28,19 +29,36 @@ const MovieSeat: React.FC = () => {
     0,
   );
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedSeats.length !== maxSeats) {
       toast.error(`Vui lòng chọn đúng ${maxSeats} ghế.`);
       return;
     }
-    navigate("/ticket/payment", {
-      state: {
-        selectedDate,
-        selectedTime,
-        tickets,
-        seats: selectedSeats.map((seat) => seat.name),
-      },
-    });
+
+    const checkoutPayload = selectedSeats.map((seat) => ({
+      ticketId: seat.ticketId,
+      version: seat.version,
+    }));
+
+    try {
+      const response = await api.put("/ticketdetail/checkout", checkoutPayload);
+
+      if (response.status === 200) {
+        toast.success("Đặt chỗ thành công! Chuyển đến trang thanh toán...");
+        navigate("/ticket/payment", {
+          state: {
+            selectedDate,
+            selectedTime,
+            tickets,
+            seats: selectedSeats.map((seat) => seat.name),
+          },
+        });
+      } else {
+        toast.error("Có lỗi xảy ra khi đặt chỗ. Vui lòng thử lại.");
+      }
+    } catch (error) {
+      toast.error("Lỗi khi đặt chỗ! Có thể ghế đã được người khác chọn.");
+    }
   };
 
   return (
@@ -139,7 +157,7 @@ const MovieSeat: React.FC = () => {
                 }}
               >
                 <SeatCinema
-                  showTimeId={showTimeId} // Changed from showtimeId to showTimeId
+                  showTimeId={showTimeId}
                   selectedSeats={selectedSeats}
                   setSelectedSeats={setSelectedSeats}
                 />
