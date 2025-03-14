@@ -122,7 +122,24 @@
         "my_profile": "マイプロフィール",
         "settings": "設定",
         "my_bookings": "予約",
-        "logout": "ログアウト"
+        "logout": "ログアウト",
+        "account_info": "アカウント情報",
+        "cumulative_points": "累積ポイント",
+        "booked_tickets": "予約済みチケット",
+        "history": "履歴",
+        "change_password": "パスワード変更",
+        "admin_panel": "管理者パネル",
+        "admin": "管理者"
+      },
+      "field": {
+        "full_name": "氏名",
+        "dob": "生年月日",
+        "male": "男性",
+        "female": "女性",
+        "email": "メールアドレス",
+        "id_card": "身分証明書",
+        "phone": "電話番号",
+        "address": "住所"
       }
     },
     "promotion": {
@@ -151,37 +168,46 @@
       "title":{
         "showtime_list" : "上映時間と劇場",
         "now_day" : "今日",
-        "theater_list" : "劇場一覧"
+        "theater_list" : "劇場一覧",
+        "no_showtime" : "上映時間がありません"
       },
-      "location":{
-        "HaNoi" : "ハノイ",
-        "HCM" : "ホーチミン",
-        "DaNang" : "ダナン"
+      "location": {
+        "HaNoi": "ハノイ",
+        "HCM": "ホーチミン",
+        "DaNang": "ダナン"
       },
-      "notification":{
-        "loading_showtime" : "上映時間を読み込んでいます...",
-        "no_showtime" : "選択した日付には上映時間がありません"
+      "notification": {
+        "loading_showtime": "上映時間を読み込んでいます...",
+        "no_showtime": "選択した日付には上映時間がありません"
       },
-      "error":{
-        "select_show_time" : "上映時間を選択してください！",
-        "select_ticket" : "チケットを少なくとも1つ選択してください！"
+      "error": {
+        "select_show_time": "上映時間を選択してください！",
+        "select_ticket": "チケットを少なくとも1つ選択してください！"
       }
     },
-    "ticket_price":{
+    "ticket_price": {
       "ticket_selection": "チケットタイプ",
       "ticket_type": {
-        "couple" :"ダブルシート",
-        "single" : "シングルシート",
-        "vip" : "贅沢シート"
+        "couple": "ダブルシート",
+        "single": "シングルシート",
+        "vip": "贅沢シート"
       },
-      "next" :"次へ"
+      "next": "次へ"
     },
     "seat": "座席",
-    "step_tracker":{
-      "select_show_time" : "上映時間を選択",
-      "select_seat" : "座席を選択",
-      "payment" : "支払い",
-      "success" : "成功"
+    "step_tracker": {
+      "select_show_time": "上映時間を選択",
+      "select_seat": "座席を選択",
+      "payment": "支払い",
+      "success": "成功"
+    },
+    "common": {
+      "button": {
+        "action": {
+          "update": "更新",
+          "cancel": "キャンセル"
+        }
+      }
     }
   }
 }

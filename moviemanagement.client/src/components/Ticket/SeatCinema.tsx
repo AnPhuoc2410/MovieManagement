@@ -2,47 +2,56 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import axios from "axios";
-import type { Seat } from "../../types/seat.types";
+import toast from "react-hot-toast";
+import { SeatType } from "../../types/seattype.types";
+import { Seat } from "../../types/seat.types";
+import { TicketDetail } from "../../types/ticketdetail.types";
 
 interface SeatProps {
-  roomId: string;
-  selectedSeats: { id: string; name: string }[];
+  showTimeId: string; // Changed from showtimeId to showTimeId for consistency
+  selectedSeats: { id: string; name: string; version: string }[];
   setSelectedSeats: React.Dispatch<
-    React.SetStateAction<{ id: string; name: string }[]>
+    React.SetStateAction<{ id: string; name: string; version: string }[]>
   >;
 }
 
-const Seat: React.FC<SeatProps> = ({
-  roomId,
+const SeatCinema: React.FC<SeatProps> = ({
+  showTimeId, // Changed from showtimeId to showTimeId
   selectedSeats,
   setSelectedSeats,
 }) => {
-  const [seats, setSeats] = useState<Seat[]>([]);
+  const [seats, setSeats] = useState<TicketDetail[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch seat data based on roomId.
+  // Fetch ticket data based on showTimeId.
   useEffect(() => {
     const fetchSeats = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
-          `https://localhost:7119/api/Room/GetRoomInfo/${roomId}`,
+          `https://localhost:7119/api/ticketdetail/getbyroomid/${showTimeId}` // Updated endpoint URL
         );
-        if (response.data.isSuccess) {
-          setSeats(response.data.data.seats);
+        if (response.data && response.data.data) {
+          setSeats(response.data.data);
+        } else {
+          toast.error("Không tìm thấy thông tin ghế.");
         }
       } catch (error) {
-        console.error("Error fetching seat data:", error);
+        toast.error("Lỗi khi tải danh sách ghế.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchSeats();
-  }, [roomId]);
+  }, [showTimeId]);
 
-  // Toggle the selected seat when a seat button is clicked.
-  const handleSeatClick = (seat: Seat) => {
-    const seatName = `${seat.atRow}${seat.atColumn}`;
-    const seatInfo = { id: seat.seatId, name: seatName };
+  // Toggle seat selection
+  const handleSeatClick = (ticket: TicketDetail) => {
+    const seatName = `${ticket.seat.atRow}${ticket.seat.atColumn}`;
+    const seatInfo = { id: ticket.seatId, name: seatName, version: ticket.version };
 
-    if (selectedSeats.some((s) => s.id === seat.seatId)) {
-      setSelectedSeats(selectedSeats.filter((s) => s.id !== seat.seatId));
+    if (selectedSeats.some((s) => s.id === ticket.seatId)) {
+      setSelectedSeats(selectedSeats.filter((s) => s.id !== ticket.seatId));
     } else {
       setSelectedSeats([...selectedSeats, seatInfo]);
     }
@@ -124,25 +133,25 @@ const Seat: React.FC<SeatProps> = ({
         >
           {Object.entries(
             seats.reduce(
-              (acc, seat) => {
+              (acc, ticket) => {
                 // Group seats by row
-                if (!acc[seat.atRow]) acc[seat.atRow] = [];
-                acc[seat.atRow].push(seat);
+                if (!acc[ticket.seat.atRow]) acc[ticket.seat.atRow] = [];
+                acc[ticket.seat.atRow].push(ticket);
                 return acc;
               },
-              {} as Record<string, Seat[]>,
-            ),
+              {} as Record<string, TicketDetail[]>
+            )
           ).map(([row, rowSeats]) => (
             <Box
               key={row}
               sx={{ display: "flex", justifyContent: "center", gap: 4 }}
             >
-              {rowSeats.map((seat) => {
+              {rowSeats.map((ticket) => {
                 const isSelected = selectedSeats.some(
-                  (s) => s.id === seat.seatId,
+                  (s) => s.id === ticket.seatId
                 );
-                const isBought = seat.status === 3; // Booked
-                const isVip = seat.seatType.typeName === "VIP";
+                const isBought = ticket.status !== 0; // Booked or Reserved
+                const isVip = ticket.seat.seatType.typeName === "VIP";
 
                 // Set default styles
                 let iconColor = "white";
@@ -163,10 +172,10 @@ const Seat: React.FC<SeatProps> = ({
 
                 return (
                   <Button
-                    key={seat.seatId}
+                    key={ticket.seatId}
                     variant="outlined"
                     disabled={disabled}
-                    onClick={() => handleSeatClick(seat)}
+                    onClick={() => handleSeatClick(ticket)}
                     sx={{
                       minWidth: "50px",
                       minHeight: "50px",
@@ -196,8 +205,8 @@ const Seat: React.FC<SeatProps> = ({
                     >
                       <EventSeatIcon sx={{ color: iconColor }} />
                       <Typography variant="body2" align="center">
-                        {seat.atRow}
-                        {seat.atColumn}
+                        {ticket.seat.atRow}
+                        {ticket.seat.atColumn}
                       </Typography>
                     </Box>
                   </Button>
@@ -211,4 +220,4 @@ const Seat: React.FC<SeatProps> = ({
   );
 };
 
-export default Seat;
+export default SeatCinema;

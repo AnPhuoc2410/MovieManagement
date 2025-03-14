@@ -26,7 +26,8 @@ namespace MovieManagement.Server.Services.UserService
             _mapper = mapper;
         }
 
-        public async Task<bool> ChangeUserPasswordByUserId(Guid userId, string currentPassword, string newPassword)
+        public async Task<bool> ChangeUserPasswordByUserId(Guid userId, string currentPassword,
+            string newPassword)
         {
             try
             {
@@ -44,7 +45,8 @@ namespace MovieManagement.Server.Services.UserService
                 var passwordHasher = new PasswordHasher<User>();
 
                 //Verify password
-                var verificationResult = passwordHasher.VerifyHashedPassword(user, user.Password, currentPassword);
+                var verificationResult =
+                    passwordHasher.VerifyHashedPassword(user, user.Password, currentPassword);
                 Console.WriteLine($"Verification Result: {verificationResult}");
                 if (verificationResult == PasswordVerificationResult.Failed)
                     throw new Exception("Current password is incorrect.");
@@ -53,7 +55,9 @@ namespace MovieManagement.Server.Services.UserService
                 user.Password = passwordHasher.HashPassword(user, newPassword);
 
                 //Update new password
-                var updatedUser = await _unitOfWork.UserRepository.ResetUserPasswordByUserIdAsync(userId, user.Password, newPassword);
+                var updatedUser =
+                    await _unitOfWork.UserRepository.ResetUserPasswordByUserIdAsync(userId,
+                        user.Password, newPassword);
                 if (updatedUser == null)
                     throw new Exception("Failed to change password.");
 
@@ -83,7 +87,8 @@ namespace MovieManagement.Server.Services.UserService
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("An error occurred while creating the user using OAuth.", ex);
+                throw new ApplicationException(
+                    "An error occurred while creating the user using OAuth.", ex);
             }
         }
 
@@ -94,8 +99,9 @@ namespace MovieManagement.Server.Services.UserService
                 throw new BadRequestException("Admin cannot be created by this method.");
 
             if (_unitOfWork.UserRepository.IsExistingEmailOrUsernameOrPhoneOrIdNumber(user.Email,
-                   user.UserName, user.PhoneNumber, user.IDCard))
-                throw new BadRequestException("Email, username, phone number or ID number already exists.");
+                    user.UserName, user.PhoneNumber, user.IDCard))
+                throw new BadRequestException(
+                    "Email, username, phone number or ID number already exists.");
 
             var newUser = _mapper.Map<User>(user);
             newUser.Password = new PasswordHasher<User>().HashPassword(newUser, user.Password);
@@ -116,48 +122,33 @@ namespace MovieManagement.Server.Services.UserService
 
             if (user.Role != Role.Employee)
                 throw new BadRequestException("Cannot delete this user role");
+            
+            if (user.Status == UserStatus.Inactive)
+                throw new BadRequestException("User is already inactive!");
 
             return await _unitOfWork.UserRepository.SoftDeleteAsync(id);
         }
 
         public async Task<IEnumerable<UserDto.UserResponse>> GetAllUsersAsync()
         {
-            try
-            {
-                var users = await _unitOfWork.UserRepository.GetAllAsync();
-                if (users == null)
-                    throw new NotFoundException("No users found!");
-                return _mapper.Map<List<UserDto.UserResponse>>(users);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            var users = await _unitOfWork.UserRepository.GetAllAsync();
+            if (users == null)
+                throw new NotFoundException("User List not found!");
+            return _mapper.Map<List<UserDto.UserResponse>>(users);
         }
 
         public async Task<UserDto.UserResponse> GetUserByIdAsync(Guid id)
         {
-            try
-            {
-                var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
-                if (user == null)
-                    throw new NotFoundException("User not found!");
-                return _mapper.Map<UserDto.UserResponse>(user);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(id) ?? throw new BadRequestException("User not found hihi!");
+            return _mapper.Map<UserDto.UserResponse>(user);
         }
 
         public UserDto.UserResponse GetUserByEmail(string email)
         {
-
             var user = _unitOfWork.UserRepository.GetUserByEmail(email);
             if (user == null)
                 throw new NotFoundException("User not found!");
             return _mapper.Map<UserDto.UserResponse>(user);
-
         }
 
         public async Task<List<UserDto.UserResponse>> GetUserByRoleAsync(Role role)
@@ -199,17 +190,17 @@ namespace MovieManagement.Server.Services.UserService
                                ?? throw new NotFoundException("User not found!");
 
             // Validate username and email only if they are being changed
-            if (userDto.UserName != existingUser.UserName && await _unitOfWork.UserRepository.GetByUsername(userDto.UserName) != null)
+            if (userDto.UserName != existingUser.UserName &&
+                await _unitOfWork.UserRepository.GetByUsername(userDto.UserName) != null)
                 throw new BadRequestException("Username already exists.");
 
-            if (userDto.Email != existingUser.Email && await _unitOfWork.UserRepository.GetUserByEmailAsync(userDto.Email) != null)
+            if (userDto.Email != existingUser.Email &&
+                await _unitOfWork.UserRepository.GetUserByEmailAsync(userDto.Email) != null)
                 throw new BadRequestException("Email already exists.");
 
             // Map and update the user
             _mapper.Map(userDto, existingUser);
             await _unitOfWork.UserRepository.UpdateAsync(existingUser);
         }
-
-
     }
 }

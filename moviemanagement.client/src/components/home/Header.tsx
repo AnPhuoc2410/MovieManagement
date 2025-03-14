@@ -26,7 +26,7 @@ import LanguageSelector from "../common/LanguageSelector";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Header: React.FC = () => {
-  const { isAuthenticated, authLogout } = useAuth();
+  const { isAuthenticated, authLogout, userDetails } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
@@ -43,10 +43,8 @@ const Header: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    authLogout();
-    handleClose();
-    navigate("/");
+  const handleLogout = async () => {
+    await authLogout();
   };
 
   useEffect(() => {
@@ -314,15 +312,29 @@ const Header: React.FC = () => {
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
-                  <MenuItem onClick={() => navigate("/profile")}>
+                  <MenuItem
+                    onClick={() =>
+                      navigate(`/users/profile/${userDetails?.userId}`)
+                    }
+                  >
                     <PersonIcon fontSize="small" sx={{ mr: 2 }} />
                     {t("user.profile.my_profile")}
                   </MenuItem>
-                  <MenuItem onClick={() => navigate("/settings")}>
+                  {userDetails?.role === 2 && (
+                    <MenuItem onClick={() => navigate("/admin/thong-ke")}>
+                      <PersonIcon fontSize="small" sx={{ mr: 2 }} />
+                      {t("user.profile.admin_panel")}
+                    </MenuItem>
+                  )}
+                  <MenuItem>
                     <SettingsIcon fontSize="small" sx={{ mr: 2 }} />
                     {t("user.profile.settings")}
                   </MenuItem>
-                  <MenuItem onClick={() => navigate("/bookings")}>
+                  <MenuItem
+                    onClick={() =>
+                      navigate(`/users/profile/${userDetails?.userId}`)
+                    }
+                  >
                     <LocalActivityOutlinedIcon
                       fontSize="small"
                       sx={{ mr: 2 }}

@@ -1,10 +1,8 @@
-import { Seat } from "./seat.types";
 
-export type SeatType = {
-  seatTypeId: string; // Guid in C#
+export interface SeatType {
+  seatTypeId: string;
   typeName: string;
-  price: number; // decimal in C#
-  quantity: number; // int in C#
-  isActive: boolean; // bool in C#
-  seats: Seat[]; // ICollection in C# (as an array)
-};
+  price: number;
+  quantity: number;
+  isActive: boolean;
+}

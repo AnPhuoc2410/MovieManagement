@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Avatar,
+  Chip,
   IconButton,
   Paper,
   Table,
@@ -11,12 +12,15 @@ import {
   TableRow,
 } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
+import { UserResponse } from "../../types/users.type";
+import Loader from "./Loading";
 
 // Base interface for table data with string id
 export interface TableData {
-  MaNhanVien?: string; // Make this optional
-  movieId?: string; // Add this for movies
-  roomId?: string; // Add this for rooms
+  userId?: string;
+  MaNhanVien?: string;
+  movieId?: string;
+  roomId?: string;
   [key: string]: any;
 }
 
@@ -31,11 +35,12 @@ export interface ColumnDef<T extends TableData> {
 
 // Props interface for the management table
 interface ManagementTableProps<T extends TableData> {
-  data: T[];
+  data?: T[];
   columns: ColumnDef<T>[];
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   showActions?: boolean;
+  isLoading?: boolean;
   actionColumn?: {
     align?: "left" | "center" | "right";
     width?: string | number;
@@ -44,19 +49,74 @@ interface ManagementTableProps<T extends TableData> {
   };
 }
 
+// Default user columns that can be reused
+export const defaultUserColumns: ColumnDef<UserResponse>[] = [
+  {
+    field: "avatar",
+    headerName: "Avatar",
+    align: "center",
+    width: "80px",
+    renderCell: (item) => (
+      <Avatar src={item.avatar || "/default-avatar.png"} alt={item.fullName} />
+    ),
+  },
+  {
+    field: "userName",
+    headerName: "Username",
+    align: "left",
+  },
+  {
+    field: "fullName",
+    headerName: "Full Name",
+    align: "left",
+  },
+  {
+    field: "email",
+    headerName: "Email",
+    align: "left",
+  },
+  {
+    field: "phoneNumber",
+    headerName: "Phone",
+    align: "left",
+  },
+  {
+    field: "status",
+    headerName: "Status",
+    align: "center",
+    renderCell: (item) => (
+      <Chip
+        label={item.status === 1 ? "Active" : "Inactive"}
+        sx={{
+          backgroundColor: item.status === 1 ? "#4caf50" : "#f44336",
+          color: "white",
+          fontWeight: "bold",
+          borderRadius: "16px",
+          padding: "0 8px",
+          minWidth: "80px",
+          minHeight: "32px",
+          textAlign: "center",
+        }}
+      />
+    ),
+  },
+];
+
 function ManagementTable<T extends TableData>({
-  data,
+  data = [],
   columns,
   onEdit,
   onDelete,
   showActions = true,
+  isLoading = false,
   actionColumn = {
     align: "center",
     headerName: "Actions",
     width: "120px",
-    backgroundColor: "#FFA09B",
   },
 }: ManagementTableProps<T>) {
+  if (isLoading) return <Loader />;
+
   const renderHeaderCells = () => {
     const headerCells = columns.map((column) => (
       <TableCell
@@ -64,7 +124,6 @@ function ManagementTable<T extends TableData>({
         align={column.align}
         style={{ width: column.width }}
         sx={{
-          backgroundColor: "#FFA09B", // Change to your preferred color
           fontWeight: "bold", // Optional: make the text bold
         }}
       >
@@ -102,17 +161,29 @@ function ManagementTable<T extends TableData>({
         <IconButton
           color="primary"
           onClick={() =>
-            onEdit(item.roomId || item.MaNhanVien || item.movieId || "")
+            onEdit(
+              item.userId ||
+                item.roomId ||
+                item.MaNhanVien ||
+                item.movieId ||
+                "",
+            )
           }
         >
           <Edit />
         </IconButton>
       )}
-      {onDelete && (
+      {onDelete && item.status === 1 && (
         <IconButton
           color="secondary"
           onClick={() =>
-            onDelete(item.roomId || item.MaNhanVien || item.movieId || "")
+            onDelete(
+              item.userId ||
+                item.roomId ||
+                item.MaNhanVien ||
+                item.movieId ||
+                "",
+            )
           }
         >
           <Delete />
@@ -143,7 +214,11 @@ function ManagementTable<T extends TableData>({
         </TableHead>
         <TableBody>
           {data.map((item) => (
-            <TableRow key={item.roomId || item.MaNhanVien || item.movieId}>
+            <TableRow
+              key={
+                item.userId || item.roomId || item.MaNhanVien || item.movieId
+              }
+            >
               {renderRowCells(item)}
             </TableRow>
           ))}

@@ -22,9 +22,29 @@ interface TicketPriceProps {
   onNext?: (selectedSeats: SeatType[]) => void;
 }
 
+const currencyFormatMap: Record<string, { locale: string, currency: string }> = {
+  en: { locale: 'en-US', currency: 'USD' },
+  jp: { locale: 'ja-JP', currency: 'JPY' },
+  vi: { locale: 'vi-VN', currency: 'VND' }
+};
+
+const exchangeRates = {
+  VND: 1,
+  USD: 0.000039,
+  JPY: 0.0058
+};
+
 const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
   const [seatTypes, setSeatTypes] = useState<SeatType[]>([]);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [currencyFormat, setCurrencyFormat] = useState({ locale: 'vi-VN', currency: 'VND' });
+
+
+  useEffect(() => {
+    const currentLang = i18n.language;
+    const languageKey = currentLang.substring(0, 2); // Get first 2 chars (e.g., "en" from "en-US")
+    setCurrencyFormat(currencyFormatMap[languageKey] || currencyFormatMap.vi);
+  }, [i18n.language]); // This will trigger when language changes
 
   useEffect(() => {
     const fetchSeatTypes = async () => {
@@ -37,12 +57,12 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
         setSeatTypes(seatData);
       } catch (error) {
         console.error("Error fetching seat types:", error);
-        toast.error("Lỗi lấy dữ liệu ghế.");
+        toast.error(t("errors.fetch_seats_failed"));
       }
     };
 
     fetchSeatTypes();
-  }, []);
+  }, [t]);
 
   const increment = (id: string) => {
     setSeatTypes((prevSeats) =>
@@ -62,6 +82,23 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
     );
   };
 
+  const convertPrice = (priceInVND: number, targetCurrency: string) => {
+    if (targetCurrency === 'VND') return priceInVND;
+    return priceInVND * exchangeRates[targetCurrency as keyof typeof exchangeRates];
+  };
+
+  const formatPrice = (price: number) => {
+    // Convert the VND price to the target currency
+    const convertedPrice = convertPrice(price, currencyFormat.currency);
+
+    // For JPY, round to whole number as yen doesn't use decimals
+    const adjustedPrice = currencyFormat.currency === 'JPY' ? Math.round(convertedPrice) : convertedPrice;
+
+    return adjustedPrice.toLocaleString(currencyFormat.locale, {
+      style: "currency",
+      currency: currencyFormat.currency,
+    });
+  };
   const handleNext = () => {
     const selectedSeats = seatTypes.filter((seat) => seat.quantity > 0);
     if (selectedSeats.length === 0) {
@@ -137,10 +174,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
                     variant="body1"
                     sx={{ color: "#FFC107", fontWeight: "bold", mb: 1 }}
                   >
-                    {seat.price.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })}
+                    {formatPrice(seat.price)}
                   </Typography>
 
                   {/* Quantity Controls */}
@@ -198,7 +232,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
             }}
             onClick={handleNext}
           >
-          {t("ticket_price.next")}
+            {t("ticket_price.next")}
           </Button>
         </Box>
       )}

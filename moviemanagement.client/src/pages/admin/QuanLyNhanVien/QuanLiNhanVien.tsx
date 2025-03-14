@@ -1,60 +1,91 @@
-import { useState } from "react";
-import { useQuery } from "react-query";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
-import { fetchNhanVien } from "../../../apis/mock.apis";
+import { doInActiveUser, fetchUserByRole, Role } from "../../../apis/user.apis";
+import ManagementTable, {
+  ColumnDef,
+  defaultUserColumns,
+} from "../../../components/shared/ManagementTable";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
-import EmployeeTable, { Employee } from "./BangNhanVien";
+import { UserResponse } from "../../../types/users.type";
 import XoaNhanVien from "./XoaNhanVien";
-import Loader from "../../../components/shared/Loading";
+import { useQuery } from "react-query";
 
 const QuanLiNhanVien: React.FC = () => {
-  const {
-    data: danhSachNhanVien = [],
-    isLoading,
-    error,
-  } = useQuery<Employee[]>("NhanVienData", fetchNhanVien);
-
   const navigate = useNavigate();
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+  const [selectedEmployee, setSelectedEmployee] = useState<UserResponse | null>(
     null,
   );
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const handleEdit = (id: string) => {
-    console.log("Handling edit for ID:", id);
-    const employee = danhSachNhanVien.find((emp) => emp.MaNhanVien === id);
-    if (employee) {
-      navigate(`/admin/ql-nhan-vien/${id}`);
+  const {
+    data: employees,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["users", "employees"],
+    queryFn: async () => {
+      const response = await fetchUserByRole(Role.Employee);
+      if (!response.isSuccess || !response.data) {
+        throw new Error(response.message || "Failed to fetch employees");
+      }
+      return response.data;
+    },
+  });
+
+  useEffect(() => {
+    if (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to load employees",
+      );
     }
+  }, [error]);
+
+  const handleEdit = (id: string) => {
+    navigate(`/admin/ql-nhan-vien/${id}`);
   };
 
   const handleDelete = (id: string) => {
-    console.log("Handling delete for ID:", id);
-    const employee = danhSachNhanVien.find((emp) => emp.MaNhanVien === id);
-    if (employee) {
-      setSelectedEmployee(employee);
+    const employeeToDelete = employees?.find((emp) => emp.userId === id);
+    if (employeeToDelete) {
+      setSelectedEmployee(employeeToDelete);
       setIsDeleteDialogOpen(true);
     }
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (selectedEmployee) {
-      // Implement delete logic here
-      console.log("Deleting employee:", selectedEmployee.MaNhanVien);
+      try {
+        const res = await doInActiveUser(selectedEmployee.userId);
+        if (res) {
+          toast.success("Employee deleted successfully");
+        }
+      } catch (error) {
+        toast.error("Failed to delete employee");
+      }
     }
     setIsDeleteDialogOpen(false);
     setSelectedEmployee(null);
   };
 
-  if (isLoading) return <Loader />;
-  if (error) return <div>Failed to fetch data</div>;
+  const columns: ColumnDef<UserResponse>[] = [
+    ...defaultUserColumns,
+    {
+      field: "joinDate",
+      headerName: "Join Date",
+      align: "center",
+      renderCell: (item) => new Date(item.joinDate).toLocaleDateString(),
+    },
+  ];
 
   return (
     <ManagementPageLayout>
-      <EmployeeTable
-        employees={danhSachNhanVien}
+      <ManagementTable
+        data={employees}
+        columns={columns}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        isLoading={isLoading}
       />
 
       <XoaNhanVien

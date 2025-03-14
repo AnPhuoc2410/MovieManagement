@@ -18,7 +18,7 @@ export type UserBase = {
   TrangThai: number;
 };
 
-export type UserResponse = {
+export interface UserResponse {
   userId: string;
   userName: string;
   avatar: string;
@@ -33,7 +33,7 @@ export type UserResponse = {
   status: number;
   role: number;
   point: number;
-};
+}
 
 export type UserProfile = Pick<
   UserResponse,

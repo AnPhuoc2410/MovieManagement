@@ -5,6 +5,8 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.Enums;
+using MovieManagement.Server.Models.RequestModel;
 
 namespace MovieManagement.Server.Services.BillService
 {
@@ -54,17 +56,23 @@ namespace MovieManagement.Server.Services.BillService
                 throw new Exception("Couldn't access into database due to systems error.", ex);
             }
         }
-        public async Task<BillDto> CreateBillAsync(Guid userId, BillDto billDto)
+        public async Task<BillDto> CreateBillAsync(Guid userId, BillRequest billRequest)
         {
             try
             {
                 //Checking user is existing
-                var user = _unitOfWork.UserRepository.GetByIdAsync(userId);
+                var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
                 if (user == null)
                     throw new NotFoundException("User cannot found!");
 
                 //Calculator ticket total
-                var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateAsync(_mapper.Map<Bill>(billDto)));
+                var bill = _mapper.Map<Bill>(billRequest);
+                bill.CreatedDate = DateTime.Now;
+                bill.UserId = userId;
+                bill.Status = BillEnum.BillStatus.Pending;
+                bill.Point = bill.TotalTicket;
+
+                var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateAsync(bill));
                 if (createdBill == null)
                     throw new Exception("Failed to create bill.");
                 return createdBill;
@@ -74,24 +82,18 @@ namespace MovieManagement.Server.Services.BillService
                 throw new ApplicationException("An error occurred while processing into Database", ex);
             }
         }
-        public async Task<BillDto> UpdateBillAsync(Guid billId, BillDto billDto)
+        public async Task<BillDto> UpdateBillAsync(Guid billId, BillRequest billRequest)
         {
-            try
-            {
-                var existingBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
-                if (existingBill == null)
-                    throw new NotFoundException("Bill cannot found!");
+            var existingBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
+            if (existingBill == null)
+                throw new NotFoundException("Bill cannot found!");
 
-                _mapper.Map(billDto, existingBill);
-                var updatedBill = await _unitOfWork.BillRepository.UpdateAsync(existingBill);
-                if (updatedBill == null)
-                    throw new DbUpdateException("Bill cannot update!");
-                return _mapper.Map<BillDto>(updatedBill);
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("An error occurred while processing with database.", ex);
-            }
+            existingBill = _mapper.Map(billRequest, existingBill);
+            var updatedBill = await _unitOfWork.BillRepository.UpdateAsync(existingBill);
+            if (updatedBill == null)
+                throw new DbUpdateException("Bill cannot update!");
+            return _mapper.Map<BillDto>(updatedBill);
+
         }
         public async Task<bool> DeleteBillAsync(Guid billId)
         {

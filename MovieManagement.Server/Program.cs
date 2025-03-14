@@ -1,3 +1,8 @@
+using System.Reflection;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using ClaimRequest.API.Middlewares;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,14 +12,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
-using MovieManagement.Server.Services.AuthorizationService;
 using MovieManagement.Server.Services.JwtService;
-using System.Reflection;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace MovieManagement.Server
 {
@@ -29,7 +30,8 @@ namespace MovieManagement.Server
             builder.Services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
-                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.ReferenceLoopHandling =
+                        ReferenceLoopHandling.Ignore;
                 });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -37,19 +39,20 @@ namespace MovieManagement.Server
 
             //Đăng ký JWT Authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
+                .AddJwtBearer(options =>
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
-                };
-            });
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
+                    };
+                });
 
             builder.Services.AddAuthorization(options =>
             {
@@ -64,7 +67,7 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("LaazyConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("PhuocConnection"))
             );
 
             // Đăng ký UnitOfWork
@@ -76,7 +79,8 @@ namespace MovieManagement.Server
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.DefaultIgnoreCondition =
+                    JsonIgnoreCondition.WhenWritingNull;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
@@ -87,10 +91,10 @@ namespace MovieManagement.Server
             {
                 options.AddPolicy("AllowReactApp",
                     policy => policy.WithOrigins(
-                    "https://localhost:3000",
-                    "http://localhost:3000",
-                    "https://localhost:7119",
-                    "https://eigaa.vercel.app")
+                            "https://localhost:3000",
+                            "http://localhost:3000",
+                            "https://localhost:7119",
+                            "https://eigaa.vercel.app")
                         .AllowAnyMethod()
                         .AllowAnyHeader());
             });
@@ -102,7 +106,8 @@ namespace MovieManagement.Server
                 c.SwaggerDoc("v1", new() { Title = "MovieManagement.Server", Version = "v1" });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+                    Description =
+                        "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
@@ -125,7 +130,7 @@ namespace MovieManagement.Server
                 // Set the comments path for the Swagger JSON and UI.
                 // Set up this in .csproj
                 /*
-                
+
                  <PropertyGroup>
                       <GenerateDocumentationFile>true</GenerateDocumentationFile>
                       <NoWarn>$(NoWarn);1591</NoWarn>
@@ -142,21 +147,26 @@ namespace MovieManagement.Server
 
             //Enable role based and policy based authorization
             builder.Services.AddAuthorization();
-            
+
+            // Đăng ký VnPayService
+            builder.Services.AddSingleton<IVnPayService, VnPayService>();
+
             builder.Services.Configure<RouteOptions>(options =>
             {
-                options.LowercaseUrls = true;  // Forces lowercase routes
+                options.LowercaseUrls = true; // Forces lowercase routes
             });
             builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; // Added missing assignment
-            })
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme =
+                        JwtBearerDefaults.AuthenticationScheme; // Added missing assignment
+                })
                 .AddCookie()
                 .AddGoogle(options =>
                 {
                     options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-                    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                    options.ClientSecret =
+                        builder.Configuration["Authentication:Google:ClientSecret"];
                     options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
                     options.SaveTokens = true;
                 });
@@ -194,6 +204,7 @@ namespace MovieManagement.Server
             {
                 app.UseDeveloperExceptionPage();
             }
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -201,6 +212,13 @@ namespace MovieManagement.Server
             app.UseCors("AllowReactApp");
 
             app.MapFallbackToFile("/index.html");
+            app.UseHttpsRedirection();
+
+            // Add the ExceptionHandlerMiddleware to the pipeline
+            // comment lai doan code phia duoi neu chuong khong doc duoc loi tu swagger
+            // ===============================================
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
+            // ===============================================
 
             app.Run();
         }
