@@ -67,7 +67,7 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("PhuocConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
 
             // Đăng ký UnitOfWork
@@ -155,21 +155,21 @@ namespace MovieManagement.Server
             {
                 options.LowercaseUrls = true; // Forces lowercase routes
             });
-            builder.Services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme =
-                        JwtBearerDefaults.AuthenticationScheme; // Added missing assignment
-                })
-                .AddCookie()
-                .AddGoogle(options =>
-                {
-                    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-                    options.ClientSecret =
-                        builder.Configuration["Authentication:Google:ClientSecret"];
-                    options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
-                    options.SaveTokens = true;
-                });
+            //builder.Services.AddAuthentication(options =>
+            //    {
+            //        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //        options.DefaultChallengeScheme =
+            //            JwtBearerDefaults.AuthenticationScheme; // Added missing assignment
+            //    })
+            //    .AddCookie()
+            //    .AddGoogle(options =>
+            //    {
+            //        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+            //        options.ClientSecret =
+            //            builder.Configuration["Authentication:Google:ClientSecret"];
+            //        options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
+            //        options.SaveTokens = true;
+            //    });
 
             var app = builder.Build();
 

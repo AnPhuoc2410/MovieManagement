@@ -1,6 +1,7 @@
 ﻿using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Services.BillService
 {
@@ -12,6 +13,6 @@ namespace MovieManagement.Server.Services.BillService
         public Task<BillDto> CreateBillAsync(Guid userId, BillRequest billRequest);
         public Task<BillDto> UpdateBillAsync(Guid billId, BillRequest billRequest);
         public Task<bool> DeleteBillAsync(Guid billId);
-        public Task<IEnumerable<PurchasedTicketDto>> GetPurchasedTicketsAsync(Guid userId); 
+        public Task<IEnumerable<PurchasedTicketResponse>> GetPurchasedTicketsAsync(Guid userId); 
     }
 }

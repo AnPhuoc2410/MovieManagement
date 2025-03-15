@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.BillService;
+using MovieManagement.Server.Services.EmailService;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MovieManagement.Server.Controllers
@@ -14,10 +16,12 @@ namespace MovieManagement.Server.Controllers
     public class BillController : Controller
     {
         private readonly IBillService _billService;
+        private readonly IEmailService _emailService;
 
-        public BillController(IBillService billService)
+        public BillController(IBillService billService, IEmailService emailService)
         {
             _billService = billService;
+            _emailService = emailService;
         }
 
 
@@ -252,6 +256,13 @@ namespace MovieManagement.Server.Controllers
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
+        }
+
+        [HttpPost("send/bill")]
+        public async Task<ActionResult<bool>> GetBillByEmail(BillReportRequest request)
+        {
+            var result = await _emailService.SendEmailReportBill(request);
+            return Ok();
         }
 
         [HttpPost]

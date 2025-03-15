@@ -7,6 +7,7 @@ using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.Enums;
 using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Services.BillService
 {
@@ -109,14 +110,14 @@ namespace MovieManagement.Server.Services.BillService
                 throw new Exception("Couldn't access into database due to systems error.", ex);
             }
         }
-        public async Task<IEnumerable<PurchasedTicketDto>> GetPurchasedTicketsAsync(Guid userId)
+        public async Task<IEnumerable<PurchasedTicketResponse>> GetPurchasedTicketsAsync(Guid userId)
         {
             try
             {
                 var bill = _unitOfWork.BillRepository.GetPurchasedTickets(userId);
                 if (bill == null)
                     throw new NotFoundException("Bill of user is not found!");
-                return (IEnumerable<PurchasedTicketDto>)bill;
+                return (IEnumerable<PurchasedTicketResponse>)bill;
             }
             catch (Exception ex)
             {
