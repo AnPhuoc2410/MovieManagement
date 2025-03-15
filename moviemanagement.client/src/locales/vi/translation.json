@@ -130,6 +130,29 @@
         "description": "Bạn có chắc chắn muốn đăng xuất?",
         "cancel": "Hủy",
         "confirm": "Xác nhận"
+      },
+      "forgot_password": {
+        "title": "Quên Mật Khẩu",
+        "reset_title": "Đặt Lại Mật Khẩu",
+        "email_label": "Email",
+        "new_password": "Mật khẩu mới",
+        "confirm_password": "Xác nhận mật khẩu",
+        "send_link": "Gửi Link Đặt Lại",
+        "reset_button": "Đặt Lại Mật Khẩu",
+        "validation": {
+          "email_required": "Vui lòng nhập email",
+          "email_invalid": "Email không hợp lệ",
+          "password_required": "Vui lòng nhập mật khẩu",
+          "password_length": "Mật khẩu phải có ít nhất 8 ký tự",
+          "passwords_match": "Mật khẩu không khớp",
+          "confirm_required": "Vui lòng xác nhận mật khẩu"
+        },
+        "toast": {
+          "email_sent": "Đã gửi email xác nhận!",
+          "email_failed": "Không thể gửi email xác nhận",
+          "reset_success": "Đặt lại mật khẩu thành công!",
+          "reset_failed": "Đặt lại mật khẩu thất bại"
+        }
       }
     },
     "user": {

@@ -131,6 +131,29 @@
         "description": "Are you sure you want to logout?",
         "cancel": "Cancel",
         "confirm": "Confirm"
+      },
+      "forgot_password": {
+        "title": "Forgot Password",
+        "reset_title": "Reset Password",
+        "email_label": "Email",
+        "new_password": "New Password",
+        "confirm_password": "Confirm Password",
+        "send_link": "Send Reset Link",
+        "reset_button": "Reset Password",
+        "validation": {
+          "email_required": "Email is required",
+          "email_invalid": "Invalid email format",
+          "password_required": "Password is required",
+          "password_length": "Password must be at least 8 characters",
+          "passwords_match": "Passwords must match",
+          "confirm_required": "Please confirm your password"
+        },
+        "toast": {
+          "email_sent": "Verification email sent!",
+          "email_failed": "Failed to send verification email",
+          "reset_success": "Password reset successfully!",
+          "reset_failed": "Failed to reset password"
+        }
       }
     },
     "user": {

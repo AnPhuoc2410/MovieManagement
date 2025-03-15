@@ -29,7 +29,11 @@ import { useNavigate } from "react-router-dom";
 import LanguageSelector from "../common/LanguageSelector";
 import { useAuth } from "../../contexts/AuthContext";
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  isTransparent?: boolean;
+}
+
+const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
   const { isAuthenticated, authLogout, userDetails } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -71,7 +75,11 @@ const Header: React.FC = () => {
     <AppBar
       position="fixed"
       sx={{
-        backgroundColor: scrolled ? "rgba(0, 0, 0, 0.8)" : "transparent",
+        backgroundColor: scrolled
+          ? "rgba(0, 0, 0, 0.8)"
+          : isTransparent
+            ? "transparent"
+            : "#000",
         backdropFilter: scrolled ? "blur(8px)" : "none",
         boxShadow: scrolled ? 2 : "none",
         transition: "all 0.3s ease-in-out",
