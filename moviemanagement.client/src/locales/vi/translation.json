@@ -220,6 +220,24 @@
           "update": "Cập nhật",
           "cancel": "Hủy"
         }
+      },
+      "table_header": {
+        "user": {
+          "username": "Tài khoản",
+          "fullname": "Họ và tên",
+          "email": "Email",
+          "phone": "Số điện thoại",
+          "status": "Trạng thái",
+          "join_date": "Ngày tham gia",
+          "points": "Điểm thưởng"
+        },
+        "actions": "Hành động"
+      }
+    },
+    "toast": {
+      "employee": {
+        "deleteSuccess": "Xóa thành viên thành công",
+        "deleteFailed": "Xóa thành viên thất bại"
       }
     }
   }

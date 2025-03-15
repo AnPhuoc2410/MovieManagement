@@ -215,12 +215,31 @@
       "payment": "Payment",
       "success": "Success"
     },
+
     "common": {
       "button": {
         "action": {
           "update": "Update",
           "cancel": "Cancel"
         }
+      },
+      "table_header": {
+        "user": {
+          "username": "Username",
+          "fullname": "Full Name",
+          "email": "Email",
+          "phone": "Phone Number",
+          "status": "Status",
+          "join_date": "Join Date",
+          "points": "Points"
+        },
+        "actions": "Actions"
+      }
+    },
+    "toast": {
+      "employee": {
+        "deleteSuccess": "Employee deleted successfully",
+        "deleteFailed": "Employee deletion failed"
       }
     }
   }

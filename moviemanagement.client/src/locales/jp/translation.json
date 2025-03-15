@@ -220,6 +220,24 @@
           "update": "更新",
           "cancel": "キャンセル"
         }
+      },
+      "table_header": {
+        "user": {
+          "username": "ユーザー名",
+          "fullname": "氏名",
+          "email": "メール",
+          "phone": "電話番号",
+          "status": "ステータス",
+          "join_date": "参加日",
+          "points": "ボーナスポイント"
+        },
+        "actions": "アクション"
+      }
+    },
+    "toast": {
+      "employee": {
+        "deleteSuccess": "メンバーの削除に成功しました",
+        "deleteFailed": "メンバーの削除に失敗しました"
       }
     }
   }

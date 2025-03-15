@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 import { doInActiveUser, fetchUserByRole, Role } from "../../../apis/user.apis";
 import ManagementTable, {
   ColumnDef,
@@ -13,6 +14,7 @@ import { useQuery } from "react-query";
 
 const QuanLiNhanVien: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [selectedEmployee, setSelectedEmployee] = useState<UserResponse | null>(
     null,
   );
@@ -41,9 +43,7 @@ const QuanLiNhanVien: React.FC = () => {
     }
   }, [error]);
 
-  const handleEdit = (id: string) => {
-    navigate(`/admin/ql-nhan-vien/${id}`);
-  };
+  const handleEdit = (id: string) => navigate(`/admin/ql-nhan-vien/${id}`);
 
   const handleDelete = (id: string) => {
     const employeeToDelete = employees?.find((emp) => emp.userId === id);
@@ -58,21 +58,23 @@ const QuanLiNhanVien: React.FC = () => {
       try {
         const res = await doInActiveUser(selectedEmployee.userId);
         if (res) {
-          toast.success("Employee deleted successfully");
+          toast.success(t("toast.employee.deleteSuccess"));
         }
       } catch (error) {
-        toast.error("Failed to delete employee");
+        toast.error(t("toast.employee.deleteFailed"));
       }
     }
     setIsDeleteDialogOpen(false);
     setSelectedEmployee(null);
   };
 
+  // Define columns with translation keys
   const columns: ColumnDef<UserResponse>[] = [
     ...defaultUserColumns,
     {
       field: "joinDate",
-      headerName: "Join Date",
+      headerName: "Join Date", // Fallback text
+      translationKey: "common.table_header.user.join_date",
       align: "center",
       renderCell: (item) => new Date(item.joinDate).toLocaleDateString(),
     },
@@ -86,6 +88,12 @@ const QuanLiNhanVien: React.FC = () => {
         onEdit={handleEdit}
         onDelete={handleDelete}
         isLoading={isLoading}
+        actionColumn={{
+          align: "center",
+          headerName: "Actions",
+          translationKey: "common.table_header.actions",
+          width: "120px",
+        }}
       />
 
       <XoaNhanVien
