@@ -1,8 +1,9 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { getCookie } from "../utils/cookieUtils.ts";
+import { ENV } from "../env/env.config.ts";
 
 const api = axios.create({
-  baseURL: "https://localhost:7119/api/",
+  baseURL: ENV.API_URL,
   withCredentials: false, // Include credentials with requests
 });
 

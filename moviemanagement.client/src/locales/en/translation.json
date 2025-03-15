@@ -107,6 +107,18 @@
           "signup": "Sign Up",
           "processing": "Processing..."
         },
+        "validation": {
+          "fullname_required": "Full Name is required",
+          "birthdate_required": "Date of Birth is required",
+          "gender_required": "Gender is required",
+          "id_card_required": "ID Card is required",
+          "email": {
+            "required": "Email is required",
+            "invalid": "Email is invalid"
+          },
+          "address_required": "Address is required",
+          "phone_required": "Phone Number is required"
+        },
         "have_account": "Already have an account?",
         "login_link": "Login now"
       },
@@ -138,6 +150,7 @@
         "male": "Male",
         "female": "Female",
         "email": "Email",
+        "username": "Username",
         "id_card": "ID Card",
         "phone": "Phone Number",
         "address": "Address"
@@ -166,11 +179,11 @@
       }
     },
     "showtime_cinema": {
-      "title":{
-        "showtime_list" : "Showtime a Theaters",
-        "now_day" : "Now Day",
-        "theater_list" : "Theater list",
-        "no_showtime" : "No showtime"
+      "title": {
+        "showtime_list": "Showtime a Theaters",
+        "now_day": "Now Day",
+        "theater_list": "Theater list",
+        "no_showtime": "No showtime"
       },
       "location": {
         "HaNoi": "Ha Noi",

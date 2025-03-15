@@ -72,6 +72,21 @@ namespace MovieManagement.Server.Repositories
                 .FirstOrDefault();
         }
 
+        public bool IsExistingUsernameOrPhone(string username, string phone, Guid? excludeUserId = null)
+        {
+            var query = _context.Users
+                .Where(user =>  user.UserName == username || 
+                                user.PhoneNumber == phone);
+    
+            if (excludeUserId.HasValue)
+            {
+                query = query.Where(user => user.UserId != excludeUserId.Value);
+            }
+    
+            var user = query.OrderBy(user => user.JoinDate).LastOrDefault();
+            return user != null;
+        }
+        
         public bool IsExistingEmailOrUsernameOrPhoneOrIdNumber(string email, string username, string phone,
             string idNumber, Guid? excludeUserId = null)
         {

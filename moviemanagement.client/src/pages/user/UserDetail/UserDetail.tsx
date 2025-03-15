@@ -42,6 +42,7 @@ import { UserProfile } from "../../../types/users.type";
 import Header from "../../../components/home/Header";
 import Footer from "../../../components/home/Footer";
 import { useTranslation } from "react-i18next";
+import InputComponent from "../../../components/common/InputComponent";
 
 export default function UserDetail() {
   const { userId } = useParams();
@@ -56,6 +57,7 @@ export default function UserDetail() {
   const [successMessage, setSuccessMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const { t } = useTranslation();
+  const [passwordError, setPasswordError] = useState("");
 
   const [passwords, setPasswords] = useState({
     oldPassword: "",
@@ -72,6 +74,7 @@ export default function UserDetail() {
     phoneNumber: "",
     address: "",
     point: 0,
+    userName: "",
     ticket: {
       history: [],
       data: [],
@@ -89,6 +92,7 @@ export default function UserDetail() {
         phoneNumber: userDetails.phoneNumber,
         address: userDetails.address,
         point: userDetails.point,
+        userName: userDetails.userName,
         ticket: {
           history: [],
           data: [],
@@ -133,7 +137,24 @@ export default function UserDetail() {
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswords({ ...passwords, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setPasswords((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (name === "confirmPassword" || name === "newPassword") {
+      if (name === "confirmPassword" && value !== passwords.newPassword) {
+        setPasswordError("Mật khẩu không khớp");
+      } else if (
+        name === "newPassword" &&
+        value !== passwords.confirmPassword
+      ) {
+        setPasswordError("Mật khẩu không khớp");
+      } else {
+        setPasswordError("");
+      }
+    }
   };
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -441,31 +462,41 @@ export default function UserDetail() {
                       sx={{ mb: 2 }}
                     >
                       <FormControlLabel
-                        value="male"
+                        value="0"
                         control={<Radio />}
                         label={t("user.field.male")}
                       />
                       <FormControlLabel
-                        value="female"
+                        value="1"
                         control={<Radio />}
                         label={t("user.field.female")}
                       />
                     </RadioGroup>
-                    <TextField
+                    <InputComponent
                       label={t("user.field.email")}
                       name="email"
                       value={profile.email}
                       onChange={handleProfileChange}
                       fullWidth
                       sx={{ mb: 2 }}
+                      inputProps={{ readOnly: true }}
                     />
                     <TextField
+                      label={t("user.field.username")}
+                      name="userName"
+                      value={profile.userName}
+                      onChange={handleProfileChange}
+                      fullWidth
+                      sx={{ mb: 2 }}
+                    />
+                    <InputComponent
                       label={t("user.field.id_card")}
                       name="idCard"
                       value={profile.idCard}
                       onChange={handleProfileChange}
                       fullWidth
                       sx={{ mb: 2 }}
+                      inputProps={{ readOnly: true }}
                     />
                     <TextField
                       label={t("user.field.phone")}
@@ -639,40 +670,16 @@ export default function UserDetail() {
                   </Box>
                 )}
 
-                {tabValue === 3 && (
+                {userDetails?.role !== 2 && tabValue === 3 && (
                   <Box sx={{ mt: 3 }}>
-                    <TextField
-                      label="Mật khẩu cũ"
-                      type={showPassword.old ? "text" : "password"}
-                      name="oldPassword"
-                      value={passwords.oldPassword}
-                      onChange={handlePasswordChange}
-                      fullWidth
-                      sx={{ mb: 2 }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={() =>
-                                handleTogglePasswordVisibility("old")
-                              }
-                            >
-                              {showPassword.old ? (
-                                <Visibility />
-                              ) : (
-                                <VisibilityOff />
-                              )}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
                     <TextField
                       label="Mật khẩu mới"
                       type={showPassword.new ? "text" : "password"}
                       name="newPassword"
                       value={passwords.newPassword}
                       onChange={handlePasswordChange}
+                      error={!!passwordError}
+                      helperText={passwordError}
                       fullWidth
                       sx={{ mb: 2 }}
                       InputProps={{
@@ -699,6 +706,8 @@ export default function UserDetail() {
                       name="confirmPassword"
                       value={passwords.confirmPassword}
                       onChange={handlePasswordChange}
+                      error={!!passwordError} // Show error state if there's an error
+                      helperText={passwordError} // Show error message
                       fullWidth
                       sx={{ mb: 2 }}
                       InputProps={{

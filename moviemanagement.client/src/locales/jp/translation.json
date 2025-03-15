@@ -106,6 +106,18 @@
           "signup": "登録",
           "processing": "処理中..."
         },
+        "validation": {
+          "fullname_required": "氏名を入力してください",
+          "birthdate_required": "生年月日を入力してください",
+          "gender_required": "性別を選択してください",
+          "id_card_required": "身分証明書を入力してください",
+          "email": {
+            "required": "メールアドレスを入力してください",
+            "invalid": "メールアドレスが無効です"
+          },
+          "address_required": "住所を入力してください",
+          "phone_required": "電話番号を入力してください"
+        },
         "have_account": "すでにアカウントをお持ちの方",
         "login_link": "ログインする"
       },
@@ -137,6 +149,7 @@
         "male": "男性",
         "female": "女性",
         "email": "メールアドレス",
+        "username": "ユーザー名",
         "id_card": "身分証明書",
         "phone": "電話番号",
         "address": "住所"
@@ -165,11 +178,11 @@
       }
     },
     "showtime_cinema": {
-      "title":{
-        "showtime_list" : "上映時間と劇場",
-        "now_day" : "今日",
-        "theater_list" : "劇場一覧",
-        "no_showtime" : "上映時間がありません"
+      "title": {
+        "showtime_list": "上映時間と劇場",
+        "now_day": "今日",
+        "theater_list": "劇場一覧",
+        "no_showtime": "上映時間がありません"
       },
       "location": {
         "HaNoi": "ハノイ",

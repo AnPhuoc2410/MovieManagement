@@ -15,7 +15,7 @@ namespace MovieManagement.Server.Services.UserService
         Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page, int pageSize);
         Task<List<UserDto.UserResponse>> GetUserByRoleAsync(Role role);
         Task UpdateUserAsync(Guid id, UserDto.UpdateRequest updateRequest);
-        Task<bool> ChangeUserPasswordByUserId(Guid userId, string currentPassword, string newPassword);
+        Task ChangeUserPasswordByUserId(Guid userId, string currentPassword, string newPassword);
         Task<bool> DeleteUserAsync(Guid id);
 
 

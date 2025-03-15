@@ -18,6 +18,10 @@ namespace MovieManagement.Server.Repositories.IRepositories
             string phone,
             string idNumber, Guid? excludeUserId = null);
 
+        bool IsExistingUsernameOrPhone(string username,
+            string phone,
+            Guid? excludeUserId = null);
+        
     }
 
 }

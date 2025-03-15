@@ -26,7 +26,7 @@ namespace MovieManagement.Server.Services.UserService
             _mapper = mapper;
         }
 
-        public async Task<bool> ChangeUserPasswordByUserId(Guid userId, string currentPassword,
+        public async Task ChangeUserPasswordByUserId(Guid userId, string currentPassword,
             string newPassword)
         {
                 //Checking userId is existing
@@ -44,7 +44,7 @@ namespace MovieManagement.Server.Services.UserService
 
                 //Verify password
                 var verificationResult =
-                    passwordHasher.VerifyHashedPassword(user, user.Password, currentPassword);
+                    new PasswordHasher<User>().VerifyHashedPassword(user, user.Password, currentPassword);
                 Console.WriteLine($"Verification Result: {verificationResult}");
                 if (verificationResult == PasswordVerificationResult.Failed)
                     throw new Exception("Current password is incorrect.");
@@ -58,8 +58,6 @@ namespace MovieManagement.Server.Services.UserService
                         user.Password, newPassword);
                 if (updatedUser == null)
                     throw new Exception("Failed to change password.");
-
-                return updatedUser;
         }
 
         public async Task<bool> RegisterWithGoogle(OAuthRequest account)
@@ -144,17 +142,13 @@ namespace MovieManagement.Server.Services.UserService
                                ?? throw new NotFoundException($"User with ID {id} not found!");
 
             // Only check for uniqueness if any of the unique fields are being changed
-            if (userDto.Email != existingUser.Email || 
-                userDto.UserName != existingUser.UserName || 
-                userDto.PhoneNumber != existingUser.PhoneNumber || 
-                userDto.IDCard != existingUser.IDCard)
+            if (userDto.UserName != existingUser.UserName || 
+                userDto.PhoneNumber != existingUser.PhoneNumber)
             {
                 // Use the existing method with the excludeUserId parameter
-                bool isDuplicate = _unitOfWork.UserRepository.IsExistingEmailOrUsernameOrPhoneOrIdNumber(
-                    userDto.Email, 
+                bool isDuplicate = _unitOfWork.UserRepository.IsExistingUsernameOrPhone(
                     userDto.UserName, 
                     userDto.PhoneNumber, 
-                    userDto.IDCard,
                     excludeUserId: id);
             
                 if (isDuplicate)
