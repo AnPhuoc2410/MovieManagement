@@ -55,19 +55,20 @@ interface ManagementTableProps<T extends TableData> {
 // Default user columns that can be reused - now with translation keys
 export const defaultUserColumns: ColumnDef<UserResponse>[] = [
   {
-    field: "avatar",
-    headerName: "",
-    align: "center",
-    width: "80px",
-    renderCell: (item) => (
-      <Avatar src={item.avatar || "/default-avatar.png"} alt={item.fullName} />
-    ),
-  },
-  {
     field: "userName",
     headerName: "Username",
     translationKey: "common.table_header.user.username",
     align: "left",
+    width: "200px",
+    renderCell: (item) => (
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <Avatar
+          src={item.avatar || "/default-avatar.png"}
+          alt={item.fullName}
+        />
+        <span>{item.userName}</span>
+      </div>
+    ),
   },
   {
     field: "fullName",

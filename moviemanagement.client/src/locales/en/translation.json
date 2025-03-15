@@ -142,7 +142,8 @@
         "history": "History",
         "change_password": "Change Password",
         "admin_panel": "Admin Panel",
-        "admin": "Admin"
+        "admin": "Admin",
+        "employee": "Employee"
       },
       "field": {
         "full_name": "Full Name",
@@ -241,6 +242,30 @@
         "deleteSuccess": "Employee deleted successfully",
         "deleteFailed": "Employee deletion failed"
       }
+    },
+    "menu": {
+      "home": "Home",
+      "memberManagement": "Member Management",
+      "employeeManagement": "Employee Management",
+      "ticketSales": "Ticket Sales",
+      "ticketBooking": "Ticket Booking",
+      "screeningRooms": "Screening Rooms",
+      "movieManagement": "Movie Management",
+      "promotions": "Promotions",
+      "settings": "Settings",
+      "feedback": "Feedback",
+      "aboutUs": "About Us"
+    },
+    "breadcrumbs": {
+      "home": "Home",
+      "dashboard": "Dashboard",
+      "promotions": "Promotions",
+      "movies": "Movies",
+      "screeningRooms": "Screening Rooms",
+      "ticketBooking": "Ticket Booking",
+      "ticketSales": "Ticket Sales",
+      "employees": "Employees",
+      "members": "Members"
     }
   }
 }

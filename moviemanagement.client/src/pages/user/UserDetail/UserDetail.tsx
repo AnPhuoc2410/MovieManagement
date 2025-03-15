@@ -279,10 +279,11 @@ export default function UserDetail() {
                   {profile.fullName}
                 </Typography>
 
-                {userDetails?.role === 2 && (
+                {userDetails?.role === 2 || userDetails?.role === 1 ? (
                   <Box
                     sx={{
-                      bgcolor: "primary.dark",
+                      bgcolor:
+                        userDetails?.role === 2 ? "error.main" : "info.main",
                       color: "primary.contrastText",
                       borderRadius: 2,
                       py: 1,
@@ -293,27 +294,29 @@ export default function UserDetail() {
                     }}
                   >
                     <Typography variant="body2" fontWeight="medium">
-                      {t("user.profile.admin")}
+                      {userDetails?.role === 2
+                        ? t("user.profile.admin")
+                        : t("user.profile.employee")}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Box
+                    sx={{
+                      bgcolor: "primary.light",
+                      color: "primary.contrastText",
+                      borderRadius: 2,
+                      py: 1,
+                      px: 2,
+                      mb: 3,
+                      width: "100%",
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography variant="body2" fontWeight="medium">
+                      {t("user.profile.cumulative_points")}: {profile.point}
                     </Typography>
                   </Box>
                 )}
-
-                <Box
-                  sx={{
-                    bgcolor: "primary.light",
-                    color: "primary.contrastText",
-                    borderRadius: 2,
-                    py: 1,
-                    px: 2,
-                    mb: 3,
-                    width: "100%",
-                    textAlign: "center",
-                  }}
-                >
-                  <Typography variant="body2" fontWeight="medium">
-                    {t("user.profile.cumulative_points")}: {profile.point}
-                  </Typography>
-                </Box>
 
                 <Divider sx={{ width: "100%", mb: 2 }} />
 
@@ -338,65 +341,73 @@ export default function UserDetail() {
                     />{" "}
                   </ListItem>
 
-                  <ListItem
-                    button
-                    selected={tabValue === 1}
-                    onClick={() => setTabValue(1)}
-                    sx={{ borderRadius: 1, mb: 1 }}
-                  >
-                    <ListItemIcon>
-                      <AccountCircleIcon
-                        color={tabValue === 1 ? "primary" : "inherit"}
-                      />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={t("user.profile.history")}
-                      primaryTypographyProps={{
-                        fontWeight: tabValue === 1 ? "bold" : "normal",
-                        color: tabValue === 1 ? "primary" : "text.secondary",
-                      }}
-                    />{" "}
-                  </ListItem>
+                  {userDetails?.role === 0 && (
+                    <>
+                      <ListItem
+                        button
+                        selected={tabValue === 1}
+                        onClick={() => setTabValue(1)}
+                        sx={{ borderRadius: 1, mb: 1 }}
+                      >
+                        <ListItemIcon>
+                          <AccountCircleIcon
+                            color={tabValue === 1 ? "primary" : "inherit"}
+                          />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={t("user.profile.history")}
+                          primaryTypographyProps={{
+                            fontWeight: tabValue === 1 ? "bold" : "normal",
+                            color:
+                              tabValue === 1 ? "primary" : "text.secondary",
+                          }}
+                        />{" "}
+                      </ListItem>
 
-                  <ListItem
-                    button
-                    selected={tabValue === 2}
-                    onClick={() => setTabValue(2)}
-                    sx={{ borderRadius: 1, mb: 1 }}
-                  >
-                    <ListItemIcon>
-                      <AccountCircleIcon
-                        color={tabValue === 2 ? "primary" : "inherit"}
-                      />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={t("user.profile.booked_tickets")}
-                      primaryTypographyProps={{
-                        fontWeight: tabValue === 2 ? "bold" : "normal",
-                        color: tabValue === 2 ? "primary" : "text.secondary",
-                      }}
-                    />{" "}
-                  </ListItem>
+                      <ListItem
+                        button
+                        selected={tabValue === 2}
+                        onClick={() => setTabValue(2)}
+                        sx={{ borderRadius: 1, mb: 1 }}
+                      >
+                        <ListItemIcon>
+                          <AccountCircleIcon
+                            color={tabValue === 2 ? "primary" : "inherit"}
+                          />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={t("user.profile.booked_tickets")}
+                          primaryTypographyProps={{
+                            fontWeight: tabValue === 2 ? "bold" : "normal",
+                            color:
+                              tabValue === 2 ? "primary" : "text.secondary",
+                          }}
+                        />{" "}
+                      </ListItem>
+                    </>
+                  )}
 
-                  <ListItem
-                    button
-                    selected={tabValue === 3}
-                    onClick={() => setTabValue(3)}
-                    sx={{ borderRadius: 1, mb: 1 }}
-                  >
-                    <ListItemIcon>
-                      <LockIcon
-                        color={tabValue === 3 ? "primary" : "inherit"}
+                  {userDetails?.role !== 2 && (
+                    <ListItem
+                      button
+                      selected={tabValue === 3}
+                      onClick={() => setTabValue(3)}
+                      sx={{ borderRadius: 1, mb: 1 }}
+                    >
+                      <ListItemIcon>
+                        <LockIcon
+                          color={tabValue === 3 ? "primary" : "inherit"}
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={t("user.profile.change_password")}
+                        primaryTypographyProps={{
+                          fontWeight: tabValue === 3 ? "bold" : "normal",
+                          color: tabValue === 3 ? "primary" : "text.secondary",
+                        }}
                       />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={t("user.profile.change_password")}
-                      primaryTypographyProps={{
-                        fontWeight: tabValue === 3 ? "bold" : "normal",
-                        color: tabValue === 3 ? "primary" : "text.secondary",
-                      }}
-                    />
-                  </ListItem>
+                    </ListItem>
+                  )}
 
                   <ListItem
                     button
@@ -430,9 +441,15 @@ export default function UserDetail() {
                   variant="fullWidth"
                 >
                   <Tab label={t("user.profile.account_info")} />
-                  <Tab label={t("user.profile.history")} />
-                  <Tab label={t("user.profile.booked_tickets")} />
-                  <Tab label={t("user.profile.change_password")} />
+                  {userDetails?.role === 0 && (
+                    <>
+                      <Tab label={t("user.profile.history")} />
+                      <Tab label={t("user.profile.booked_tickets")} />
+                    </>
+                  )}
+                  {userDetails?.role !== 2 && (
+                    <Tab label={t("user.profile.change_password")} />
+                  )}
                 </Tabs>
 
                 {/* Tab Panels */}
@@ -528,7 +545,7 @@ export default function UserDetail() {
                 )}
 
                 {/* Lịch sử */}
-                {tabValue === 1 && (
+                {userDetails?.role === 0 && tabValue === 1 && (
                   <Box
                     sx={{
                       mt: 3,
@@ -627,7 +644,7 @@ export default function UserDetail() {
                 )}
 
                 {/* Vé đã đặt */}
-                {tabValue === 2 && (
+                {userDetails?.role === 0 && tabValue === 2 && (
                   <Box sx={{ mt: 3 }}>
                     <Table>
                       <TableHead>

@@ -141,7 +141,8 @@
         "history": "履歴",
         "change_password": "パスワード変更",
         "admin_panel": "管理者パネル",
-        "admin": "管理者"
+        "admin": "管理者",
+        "employee": "従業員"
       },
       "field": {
         "full_name": "氏名",
@@ -239,6 +240,30 @@
         "deleteSuccess": "メンバーの削除に成功しました",
         "deleteFailed": "メンバーの削除に失敗しました"
       }
+    },
+    "menu": {
+      "home": "ホーム",
+      "memberManagement": "会員管理",
+      "employeeManagement": "従業員管理",
+      "ticketSales": "チケット販売",
+      "ticketBooking": "チケット予約",
+      "screeningRooms": "スクリーニングルーム",
+      "movieManagement": "映画管理",
+      "promotions": "プロモーション",
+      "settings": "設定",
+      "feedback": "フィードバック",
+      "aboutUs": "私たちについて"
+    },
+    "breadcrumbs": {
+      "home": "ホーム",
+      "dashboard": "ダッシュボード",
+      "promotions": "プロモーション",
+      "movies": "映画",
+      "screeningRooms": "スクリーニングルーム",
+      "ticketBooking": "チケット予約",
+      "ticketSales": "チケット販売",
+      "employees": "従業員",
+      "members": "メンバー"
     }
   }
 }

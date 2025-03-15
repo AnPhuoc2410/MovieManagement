@@ -141,7 +141,8 @@
         "history": "Lịch sử",
         "change_password": "Đổi mật khẩu",
         "admin_panel": "Quản lí hệ thống",
-        "admin": "Quản trị viên"
+        "admin": "Quản trị viên",
+        "employee": "Nhân viên"
       },
       "field": {
         "full_name": "Họ và tên",
@@ -239,6 +240,30 @@
         "deleteSuccess": "Xóa thành viên thành công",
         "deleteFailed": "Xóa thành viên thất bại"
       }
+    },
+    "menu": {
+      "home": "Trang chủ",
+      "memberManagement": "Quản lý Thành viên",
+      "employeeManagement": "Quản lý Nhân viên",
+      "ticketSales": "Quản lý Bán vé",
+      "ticketBooking": "Quản lý Đặt vé",
+      "screeningRooms": "Quản lý Phòng chiếu",
+      "movieManagement": "Quản lý Phim",
+      "promotions": "Quản lý Khuyến mãi",
+      "settings": "Cài đặt",
+      "feedback": "Góp ý",
+      "aboutUs": "Về chúng tôi"
+    },
+    "breadcrumbs": {
+      "home": "Trang chủ",
+      "dashboard": "Thống kê",
+      "promotions": "Khuyến mãi",
+      "movies": "Phim",
+      "screeningRooms": "Phòng chiếu",
+      "ticketBooking": "Đặt vé",
+      "ticketSales": "Bán vé",
+      "employees": "Nhân viên",
+      "members": "Thành viên"
     }
   }
 }

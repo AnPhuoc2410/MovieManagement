@@ -1,4 +1,8 @@
-import { AccountCircleOutlined, FastfoodOutlined } from "@mui/icons-material";
+import {
+  AccountCircleOutlined,
+  AdminPanelSettings,
+  FastfoodOutlined,
+} from "@mui/icons-material";
 import LocalActivityOutlinedIcon from "@mui/icons-material/LocalActivityOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
@@ -271,9 +275,12 @@ const Header: React.FC = () => {
                       height: 32,
                       bgcolor: "#834bff",
                     }}
-                  >
-                    <PersonIcon fontSize="small" />
-                  </Avatar>
+                    src={
+                      userDetails?.avatar ||
+                      "https://images.dog.ceo/breeds/pembroke/n02113023_1258.jpg"
+                    }
+                    alt={userDetails?.fullName}
+                  />
                   <Typography>{t("user.profile.my_account")}</Typography>
                 </Box>
 
@@ -322,7 +329,7 @@ const Header: React.FC = () => {
                   </MenuItem>
                   {userDetails?.role === 2 && (
                     <MenuItem onClick={() => navigate("/admin/thong-ke")}>
-                      <PersonIcon fontSize="small" sx={{ mr: 2 }} />
+                      <AdminPanelSettings fontSize="small" sx={{ mr: 2 }} />
                       {t("user.profile.admin_panel")}
                     </MenuItem>
                   )}
@@ -330,17 +337,19 @@ const Header: React.FC = () => {
                     <SettingsIcon fontSize="small" sx={{ mr: 2 }} />
                     {t("user.profile.settings")}
                   </MenuItem>
-                  <MenuItem
-                    onClick={() =>
-                      navigate(`/users/profile/${userDetails?.userId}`)
-                    }
-                  >
-                    <LocalActivityOutlinedIcon
-                      fontSize="small"
-                      sx={{ mr: 2 }}
-                    />
-                    {t("user.profile.my_bookings")}
-                  </MenuItem>
+                  {userDetails?.role === 0 && (
+                    <MenuItem
+                      onClick={() =>
+                        navigate(`/users/profile/${userDetails?.userId}`)
+                      }
+                    >
+                      <LocalActivityOutlinedIcon
+                        fontSize="small"
+                        sx={{ mr: 2 }}
+                      />
+                      {t("user.profile.my_bookings")}
+                    </MenuItem>
+                  )}
                   <Divider />
                   <MenuItem onClick={handleLogout}>
                     <LogoutIcon fontSize="small" sx={{ mr: 2 }} />
