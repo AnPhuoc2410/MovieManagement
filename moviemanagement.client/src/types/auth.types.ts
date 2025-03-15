@@ -20,6 +20,7 @@ export type LoginResponse = {
   };
   statusCode: number;
   isSuccess: boolean;
+  reason: string | null;
 };
 
 export type LogoutRequest = {
@@ -45,3 +46,11 @@ export type SignupRequest = {
 };
 
 export type SignupResponse = ApiResponse<UserResponse>;
+
+export type ExtractTokenResponse = {
+  message: string;
+  statusCode: number;
+  reason: string | null;
+  isSuccess: boolean;
+  data: UserResponse;
+};

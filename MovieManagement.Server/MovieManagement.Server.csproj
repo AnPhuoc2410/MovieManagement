@@ -61,7 +61,6 @@
 
   <ItemGroup>
     <Folder Include="Constants\" />
-    <Folder Include="Exceptions\" />
   </ItemGroup>
 
 </Project>
