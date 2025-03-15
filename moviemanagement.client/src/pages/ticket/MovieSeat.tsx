@@ -1,5 +1,5 @@
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SeatCinema from "../../components/Ticket/SeatCinema";
 import StepTracker from "../../components/Ticket/StepTracker";
@@ -7,10 +7,13 @@ import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import toast from "react-hot-toast";
 import api from "../../apis/axios.config";
+import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
+
 
 const MovieSeat: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [connection, setConnection] = useState<HubConnection | null>(null);
   const { showTimeId, selectedTime, selectedDate, tickets } = location.state || {
     showTimeId: "",
     selectedTime: "Not selected",
@@ -22,6 +25,24 @@ const MovieSeat: React.FC = () => {
   const [selectedSeats, setSelectedSeats] = useState<
     { id: string; name: string; version: string; ticketId: string }[]
   >([]);
+
+  useEffect(() => {
+    const newConnection = new HubConnectionBuilder()
+      .withUrl('https://localhost:7119/seatSelectionHub') // Replace with your SignalR hub URL
+      .withAutomaticReconnect()
+      .build();
+
+    setConnection(newConnection);
+
+    newConnection
+      .start()
+      .then(() => console.log("Connected to SignalR"))
+      .catch((err) => console.error("SignalR Connection Error:", err));
+
+    return () => {
+      newConnection.stop();
+    };
+  }, []);
 
   // Calculate the total number of seats that should be selected based on ticket quantities
   const maxSeats = (tickets || []).reduce(
@@ -35,16 +56,27 @@ const MovieSeat: React.FC = () => {
       return;
     }
 
-    const checkoutPayload = selectedSeats.map((seat) => ({
-      ticketId: seat.ticketId,
-      version: seat.version,
-    }));
+    if (!connection) {
+      toast.error("Mất kết nối đến server!");
+      return;
+    }
 
     try {
+      const seatIds = selectedSeats.map((seat) => seat.id);
+
+      // Notify others that these seats are now "Pending"
+      await connection.invoke("SetSeatPending", seatIds);
+
+      const checkoutPayload = selectedSeats.map((seat) => ({
+        ticketId: seat.ticketId,
+        version: seat.version,
+      }));
+
       const response = await api.put("/ticketdetail/checkout", checkoutPayload);
 
       if (response.status === 200) {
         toast.success("Đặt chỗ thành công! Chuyển đến trang thanh toán...");
+
         navigate("/ticket/payment", {
           state: {
             selectedDate,
@@ -57,9 +89,11 @@ const MovieSeat: React.FC = () => {
         toast.error("Có lỗi xảy ra khi đặt chỗ. Vui lòng thử lại.");
       }
     } catch (error) {
+      console.error("Error when booking:", error);
       toast.error("Lỗi khi đặt chỗ! Có thể ghế đã được người khác chọn.");
     }
   };
+
 
   return (
     <Box
@@ -160,6 +194,7 @@ const MovieSeat: React.FC = () => {
                   showTimeId={showTimeId}
                   selectedSeats={selectedSeats}
                   setSelectedSeats={setSelectedSeats}
+                  connection={connection}
                 />
 
                 <Typography

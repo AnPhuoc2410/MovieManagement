@@ -34,7 +34,7 @@ namespace MovieManagement.Server.Data
             return connectionString;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
-            => optionsBuilder.UseSqlServer(GetConnectionString("LaazyConnection"));
+            => optionsBuilder.UseSqlServer(GetConnectionString("PhuocConnection"));
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

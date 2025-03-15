@@ -54,7 +54,7 @@ const MovieSlider = ({
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={20}
-        slidesPerView={1} // Default for small screens
+        slidesPerView={1}
         breakpoints={{
           480: { slidesPerView: 2 },
           768: { slidesPerView: 3 },
@@ -63,7 +63,7 @@ const MovieSlider = ({
         navigation
         pagination={{ clickable: true }}
         autoplay={{ delay: 3000 }}
-        loop
+        loop={movies.length > 4}
         style={{ width: "100%", paddingBottom: "20px" }}
       >
 
