@@ -20,6 +20,7 @@ import { login } from "../../../apis/auth.apis";
 import { useAuth } from "../../../contexts/AuthContext";
 import ReCAPTCHA from "react-google-recaptcha";
 import { ENV } from "../../../env/env.config";
+import { Link as RouterLink } from "react-router-dom";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -90,7 +91,9 @@ export const Login = () => {
             expires: tokenData.expires,
           });
 
-          toast.success(t("auth.login.welcome_message", { name: userDetails?.fullName }));
+          toast.success(
+            t("auth.login.welcome_message", { name: userDetails?.fullName }),
+          );
 
           // Navigate based on extracted role
           setTimeout(() => {
@@ -255,20 +258,17 @@ export const Login = () => {
           }
         />
 
-        <Link
-          href="#"
-          underline="hover"
-          sx={{
+        <RouterLink
+          to="/auth/forgot-password"
+          style={{
             fontSize: "0.875rem",
             color: "black",
+            textDecoration: "none",
             transition: "color 0.2s",
-            "&:hover": {
-              color: "#e6c300",
-            },
           }}
         >
           {t("auth.login.forgot_password")}
-        </Link>
+        </RouterLink>
       </Box>
 
       <Box sx={{ mb: 3 }}>

@@ -130,6 +130,29 @@
         "description": "ログアウトしますか？",
         "cancel": "キャンセル",
         "confirm": "確認"
+      },
+      "forgot_password": {
+        "title": "パスワードをお忘れの方",
+        "reset_title": "パスワードの再設定",
+        "email_label": "メールアドレス",
+        "new_password": "新しいパスワード",
+        "confirm_password": "パスワードの確認",
+        "send_link": "リセットリンクを送信",
+        "reset_button": "パスワードを再設定",
+        "validation": {
+          "email_required": "メールアドレスを入力してください",
+          "email_invalid": "メールアドレスの形式が正しくありません",
+          "password_required": "パスワードを入力してください",
+          "password_length": "パスワードは8文字以上である必要があります",
+          "passwords_match": "パスワードが一致しません",
+          "confirm_required": "パスワードの確認を入力してください"
+        },
+        "toast": {
+          "email_sent": "確認メールを送信しました！",
+          "email_failed": "確認メールの送信に失敗しました",
+          "reset_success": "パスワードの再設定が完了しました！",
+          "reset_failed": "パスワードの再設定に失敗しました"
+        }
       }
     },
     "user": {
