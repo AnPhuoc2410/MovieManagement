@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using MovieManagement.Server.Models.Entities;
 
 namespace MovieManagement.Server.Services.JwtService
 {
@@ -16,18 +17,16 @@ namespace MovieManagement.Server.Services.JwtService
         }
 
 
-        public string GenerateToken(Guid id, string userName, string role)
+        public string GenerateToken(User user)
         {
-
-
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new []
             {
-                new Claim(JwtRegisteredClaimNames.Sub, id.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, userName),
-                new Claim("Role", role.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.Email),
+                new Claim("Role", ((int)user.Role).ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 

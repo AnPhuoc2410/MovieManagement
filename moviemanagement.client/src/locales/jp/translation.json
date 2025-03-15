@@ -78,7 +78,11 @@
           "password_required": "パスワードを入力してください",
           "password_length": "パスワードは8文字以上である必要があります"
         },
-        "remember_me": "ログイン情報を保存"
+        "remember_me": "ログイン情報を保存",
+        "logging_in": "ログイン中...",
+        "captcha_required": "キャプチャ認証を完了してください",
+        "unexpected_error": "予期せぬエラーが発生しました",
+        "welcome_message": "お帰りなさい、{{name}}さん"
       },
       "signup": {
         "title": "新規登録",
@@ -106,6 +110,18 @@
           "signup": "登録",
           "processing": "処理中..."
         },
+        "validation": {
+          "fullname_required": "氏名を入力してください",
+          "birthdate_required": "生年月日を入力してください",
+          "gender_required": "性別を選択してください",
+          "id_card_required": "身分証明書を入力してください",
+          "email": {
+            "required": "メールアドレスを入力してください",
+            "invalid": "メールアドレスが無効です"
+          },
+          "address_required": "住所を入力してください",
+          "phone_required": "電話番号を入力してください"
+        },
         "have_account": "すでにアカウントをお持ちの方",
         "login_link": "ログインする"
       },
@@ -129,7 +145,8 @@
         "history": "履歴",
         "change_password": "パスワード変更",
         "admin_panel": "管理者パネル",
-        "admin": "管理者"
+        "admin": "管理者",
+        "employee": "従業員"
       },
       "field": {
         "full_name": "氏名",
@@ -137,6 +154,7 @@
         "male": "男性",
         "female": "女性",
         "email": "メールアドレス",
+        "username": "ユーザー名",
         "id_card": "身分証明書",
         "phone": "電話番号",
         "address": "住所"
@@ -165,11 +183,11 @@
       }
     },
     "showtime_cinema": {
-      "title":{
-        "showtime_list" : "上映時間と劇場",
-        "now_day" : "今日",
-        "theater_list" : "劇場一覧",
-        "no_showtime" : "上映時間がありません"
+      "title": {
+        "showtime_list": "上映時間と劇場",
+        "now_day": "今日",
+        "theater_list": "劇場一覧",
+        "no_showtime": "上映時間がありません"
       },
       "location": {
         "HaNoi": "ハノイ",
@@ -207,7 +225,49 @@
           "update": "更新",
           "cancel": "キャンセル"
         }
+      },
+      "table_header": {
+        "user": {
+          "username": "ユーザー名",
+          "fullname": "氏名",
+          "email": "メール",
+          "phone": "電話番号",
+          "status": "ステータス",
+          "join_date": "参加日",
+          "points": "ボーナスポイント"
+        },
+        "actions": "アクション"
       }
+    },
+    "toast": {
+      "employee": {
+        "deleteSuccess": "メンバーの削除に成功しました",
+        "deleteFailed": "メンバーの削除に失敗しました"
+      }
+    },
+    "menu": {
+      "home": "ホーム",
+      "memberManagement": "会員管理",
+      "employeeManagement": "従業員管理",
+      "ticketSales": "チケット販売",
+      "ticketBooking": "チケット予約",
+      "screeningRooms": "スクリーニングルーム",
+      "movieManagement": "映画管理",
+      "promotions": "プロモーション",
+      "settings": "設定",
+      "feedback": "フィードバック",
+      "aboutUs": "私たちについて"
+    },
+    "breadcrumbs": {
+      "home": "ホーム",
+      "dashboard": "ダッシュボード",
+      "promotions": "プロモーション",
+      "movies": "映画",
+      "screeningRooms": "スクリーニングルーム",
+      "ticketBooking": "チケット予約",
+      "ticketSales": "チケット販売",
+      "employees": "従業員",
+      "members": "メンバー"
     }
   }
 }

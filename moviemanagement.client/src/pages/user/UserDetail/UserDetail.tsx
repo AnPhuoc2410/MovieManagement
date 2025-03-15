@@ -42,6 +42,8 @@ import { UserProfile } from "../../../types/users.type";
 import Header from "../../../components/home/Header";
 import Footer from "../../../components/home/Footer";
 import { useTranslation } from "react-i18next";
+import InputComponent from "../../../components/common/InputComponent";
+import { updateUserPartial } from "../../../apis/user.apis";
 
 export default function UserDetail() {
   const { userId } = useParams();
@@ -56,6 +58,7 @@ export default function UserDetail() {
   const [successMessage, setSuccessMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const { t } = useTranslation();
+  const [passwordError, setPasswordError] = useState("");
 
   const [passwords, setPasswords] = useState({
     oldPassword: "",
@@ -72,6 +75,8 @@ export default function UserDetail() {
     phoneNumber: "",
     address: "",
     point: 0,
+    userName: "",
+    avatar: "",
     ticket: {
       history: [],
       data: [],
@@ -89,6 +94,8 @@ export default function UserDetail() {
         phoneNumber: userDetails.phoneNumber,
         address: userDetails.address,
         point: userDetails.point,
+        userName: userDetails.userName,
+        avatar: userDetails.avatar,
         ticket: {
           history: [],
           data: [],
@@ -133,7 +140,24 @@ export default function UserDetail() {
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswords({ ...passwords, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setPasswords((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (name === "confirmPassword" || name === "newPassword") {
+      if (name === "confirmPassword" && value !== passwords.newPassword) {
+        setPasswordError("Mật khẩu không khớp");
+      } else if (
+        name === "newPassword" &&
+        value !== passwords.confirmPassword
+      ) {
+        setPasswordError("Mật khẩu không khớp");
+      } else {
+        setPasswordError("");
+      }
+    }
   };
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,7 +171,7 @@ export default function UserDetail() {
     });
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -162,10 +186,23 @@ export default function UserDetail() {
     });
   };
 
-  const handleUpdateProfile = () => {
-    // Simulating update action
-    setSuccessMessage("Thông tin tài khoản đã được cập nhật thành công!");
-    setShowSuccess(true);
+  const handleUpdateProfile = async (id: string) => {
+    try {
+      await updateUserPartial(id, {
+        fullName: profile.fullName,
+        birthDate: profile.birthDate,
+        avatar: profile.avatar,
+        gender: profile.gender,
+        email: profile.email,
+        phoneNumber: profile.phoneNumber,
+        address: profile.address,
+      });
+      setSuccessMessage("Thông tin tài khoản đã được cập nhật thành công!");
+      setShowSuccess(true);
+    } catch (error) {
+      setSuccessMessage("Cập nhật thông tin tài khoản thất bại!");
+      setShowSuccess(true);
+    }
   };
 
   const handleCloseSnackbar = () => {
@@ -258,10 +295,11 @@ export default function UserDetail() {
                   {profile.fullName}
                 </Typography>
 
-                {userDetails?.role === 2 && (
+                {userDetails?.role === 2 || userDetails?.role === 1 ? (
                   <Box
                     sx={{
-                      bgcolor: "primary.dark",
+                      bgcolor:
+                        userDetails?.role === 2 ? "error.main" : "info.main",
                       color: "primary.contrastText",
                       borderRadius: 2,
                       py: 1,
@@ -272,27 +310,29 @@ export default function UserDetail() {
                     }}
                   >
                     <Typography variant="body2" fontWeight="medium">
-                      {t("user.profile.admin")}
+                      {userDetails?.role === 2
+                        ? t("user.profile.admin")
+                        : t("user.profile.employee")}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Box
+                    sx={{
+                      bgcolor: "primary.light",
+                      color: "primary.contrastText",
+                      borderRadius: 2,
+                      py: 1,
+                      px: 2,
+                      mb: 3,
+                      width: "100%",
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography variant="body2" fontWeight="medium">
+                      {t("user.profile.cumulative_points")}: {profile.point}
                     </Typography>
                   </Box>
                 )}
-
-                <Box
-                  sx={{
-                    bgcolor: "primary.light",
-                    color: "primary.contrastText",
-                    borderRadius: 2,
-                    py: 1,
-                    px: 2,
-                    mb: 3,
-                    width: "100%",
-                    textAlign: "center",
-                  }}
-                >
-                  <Typography variant="body2" fontWeight="medium">
-                    {t("user.profile.cumulative_points")}: {profile.point}
-                  </Typography>
-                </Box>
 
                 <Divider sx={{ width: "100%", mb: 2 }} />
 
@@ -317,65 +357,71 @@ export default function UserDetail() {
                     />{" "}
                   </ListItem>
 
-                  <ListItem
-                    button
-                    selected={tabValue === 1}
-                    onClick={() => setTabValue(1)}
-                    sx={{ borderRadius: 1, mb: 1 }}
-                  >
-                    <ListItemIcon>
-                      <AccountCircleIcon
-                        color={tabValue === 1 ? "primary" : "inherit"}
-                      />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={t("user.profile.history")}
-                      primaryTypographyProps={{
-                        fontWeight: tabValue === 1 ? "bold" : "normal",
-                        color: tabValue === 1 ? "primary" : "text.secondary",
-                      }}
-                    />{" "}
-                  </ListItem>
+                  {userDetails?.role === 0 && (
+                    <ListItem
+                      button
+                      selected={tabValue === 1}
+                      onClick={() => setTabValue(1)}
+                      sx={{ borderRadius: 1, mb: 1 }}
+                    >
+                      <ListItemIcon>
+                        <AccountCircleIcon
+                          color={tabValue === 1 ? "primary" : "inherit"}
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={t("user.profile.history")}
+                        primaryTypographyProps={{
+                          fontWeight: tabValue === 1 ? "bold" : "normal",
+                          color: tabValue === 1 ? "primary" : "text.secondary",
+                        }}
+                      />{" "}
+                    </ListItem>
+                  )}
 
-                  <ListItem
-                    button
-                    selected={tabValue === 2}
-                    onClick={() => setTabValue(2)}
-                    sx={{ borderRadius: 1, mb: 1 }}
-                  >
-                    <ListItemIcon>
-                      <AccountCircleIcon
-                        color={tabValue === 2 ? "primary" : "inherit"}
-                      />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={t("user.profile.booked_tickets")}
-                      primaryTypographyProps={{
-                        fontWeight: tabValue === 2 ? "bold" : "normal",
-                        color: tabValue === 2 ? "primary" : "text.secondary",
-                      }}
-                    />{" "}
-                  </ListItem>
+                  {userDetails?.role === 0 && (
+                    <ListItem
+                      button
+                      selected={tabValue === 2}
+                      onClick={() => setTabValue(2)}
+                      sx={{ borderRadius: 1, mb: 1 }}
+                    >
+                      <ListItemIcon>
+                        <AccountCircleIcon
+                          color={tabValue === 2 ? "primary" : "inherit"}
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={t("user.profile.booked_tickets")}
+                        primaryTypographyProps={{
+                          fontWeight: tabValue === 2 ? "bold" : "normal",
+                          color: tabValue === 2 ? "primary" : "text.secondary",
+                        }}
+                      />{" "}
+                    </ListItem>
+                  )}
 
-                  <ListItem
-                    button
-                    selected={tabValue === 3}
-                    onClick={() => setTabValue(3)}
-                    sx={{ borderRadius: 1, mb: 1 }}
-                  >
-                    <ListItemIcon>
-                      <LockIcon
-                        color={tabValue === 3 ? "primary" : "inherit"}
+                  {userDetails?.role !== 2 && (
+                    <ListItem
+                      button
+                      selected={tabValue === 3}
+                      onClick={() => setTabValue(3)}
+                      sx={{ borderRadius: 1, mb: 1 }}
+                    >
+                      <ListItemIcon>
+                        <LockIcon
+                          color={tabValue === 3 ? "primary" : "inherit"}
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={t("user.profile.change_password")}
+                        primaryTypographyProps={{
+                          fontWeight: tabValue === 3 ? "bold" : "normal",
+                          color: tabValue === 3 ? "primary" : "text.secondary",
+                        }}
                       />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={t("user.profile.change_password")}
-                      primaryTypographyProps={{
-                        fontWeight: tabValue === 3 ? "bold" : "normal",
-                        color: tabValue === 3 ? "primary" : "text.secondary",
-                      }}
-                    />
-                  </ListItem>
+                    </ListItem>
+                  )}
 
                   <ListItem
                     button
@@ -409,9 +455,15 @@ export default function UserDetail() {
                   variant="fullWidth"
                 >
                   <Tab label={t("user.profile.account_info")} />
-                  <Tab label={t("user.profile.history")} />
-                  <Tab label={t("user.profile.booked_tickets")} />
-                  <Tab label={t("user.profile.change_password")} />
+                  {userDetails?.role === 0 && (
+                    <Tab label={t("user.profile.history")} />
+                  )}
+                  {userDetails?.role === 0 && (
+                    <Tab label={t("user.profile.booked_tickets")} />
+                  )}
+                  {userDetails?.role !== 2 && (
+                    <Tab label={t("user.profile.change_password")} />
+                  )}
                 </Tabs>
 
                 {/* Tab Panels */}
@@ -441,31 +493,41 @@ export default function UserDetail() {
                       sx={{ mb: 2 }}
                     >
                       <FormControlLabel
-                        value="male"
+                        value="0"
                         control={<Radio />}
                         label={t("user.field.male")}
                       />
                       <FormControlLabel
-                        value="female"
+                        value="1"
                         control={<Radio />}
                         label={t("user.field.female")}
                       />
                     </RadioGroup>
-                    <TextField
+                    <InputComponent
                       label={t("user.field.email")}
                       name="email"
                       value={profile.email}
                       onChange={handleProfileChange}
                       fullWidth
                       sx={{ mb: 2 }}
+                      inputProps={{ readOnly: true }}
                     />
                     <TextField
+                      label={t("user.field.username")}
+                      name="userName"
+                      value={profile.userName}
+                      onChange={handleProfileChange}
+                      fullWidth
+                      sx={{ mb: 2 }}
+                    />
+                    <InputComponent
                       label={t("user.field.id_card")}
                       name="idCard"
                       value={profile.idCard}
                       onChange={handleProfileChange}
                       fullWidth
                       sx={{ mb: 2 }}
+                      inputProps={{ readOnly: true }}
                     />
                     <TextField
                       label={t("user.field.phone")}
@@ -483,21 +545,26 @@ export default function UserDetail() {
                       fullWidth
                       sx={{ mb: 2 }}
                     />
-                    <Box sx={{ textAlign: "right" }}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<SaveIcon />}
-                        onClick={handleUpdateProfile}
-                      >
-                        {t("common.button.action.update")}
-                      </Button>
-                    </Box>
+                    {userDetails?.role !== 2 && (
+                      <Box sx={{ textAlign: "right" }}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          startIcon={<SaveIcon />}
+                          onClick={() =>
+                            userDetails?.userId &&
+                            handleUpdateProfile(userDetails.userId)
+                          }
+                        >
+                          {t("common.button.action.update")}
+                        </Button>
+                      </Box>
+                    )}
                   </Box>
                 )}
 
                 {/* Lịch sử */}
-                {tabValue === 1 && (
+                {userDetails?.role === 0 && tabValue === 1 && (
                   <Box
                     sx={{
                       mt: 3,
@@ -596,7 +663,7 @@ export default function UserDetail() {
                 )}
 
                 {/* Vé đã đặt */}
-                {tabValue === 2 && (
+                {userDetails?.role === 0 && tabValue === 2 && (
                   <Box sx={{ mt: 3 }}>
                     <Table>
                       <TableHead>
@@ -639,40 +706,16 @@ export default function UserDetail() {
                   </Box>
                 )}
 
-                {tabValue === 3 && (
+                {userDetails?.role !== 2 && tabValue === 3 && (
                   <Box sx={{ mt: 3 }}>
-                    <TextField
-                      label="Mật khẩu cũ"
-                      type={showPassword.old ? "text" : "password"}
-                      name="oldPassword"
-                      value={passwords.oldPassword}
-                      onChange={handlePasswordChange}
-                      fullWidth
-                      sx={{ mb: 2 }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={() =>
-                                handleTogglePasswordVisibility("old")
-                              }
-                            >
-                              {showPassword.old ? (
-                                <Visibility />
-                              ) : (
-                                <VisibilityOff />
-                              )}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
                     <TextField
                       label="Mật khẩu mới"
                       type={showPassword.new ? "text" : "password"}
                       name="newPassword"
                       value={passwords.newPassword}
                       onChange={handlePasswordChange}
+                      error={!!passwordError}
+                      helperText={passwordError}
                       fullWidth
                       sx={{ mb: 2 }}
                       InputProps={{
@@ -699,6 +742,8 @@ export default function UserDetail() {
                       name="confirmPassword"
                       value={passwords.confirmPassword}
                       onChange={handlePasswordChange}
+                      error={!!passwordError} // Show error state if there's an error
+                      helperText={passwordError} // Show error message
                       fullWidth
                       sx={{ mb: 2 }}
                       InputProps={{

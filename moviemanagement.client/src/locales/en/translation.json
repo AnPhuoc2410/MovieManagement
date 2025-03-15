@@ -79,7 +79,11 @@
           "password_required": "Password is required",
           "password_length": "Password must be at least 8 characters"
         },
-        "remember_me": "Remember me"
+        "remember_me": "Remember me",
+        "logging_in": "Logging in...",
+        "captcha_required": "Please complete the captcha verification",
+        "unexpected_error": "An unexpected error occurred",
+        "welcome_message": "Welcome back, {{name}}"
       },
       "signup": {
         "title": "Sign Up",
@@ -107,6 +111,18 @@
           "signup": "Sign Up",
           "processing": "Processing..."
         },
+        "validation": {
+          "fullname_required": "Full Name is required",
+          "birthdate_required": "Date of Birth is required",
+          "gender_required": "Gender is required",
+          "id_card_required": "ID Card is required",
+          "email": {
+            "required": "Email is required",
+            "invalid": "Email is invalid"
+          },
+          "address_required": "Address is required",
+          "phone_required": "Phone Number is required"
+        },
         "have_account": "Already have an account?",
         "login_link": "Login now"
       },
@@ -130,7 +146,8 @@
         "history": "History",
         "change_password": "Change Password",
         "admin_panel": "Admin Panel",
-        "admin": "Admin"
+        "admin": "Admin",
+        "employee": "Employee"
       },
       "field": {
         "full_name": "Full Name",
@@ -138,6 +155,7 @@
         "male": "Male",
         "female": "Female",
         "email": "Email",
+        "username": "Username",
         "id_card": "ID Card",
         "phone": "Phone Number",
         "address": "Address"
@@ -166,11 +184,11 @@
       }
     },
     "showtime_cinema": {
-      "title":{
-        "showtime_list" : "Showtime a Theaters",
-        "now_day" : "Now Day",
-        "theater_list" : "Theater list",
-        "no_showtime" : "No showtime"
+      "title": {
+        "showtime_list": "Showtime a Theaters",
+        "now_day": "Now Day",
+        "theater_list": "Theater list",
+        "no_showtime": "No showtime"
       },
       "location": {
         "HaNoi": "Ha Noi",
@@ -202,13 +220,56 @@
       "payment": "Payment",
       "success": "Success"
     },
+
     "common": {
       "button": {
         "action": {
           "update": "Update",
           "cancel": "Cancel"
         }
+      },
+      "table_header": {
+        "user": {
+          "username": "Username",
+          "fullname": "Full Name",
+          "email": "Email",
+          "phone": "Phone Number",
+          "status": "Status",
+          "join_date": "Join Date",
+          "points": "Points"
+        },
+        "actions": "Actions"
       }
+    },
+    "toast": {
+      "employee": {
+        "deleteSuccess": "Employee deleted successfully",
+        "deleteFailed": "Employee deletion failed"
+      }
+    },
+    "menu": {
+      "home": "Home",
+      "memberManagement": "Member Management",
+      "employeeManagement": "Employee Management",
+      "ticketSales": "Ticket Sales",
+      "ticketBooking": "Ticket Booking",
+      "screeningRooms": "Screening Rooms",
+      "movieManagement": "Movie Management",
+      "promotions": "Promotions",
+      "settings": "Settings",
+      "feedback": "Feedback",
+      "aboutUs": "About Us"
+    },
+    "breadcrumbs": {
+      "home": "Home",
+      "dashboard": "Dashboard",
+      "promotions": "Promotions",
+      "movies": "Movies",
+      "screeningRooms": "Screening Rooms",
+      "ticketBooking": "Ticket Booking",
+      "ticketSales": "Ticket Sales",
+      "employees": "Employees",
+      "members": "Members"
     }
   }
 }

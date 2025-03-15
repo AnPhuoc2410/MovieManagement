@@ -41,33 +41,21 @@ namespace MovieManagement.Server.Services.AuthorizationService
         public async Task<AuthDto.LoginResponse> Login(AuthDto.LoginRequest dto)
         {
             //Check user name
-            var user = await _userRepository.GetUserByEmailAsync(dto.Email);
-            if (user == null)
-            {
-                throw new UnauthorizedAccessException("Invalid username/email or password");
-            }
-
-            // Use PasswordHasher to verify the password
-            var passwordHasher = new PasswordHasher<User>();
-
-
+            var user = await _userRepository.GetUserByEmailAsync(dto.Email) ?? 
+                       throw new UnauthorizedAccessException("Invalid username/email or password");
+            
             //Check password
-            var result = passwordHasher.VerifyHashedPassword(user, user.Password, dto.Password);
+            var result = new PasswordHasher<User>().VerifyHashedPassword(user, user.Password, dto.Password);
             if (result == PasswordVerificationResult.Failed)
-            {
                 throw new UnauthorizedAccessException("Invalid username/email or password");
-            }
-
-            //Method create Token
-            var token = _jwtService.GenerateToken(user.UserId, user.UserName, user.Role.ToString());
-
-            var tokenResponse = new TokenDto.TokenResponse();
-            tokenResponse.AccessToken = token;
-            tokenResponse.Expires = DateTime.UtcNow.AddMinutes(60);
-
+            
             return new AuthDto.LoginResponse
             {
-                Token = tokenResponse
+                Token = new TokenDto.TokenResponse()
+                {
+                    AccessToken = _jwtService.GenerateToken(user),
+                    Expires = DateTime.UtcNow.AddMinutes(60)
+                }
             };
         }
 

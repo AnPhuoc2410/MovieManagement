@@ -78,7 +78,11 @@
           "password_required": "Mật khẩu không được để trống",
           "password_length": "Mật khẩu phải có ít nhất 8 ký tự"
         },
-        "remember_me": "Ghi nhớ đăng nhập"
+        "remember_me": "Ghi nhớ đăng nhập",
+        "logging_in": "Đang đăng nhập...",
+        "captcha_required": "Vui lòng xác thực captcha",
+        "unexpected_error": "Đã xảy ra lỗi không mong muốn",
+        "welcome_message": "Xin chào, {{name}}"
       },
       "signup": {
         "title": "Đăng ký tài khoản",
@@ -106,6 +110,18 @@
           "signup": "Đăng ký",
           "processing": "Đang xử lý..."
         },
+        "validation": {
+          "fullname_required": "Họ và tên không được để trống",
+          "birthdate_required": "Ngày sinh không được để trống",
+          "gender_required": "Giới tính không được để trống",
+          "id_card_required": "CMND không được để trống",
+          "email": {
+            "required": "Email không được để trống",
+            "invalid": "Email không hợp lệ"
+          },
+          "address_required": "Địa chỉ không được để trống",
+          "phone_required": "Số điện thoại không được để trống"
+        },
         "have_account": "Đã có tài khoản?",
         "login_link": "Đăng nhập ngay"
       },
@@ -129,7 +145,8 @@
         "history": "Lịch sử",
         "change_password": "Đổi mật khẩu",
         "admin_panel": "Quản lí hệ thống",
-        "admin": "Quản trị viên"
+        "admin": "Quản trị viên",
+        "employee": "Nhân viên"
       },
       "field": {
         "full_name": "Họ và tên",
@@ -137,6 +154,7 @@
         "male": "Nam",
         "female": "Nữ",
         "email": "Email",
+        "username": "Tài khoản",
         "id_card": "Số CMND",
         "phone": "Số điện thoại",
         "address": "Địa chỉ"
@@ -165,11 +183,11 @@
       }
     },
     "showtime_cinema": {
-      "title":{
-        "showtime_list" : "Lịch chiếu và Rạp",
-        "now_day" : "Hôm nay",
-        "theater_list" : "Danh sách rạp",
-        "no_showtime" : "Không có lịch chiếu"
+      "title": {
+        "showtime_list": "Lịch chiếu và Rạp",
+        "now_day": "Hôm nay",
+        "theater_list": "Danh sách rạp",
+        "no_showtime": "Không có lịch chiếu"
       },
       "location": {
         "HaNoi": "Hà Nội",
@@ -207,7 +225,49 @@
           "update": "Cập nhật",
           "cancel": "Hủy"
         }
+      },
+      "table_header": {
+        "user": {
+          "username": "Tài khoản",
+          "fullname": "Họ và tên",
+          "email": "Email",
+          "phone": "Số điện thoại",
+          "status": "Trạng thái",
+          "join_date": "Ngày tham gia",
+          "points": "Điểm thưởng"
+        },
+        "actions": "Hành động"
       }
+    },
+    "toast": {
+      "employee": {
+        "deleteSuccess": "Xóa thành viên thành công",
+        "deleteFailed": "Xóa thành viên thất bại"
+      }
+    },
+    "menu": {
+      "home": "Trang chủ",
+      "memberManagement": "Quản lý Thành viên",
+      "employeeManagement": "Quản lý Nhân viên",
+      "ticketSales": "Quản lý Bán vé",
+      "ticketBooking": "Quản lý Đặt vé",
+      "screeningRooms": "Quản lý Phòng chiếu",
+      "movieManagement": "Quản lý Phim",
+      "promotions": "Quản lý Khuyến mãi",
+      "settings": "Cài đặt",
+      "feedback": "Góp ý",
+      "aboutUs": "Về chúng tôi"
+    },
+    "breadcrumbs": {
+      "home": "Trang chủ",
+      "dashboard": "Thống kê",
+      "promotions": "Khuyến mãi",
+      "movies": "Phim",
+      "screeningRooms": "Phòng chiếu",
+      "ticketBooking": "Đặt vé",
+      "ticketSales": "Bán vé",
+      "employees": "Nhân viên",
+      "members": "Thành viên"
     }
   }
 }
