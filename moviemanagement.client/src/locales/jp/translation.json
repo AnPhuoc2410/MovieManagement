@@ -78,7 +78,11 @@
           "password_required": "パスワードを入力してください",
           "password_length": "パスワードは8文字以上である必要があります"
         },
-        "remember_me": "ログイン情報を保存"
+        "remember_me": "ログイン情報を保存",
+        "logging_in": "ログイン中...",
+        "captcha_required": "キャプチャ認証を完了してください",
+        "unexpected_error": "予期せぬエラーが発生しました",
+        "welcome_message": "お帰りなさい、{{name}}さん"
       },
       "signup": {
         "title": "新規登録",

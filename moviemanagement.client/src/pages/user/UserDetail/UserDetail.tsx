@@ -43,6 +43,7 @@ import Header from "../../../components/home/Header";
 import Footer from "../../../components/home/Footer";
 import { useTranslation } from "react-i18next";
 import InputComponent from "../../../components/common/InputComponent";
+import { updateUserPartial } from "../../../apis/user.apis";
 
 export default function UserDetail() {
   const { userId } = useParams();
@@ -75,6 +76,7 @@ export default function UserDetail() {
     address: "",
     point: 0,
     userName: "",
+    avatar: "",
     ticket: {
       history: [],
       data: [],
@@ -93,6 +95,7 @@ export default function UserDetail() {
         address: userDetails.address,
         point: userDetails.point,
         userName: userDetails.userName,
+        avatar: userDetails.avatar,
         ticket: {
           history: [],
           data: [],
@@ -168,7 +171,7 @@ export default function UserDetail() {
     });
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -183,10 +186,23 @@ export default function UserDetail() {
     });
   };
 
-  const handleUpdateProfile = () => {
-    // Simulating update action
-    setSuccessMessage("Thông tin tài khoản đã được cập nhật thành công!");
-    setShowSuccess(true);
+  const handleUpdateProfile = async (id: string) => {
+    try {
+      await updateUserPartial(id, {
+        fullName: profile.fullName,
+        birthDate: profile.birthDate,
+        avatar: profile.avatar,
+        gender: profile.gender,
+        email: profile.email,
+        phoneNumber: profile.phoneNumber,
+        address: profile.address,
+      });
+      setSuccessMessage("Thông tin tài khoản đã được cập nhật thành công!");
+      setShowSuccess(true);
+    } catch (error) {
+      setSuccessMessage("Cập nhật thông tin tài khoản thất bại!");
+      setShowSuccess(true);
+    }
   };
 
   const handleCloseSnackbar = () => {
@@ -342,49 +358,47 @@ export default function UserDetail() {
                   </ListItem>
 
                   {userDetails?.role === 0 && (
-                    <>
-                      <ListItem
-                        button
-                        selected={tabValue === 1}
-                        onClick={() => setTabValue(1)}
-                        sx={{ borderRadius: 1, mb: 1 }}
-                      >
-                        <ListItemIcon>
-                          <AccountCircleIcon
-                            color={tabValue === 1 ? "primary" : "inherit"}
-                          />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={t("user.profile.history")}
-                          primaryTypographyProps={{
-                            fontWeight: tabValue === 1 ? "bold" : "normal",
-                            color:
-                              tabValue === 1 ? "primary" : "text.secondary",
-                          }}
-                        />{" "}
-                      </ListItem>
+                    <ListItem
+                      button
+                      selected={tabValue === 1}
+                      onClick={() => setTabValue(1)}
+                      sx={{ borderRadius: 1, mb: 1 }}
+                    >
+                      <ListItemIcon>
+                        <AccountCircleIcon
+                          color={tabValue === 1 ? "primary" : "inherit"}
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={t("user.profile.history")}
+                        primaryTypographyProps={{
+                          fontWeight: tabValue === 1 ? "bold" : "normal",
+                          color: tabValue === 1 ? "primary" : "text.secondary",
+                        }}
+                      />{" "}
+                    </ListItem>
+                  )}
 
-                      <ListItem
-                        button
-                        selected={tabValue === 2}
-                        onClick={() => setTabValue(2)}
-                        sx={{ borderRadius: 1, mb: 1 }}
-                      >
-                        <ListItemIcon>
-                          <AccountCircleIcon
-                            color={tabValue === 2 ? "primary" : "inherit"}
-                          />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={t("user.profile.booked_tickets")}
-                          primaryTypographyProps={{
-                            fontWeight: tabValue === 2 ? "bold" : "normal",
-                            color:
-                              tabValue === 2 ? "primary" : "text.secondary",
-                          }}
-                        />{" "}
-                      </ListItem>
-                    </>
+                  {userDetails?.role === 0 && (
+                    <ListItem
+                      button
+                      selected={tabValue === 2}
+                      onClick={() => setTabValue(2)}
+                      sx={{ borderRadius: 1, mb: 1 }}
+                    >
+                      <ListItemIcon>
+                        <AccountCircleIcon
+                          color={tabValue === 2 ? "primary" : "inherit"}
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={t("user.profile.booked_tickets")}
+                        primaryTypographyProps={{
+                          fontWeight: tabValue === 2 ? "bold" : "normal",
+                          color: tabValue === 2 ? "primary" : "text.secondary",
+                        }}
+                      />{" "}
+                    </ListItem>
                   )}
 
                   {userDetails?.role !== 2 && (
@@ -442,10 +456,10 @@ export default function UserDetail() {
                 >
                   <Tab label={t("user.profile.account_info")} />
                   {userDetails?.role === 0 && (
-                    <>
-                      <Tab label={t("user.profile.history")} />
-                      <Tab label={t("user.profile.booked_tickets")} />
-                    </>
+                    <Tab label={t("user.profile.history")} />
+                  )}
+                  {userDetails?.role === 0 && (
+                    <Tab label={t("user.profile.booked_tickets")} />
                   )}
                   {userDetails?.role !== 2 && (
                     <Tab label={t("user.profile.change_password")} />
@@ -531,16 +545,21 @@ export default function UserDetail() {
                       fullWidth
                       sx={{ mb: 2 }}
                     />
-                    <Box sx={{ textAlign: "right" }}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<SaveIcon />}
-                        onClick={handleUpdateProfile}
-                      >
-                        {t("common.button.action.update")}
-                      </Button>
-                    </Box>
+                    {userDetails?.role !== 2 && (
+                      <Box sx={{ textAlign: "right" }}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          startIcon={<SaveIcon />}
+                          onClick={() =>
+                            userDetails?.userId &&
+                            handleUpdateProfile(userDetails.userId)
+                          }
+                        >
+                          {t("common.button.action.update")}
+                        </Button>
+                      </Box>
+                    )}
                   </Box>
                 )}
 

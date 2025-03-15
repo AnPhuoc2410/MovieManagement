@@ -46,6 +46,7 @@ export type UserProfile = Pick<
   | "address"
   | "point"
   | "userName"
+  | "avatar"
 > & {
   ticket?: {
     history?: UserTicketHistory[];

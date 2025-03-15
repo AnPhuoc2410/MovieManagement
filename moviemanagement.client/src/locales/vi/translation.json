@@ -78,7 +78,11 @@
           "password_required": "Mật khẩu không được để trống",
           "password_length": "Mật khẩu phải có ít nhất 8 ký tự"
         },
-        "remember_me": "Ghi nhớ đăng nhập"
+        "remember_me": "Ghi nhớ đăng nhập",
+        "logging_in": "Đang đăng nhập...",
+        "captcha_required": "Vui lòng xác thực captcha",
+        "unexpected_error": "Đã xảy ra lỗi không mong muốn",
+        "welcome_message": "Xin chào, {{name}}"
       },
       "signup": {
         "title": "Đăng ký tài khoản",

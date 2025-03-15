@@ -79,7 +79,11 @@
           "password_required": "Password is required",
           "password_length": "Password must be at least 8 characters"
         },
-        "remember_me": "Remember me"
+        "remember_me": "Remember me",
+        "logging_in": "Logging in...",
+        "captcha_required": "Please complete the captcha verification",
+        "unexpected_error": "An unexpected error occurred",
+        "welcome_message": "Welcome back, {{name}}"
       },
       "signup": {
         "title": "Sign Up",

@@ -71,34 +71,21 @@ namespace MovieManagement.Server.Repositories
                                user.UserName == userName)
                 .FirstOrDefault();
         }
+        public bool IsFieldExisting(string fieldName, string fieldValue, Guid? excludeUserId = null)
+        {
+            var query = _context.Users.AsQueryable();
 
-        public bool IsExistingUsernameOrPhone(string username, string phone, Guid? excludeUserId = null)
-        {
-            var query = _context.Users
-                .Where(user =>  user.UserName == username || 
-                                user.PhoneNumber == phone);
-    
+            // Dynamically construct the query based on the field name
+            if (fieldName == "UserName")
+                query = query.Where(user => user.UserName == fieldValue);
+            else if (fieldName == "PhoneNumber")
+                query = query.Where(user => user.PhoneNumber == fieldValue);
+
             if (excludeUserId.HasValue)
             {
                 query = query.Where(user => user.UserId != excludeUserId.Value);
             }
-    
-            var user = query.OrderBy(user => user.JoinDate).LastOrDefault();
-            return user != null;
-        }
-        
-        public bool IsExistingEmailOrUsernameOrPhoneOrIdNumber(string email, string username, string phone,
-            string idNumber, Guid? excludeUserId = null)
-        {
-            var query = _context.Users
-                .Where(user => user.Email == email || user.UserName == username || 
-                               user.PhoneNumber == phone || user.IDCard == idNumber);
-    
-            if (excludeUserId.HasValue)
-            {
-                query = query.Where(user => user.UserId != excludeUserId.Value);
-            }
-    
+
             var user = query.OrderBy(user => user.JoinDate).LastOrDefault();
             return user != null;
         }

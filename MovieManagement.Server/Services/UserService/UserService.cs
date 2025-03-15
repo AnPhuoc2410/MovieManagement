@@ -81,10 +81,17 @@ namespace MovieManagement.Server.Services.UserService
             if (user.Role == Role.Admin)
                 throw new BadRequestException("Admin cannot be created by this method.");
 
-            if (_unitOfWork.UserRepository.IsExistingEmailOrUsernameOrPhoneOrIdNumber(user.Email,
-                    user.UserName, user.PhoneNumber, user.IDCard))
-                throw new BadRequestException(
-                    "Email, username, phone number or ID number already exists.");
+            if (_unitOfWork.UserRepository.IsFieldExisting("Email", user.Email))
+                throw new BadRequestException("Email already exists.");
+
+            if (_unitOfWork.UserRepository.IsFieldExisting("UserName", user.UserName))
+                throw new BadRequestException("Username already exists.");
+
+            if (_unitOfWork.UserRepository.IsFieldExisting("PhoneNumber", user.PhoneNumber))
+                throw new BadRequestException("Phone number already exists.");
+
+            if (_unitOfWork.UserRepository.IsFieldExisting("IDCard", user.IDCard))
+                throw new BadRequestException("ID card number already exists.");
 
             var newUser = _mapper.Map<User>(user);
             newUser.Password = new PasswordHasher<User>().HashPassword(newUser, user.Password);
@@ -141,23 +148,27 @@ namespace MovieManagement.Server.Services.UserService
             var existingUser = await _unitOfWork.UserRepository.GetByIdAsync(id)
                                ?? throw new NotFoundException($"User with ID {id} not found!");
 
-            // Only check for uniqueness if any of the unique fields are being changed
-            if (userDto.UserName != existingUser.UserName || 
-                userDto.PhoneNumber != existingUser.PhoneNumber)
+            // Check for uniqueness on each field separately
+            if (userDto.UserName != null && userDto.UserName != existingUser.UserName)
             {
-                // Use the existing method with the excludeUserId parameter
-                bool isDuplicate = _unitOfWork.UserRepository.IsExistingUsernameOrPhone(
-                    userDto.UserName, 
-                    userDto.PhoneNumber, 
-                    excludeUserId: id);
-            
-                if (isDuplicate)
-                    throw new BadRequestException("Email, username, phone number or ID number already exists.");
+                bool isUsernameDuplicate = _unitOfWork.UserRepository.IsFieldExisting(
+                    "UserName", userDto.UserName, excludeUserId: id);
+                if (isUsernameDuplicate)
+                    throw new BadRequestException("Username already exists.");
+            }
+
+            if (userDto.PhoneNumber != null && userDto.PhoneNumber != existingUser.PhoneNumber)
+            {
+                bool isPhoneDuplicate = _unitOfWork.UserRepository.IsFieldExisting(
+                    "PhoneNumber", userDto.PhoneNumber, excludeUserId: id);
+                if (isPhoneDuplicate)
+                    throw new BadRequestException("Phone number already exists.");
             }
 
             // Map and update the user
             _mapper.Map(userDto, existingUser);
             await _unitOfWork.UserRepository.UpdateAsync(existingUser);
         }
+
     }
 }

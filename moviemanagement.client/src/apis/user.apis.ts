@@ -1,3 +1,4 @@
+import { SignupRequest } from "../types/auth.types";
 import { UserResponse } from "../types/users.type";
 import { ApiResponse } from "./api.config";
 import api from "./axios.config";
@@ -19,8 +20,16 @@ export const fetchUserByRole = async (
 
 export const doInActiveUser = async (id: string) => {
   const response = await api.delete(`/users/${id}`);
-  if (response.status === 204) {
-    return true;
-  }
-  return false;
+  return response.status === 204 ? true : false;
+};
+
+export const updateUserPartial = async (
+  id: string,
+  data: Partial<UserResponse>,
+) => {
+  const response = await api.patch<ApiResponse<UserResponse>>(
+    `/users/${id}`,
+    data,
+  );
+  return response.status === 200 ? true : false;
 };
