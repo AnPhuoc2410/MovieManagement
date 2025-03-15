@@ -135,21 +135,29 @@ export const Signup = () => {
   const validationSchema = yup.object({
     userName: yup
       .string()
-      .required(t("auth.login.validation.userName_required")),
+      .required(t("auth.login.validation.username_required")),
     password: yup
       .string()
       .min(8, t("auth.login.validation.password_length"))
       .required(t("auth.login.validation.password_required")),
-    fullName: yup.string().required(t("auth.signup.fields.fullName")),
-    birthDate: yup.date().required(t("auth.signup.fields.birthDate")),
-    gender: yup.string().required(t("auth.signup.fields.gender")),
-    idCard: yup.string().required(t("auth.signup.fields.id_card")),
+    fullName: yup
+      .string()
+      .required(t("auth.signup.validation.fullname_required")),
+    birthDate: yup
+      .date()
+      .required(t("auth.signup.validation.birthdate_required")),
+    gender: yup.string().required(t("auth.signup.validation.gender_required")),
+    idCard: yup.string().required(t("auth.signup.validation.id_card_required")),
     email: yup
       .string()
-      .email("Invalid email")
-      .required(t("auth.signup.fields.email")),
-    address: yup.string().required(t("auth.signup.fields.address")),
-    phoneNumber: yup.string().required(t("auth.signup.fields.phoneNumber")),
+      .email(t("auth.signup.validation.email.invalid"))
+      .required(t("auth.signup.validation.email.required")),
+    address: yup
+      .string()
+      .required(t("auth.signup.validation.address_required")),
+    phoneNumber: yup
+      .string()
+      .required(t("auth.signup.validation.phone_required")),
   });
 
   const handleClickShowPassword = () => {

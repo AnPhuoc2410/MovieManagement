@@ -10,6 +10,9 @@ import { ProtectedRoute, RejectedRoute } from "./guards/AuthGuard";
 // Lazy load components
 const Home = lazy(() => import("./pages/Home/Home"));
 const AuthForm = lazy(() => import("./pages/auth/AuthForm"));
+const ForgotPassword = lazy(
+  () => import("./pages/auth/ForgotPassword/ForgotPassword"),
+);
 
 // Admin Pages
 const AdminPages = {
@@ -75,13 +78,22 @@ export default function useRouteElements() {
       path: "/",
       element: <Home />,
     },
+    // Forgot Password (Public Route)
+    {
+      path: "/auth/forgot-password",
+      element: <ForgotPassword />,
+    },
     // Auth Routes (Rejected when authenticated)
     {
       element: <RejectedRoute />,
       children: [
         {
-          path: "/auth/*",
-          element: <AuthForm />,
+          path: "/auth",
+          children: [
+            { path: "", element: <AuthForm /> },
+            { path: "login", element: <AuthForm /> },
+            { path: "signup", element: <AuthForm /> },
+          ],
         },
       ],
     },

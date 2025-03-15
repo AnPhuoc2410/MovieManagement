@@ -28,9 +28,12 @@ const Drawer = styled(MuiDrawer)({
 export default function SideMenu() {
   const navigate = useNavigate();
   const { userDetails } = useAuth();
-  const [user, setUser] = useState<Pick<UserResponse, "email" | "fullName">>({
+  const [user, setUser] = useState<
+    Pick<UserResponse, "email" | "fullName" | "avatar">
+  >({
     email: "",
     fullName: "",
+    avatar: "",
   });
 
   useEffect(() => {
@@ -96,7 +99,10 @@ export default function SideMenu() {
         <Avatar
           sizes="small"
           alt="Avatar Img"
-          src="https://avatars.githubusercontent.com/u/153256952?v=4&size=64"
+          src={
+            userDetails?.avatar ||
+            "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474081dJf/mat-troll-pho-bien-tren-facebook_040119322.png"
+          }
           sx={{ width: 36, height: 36 }}
         />
         <Box sx={{ mr: "auto" }}>

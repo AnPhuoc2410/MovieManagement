@@ -11,13 +11,16 @@ import {
   Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { createRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import * as yup from "yup";
 import { login } from "../../../apis/auth.apis";
 import { useAuth } from "../../../contexts/AuthContext";
+import ReCAPTCHA from "react-google-recaptcha";
+import { ENV } from "../../../env/env.config";
+import { Link as RouterLink } from "react-router-dom";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,6 +29,8 @@ export const Login = () => {
   const navigate = useNavigate();
   const { authLogin } = useAuth();
   const { t } = useTranslation();
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = createRef<ReCAPTCHA>();
 
   const validationSchema = yup.object({
     email: yup.string().required(t("auth.login.validation.email_required")),
@@ -52,6 +57,10 @@ export const Login = () => {
     setRememberMe(event.target.checked);
   };
 
+  const handleCaptchaChange = (token: string | null) => {
+    setCaptchaToken(token);
+  };
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -59,11 +68,18 @@ export const Login = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      if (!captchaToken) {
+        toast.error(t("auth.login.captcha_required"));
+        return;
+      }
+
       setLoading(true);
-      const toastId = toast.loading("Đang đăng nhập...");
+      const toastId = toast.loading(t("auth.login.logging_in"));
 
       try {
-        const response = await login(values);
+        const response = await login({
+          ...values,
+        });
         toast.dismiss(toastId);
 
         if (response.isSuccess) {
@@ -75,7 +91,9 @@ export const Login = () => {
             expires: tokenData.expires,
           });
 
-          toast.success(`Xin chào ${userDetails?.fullName}`);
+          toast.success(
+            t("auth.login.welcome_message", { name: userDetails?.fullName }),
+          );
 
           // Navigate based on extracted role
           setTimeout(() => {
@@ -83,11 +101,17 @@ export const Login = () => {
           }, 1000);
         } else {
           toast.error(response.message);
+          // Reset captcha on failed login attempt
+          recaptchaRef.current?.reset();
+          setCaptchaToken(null);
         }
       } catch (error) {
         toast.dismiss(toastId);
-        toast.error("An unexpected error occurred.");
+        toast.error(t("auth.login.unexpected_error"));
         console.error("Login error:", error);
+        // Reset captcha on error
+        recaptchaRef.current?.reset();
+        setCaptchaToken(null);
       } finally {
         setLoading(false);
       }
@@ -234,27 +258,34 @@ export const Login = () => {
           }
         />
 
-        <Link
-          href="#"
-          underline="hover"
-          sx={{
+        <RouterLink
+          to="/auth/forgot-password"
+          style={{
             fontSize: "0.875rem",
             color: "black",
+            textDecoration: "none",
             transition: "color 0.2s",
-            "&:hover": {
-              color: "#e6c300",
-            },
           }}
         >
           {t("auth.login.forgot_password")}
-        </Link>
+        </RouterLink>
+      </Box>
+
+      <Box sx={{ mb: 3 }}>
+        <ReCAPTCHA
+          ref={recaptchaRef}
+          sitekey={ENV.RECAPTCHA_V2_SITE_KEY}
+          onChange={handleCaptchaChange}
+          theme="light"
+          size="normal"
+        />
       </Box>
 
       <Button
         variant="contained"
         fullWidth
         type="submit"
-        disabled={loading}
+        disabled={loading || !captchaToken}
         sx={{
           backgroundColor: "#e6c300",
           color: "black",

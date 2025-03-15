@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.FileIO;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
@@ -26,6 +27,7 @@ namespace MovieManagement.Server.Controllers
             _userService = userService;
         }
 
+        [AllowAnonymous]
         [HttpPost("Register")]
         [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -34,67 +36,18 @@ namespace MovieManagement.Server.Controllers
             StatusCodes.Status500InternalServerError)]
         public IActionResult Signup([FromBody] AuthDto.RegisterRequest registerDto)
         {
-            
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            
-            try
+            var newUser = _authenticateService.Register(registerDto);
+            return Ok(new ApiResponse<UserDto.UserResponse>
             {
-                var newUser = _authenticateService.Register(registerDto);
-                var successResponse = new ApiResponse<UserDto.UserResponse>
-                {
-                    StatusCode = 200,
-                    Message = "User registered successfully",
-                    IsSuccess = true,
-                    Data = newUser
-                };
-                return Ok(successResponse);
-            }
-            catch (MalformedLineException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401, // Updated to 401 Unauthorized instead of 400
-                    Message = "Unauthorized access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (NotFoundException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 404,
-                    Message = ex.Message,
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return NotFound(response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while creating user",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "User registered successfully",
+                IsSuccess = true,
+                Data = newUser
+            });
         }
 
+        [AllowAnonymous]
         [HttpPost("Login")]
         [ProducesResponseType(typeof(ApiResponse<AuthDto.LoginResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -102,53 +55,17 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ApiResponse<AuthDto.LoginResponse>>> Login([FromBody] AuthDto.LoginRequest loginDto)
         {
-            try
+            var result = await _authenticateService.Login(loginDto);
+            return Ok(new ApiResponse<AuthDto.LoginResponse>
             {
-                var result = await _authenticateService.Login(loginDto);
-                var response = new ApiResponse<AuthDto.LoginResponse>
-                {
-                    StatusCode = 200,
-                    Message = "Login successfully",
-                    IsSuccess = true,
-                    Data = result
-                };
-                return Ok(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Invalid credentials",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred during login",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Login successfully",
+                IsSuccess = true,
+                Data = result
+            });
         }
 
+        [AllowAnonymous]
         [HttpPost("OTP/Send")]
         [ProducesResponseType(typeof(ApiResponse<OtpCodeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -187,6 +104,7 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("OTP/Verify/ChangePassword")]
         [ProducesResponseType(typeof(ApiResponse<OtpCodeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -237,7 +155,10 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
-        [HttpPost("ResetPassword")]
+        [Authorize(Policy = "Member")]
+        [Authorize(Policy = "Employee")]
+        [Authorize(Policy = "Admin")]
+        [HttpPatch("Update-Password")]
         [ProducesResponseType(typeof(ApiResponse<ResetPasswordRequest>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -245,46 +166,14 @@ namespace MovieManagement.Server.Controllers
             StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ResetUserPassword([FromBody] ResetPasswordRequest request)
         {
-            try
+            await _userService.ChangeUserPasswordByUserId(request.UserId,
+                request.CurrentPassword, request.NewPassword);
+            return Ok(new ApiResponse<IEnumerable<ResetPasswordRequest>>
             {
-                bool isValid = await _userService.ChangeUserPasswordByUserId(request.UserId,
-                    request.CurrentPassword, request.NewPassword);
-                if (!isValid)
-                {
-                    var response = new ApiResponse<IEnumerable<ResetPasswordRequest>>
-                    {
-                        StatusCode = 404,
-                        Message = "Reset password is not fail!",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                else
-                {
-                    var response = new ApiResponse<IEnumerable<ResetPasswordRequest>>
-                    {
-                        StatusCode = 200,
-                        Message = "Change password successfully",
-                        IsSuccess = true
-                    };
-                    return Ok(response);
-                }
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+                StatusCode = 200,
+                Message = "Change password successfully",
+                IsSuccess = true
+            });
         }
 
         //[HttpPost("GoogleAuth/Login")]

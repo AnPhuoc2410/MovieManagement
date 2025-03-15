@@ -1,17 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router";
 import { fetchUserByRole, Role } from "../../../apis/user.apis";
-import ManagementTable, {
-  ColumnDef,
-  defaultUserColumns,
-} from "../../../components/shared/ManagementTable";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import { UserResponse } from "../../../types/users.type";
-import { useQuery } from "react-query";
+import { DataGrid, GridColDef, GridActionsCellItem } from "@mui/x-data-grid";
+import EditIcon from "@mui/icons-material/Edit";
+import { Avatar, Box, Chip } from "@mui/material";
 
 const QuanLiThanhVien: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const {
     data: users,
@@ -31,32 +32,123 @@ const QuanLiThanhVien: React.FC = () => {
   useEffect(() => {
     if (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to load employees",
+        error instanceof Error ? error.message : "Failed to load members",
       );
     }
   }, [error]);
 
-  const handleEdit = (id: string) => {
-    navigate(`/admin/ql-thanh-vien/${id}`);
-  };
+  const handleEdit = (username: string) =>
+    navigate(`/admin/ql-thanh-vien/${username}`);
 
-  const columns: ColumnDef<UserResponse>[] = [
-    ...defaultUserColumns,
-    {
-      field: "point",
-      headerName: "Points",
-      align: "center",
-    },
-  ];
+  const columns: GridColDef[] = useMemo(
+    () => [
+      {
+        field: "userName",
+        headerName: t("common.table_header.user.username"),
+        width: 250,
+        renderCell: (params) => (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Avatar
+              src={params.row.avatar || "/default-avatar.png"}
+              alt={params.row.fullName}
+            />
+            <span>{params.row.userName}</span>
+          </Box>
+        ),
+      },
+      {
+        field: "fullName",
+        headerName: t("common.table_header.user.fullname"),
+        width: 180,
+      },
+      {
+        field: "email",
+        headerName: t("common.table_header.user.email"),
+        width: 220,
+      },
+      {
+        field: "phone",
+        headerName: t("common.table_header.user.phone"),
+        width: 130,
+      },
+      {
+        field: "status",
+        headerName: t("common.table_header.user.status"),
+        width: 120,
+        renderCell: (params) => (
+          <Chip
+            label={params.row.status === 1 ? "Active" : "Inactive"}
+            color={params.row.status === 1 ? "success" : "error"}
+            sx={{
+              fontWeight: "bold",
+              borderRadius: "16px",
+              minWidth: "80px",
+            }}
+          />
+        ),
+      },
+      {
+        field: "point",
+        headerName: t("common.table_header.user.points"),
+        width: 130,
+        type: "number",
+        align: "center",
+      },
+      {
+        field: "actions",
+        headerName: t("common.table_header.actions"),
+        type: "actions",
+        width: 100,
+        getActions: (params) => [
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            onClick={() => handleEdit(params.row.userName)}
+          />,
+        ],
+      },
+    ],
+    [t],
+  );
 
   return (
     <ManagementPageLayout>
-      <ManagementTable
-        data={users}
-        columns={columns}
-        onEdit={handleEdit}
-        isLoading={isLoading}
-      />
+      <Box
+        sx={{
+          width: "100%",
+          height: 600,
+          "& .MuiDataGrid-root": {
+            border: "none",
+            backgroundColor: "white",
+            borderRadius: 2,
+            boxShadow: 1,
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: "primary.main",
+              color: "black",
+              fontWeight: "bold",
+            },
+            "& .MuiDataGrid-cell": {
+              borderBottom: "1px solid #f0f0f0",
+            },
+            "& .MuiDataGrid-row:hover": {
+              backgroundColor: "#f5f5f5",
+            },
+          },
+        }}
+      >
+        <DataGrid
+          rows={users || []}
+          columns={columns}
+          loading={isLoading}
+          getRowId={(row) => row.userName}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 10 } },
+          }}
+          pageSizeOptions={[5, 10, 25]}
+          disableRowSelectionOnClick
+          autoHeight
+        />
+      </Box>
     </ManagementPageLayout>
   );
 };
