@@ -29,12 +29,9 @@ namespace MovieManagement.Server.Repositories
 
         public Task<List<User>> GetUserByRoleAsync(Role role)
         {
-
-            var users = _context.Users
-                        .Where(user => user.Role == role)
-                        .ToListAsync();
-
-            return users;
+            return _context.Users
+                .Where(user => user.Role == role && user.Status == UserStatus.Active)
+                .ToListAsync();
         }
 
         public async Task<bool> IsExistingEmailAsync(string email)
@@ -64,26 +61,6 @@ namespace MovieManagement.Server.Repositories
             await _context.SaveChangesAsync();
             return user!=null;
         }
-
-        public User GetUserByEmail(string email)
-        {
-            
-            var user = _context.Users
-                .Where(user => user.Email == email)
-                .OrderBy(user => user.JoinDate)
-                .LastOrDefault();
-            return user;
-            
-        }
-
-        public async Task<User> GetByUsername(string username)
-        {
-            var user = await _context.Users
-                .Where(u => u.UserName == username && u.Status != 0)
-                .FirstOrDefaultAsync();
-
-            return user;
-        }
         
         public User GetUserByUniqueFields(string email, string idCard, string phoneNumber, string userName)
         {
@@ -94,20 +71,25 @@ namespace MovieManagement.Server.Repositories
                                user.UserName == userName)
                 .FirstOrDefault();
         }
-
-
-        public bool IsExistingEmailOrUsernameOrPhoneOrIdNumber(string email, string username, string phone,
-            string idNumber)
+        public bool IsFieldExisting(string fieldName, string fieldValue, Guid? excludeUserId = null)
         {
-            
-            var user = _context.Users
-                .Where(user => user.Email == email || user.UserName == username || user.PhoneNumber == phone || user.IDCard == idNumber)
-                .OrderBy(user => user.JoinDate)
-                .LastOrDefault();
-            return user != null;
-            
-        }
+            var query = _context.Users.AsQueryable();
 
+            // Dynamically construct the query based on the field name
+            if (fieldName == "UserName")
+                query = query.Where(user => user.UserName == fieldValue);
+            else if (fieldName == "PhoneNumber")
+                query = query.Where(user => user.PhoneNumber == fieldValue);
+
+            if (excludeUserId.HasValue)
+            {
+                query = query.Where(user => user.UserId != excludeUserId.Value);
+            }
+
+            var user = query.OrderBy(user => user.JoinDate).LastOrDefault();
+            return user != null;
+        }
+        
         public async Task<User> GetUserByEmailAsync(string email)
         {
             var user = await _context.Users

@@ -1,4 +1,8 @@
-import { AccountCircleOutlined, FastfoodOutlined } from "@mui/icons-material";
+import {
+  AccountCircleOutlined,
+  AdminPanelSettings,
+  FastfoodOutlined,
+} from "@mui/icons-material";
 import LocalActivityOutlinedIcon from "@mui/icons-material/LocalActivityOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
@@ -25,7 +29,11 @@ import { useNavigate } from "react-router-dom";
 import LanguageSelector from "../common/LanguageSelector";
 import { useAuth } from "../../contexts/AuthContext";
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  isTransparent?: boolean;
+}
+
+const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
   const { isAuthenticated, authLogout, userDetails } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -67,7 +75,11 @@ const Header: React.FC = () => {
     <AppBar
       position="fixed"
       sx={{
-        backgroundColor: scrolled ? "rgba(0, 0, 0, 0.8)" : "transparent",
+        backgroundColor: scrolled
+          ? "rgba(0, 0, 0, 0.8)"
+          : isTransparent
+            ? "transparent"
+            : "#000",
         backdropFilter: scrolled ? "blur(8px)" : "none",
         boxShadow: scrolled ? 2 : "none",
         transition: "all 0.3s ease-in-out",
@@ -271,9 +283,12 @@ const Header: React.FC = () => {
                       height: 32,
                       bgcolor: "#834bff",
                     }}
-                  >
-                    <PersonIcon fontSize="small" />
-                  </Avatar>
+                    src={
+                      userDetails?.avatar ||
+                      "https://images.dog.ceo/breeds/pembroke/n02113023_1258.jpg"
+                    }
+                    alt={userDetails?.fullName}
+                  />
                   <Typography>{t("user.profile.my_account")}</Typography>
                 </Box>
 
@@ -322,7 +337,7 @@ const Header: React.FC = () => {
                   </MenuItem>
                   {userDetails?.role === 2 && (
                     <MenuItem onClick={() => navigate("/admin/thong-ke")}>
-                      <PersonIcon fontSize="small" sx={{ mr: 2 }} />
+                      <AdminPanelSettings fontSize="small" sx={{ mr: 2 }} />
                       {t("user.profile.admin_panel")}
                     </MenuItem>
                   )}
@@ -330,17 +345,19 @@ const Header: React.FC = () => {
                     <SettingsIcon fontSize="small" sx={{ mr: 2 }} />
                     {t("user.profile.settings")}
                   </MenuItem>
-                  <MenuItem
-                    onClick={() =>
-                      navigate(`/users/profile/${userDetails?.userId}`)
-                    }
-                  >
-                    <LocalActivityOutlinedIcon
-                      fontSize="small"
-                      sx={{ mr: 2 }}
-                    />
-                    {t("user.profile.my_bookings")}
-                  </MenuItem>
+                  {userDetails?.role === 0 && (
+                    <MenuItem
+                      onClick={() =>
+                        navigate(`/users/profile/${userDetails?.userId}`)
+                      }
+                    >
+                      <LocalActivityOutlinedIcon
+                        fontSize="small"
+                        sx={{ mr: 2 }}
+                      />
+                      {t("user.profile.my_bookings")}
+                    </MenuItem>
+                  )}
                   <Divider />
                   <MenuItem onClick={handleLogout}>
                     <LogoutIcon fontSize="small" sx={{ mr: 2 }} />

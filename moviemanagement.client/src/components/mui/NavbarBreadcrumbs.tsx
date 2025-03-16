@@ -4,18 +4,7 @@ import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Breadcrumbs, { breadcrumbsClasses } from "@mui/material/Breadcrumbs";
 import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
-import { string } from "yup";
-
-const slugMapping: { [key: string]: string } = {
-  "khuyen-mai": "Khuyến mãi",
-  "thong-ke": "Thống kê",
-  phim: "Phim",
-  "ql-phong-chieu": "Phòng chiếu",
-  "ql-dat-ve": "Đặt vé",
-  "ban-ve": "Bán vé",
-  "ql-nhan-vien": "Nhân viên",
-  "ql-thanh-vien": "Thành viên",
-};
+import { useTranslation } from "react-i18next"; // Import translation hook
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
   margin: theme.spacing(1, 0),
@@ -28,35 +17,51 @@ const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
   },
 }));
 
-function getBreadcrumbs(pathname: string): [string[], string[]] {
-  if (pathname === "/admin/thong-ke") {
-    return [["Trang chủ"], ["/admin/thong-ke"]];
-  }
-
-  const parts = pathname.split("/").filter(Boolean);
-  const breadcrumbs = ["Trang chủ"];
-  const paths = ["/admin/thong-ke"];
-
-  paths.push(pathname);
-
-  if (parts.length > 0) {
-    const lastPart = parts[parts.length - 1];
-    if (slugMapping[lastPart]) {
-      breadcrumbs.push(slugMapping[lastPart]);
-    } else {
-      breadcrumbs.push(lastPart.charAt(0).toUpperCase() + lastPart.slice(1));
-    }
-  }
-  return [breadcrumbs, paths];
-}
-
 export default function NavbarBreadcrumbs() {
   const location = useLocation();
+  const { t } = useTranslation(); // Add translation hook
+
+  // Maps route slugs to translation keys
+  const slugToTranslationKey: { [key: string]: string } = {
+    "khuyen-mai": "breadcrumbs.promotions",
+    "thong-ke": "breadcrumbs.dashboard",
+    phim: "breadcrumbs.movies",
+    "ql-phong-chieu": "breadcrumbs.screeningRooms",
+    "ql-dat-ve": "breadcrumbs.ticketBooking",
+    "ban-ve": "breadcrumbs.ticketSales",
+    "ql-nhan-vien": "breadcrumbs.employees",
+    "ql-thanh-vien": "breadcrumbs.members",
+  };
+
+  function getBreadcrumbs(pathname: string): [string[], string[]] {
+    if (pathname === "/admin/thong-ke") {
+      return [[t("breadcrumbs.home")], ["/admin/thong-ke"]];
+    }
+
+    const parts = pathname.split("/").filter(Boolean);
+    const breadcrumbs = [t("breadcrumbs.home")];
+    const paths = ["/admin/thong-ke"];
+
+    paths.push(pathname);
+
+    if (parts.length > 0) {
+      const lastPart = parts[parts.length - 1];
+      if (slugToTranslationKey[lastPart]) {
+        // Use translation key for known routes
+        breadcrumbs.push(t(slugToTranslationKey[lastPart]));
+      } else {
+        // Fallback for unknown routes
+        breadcrumbs.push(lastPart.charAt(0).toUpperCase() + lastPart.slice(1));
+      }
+    }
+    return [breadcrumbs, paths];
+  }
+
   const [breadcrumbs, paths] = getBreadcrumbs(location.pathname);
 
   return (
     <StyledBreadcrumbs
-      aria-label="breadcrumb"
+      aria-label={t("common.breadcrumb")}
       separator={<NavigateNextRoundedIcon fontSize="small" />}
     >
       {breadcrumbs.map((label, index) => (
