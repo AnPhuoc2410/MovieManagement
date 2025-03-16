@@ -563,6 +563,42 @@ namespace MovieManagement.Server.Controllers
         }
 
 
+        [HttpDelete("DeleteRemainingTicket/{showTimeId:guid}")]
+        public async Task<IActionResult> DeleteRemainingTicket(Guid showTimeId)
+        {
+            try
+            {
+                var isDeleted = await _ticketDetailService.DeleteRemainingTicket(showTimeId);
+                if (!isDeleted)
+                {
+                    var response = new ApiResponse<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Ticket detail not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(new ApiResponse<object>
+                {
+                    Data = isDeleted,
+                    StatusCode = 200,
+                    Message = "Delete remaining ticket successfully",
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while deleting remaining ticket",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
 
 
     }

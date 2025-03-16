@@ -19,5 +19,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
         Task<IEnumerable<TicketDetailResponseModel>> UpdateTicketToPending(List<TicketDetailRequest> Tickets);
 
         Task<TicketDetailResponseModel> ChangeStatusTicketDetailAsync(Guid ticketId, TicketStatus status);
+        Task<bool> DeleteRemainingTicket(Guid showTimeId);
+
     }
 }

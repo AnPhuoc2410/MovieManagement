@@ -91,9 +91,10 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             List<TicketDetail> ticketDetails = new List<TicketDetail>();
             foreach (var t in Tickets)
             {
-                var current = await _unitOfWork.TicketDetailRepository.GetTicketByIdAndVersion(t.TicketId, t.Version);
-                if (current == null)
-                    throw new NotFoundException("Version conflicted.");
+                var current = await _unitOfWork.TicketDetailRepository.GetTicketByIdAndVersion(t.TicketId, t.Version)
+                ?? throw new NotFoundException("Version conflicted.");
+                if (current.ShowTime.EndTime.CompareTo(DateTime.Now) < 0)
+                    throw new BadRequestException("Show time is over.");
                 if (current.Status != TicketStatus.Created)
                     throw new BadRequestException($"Ticket is on other status.");
                 current.Status = TicketStatus.Pending;
@@ -121,6 +122,20 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 
             return _mapper.Map<TicketDetailResponseModel>(updatedTicketDetail);
         }
+
+        public async Task<bool> DeleteRemainingTicket(Guid showTimeId)
+        {
+            var ticketDetails = (await _unitOfWork.TicketDetailRepository.GetTicketByShowTimeId(showTimeId)).Where(t => t.Status == TicketStatus.Created)
+                ?? throw new NotFoundException("Ticket details not found!");
+            foreach (var t in ticketDetails)
+            {
+                _unitOfWork.TicketDetailRepository.PrepareRemove(t);
+            }
+            return await _unitOfWork.TicketDetailRepository.SaveAsync() == ticketDetails.Count();
+        }
+
+
+
 
     }
 }
