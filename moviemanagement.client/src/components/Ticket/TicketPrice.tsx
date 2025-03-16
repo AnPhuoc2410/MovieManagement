@@ -142,7 +142,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
             900: { slidesPerView: 3 },
           }}
           autoplay={{ delay: 1000 }}
-          loop={true}
+          loop={seatTypes.length > 4}
           modules={[Pagination]}
           style={{
             width: "100%",

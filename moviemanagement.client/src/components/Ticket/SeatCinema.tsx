@@ -1,7 +1,6 @@
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import { Box, Button, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import toast from "react-hot-toast";
 import api from "../../apis/axios.config";
 import { TicketDetail } from "../../types/ticketdetail.types";
@@ -9,45 +8,45 @@ import { SelectedSeat } from "../../types/selectedseat.types";
 
 interface SeatProps {
   showTimeId: string;
-  selectedSeats: { id: string; name: string; version: string; ticketId: string }[];
-  setSelectedSeats: React.Dispatch<React.SetStateAction<{ id: string; name: string; version: string; ticketId: string }[]>>;
-  connection: HubConnection | null;
+  selectedSeats: { id: string; name: string; version: string; ticketId: string; isMine?: boolean }[];
+  setSelectedSeats: React.Dispatch<
+    React.SetStateAction<{ id: string; name: string; version: string; ticketId: string; isMine?: boolean }[]>
+  >;
+  connection: any; // Use HubConnection | null if desired.
 }
 
 const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelectedSeats, connection }) => {
   const [seats, setSeats] = useState<TicketDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Listen for backend status updates (pending and bought) via SignalR.
   useEffect(() => {
     if (!connection) return;
 
-    // Set up event listeners
-    connection.on("SeatSelected", (seatInfo: SelectedSeat) => {
-      setSelectedSeats((prevSeats) => {
-        if (!prevSeats.some((s) => s.id === seatInfo.id)) {
-          return [...prevSeats, seatInfo];
-        }
-        return prevSeats;
-      });
+    connection.on("SeatPending", (seatId: string) => {
+      setSeats((prev) =>
+        prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
+      );
     });
-    connection.on("SeatDeselected", (seatId: string) => {
-      setSelectedSeats((prevSeats) => prevSeats.filter((s) => s.id !== seatId));
+    connection.on("SeatBought", (seatId: string) => {
+      setSeats((prev) =>
+        prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 2 } : ticket))
+      );
     });
 
     return () => {
-      connection.off("SeatSelected");
-      connection.off("SeatDeselected");
+      connection.off("SeatPending");
+      connection.off("SeatBought");
     };
-  }, [connection, setSelectedSeats]);
+  }, [connection]);
 
-
-  // Fetch ticket data based on showTimeId.
+  // Fetch ticket data by showTimeId.
   useEffect(() => {
     const fetchSeats = async () => {
       try {
         setLoading(true);
         const response = await api.get(`ticketdetail/getbyroomid/${showTimeId}`);
-        if (response.data && response.data.data) {
+        if (response.data?.data) {
           setSeats(response.data.data);
         } else {
           toast.error("Không tìm thấy thông tin ghế.");
@@ -61,8 +60,8 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     fetchSeats();
   }, [showTimeId]);
 
-  // Handle seat click event
-  const handleSeatClick = async (ticket: TicketDetail) => {
+  // Handle seat click event (select/deselect locally).
+  const handleSeatClick = (ticket: TicketDetail) => {
     if (!connection) {
       toast.error("Mất kết nối đến server!");
       return;
@@ -74,53 +73,30 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
       name: seatName,
       version: ticket.version,
       ticketId: ticket.ticketId,
+      isMine: true,
     };
 
     setSelectedSeats((prevSeats) => {
-      const existingSeatIndex = prevSeats.findIndex((s) => s.ticketId === ticket.ticketId);
-      const isSameSeat = existingSeatIndex !== -1 && prevSeats[existingSeatIndex].id === ticket.seatId;
-
-      if (isSameSeat) {
-        // Deselect seat
-        connection.invoke("DeselectSeat", ticket.seatId, ticket.ticketId)
-          .then(() => toast.success(`Bỏ chọn ghế ${seatName}`))
-          .catch((error) => toast.error(`Hủy chọn ghế thất bại: ${error}`));
-
-        return prevSeats.filter((s) => s.ticketId !== ticket.ticketId);
-      } else {
-        if (existingSeatIndex !== -1) {
-          // Deselect previous seat first
-          const previousSeat = prevSeats[existingSeatIndex];
-          connection.invoke("DeselectSeat", previousSeat.id, ticket.ticketId)
-            .catch((error) => toast.error(`Lỗi hủy ghế trước: ${error}`));
-
-          // Replace previous seat with the new selection
-          connection.invoke("SelectSeat", seatInfo)
-            .then(() => toast.success(`Đổi ghế từ ${previousSeat.name} sang ${seatName}`))
-            .catch((error) => toast.error(`Lỗi chọn ghế mới: ${error}`));
-
-          return prevSeats.map((s, index) => (index === existingSeatIndex ? seatInfo : s));
+      const existingSeat = prevSeats.find((s) => s.ticketId === ticket.ticketId);
+      if (existingSeat) {
+        if (existingSeat.id === ticket.seatId) {
+          toast.success(`Bỏ chọn ghế ${seatName}`);
+          return prevSeats.filter((s) => s.ticketId !== ticket.ticketId);
         } else {
-          // Select a new seat
-          connection.invoke("SelectSeat", seatInfo)
-            .then(() => toast.success(`Chọn ghế ${seatName}`))
-            .catch((error) => toast.error(`Chọn ghế thất bại: ${error}`));
-
-          return [...prevSeats, seatInfo];
+          toast.success(`Đổi ghế từ ${existingSeat.name} sang ${seatName}`);
+          return prevSeats.map((s) =>
+            s.ticketId === ticket.ticketId ? seatInfo : s
+          );
         }
+      } else {
+        toast.success(`Chọn ghế ${seatName}`);
+        return [...prevSeats, seatInfo];
       }
     });
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "#0B0D1A",
-        color: "white",
-        pb: 4,
-        position: "relative",
-      }}
-    >
+    <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pb: 4, position: "relative" }}>
       {/* Screen Display */}
       <Box sx={{ textAlign: "center", mb: 2 }}>
         <Box
@@ -149,7 +125,9 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           ).map(([row, rowSeats]) => (
             <Box key={row} sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
               {rowSeats.map((ticket) => {
-                const isSelected = selectedSeats.some((s) => s.id === ticket.seatId);
+                const isSelectedByMe = selectedSeats.some(
+                  (s) => s.id === ticket.seatId && s.isMine
+                );
                 const isPending = ticket.status === 1;
                 const isBought = ticket.status === 2;
                 const isVip = ticket.seat.seatType.typeName === "VIP";
@@ -158,7 +136,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
                 let backgroundColor = "transparent";
                 let disabled = false;
 
-                if (isSelected) {
+                if (isSelectedByMe) {
                   iconColor = "green";
                   backgroundColor = "rgba(0, 255, 0, 0.2)";
                 } else if (isBought) {
@@ -188,7 +166,9 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
                       p: 0.5,
                       fontSize: "0.7rem",
                       "&:hover": {
-                        backgroundColor: isSelected ? "rgba(0, 255, 0, 0.4)" : "rgba(255,255,255,0.2)",
+                        backgroundColor: isSelectedByMe
+                          ? "rgba(0, 255, 0, 0.4)"
+                          : "rgba(255,255,255,0.2)",
                       },
                       "&.Mui-disabled": {
                         backgroundColor,

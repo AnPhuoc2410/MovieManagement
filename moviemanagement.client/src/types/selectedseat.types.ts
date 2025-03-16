@@ -3,5 +3,6 @@ export type SelectedSeat = {
   name: string;
   version: string;
   ticketId: string;
+  isMine?: boolean;
 };
 

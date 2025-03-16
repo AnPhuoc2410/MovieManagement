@@ -1,65 +1,41 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System.Threading.Tasks;
-using MovieManagement.Server.Services; // Adjust namespace for service
-using MovieManagement.Server.Models; // Adjust namespace for models
-using System;
 using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Services.TicketDetailServices;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using static MovieManagement.Server.Models.Enums.TicketEnum;
 
-public class SeatInfo
+namespace MovieManagement.Server.Extensions.SignalR
 {
-    public string Id { get; set; }
-    public string Name { get; set; }
-    public byte[] Version { get; set; }
-    public string TicketId { get; set; }
-}
-
-public class SeatSelectionHub : Hub
-{
-    private static readonly Dictionary<string, string> SeatLocks = new();
-
-    public async Task SelectSeat(SelectedSeat seat)
+    public class SeatSelectionHub : Hub
     {
-        if (SeatLocks.ContainsKey(seat.Id))
+        private readonly ITicketDetailService _ticketService;
+
+        public SeatSelectionHub(ITicketDetailService ticketService)
         {
-            throw new HubException("Seat is already selected by another user.");
+            _ticketService = ticketService;
         }
 
-        SeatLocks[seat.Id] = Context.ConnectionId;
-        await Clients.Others.SendAsync("SeatSelected", seat);
-    }
-
-    public async Task DeselectSeat(string seatId)
-    {
-        if (SeatLocks.ContainsKey(seatId) && SeatLocks[seatId] == Context.ConnectionId)
+        /// <summary>
+        /// Sets one or more seats to pending status.
+        /// The client should send a list of TicketDetailRequest objects.
+        /// </summary>
+        public async Task SetSeatPending(List<TicketDetailRequest> ticketRequests)
         {
-            SeatLocks.Remove(seatId);
-            await Clients.Others.SendAsync("SeatDeselected", seatId);
+            try
+            {
+                var responses = await _ticketService.UpdateTicketToPending(ticketRequests);
+                foreach (var ticketResponse in responses)
+                {
+                    // Broadcast to all clients that this seat is now pending.
+                    await Clients.All.SendAsync("SeatPending", ticketResponse.SeatId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HubException($"Error setting seat pending: {ex.Message}");
+            }
         }
-    }
-
-    // ✅ NEW: Lock Seat for Payment Processing
-    public async Task SetSeatPending(string seatId)
-    {
-        if (!SeatLocks.ContainsKey(seatId))
-        {
-            throw new HubException("Seat is not currently selected.");
-        }
-
-        await Clients.Others.SendAsync("SeatPending", seatId);
-    }
-
-    public override async Task OnDisconnectedAsync(Exception? exception)
-    {
-        var seatsToRelease = SeatLocks.Where(kvp => kvp.Value == Context.ConnectionId)
-                                      .Select(kvp => kvp.Key)
-                                      .ToList();
-        foreach (var seatId in seatsToRelease)
-        {
-            SeatLocks.Remove(seatId);
-            await Clients.Others.SendAsync("SeatDeselected", seatId);
-        }
-        await base.OnDisconnectedAsync(exception);
     }
 }

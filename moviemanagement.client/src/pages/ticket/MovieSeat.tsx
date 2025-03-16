@@ -62,37 +62,32 @@ const MovieSeat: React.FC = () => {
     }
 
     try {
-      const seatIds = selectedSeats.map((seat) => seat.id);
-
-      // Notify others that these seats are now "Pending"
-      await connection.invoke("SetSeatPending", seatIds);
-
-      const checkoutPayload = selectedSeats.map((seat) => ({
-        ticketId: seat.ticketId,
-        version: seat.version,
+      // Create an array of TicketDetailRequest objects for SignalR
+      const ticketRequests = selectedSeats.map((seat) => ({
+        TicketId: seat.ticketId,
+        Version: seat.version, // Use the version as received from your API response
       }));
 
-      const response = await api.put("/ticketdetail/checkout", checkoutPayload);
+      // Use SignalR to update seat status to PENDING (broadcast to all clients)
+      await connection.invoke("SetSeatPending", ticketRequests);
 
-      if (response.status === 200) {
-        toast.success("Đặt chỗ thành công! Chuyển đến trang thanh toán...");
+      toast.success("Ghế đã được cập nhật thành trạng thái PENDING. Chuyển đến trang thanh toán...");
 
-        navigate("/ticket/payment", {
-          state: {
-            selectedDate,
-            selectedTime,
-            tickets,
-            seats: selectedSeats.map((seat) => seat.name),
-          },
-        });
-      } else {
-        toast.error("Có lỗi xảy ra khi đặt chỗ. Vui lòng thử lại.");
-      }
+      // Navigate directly to the payment page
+      navigate("/ticket/payment", {
+        state: {
+          selectedDate,
+          selectedTime,
+          tickets,
+          seats: selectedSeats.map((seat) => seat.name),
+        },
+      });
     } catch (error) {
       console.error("Error when booking:", error);
       toast.error("Lỗi khi đặt chỗ! Có thể ghế đã được người khác chọn.");
     }
   };
+
 
 
   return (
