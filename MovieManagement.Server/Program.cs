@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Extensions.SignalR;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services.JwtService;
@@ -96,7 +97,8 @@ namespace MovieManagement.Server
                             "https://localhost:7119",
                             "https://eigaa.vercel.app")
                         .AllowAnyMethod()
-                        .AllowAnyHeader());
+                        .AllowAnyHeader()
+                        .AllowCredentials());
             });
 
             // Đăng ký Swagger
@@ -148,6 +150,9 @@ namespace MovieManagement.Server
             //Enable role based and policy based authorization
             builder.Services.AddAuthorization();
 
+            //ADD SignalR
+            builder.Services.AddSignalR();
+
             // Đăng ký VnPayService
             builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
@@ -194,11 +199,6 @@ namespace MovieManagement.Server
 
             app.UseHttpsRedirection();
 
-            //Enable Websocket support
-            app.UseWebSockets();
-            app.UseRouting();
-
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -208,8 +208,11 @@ namespace MovieManagement.Server
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseRouting();
             app.MapControllers();
             app.UseCors("AllowReactApp");
+            //Enable Websocket support
+            app.MapHub<SeatSelectionHub>("/seatSelectionHub");
 
             app.MapFallbackToFile("/index.html");
             app.UseHttpsRedirection();
