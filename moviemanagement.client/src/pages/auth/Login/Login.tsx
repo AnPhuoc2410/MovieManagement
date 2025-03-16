@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Divider,
   FormControlLabel,
   IconButton,
   InputAdornment,
@@ -21,6 +22,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import ReCAPTCHA from "react-google-recaptcha";
 import { ENV } from "../../../env/env.config";
 import { Link as RouterLink } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -309,6 +311,32 @@ export const Login = () => {
       >
         {loading ? t("auth.login.processing") : t("auth.login.login_button")}
       </Button>
+
+      <Divider sx={{ my: 1.5 }} />
+
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 1,
+          pl: 4,
+          pr: 4,
+        }}
+      >
+        <Typography>Or</Typography>
+        <GoogleLogin
+          onSuccess={(credentialResponse) => {
+            console.log(credentialResponse);
+          }}
+          onError={() => {
+            toast.error("Google login failed");
+          }}
+          useOneTap
+          shape="pill"
+        />
+      </Box>
     </form>
   );
 };

@@ -170,7 +170,9 @@
         "change_password": "Change Password",
         "admin_panel": "Admin Panel",
         "admin": "Admin",
-        "employee": "Employee"
+        "employee": "Employee",
+        "update_success": "Profile updated successfully!",
+        "update_failed": "Failed to update profile"
       },
       "field": {
         "full_name": "Full Name",
