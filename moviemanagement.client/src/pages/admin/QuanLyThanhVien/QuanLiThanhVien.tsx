@@ -1,3 +1,6 @@
+import EditIcon from "@mui/icons-material/Edit";
+import { Avatar, Box, Chip } from "@mui/material";
+import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -5,10 +8,6 @@ import { useQuery } from "react-query";
 import { useNavigate } from "react-router";
 import { fetchUserByRole, Role } from "../../../apis/user.apis";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
-import { UserResponse } from "../../../types/users.type";
-import { DataGrid, GridColDef, GridActionsCellItem } from "@mui/x-data-grid";
-import EditIcon from "@mui/icons-material/Edit";
-import { Avatar, Box, Chip } from "@mui/material";
 
 const QuanLiThanhVien: React.FC = () => {
   const navigate = useNavigate();
@@ -37,8 +36,7 @@ const QuanLiThanhVien: React.FC = () => {
     }
   }, [error]);
 
-  const handleEdit = (username: string) =>
-    navigate(`/admin/ql-thanh-vien/${username}`);
+  const handleEdit = (id: string) => navigate(`/admin/ql-thanh-vien/${id}`);
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -67,7 +65,7 @@ const QuanLiThanhVien: React.FC = () => {
         width: 220,
       },
       {
-        field: "phone",
+        field: "phoneNumber",
         headerName: t("common.table_header.user.phone"),
         width: 130,
       },
@@ -103,7 +101,7 @@ const QuanLiThanhVien: React.FC = () => {
           <GridActionsCellItem
             icon={<EditIcon />}
             label="Edit"
-            onClick={() => handleEdit(params.row.userName)}
+            onClick={() => handleEdit(params.row.userId)}
           />,
         ],
       },

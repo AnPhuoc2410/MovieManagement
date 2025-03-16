@@ -44,6 +44,7 @@ import Footer from "../../../components/home/Footer";
 import { useTranslation } from "react-i18next";
 import InputComponent from "../../../components/common/InputComponent";
 import { updateUserPartial } from "../../../apis/user.apis";
+import { format, parseISO } from "date-fns";
 
 export default function UserDetail() {
   const { userId } = useParams();
@@ -86,16 +87,8 @@ export default function UserDetail() {
   useEffect(() => {
     if (userDetails && userId === userDetails.userId) {
       setProfile({
-        fullName: userDetails.fullName,
-        birthDate: userDetails.birthDate,
-        gender: userDetails.gender,
-        email: userDetails.email,
-        idCard: userDetails.idCard,
-        phoneNumber: userDetails.phoneNumber,
-        address: userDetails.address,
-        point: userDetails.point,
-        userName: userDetails.userName,
-        avatar: userDetails.avatar,
+        ...userDetails,
+        birthDate: userDetails.birthDate ? format(parseISO(userDetails.birthDate), "yyyy-MM-dd") : "",
         ticket: {
           history: [],
           data: [],
@@ -161,7 +154,11 @@ export default function UserDetail() {
   };
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setProfile(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleTogglePasswordVisibility = (field: keyof ShowPasswordState) => {
@@ -188,19 +185,16 @@ export default function UserDetail() {
 
   const handleUpdateProfile = async (id: string) => {
     try {
-      await updateUserPartial(id, {
-        fullName: profile.fullName,
-        birthDate: profile.birthDate,
-        avatar: profile.avatar,
-        gender: profile.gender,
-        email: profile.email,
-        phoneNumber: profile.phoneNumber,
-        address: profile.address,
-      });
-      setSuccessMessage("Thông tin tài khoản đã được cập nhật thành công!");
+      const formattedProfile = {
+        ...profile,
+        birthDate: profile.birthDate ? new Date(profile.birthDate).toISOString() : null,
+      };
+
+      await updateUserPartial(id, formattedProfile);
+      setSuccessMessage(t("user.profile.update_success"));
       setShowSuccess(true);
     } catch (error) {
-      setSuccessMessage("Cập nhật thông tin tài khoản thất bại!");
+      setSuccessMessage(t("user.profile.update_failed"));
       setShowSuccess(true);
     }
   };
@@ -479,11 +473,18 @@ export default function UserDetail() {
                     />
                     <TextField
                       label={t("user.field.dob")}
-                      name="dob"
-                      value={profile.birthDate}
+                      name="birthDate"
+                      type="date"
+                      value={profile.birthDate || ""}
                       onChange={handleProfileChange}
                       fullWidth
                       sx={{ mb: 2 }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      inputProps={{
+                        max: format(new Date(), "yyyy-MM-dd")
+                      }}
                     />
                     <RadioGroup
                       row

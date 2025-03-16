@@ -24,7 +24,7 @@ export interface UserResponse {
   avatar: string;
   joinDate: string;
   fullName: string;
-  birthDate: string;
+  birthDate: string | null;
   gender: number;
   idCard: string;
   email: string;

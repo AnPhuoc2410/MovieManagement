@@ -33,3 +33,10 @@ export const updateUserPartial = async (
   );
   return response.status === 200 ? true : false;
 };
+
+export const fetchUserDetail = async (id: string) => {
+  const response = await api.get<ApiResponse<UserResponse>>(
+    `/users/detail/${id}`,
+  );
+  return response.data;
+};

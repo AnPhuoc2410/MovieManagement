@@ -115,7 +115,7 @@ const AuthForm = () => {
           <Box
             sx={{
               p: { xs: 2, sm: 3, md: 4 },
-              minHeight: "400px",
+              minHeight: { xs: "calc(100vh - 200px)", md: "500px" },
               display: "flex",
               flexDirection: "column",
               backgroundColor: "#FFFFFF",
