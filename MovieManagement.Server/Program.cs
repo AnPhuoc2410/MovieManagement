@@ -3,6 +3,8 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ClaimRequest.API.Middlewares;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -152,6 +154,10 @@ namespace MovieManagement.Server
 
             //ADD SignalR
             builder.Services.AddSignalR();
+
+            //Register Hangfire
+            builder.Services.AddHangfire(config => config.UseMemoryStorage());
+            builder.Services.AddHangfireServer();
 
             // Đăng ký VnPayService
             builder.Services.AddSingleton<IVnPayService, VnPayService>();

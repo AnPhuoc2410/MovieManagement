@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Hangfire;
+using Microsoft.AspNetCore.SignalR;
 using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Services.TicketDetailServices;
 using System;
@@ -36,6 +37,40 @@ namespace MovieManagement.Server.Extensions.SignalR
             {
                 throw new HubException($"Error setting seat pending: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Selects a seat for a user. If the seat is not paid within 5 minutes, it will be auto-released.
+        /// </summary>
+        public async Task SelectSeat(string seatId, string userId)
+        {
+            // Notify other users that this seat is selected.
+            await Clients.Others.SendAsync("SeatSelected", seatId, userId);
+
+            // Schedule a Hangfire job to auto-release the seat after 5 minutes.
+            BackgroundJob.Schedule(() => AutoReleaseSeat(seatId), TimeSpan.FromMinutes(5));
+        }
+
+        /// <summary>
+        /// Confirms the seat purchase by updating its status to "Bought" in the database,
+        /// then notifies all clients.
+        /// </summary>
+        public async Task ConfirmSeatPurchase(string seatId)
+        {
+            // Update the ticket status to Bought.
+            await _ticketService.ChangeStatusTicketDetailAsync(Guid.Parse(seatId), TicketStatus.Paid);
+
+            // Notify all clients that the seat is now bought.
+            await Clients.All.SendAsync("SeatBought", seatId);
+        }
+
+        /// <summary>
+        /// Automatically releases the seat if payment is not confirmed within 5 minutes.
+        /// Notifies all clients that the seat is available again.
+        /// </summary>
+        public async Task AutoReleaseSeat(string seatId)
+        {
+            await Clients.All.SendAsync("SeatAvailable", seatId);
         }
     }
 }

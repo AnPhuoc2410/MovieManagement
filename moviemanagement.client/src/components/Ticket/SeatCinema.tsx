@@ -12,7 +12,7 @@ interface SeatProps {
   setSelectedSeats: React.Dispatch<
     React.SetStateAction<{ id: string; name: string; version: string; ticketId: string; isMine?: boolean }[]>
   >;
-  connection: any; // Use HubConnection | null if desired.
+  connection: any;
 }
 
 const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelectedSeats, connection }) => {
@@ -28,17 +28,39 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
         prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
       );
     });
+
     connection.on("SeatBought", (seatId: string) => {
       setSeats((prev) =>
         prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 2 } : ticket))
       );
     });
 
+    connection.on("SeatSelected", (seatId: string, userId: string) => {
+      const currentUserId = localStorage.getItem("userId") || "anonymous";
+      // Mark seats selected by others with special status
+      if (userId !== currentUserId) {
+        setSeats((prev) =>
+          prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
+        );
+      }
+    });
+
+    connection.on("SeatAvailable", (seatId: string) => {
+      setSeats((prev) =>
+        prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 0 } : ticket))
+      );
+
+      // If this was our seat that got auto-released, we need to remove it from selections
+      setSelectedSeats((prev) => prev.filter(seat => seat.id !== seatId));
+    });
+
     return () => {
       connection.off("SeatPending");
       connection.off("SeatBought");
+      connection.off("SeatSelected");
+      connection.off("SeatAvailable");
     };
-  }, [connection]);
+  }, [connection, setSelectedSeats]);
 
   // Fetch ticket data by showTimeId.
   useEffect(() => {
@@ -60,8 +82,8 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     fetchSeats();
   }, [showTimeId]);
 
-  // Handle seat click event (select/deselect locally).
-  const handleSeatClick = (ticket: TicketDetail) => {
+
+  const handleSeatClick = async (ticket: TicketDetail) => {
     if (!connection) {
       toast.error("Mất kết nối đến server!");
       return;
@@ -74,25 +96,35 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
       version: ticket.version,
       ticketId: ticket.ticketId,
       isMine: true,
+      selectedAt: Date.now() // Add timestamp when seat is selected
     };
 
-    setSelectedSeats((prevSeats) => {
-      const existingSeat = prevSeats.find((s) => s.ticketId === ticket.ticketId);
-      if (existingSeat) {
-        if (existingSeat.id === ticket.seatId) {
-          toast.success(`Bỏ chọn ghế ${seatName}`);
-          return prevSeats.filter((s) => s.ticketId !== ticket.ticketId);
+    try {
+      // Try to select this seat on the server first
+      //TODO: Add the userID to it
+      await connection.invoke("SelectSeat", ticket.seatId, localStorage.getItem("userId") || "anonymous");
+
+      setSelectedSeats((prevSeats) => {
+        const existingSeat = prevSeats.find((s) => s.ticketId === ticket.ticketId);
+        if (existingSeat) {
+          if (existingSeat.id === ticket.seatId) {
+            toast.error(`Bỏ chọn ghế ${seatName}`);
+            return prevSeats.filter((s) => s.ticketId !== ticket.ticketId);
+          } else {
+            toast.success(`Đổi ghế từ ${existingSeat.name} sang ${seatName}`);
+            return prevSeats.map((s) =>
+              s.ticketId === ticket.ticketId ? seatInfo : s
+            );
+          }
         } else {
-          toast.success(`Đổi ghế từ ${existingSeat.name} sang ${seatName}`);
-          return prevSeats.map((s) =>
-            s.ticketId === ticket.ticketId ? seatInfo : s
-          );
+          toast.success(`Chọn ghế ${seatName}`);
+          return [...prevSeats, seatInfo];
         }
-      } else {
-        toast.success(`Chọn ghế ${seatName}`);
-        return [...prevSeats, seatInfo];
-      }
-    });
+      });
+    } catch (error) {
+      toast.error("Không thể chọn ghế này. Có thể ghế đã được người khác chọn.");
+      console.error("Error selecting seat:", error);
+    }
   };
 
   return (
