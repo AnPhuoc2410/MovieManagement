@@ -17,7 +17,7 @@ const ForgotPassword = lazy(
 // Admin Pages
 const AdminPages = {
   Ticket: {
-    BuyTicket: lazy(() => import("./pages/admin/QuanLyBanVe/SoldTicket")),
+    BuyTicket: lazy(() => import("./pages/admin/QuanLyBanVe/QuanLiBanVe")),
     BookingDetail: lazy(() => import("./pages/admin/QuanLyDatVe/ChiTietDatVe")),
     BookingManagement: lazy(
       () => import("./pages/admin/QuanLyDatVe/QuanLyDatVe"),
@@ -131,7 +131,7 @@ export default function useRouteElements() {
     },
     // Protected Admin Routes
     {
-      element: <ProtectedRoute requireAdmin={true} />,
+      element: <RejectedRoute />,
       children: [
         {
           path: "/admin",
