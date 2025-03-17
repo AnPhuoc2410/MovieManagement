@@ -1,15 +1,15 @@
 import { Box } from "@mui/material";
-import React from "react";
+import React, { memo } from "react";
 import Header from "../../components/home/Header";
 import Footer from "../../components/home/Footer";
 
-interface MainLayoutProps {
+interface Props {
   children: React.ReactNode;
   hideHeader?: boolean;
   hideFooter?: boolean;
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({
+const MainLayoutInner: React.FC<Props> = ({
   children,
   hideHeader = false,
   hideFooter = false,
@@ -49,5 +49,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     </Box>
   );
 };
+
+const MainLayout = memo(MainLayoutInner);
 
 export default MainLayout;
