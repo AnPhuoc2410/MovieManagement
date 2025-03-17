@@ -48,7 +48,7 @@ namespace MovieManagement.Server.Extensions.ConvertFile
                     ";
             return ticketList;
         }
-        public string GenerateHtmlFromBillReport(BillReportRequest billReport, Bill userBill)
+        public string GenerateHtmlFromBillReport(BillReportRequest billReport)
         {
             string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Extensions", "BillReportTemplate", "BillReportTemplate.html");
             if (!File.Exists(templatePath))
@@ -59,7 +59,7 @@ namespace MovieManagement.Server.Extensions.ConvertFile
             // Generate ticket list HTML
             decimal total = 0;
             var ticketListHTML = new StringBuilder();
-            var ticketDetails = _unitOfWork.BillRepository.GetPurchasedTicketsForBill(userBill.BillId).Result;
+            var ticketDetails = _unitOfWork.BillRepository.GetPurchasedTicketsForBill(billReport.BillId).Result;
             foreach (var ticket in ticketDetails)
             {
                 ticketListHTML.Append(GenerateHtmlFromBillReportTemplate(ticket));
@@ -68,9 +68,9 @@ namespace MovieManagement.Server.Extensions.ConvertFile
 
             // Get discount
             decimal discount = 0;
-            if (userBill.PromotionId != null)
+            if (billReport.PromotionId != null)
             {
-                var promotion = _unitOfWork.PromotionRepository.GetByIdAsync(userBill.PromotionId.Value).Result;
+                var promotion = _unitOfWork.PromotionRepository.GetByIdAsync(billReport.PromotionId.Value).Result;
                 discount = promotion.Discount;
             }
 
@@ -83,7 +83,7 @@ namespace MovieManagement.Server.Extensions.ConvertFile
                 .Replace("{{Amount}}", billReport.Amount.ToString("N0"));
 
             return body;
-        }
+        }   
 
         public byte[] ConvertHtmlToPdf(string htmlContent)
         {

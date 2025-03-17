@@ -32,7 +32,7 @@ namespace MovieManagement.Server.Services.EmailService
             if (userBill == null)
                 throw new NotFoundException("No bills found!");
 
-            //Get user email
+            // Get user email
             string userEmail = (await _unitOfWork.UserRepository.GetByIdAsync(userBill.UserId)).Email;
             if(userEmail == null)
                 throw new NotFoundException("No user found!");
@@ -43,46 +43,10 @@ namespace MovieManagement.Server.Services.EmailService
             message.To.Add(new MailboxAddress("", userEmail));
             message.Subject = "INVOICE";
 
-            //Get html file
-            var templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Extensions", "BillReportTemplate", "BillReportTemplate.html");
+            // Get body from bill report
+            string body = _convertFile.GenerateHtmlFromBillReport(billReport);
 
-
-            // If not found template file
-            if (!File.Exists(templatePath))
-                throw new FileNotFoundException($"Template file not found: {templatePath}");
-
-            //Read template file
-            var body = File.ReadAllText(templatePath);
-
-            //Create list Products
-            decimal total = 0;
-            var ticketListHTML = new StringBuilder();
-            var ticketDetails = await _unitOfWork.BillRepository.GetPurchasedTicketsForBill(userBill.BillId);
-            foreach (var ticket in ticketDetails)
-            {
-                ticketListHTML.Append(_convertFile.GenerateHtmlFromBillReportTemplate(ticket));
-                total += ticket.Price;
-            }
-
-            //Get discount of Bill
-            decimal discount = 0;
-            if (userBill.PromotionId != null)
-            {
-                var promotion = await _unitOfWork.PromotionRepository.GetByIdAsync(userBill.PromotionId.Value);
-                discount = promotion.Discount;
-            }
-
-            //Replace template
-            body = body
-                .Replace("{{CreatedDate}}", billReport.CreatedDate.ToString("MMMM dd, yyyy", new System.Globalization.CultureInfo("en-US")))
-                .Replace("{{TicketList}}", ticketListHTML.ToString())
-                .Replace("{{Total}}", total.ToString())
-                .Replace("{{Discount}}", discount.ToString())
-                .Replace("{{Amount}}", billReport.Amount.ToString());
-
-
-
-            //Assign body to message
+            // Assign body to message
             var bodyBuilder = new BodyBuilder { HtmlBody = body };
             message.Body = bodyBuilder.ToMessageBody();
 
