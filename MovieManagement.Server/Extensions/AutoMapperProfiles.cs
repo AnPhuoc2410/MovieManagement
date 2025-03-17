@@ -20,9 +20,7 @@ namespace MovieManagement.Server.Extensions
                 .ForMember(dest => dest.Bills, opt => opt.Ignore())
                 .ForMember(dest => dest.UserId, opt => opt.Ignore())
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
-            
-            //List User Response For Admin  
-            CreateMap<User, UserResponse>();
+
             CreateMap<UserResponse, User>()
                 .ForMember(dest => dest.Password, opt => opt.Ignore())
                 .ForMember(dest => dest.JoinDate, opt => opt.Ignore())
@@ -36,7 +34,10 @@ namespace MovieManagement.Server.Extensions
                 .ForMember(dest => dest.Password, opt => opt.Ignore())
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()));
             //User DTO <=> User Respone
-            CreateMap<User, UserDto.UserResponse>();
+            CreateMap<User, UserDto.UserResponse>()
+                .ForMember(dest => dest.JoinDate, opt => opt.MapFrom(src => src.JoinDate.ToString("yyyy-MM-ddTHH:mm:ssZ")))
+                .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate.ToString("yyyy-MM-ddTHH:mm:ssZ")));
+
             CreateMap<UserDto.UserResponse, User>();
 
             //User DTO <=> Register Request

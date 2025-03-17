@@ -169,7 +169,9 @@
         "change_password": "Đổi mật khẩu",
         "admin_panel": "Quản lí hệ thống",
         "admin": "Quản trị viên",
-        "employee": "Nhân viên"
+        "employee": "Nhân viên",
+        "update_success": "Cập nhật thông tin thành công!",
+        "update_failed": "Cập nhật thông tin thất bại"
       },
       "field": {
         "full_name": "Họ và tên",

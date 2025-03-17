@@ -169,7 +169,9 @@
         "change_password": "パスワード変更",
         "admin_panel": "管理者パネル",
         "admin": "管理者",
-        "employee": "従業員"
+        "employee": "従業員",
+        "update_success": "プロフィールが正常に更新されました！",
+        "update_failed": "プロフィールの更新に失敗しました"
       },
       "field": {
         "full_name": "氏名",

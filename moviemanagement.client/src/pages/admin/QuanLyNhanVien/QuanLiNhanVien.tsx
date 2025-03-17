@@ -2,7 +2,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Avatar, Box, Chip } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -44,8 +43,7 @@ const QuanLiNhanVien: React.FC = () => {
     }
   }, [error]);
 
-  const handleEdit = (username: string) =>
-    navigate(`/admin/ql-nhan-vien/${username}`);
+  const handleEdit = (id: string) => navigate(`/admin/ql-nhan-vien/${id}`);
 
   const handleDelete = (username: string) => {
     const employeeToDelete = employees?.find(
@@ -99,7 +97,7 @@ const QuanLiNhanVien: React.FC = () => {
         width: 220,
       },
       {
-        field: "phone",
+        field: "phoneNumber",
         headerName: t("common.table_header.user.phone"),
         width: 130,
       },
@@ -130,9 +128,6 @@ const QuanLiNhanVien: React.FC = () => {
           if (isNaN(date.getTime())) {
             return "Invalid Date";
           }
-
-          // Use date-fns to format the date
-          return format(date, "yyyy-MM-dd");
         },
       },
       {
@@ -144,7 +139,7 @@ const QuanLiNhanVien: React.FC = () => {
           <GridActionsCellItem
             icon={<EditIcon />}
             label="Edit"
-            onClick={() => handleEdit(params.row.userName)}
+            onClick={() => handleEdit(params.row.userId)}
           />,
           params.row.status === 1 && (
             <GridActionsCellItem
