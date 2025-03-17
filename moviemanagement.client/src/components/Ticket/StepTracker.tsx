@@ -17,7 +17,7 @@ const steps = [
 
 interface StepTrackerProps {
   currentStep: number;
-  paymentStatus?: "success" | "failure";
+  paymentStatus?: string;
 }
 
 const StepTracker: React.FC<StepTrackerProps> = ({
@@ -25,9 +25,9 @@ const StepTracker: React.FC<StepTrackerProps> = ({
   paymentStatus,
 }) => {
   const finalStep =
-    paymentStatus === "success"
-      ? { label: "Thành Công", icon: <CheckCircleIcon /> }
-      : { label: "Hủy Thanh Toán", icon: <CancelOutlined sx={{ color: 'red' }} /> };
+    paymentStatus === "failure"
+      ? { label: "Hủy Thanh Toán", icon: <CancelOutlined  /> }
+      : { label: "Thành Công", icon: <CheckCircleIcon /> };
 
   return (
     <Box
@@ -85,7 +85,7 @@ const StepTracker: React.FC<StepTrackerProps> = ({
               StepIconComponent={() => (
                 <Box
                   sx={{
-                    color: index < currentStep ? "#834bff" : "gray",
+                    color: index < currentStep ? (index == 3 && paymentStatus == "failure") ? "red" : "#834bff" : "gray",
                     display: "flex",
                     alignItems: "center",
                     transition: "color 0.3s ease",
