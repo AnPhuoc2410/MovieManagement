@@ -1,4 +1,5 @@
 ﻿using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Repositories.IRepositories
 {
@@ -6,5 +7,6 @@ namespace MovieManagement.Server.Repositories.IRepositories
     {
         Task<List<TicketDetail>> GetTicketByShowTimeId(Guid showTimeId);
         Task<TicketDetail> GetTicketByIdAndVersion(Guid id, byte[] version);
+        Task<List<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(Guid billId);
     }
 }

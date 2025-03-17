@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Extensions.ConvertFile;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services.JwtService;
@@ -151,37 +152,18 @@ namespace MovieManagement.Server
             // Đăng ký VnPayService
             builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
+            // Đăng ký ConvertFile
+            builder.Services.AddScoped<IConvertFileService, ConvertFileService>();
+
             builder.Services.Configure<RouteOptions>(options =>
             {
                 options.LowercaseUrls = true; // Forces lowercase routes
             });
-            //builder.Services.AddAuthentication(options =>
-            //    {
-            //        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //        options.DefaultChallengeScheme =
-            //            JwtBearerDefaults.AuthenticationScheme; // Added missing assignment
-            //    })
-            //    .AddCookie()
-            //    .AddGoogle(options =>
-            //    {
-            //        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-            //        options.ClientSecret =
-            //            builder.Configuration["Authentication:Google:ClientSecret"];
-            //        options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
-            //        options.SaveTokens = true;
-            //    });
 
             var app = builder.Build();
 
-
             app.UseDefaultFiles();
             app.UseStaticFiles();
-
-            // Check khi nao Migration se duoc apply
-            //if (builder.Configuration.GetValue<bool>("ApplyMigrations", false))
-            //{
-            //    app.ApplyMigrations();
-            //}
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

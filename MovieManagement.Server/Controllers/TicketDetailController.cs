@@ -205,7 +205,6 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
-
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<TicketDetailDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]

@@ -13,30 +13,6 @@ namespace MovieManagement.Server.Repositories
         {
             _context = context;
         }
-        public async Task<List<PurchasedTicketResponse>> GetPurchasedTickets(Guid userId)
-        {
-            return await _context.Bills
-                .Where(b => b.UserId == userId)
-                .Include(b => b.TicketDetails)
-                    .ThenInclude(td => td.ShowTime)
-                        .ThenInclude(st => st.Room)
-                .Include(b => b.TicketDetails)
-                    .ThenInclude(td => td.ShowTime)
-                        .ThenInclude(st => st.Movie)
-                .Include(b => b.TicketDetails)
-                    .ThenInclude(td => td.Seat)
-                .SelectMany(b => b.TicketDetails.Select(td => new PurchasedTicketResponse
-                {
-                    MovieName = td.ShowTime.Movie.MovieName,
-                    CreateDate = b.CreatedDate,
-                    StartDay = td.ShowTime.StartTime.ToShortTimeString(),
-                    Showtime = td.ShowTime.StartTime.ToShortTimeString(),
-                    AtRow = td.Seat.AtRow,
-                    AtColumn = td.Seat.AtColumn,
-                    Status = b.Status
-                }))
-                .ToListAsync();
-        }
 
         public async Task<List<TicketBillResponse>> GetPurchasedTicketsForBill(Guid billId)
         {

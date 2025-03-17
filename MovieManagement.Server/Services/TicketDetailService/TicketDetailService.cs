@@ -135,5 +135,17 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
         }
 
+        public async Task<IEnumerable<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(Guid billId)
+        {
+            if (billId == Guid.Empty)
+                throw new BadRequestException("BillId is invalid!");
+            var isExist = await _unitOfWork.BillRepository.GetByIdAsync(billId);
+            if (isExist == null)
+                throw new NotFoundException("Bill not found!");
+            List<PurchasedTicketResponse>  purchasedTicketResponses = await _unitOfWork.TicketDetailRepository.GetPurchasedTicketsByBillId(billId);
+            if(purchasedTicketResponses == null)
+                throw new NotFoundException("No purchased ticket found!");
+            return purchasedTicketResponses;
+        }
     }
 }

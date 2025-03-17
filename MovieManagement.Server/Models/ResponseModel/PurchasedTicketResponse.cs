@@ -5,13 +5,14 @@ namespace MovieManagement.Server.Models.ResponseModel
 {
     public class PurchasedTicketResponse
     {
+        public string MovieImage { get; set; }
         public string MovieName { get; set; }
-        public DateTime CreateDate { get; set; }
-        public string StartDay{ get; set; }
-        public string Showtime { get; set; }
+        public List<string> MovieCategories { get; set; }
+        public string StartDay { get; set; }
+        public string StartTime { get; set; }
+        public string RoomName { get; set; }
         public string AtRow { get; set; }
         public int AtColumn { get; set; }
-        public decimal Price { get; set; }
-        public BillStatus Status { get; set; }
+        public string SeatType { get; set; }
     }
 }
