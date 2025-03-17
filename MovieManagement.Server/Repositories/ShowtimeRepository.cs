@@ -35,7 +35,7 @@ namespace MovieManagement.Server.Repositories
         public async Task<List<ShowTime>> GetShowTimeFromDateToDate(Guid movieId, DateTime date1, DateTime date2)
         {
             var showTimes = await _context.Showtimes
-                .Where(st => st.MovieId == movieId && st.StartTime.Date >= date1.Date && st.StartTime.Date <= date2.Date)
+                .Where(st => st.MovieId == movieId && st.StartTime.Date >= date1.Date && st.StartTime.Date <= date2.Date && st.StartTime.AddMinutes(15).CompareTo(DateTime.Now) > 0)
                 .OrderBy(st => st.StartTime)
                 .ToListAsync();
             return showTimes;
