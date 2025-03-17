@@ -267,9 +267,15 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                   backgroundColor: "transparent",
                 }}
               >
-                <MenuItem value="hcm">{t("showtime_cinema.location.HCM")}</MenuItem>
-                <MenuItem value="hn">{t("showtime_cinema.location.HaNoi")}</MenuItem>
-                <MenuItem value="dn">{t("showtime_cinema.location.DaNang")}</MenuItem>
+                <MenuItem value="hcm">
+                  {t("showtime_cinema.location.HCM")}
+                </MenuItem>
+                <MenuItem value="hn">
+                  {t("showtime_cinema.location.HaNoi")}
+                </MenuItem>
+                <MenuItem value="dn">
+                  {t("showtime_cinema.location.DaNang")}
+                </MenuItem>
               </Select>
             </FormControl>
           </Grid>

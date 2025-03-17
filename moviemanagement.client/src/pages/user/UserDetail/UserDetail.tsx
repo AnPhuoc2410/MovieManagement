@@ -88,7 +88,9 @@ export default function UserDetail() {
     if (userDetails && userId === userDetails.userId) {
       setProfile({
         ...userDetails,
-        birthDate: userDetails.birthDate ? format(parseISO(userDetails.birthDate), "yyyy-MM-dd") : "",
+        birthDate: userDetails.birthDate
+          ? format(parseISO(userDetails.birthDate), "yyyy-MM-dd")
+          : "",
         ticket: {
           history: [],
           data: [],
@@ -155,9 +157,9 @@ export default function UserDetail() {
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -187,7 +189,9 @@ export default function UserDetail() {
     try {
       const formattedProfile = {
         ...profile,
-        birthDate: profile.birthDate ? new Date(profile.birthDate).toISOString() : null,
+        birthDate: profile.birthDate
+          ? new Date(profile.birthDate).toISOString()
+          : null,
       };
 
       await updateUserPartial(id, formattedProfile);
@@ -483,7 +487,7 @@ export default function UserDetail() {
                         shrink: true,
                       }}
                       inputProps={{
-                        max: format(new Date(), "yyyy-MM-dd")
+                        max: format(new Date(), "yyyy-MM-dd"),
                       }}
                     />
                     <RadioGroup

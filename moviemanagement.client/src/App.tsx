@@ -6,6 +6,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { useThemeProvider } from "./theme/useThemeProvider";
 import useRouteElements from "./useRouteElements";
+import ErrorBoundary from "./components/error/ErrorBoundary";
 
 const App = () => {
   const routeElements = useRouteElements();
@@ -15,8 +16,10 @@ const App = () => {
       <AuthProvider>
         <LanguageProvider>
           <Suspense fallback={<Loader />}>
-            {routeElements}
-            <ToasterWithMax position="top-center" max={3} />
+            <ErrorBoundary>
+              {routeElements}
+              <ToasterWithMax position="top-center" max={3} />
+            </ErrorBoundary>
           </Suspense>
         </LanguageProvider>
       </AuthProvider>

@@ -29,7 +29,7 @@ const SeatCinema: React.FC<SeatProps> = ({
       try {
         setLoading(true);
         const response = await axios.get(
-          `https://localhost:7119/api/ticketdetail/getbyroomid/${showTimeId}` // Updated endpoint URL
+          `https://localhost:7119/api/ticketdetail/getbyroomid/${showTimeId}`, // Updated endpoint URL
         );
         if (response.data && response.data.data) {
           setSeats(response.data.data);
@@ -48,7 +48,11 @@ const SeatCinema: React.FC<SeatProps> = ({
   // Toggle seat selection
   const handleSeatClick = (ticket: TicketDetail) => {
     const seatName = `${ticket.seat.atRow}${ticket.seat.atColumn}`;
-    const seatInfo = { id: ticket.seatId, name: seatName, version: ticket.version };
+    const seatInfo = {
+      id: ticket.seatId,
+      name: seatName,
+      version: ticket.version,
+    };
 
     if (selectedSeats.some((s) => s.id === ticket.seatId)) {
       setSelectedSeats(selectedSeats.filter((s) => s.id !== ticket.seatId));
@@ -139,8 +143,8 @@ const SeatCinema: React.FC<SeatProps> = ({
                 acc[ticket.seat.atRow].push(ticket);
                 return acc;
               },
-              {} as Record<string, TicketDetail[]>
-            )
+              {} as Record<string, TicketDetail[]>,
+            ),
           ).map(([row, rowSeats]) => (
             <Box
               key={row}
@@ -148,7 +152,7 @@ const SeatCinema: React.FC<SeatProps> = ({
             >
               {rowSeats.map((ticket) => {
                 const isSelected = selectedSeats.some(
-                  (s) => s.id === ticket.seatId
+                  (s) => s.id === ticket.seatId,
                 );
                 const isBought = ticket.status !== 0; // Booked or Reserved
                 const isVip = ticket.seat.seatType.typeName === "VIP";

@@ -10,12 +10,13 @@ import toast from "react-hot-toast";
 const MovieSeat: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { showTimeId, selectedTime, selectedDate, tickets } = location.state || {
-    showTimeId: "", // Changed from showtimeId to showTimeId
-    selectedTime: "Not selected",
-    selectedDate: "Not selected",
-    tickets: [],
-  };
+  const { showTimeId, selectedTime, selectedDate, tickets } =
+    location.state || {
+      showTimeId: "", // Changed from showtimeId to showTimeId
+      selectedTime: "Not selected",
+      selectedDate: "Not selected",
+      tickets: [],
+    };
 
   // State to store selected seats
   const [selectedSeats, setSelectedSeats] = useState<

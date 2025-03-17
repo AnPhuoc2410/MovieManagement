@@ -81,8 +81,11 @@
         "remember_me": "ログイン情報を保存",
         "logging_in": "ログイン中...",
         "captcha_required": "キャプチャ認証を完了してください",
+        "wrong_credentials": "ユーザー名またはパスワードが正しくありません",
         "unexpected_error": "予期せぬエラーが発生しました",
-        "welcome_message": "お帰りなさい、{{name}}さん"
+        "welcome_message": "お帰りなさい、{{name}}さん",
+        "please_complete_captcha": "キャプチャ認証を完了してください",
+        "complete_captcha_to_continue": "続行するにはキャプチャ認証を完了してください"
       },
       "signup": {
         "title": "新規登録",
@@ -259,6 +262,7 @@
           "phone": "電話番号",
           "status": "ステータス",
           "join_date": "参加日",
+          "address": "住所",
           "points": "ボーナスポイント"
         },
         "actions": "アクション"
