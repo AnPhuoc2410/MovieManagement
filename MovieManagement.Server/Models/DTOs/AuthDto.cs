@@ -19,6 +19,8 @@ namespace MovieManagement.Server.Models.DTOs
 
         public class RegisterRequest
         {
+            public string? Avatar { get; set; }
+            
             [Required(ErrorMessage = "Username is required")]
             [StringLength(50, ErrorMessage = "Username cannot be longer than 50 characters")]
             public string UserName { get; set; }

@@ -69,7 +69,7 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("TempConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("PhuocConnection"))
             );
 
             // Đăng ký UnitOfWork
@@ -157,7 +157,7 @@ namespace MovieManagement.Server
             {
                 options.LowercaseUrls = true; // Forces lowercase routes
             });
-            
+
 
             var app = builder.Build();
 

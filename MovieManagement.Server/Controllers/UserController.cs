@@ -27,6 +27,7 @@ namespace MovieManagement.Server.Controllers
         /// <response code="400">Bad request from client side</response>
         /// <response code="401" >Unauthorized Access</response>
         /// <response code="500">Internal Server Error</response>
+        [Authorize(Roles = "Member,Employee,Admin")]
         [HttpGet("detail/{userId:guid}")]
         [ProducesResponseType(typeof(Services.ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -73,7 +74,7 @@ namespace MovieManagement.Server.Controllers
             });
         }
 
-        
+        [Authorize(Roles = "Member,Employee,Admin")]
         [HttpGet("page/{page:int}/limit/{limit:int}")]
         [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status400BadRequest)]
@@ -92,6 +93,7 @@ namespace MovieManagement.Server.Controllers
         /// </summary>
         /// <param name="userId"></param>
         /// <response code="200">User updated successfully</response>
+        [Authorize(Roles = "Member,Employee,Admin")]
         [HttpPatch("{userId:guid}")]
         [ProducesResponseType(typeof(Services.ApiResponse<UserDto.UpdateRequest>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -124,7 +126,7 @@ namespace MovieManagement.Server.Controllers
         /// <response code="401" >Unauthorized Access</response>
         /// <response code="500">Internal Server Error</response>
         ///
-        // [Authorize(Policy = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{empId:guid}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status400BadRequest)]

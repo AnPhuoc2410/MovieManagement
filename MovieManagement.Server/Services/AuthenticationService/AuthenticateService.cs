@@ -42,12 +42,12 @@ namespace MovieManagement.Server.Services.AuthorizationService
         {
             //Check user name
             var user = await _userRepository.GetUserByEmailAsync(dto.Email) ?? 
-                       throw new UnauthorizedAccessException("Invalid username/email or password");
+                       throw new BadRequestException("Invalid username/email or password");
             
             //Check password
             var result = new PasswordHasher<User>().VerifyHashedPassword(user, user.Password, dto.Password);
             if (result == PasswordVerificationResult.Failed)
-                throw new UnauthorizedAccessException("Invalid username/email or password");
+                throw new BadRequestException("Invalid username/email or password");
             
             return new AuthDto.LoginResponse
             {
@@ -95,7 +95,7 @@ namespace MovieManagement.Server.Services.AuthorizationService
             newUser.Status = UserStatus.Active; // Active user
             newUser.JoinDate = DateTime.UtcNow;
             newUser.Address = dto.Address.Trim();
-            newUser.Avatar = $"https://api.dicebear.com/9.x/adventurer/svg?seed={dto.FullName.Split().Last()}";
+            newUser.Avatar = dto.Avatar ?? $"https://api.dicebear.com/9.x/adventurer/svg?seed={dto.FullName.Split().Last()}";
             newUser.IDCard = dto.IDCard.Trim();
             newUser.PhoneNumber = dto.PhoneNumber.Trim();
             newUser.Role = 0; //Default role is Member
