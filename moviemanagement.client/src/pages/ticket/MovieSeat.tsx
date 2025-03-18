@@ -38,7 +38,7 @@ const MovieSeat: React.FC = () => {
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl('https://localhost:7119/seatSelectionHub')
+      .withUrl('https://localhost:7119/seatHub')
       .withAutomaticReconnect()
       .build();
 
@@ -110,7 +110,7 @@ const MovieSeat: React.FC = () => {
       // Use SignalR to update seat status to PENDING (broadcast to all clients)
       await connection.invoke("SetSeatPending", ticketRequests);
 
-      toast.success("Ghế đã được cập nhật thành trạng thái PENDING. Chuyển đến trang thanh toán...");
+      toast.success("Chuyển đến trang thanh toán...");
 
       // Navigate directly to the payment page
       navigate("/ticket/payment", {
@@ -296,7 +296,7 @@ const MovieSeat: React.FC = () => {
                     color: "primary.light",
                   }}
                 >
-                  {`Bạn cần chọn đúng ${maxSeats} ghế. Mỗi lần chọn ghế, thời gian 5 phút sẽ được làm mới.`}
+                  {`Bạn cần chọn đúng ${maxSeats} ghế.`}
                 </Typography>
               </Box>
 

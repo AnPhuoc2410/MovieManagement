@@ -102,7 +102,8 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     try {
       // Try to select this seat on the server first
       //TODO: Add the userID to it
-      await connection.invoke("SelectSeat", ticket.seatId, localStorage.getItem("userId") || "anonymous");
+      toast.error(`${ticket.ticketId}`);
+      await connection.invoke("SelectSeat", ticket.ticketId, localStorage.getItem("userId") || "anonymous");
 
       setSelectedSeats((prevSeats) => {
         const existingSeat = prevSeats.find((s) => s.ticketId === ticket.ticketId);

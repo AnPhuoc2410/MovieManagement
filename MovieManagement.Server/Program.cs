@@ -218,7 +218,7 @@ namespace MovieManagement.Server
             app.MapControllers();
             app.UseCors("AllowReactApp");
             //Enable Websocket support
-            app.MapHub<SeatSelectionHub>("/seatSelectionHub");
+            app.MapHub<SeatHub>("/seatHub");
 
             app.MapFallbackToFile("/index.html");
             app.UseHttpsRedirection();

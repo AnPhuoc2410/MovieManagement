@@ -9,11 +9,12 @@ using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Extensions.SignalR
 {
-    public class SeatSelectionHub : Hub
+    public class SeatHub : Hub
     {
+        private static Dictionary<string, string> _seatJobTracker = new();
         private readonly ITicketDetailService _ticketService;
 
-        public SeatSelectionHub(ITicketDetailService ticketService)
+        public SeatHub(ITicketDetailService ticketService)
         {
             _ticketService = ticketService;
         }
@@ -42,35 +43,47 @@ namespace MovieManagement.Server.Extensions.SignalR
         /// <summary>
         /// Selects a seat for a user. If the seat is not paid within 5 minutes, it will be auto-released.
         /// </summary>
-        public async Task SelectSeat(string seatId, string userId)
+        public void SelectSeat(string ticketId, string userId)
         {
-            // Notify other users that this seat is selected.
-            await Clients.Others.SendAsync("SeatSelected", seatId, userId);
+            // Check if there's already a job for this seat
+            if (_seatJobTracker.TryGetValue(ticketId, out var existingJobId))
+            {
+                // Cancel the existing Hangfire job to avoid multiple timers
+                BackgroundJob.Delete(existingJobId);
+            }
 
-            // Schedule a Hangfire job to auto-release the seat after 5 minutes.
-            BackgroundJob.Schedule(() => AutoReleaseSeat(seatId), TimeSpan.FromMinutes(5));
+            // Schedule a new job and store its ID
+            var newJobId = BackgroundJob.Schedule(() => AutoReleaseSeat(ticketId), TimeSpan.FromMinutes(1));
+            _seatJobTracker[ticketId] = newJobId;
         }
 
         /// <summary>
         /// Confirms the seat purchase by updating its status to "Bought" in the database,
         /// then notifies all clients.
         /// </summary>
-        public async Task ConfirmSeatPurchase(string seatId)
+        public async Task ConfirmSeatPurchase(List<TicketDetailRequest> ticketRequests)
         {
             // Update the ticket status to Bought.
-            await _ticketService.ChangeStatusTicketDetailAsync(Guid.Parse(seatId), TicketStatus.Paid);
-
-            // Notify all clients that the seat is now bought.
-            await Clients.All.SendAsync("SeatBought", seatId);
+            foreach (var ticketRequest in ticketRequests)
+            {
+                await _ticketService.ChangeStatusTicketDetailAsync(ticketRequest.TicketId, TicketStatus.Paid);
+                // Notify all clients that the seat is now bought.
+                await Clients.All.SendAsync("SeatBought", ticketRequest.TicketId);
+            }
+            
         }
 
         /// <summary>
         /// Automatically releases the seat if payment is not confirmed within 5 minutes.
         /// Notifies all clients that the seat is available again.
         /// </summary>
-        public async Task AutoReleaseSeat(string seatId)
+        public async Task AutoReleaseSeat(string ticketId)
         {
-            await Clients.All.SendAsync("SeatAvailable", seatId);
+            await _ticketService.ChangeStatusTicketDetailAsync(Guid.Parse(ticketId), TicketStatus.Created);
+
+            // Notify all clients that the seat is now available
+            await Clients.All.SendAsync("SeatAvailable", ticketId);
         }
+
     }
 }
