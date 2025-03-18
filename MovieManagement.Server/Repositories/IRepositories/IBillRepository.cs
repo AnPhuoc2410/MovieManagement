@@ -7,6 +7,7 @@ namespace MovieManagement.Server.Repositories.IRepositories
     {
         Task<List<PurchasedTicketDto>> GetPurchasedTickets(Guid userId);
         Task<Bill> GetByIdAsync(long billId);
+        Bill GetById(long billId);
         Task<bool> DeleteAsync(long billId);
     }
 }

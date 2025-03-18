@@ -23,6 +23,11 @@ namespace MovieManagement.Server.Repositories
             return true;
         }
 
+        public Bill GetById(long billId)
+        {
+            return _context.Bills.Find(billId);
+        }
+
         public async Task<Bill> GetByIdAsync(long billId)
         {
             return await _context.Bills.FindAsync(billId);

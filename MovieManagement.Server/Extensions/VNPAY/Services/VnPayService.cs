@@ -165,13 +165,10 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             if (paymentResult.IsSuccess)
             {
                 HandleSuccessfulPayment(paymentResult);
-                Console.WriteLine("Updated bill into Success");
             }
             else
             {
                 HandleFailurePayment(paymentResult);
-                Console.WriteLine("Updated bill into failed");
-
             }
 
             return paymentResult;
@@ -185,14 +182,14 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             }
         }
 
-        public async Task HandleSuccessfulPayment(PaymentResult paymentResult)
+        public void HandleSuccessfulPayment(PaymentResult paymentResult)
         {
-            await _billService.UpdateBillAsync(paymentResult.PaymentId, BillEnum.BillStatus.Completed);
+            _billService.UpdateBill(paymentResult.PaymentId, BillEnum.BillStatus.Completed);
         }
 
-        public async Task HandleFailurePayment(PaymentResult paymentResult)
+        public void HandleFailurePayment(PaymentResult paymentResult)
         {
-            await _billService.UpdateBillAsync(paymentResult.PaymentId, BillEnum.BillStatus.Cancelled);
+            _billService.UpdateBill(paymentResult.PaymentId, BillEnum.BillStatus.Cancelled);
         }
     }
 }

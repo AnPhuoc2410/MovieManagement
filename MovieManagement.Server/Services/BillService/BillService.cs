@@ -118,5 +118,19 @@ namespace MovieManagement.Server.Services.BillService
                 throw new ApplicationException("Couldn't access into database due to systems error.", ex);
             }
         }
+
+        public BillDto UpdateBill(long billId, BillEnum.BillStatus billStatus)
+        {
+            var existingBill = _unitOfWork.BillRepository.GetById(billId);
+            if (existingBill == null)
+                throw new NotFoundException("Bill cannot found!");
+
+            //existingBill = _mapper.Map(billRequest, existingBill);
+            existingBill.Status = billStatus;
+            var updatedBill = _unitOfWork.BillRepository.Update(existingBill);
+            if (updatedBill == null)
+                throw new DbUpdateException("Bill cannot update!");
+            return _mapper.Map<BillDto>(updatedBill);
+        }
     }
 }
