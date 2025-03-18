@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using MovieManagement.Server.Extensions.VNPAY.Models;
+using MovieManagement.Server.Models.RequestModel;
 
 namespace MovieManagement.Server.Extensions.VNPAY.Services
 {
@@ -33,7 +34,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
         /// <param name="request">Thông tin yêu cầu thanh toán, bao gồm các tham số như mã giao dịch, số tiền, mô tả,...</param>
         /// <param name="isTest">Chỉ định xem có phải là môi trường thử nghiệm hay không (mặc định là true).</param>
         /// <returns>URL thanh toán để chuyển hướng người dùng tới trang thanh toán của VNPAY.</returns>
-        string GetPaymentUrl(PaymentRequest request);
+        Task<string> GetPaymentUrl(PaymentRequest request, Guid userId, BillRequest billRequest);
 
         /// <summary>
         /// Thực hiện giao dịch thanh toán và trả về kết quả.

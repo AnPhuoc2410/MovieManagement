@@ -9,7 +9,7 @@ namespace MovieManagement.Server.Models.Entities
 
     public class Bill
     {
-        public Guid BillId { get; set; }
+        public long BillId { get; set; }
 
         public DateTime CreatedDate { get; set; }
 

@@ -260,11 +260,11 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BillDto>> CreateBill(Guid userId, [FromBody] BillRequest billRequest)
+        public async Task<ActionResult<BillDto>> CreateBill(Guid userId, [FromBody] BillRequest billRequest, long paymentId)
         {
             try
             {
-                var newBill = await _billService.CreateBillAsync(userId, billRequest);
+                var newBill = await _billService.CreateBillAsync(userId, billRequest, paymentId);
                 if (newBill == null)
                 {
                     var response = new ApiResponse<object>

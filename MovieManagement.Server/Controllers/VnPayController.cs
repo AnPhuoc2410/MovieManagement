@@ -3,6 +3,7 @@ using MovieManagement.Server.Extensions.VNPAY.Enums;
 using MovieManagement.Server.Extensions.VNPAY.Models;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Extensions.VNPAY.Utilities;
+using MovieManagement.Server.Models.RequestModel;
 
 namespace MovieManagement.Server.Controllers
 {
@@ -27,8 +28,8 @@ namespace MovieManagement.Server.Controllers
         /// <param name="money">Số tiền phải thanh toán</param>
         /// <param name="description">Mô tả giao dịch</param>
         /// <returns></returns>
-        [HttpGet("CreatePaymentUrl")]
-        public ActionResult<string> CreatePaymentUrl(decimal money, string description)
+        [HttpPost("CreatePaymentUrl")]
+        public ActionResult<string> CreatePaymentUrl(decimal money, string description, Guid userId, BillRequest billRequest)
         {
             try
             {
@@ -46,7 +47,7 @@ namespace MovieManagement.Server.Controllers
                     Language = DisplayLanguage.Vietnamese // Tùy chọn. Mặc định là tiếng Việt
                 };
 
-                var paymentUrl = _vnPayService.GetPaymentUrl(request);
+                string paymentUrl = _vnPayService.GetPaymentUrl(request, userId, billRequest).Result.ToString();
 
                 return Created(paymentUrl, paymentUrl);
             }

@@ -8,7 +8,7 @@ namespace MovieManagement.Server.Models.Entities
     {
         public Guid TicketId { get; set; }
 
-        public Guid? BillId { get; set; }
+        public long? BillId { get; set; }
 
         public Guid SeatId { get; set; }
 

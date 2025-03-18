@@ -4,6 +4,7 @@ using MovieManagement.Server.Extensions.VNPAY.Enums;
 using MovieManagement.Server.Extensions.VNPAY.Models;
 using MovieManagement.Server.Extensions.VNPAY.Utilities;
 using MovieManagement.Server.Services.BillService;
+using MovieManagement.Server.Models.RequestModel;
 
 namespace MovieManagement.Server.Extensions.VNPAY.Services
 {
@@ -39,7 +40,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
         /// </summary>
         /// <param name="request">Thông tin cần có để tạo yêu cầu</param>
         /// <returns></returns>
-        public string GetPaymentUrl(PaymentRequest request)
+        public async Task<string> GetPaymentUrl(PaymentRequest request, Guid userId, BillRequest billRequest)
         {
             EnsureParametersBeforePayment();
 
@@ -72,6 +73,8 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             helper.AddRequestData("vnp_OrderType", _orderType);
             helper.AddRequestData("vnp_ReturnUrl", _callbackUrl);
             helper.AddRequestData("vnp_TxnRef", request.PaymentId.ToString());
+
+            var bill = await _billService.CreateBillAsync(userId, billRequest, request.PaymentId);
 
             return helper.GetPaymentUrl(_baseUrl, _hashSecret);
         }

@@ -91,10 +91,10 @@ const Payment: React.FC = () => {
         amount: total,
         promotionId: "",
       };
-      const billResponse = await api.post(`bill?userId=${"168efc1f-dd23-4aba-b26b-8cabbb623f21"}`, data);
-      console.log(billResponse.data);
+      // const billResponse = await api.post(`bill?userId=${"db5ebacc-3b26-46be-9628-9b1cf6daf50d"}`, data);
+      // console.log(billResponse.data);
       const response = await api.get(
-        `vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}`,
+        `vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}&userId=${"0633e87b-4712-4cb3-906e-49707cdcc350"}`,
       );
 
       // Save booking info to session storage
@@ -102,7 +102,7 @@ const Payment: React.FC = () => {
         "bookingInfo",
         JSON.stringify({ selectedTime, selectedDate, tickets, seats, price, total, fullName, email, idNumber, phone }),
       );
-      
+
       window.location.href = response.data;
     } catch (error) {
       console.error(error);

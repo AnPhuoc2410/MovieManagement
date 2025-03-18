@@ -56,7 +56,7 @@ namespace MovieManagement.Server.Services.BillService
                 throw new Exception("Couldn't access into database due to systems error.", ex);
             }
         }
-        public async Task<BillDto> CreateBillAsync(Guid userId, BillRequest billRequest)
+        public async Task<BillDto> CreateBillAsync(Guid userId, BillRequest billRequest, long paymentId)
         {
             try
             {
@@ -67,6 +67,7 @@ namespace MovieManagement.Server.Services.BillService
 
                 //Calculator ticket total
                 var bill = _mapper.Map<Bill>(billRequest);
+                bill.BillId = paymentId;
                 bill.CreatedDate = DateTime.Now;
                 bill.UserId = userId;
                 bill.Status = BillEnum.BillStatus.Pending;
