@@ -19,6 +19,8 @@ namespace MovieManagement.Server.Extensions.SignalR
             _ticketService = ticketService;
         }
 
+        //TODO: Using GROUP to manage the seats for each Room
+
         /// <summary>
         /// Sets one or more seats to pending status.
         /// The client should send a list of TicketDetailRequest objects.
