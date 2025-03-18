@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -14,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
 using MovieManagement.Server.Extensions.ConvertFile;
+using MovieManagement.Server.Extensions.QRCode;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.Enums;
@@ -156,6 +158,9 @@ namespace MovieManagement.Server
 
             // Đăng ký ConvertFile
             builder.Services.AddScoped<IConvertFileService, ConvertFileService>();
+
+            // Đăng ký QR Code
+            builder.Services.AddScoped<QRCodeGenerator>();
 
             builder.Services.Configure<RouteOptions>(options =>
             {

@@ -4,6 +4,7 @@ using MimeKit;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Extensions.ConvertFile;
+using MovieManagement.Server.Extensions.QRCode;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.RequestModel;
@@ -18,16 +19,20 @@ namespace MovieManagement.Server.Services.EmailService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConvertFileService _convertFile;
+        private readonly IQRCodeGenerator _qRCodeGenerator;
         private readonly IConfiguration _configuration;
 
-        public EmailService(IUnitOfWork unitOfWork, IConfiguration configuration, IConvertFileService convertFile)
+        public EmailService(IUnitOfWork unitOfWork, IConfiguration configuration, IConvertFileService convertFile, QRCodeGenerator qRCodeGenerator)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _convertFile = convertFile;
+            _qRCodeGenerator = qRCodeGenerator;
         }
         public async Task<bool> SendEmailReportBill(BillReportRequest billReport)
         {
+            // Nhớ kiểm tra trạng thái của bill xem có phải đã thanh toán không
+
             //Get user bill
             var userBill = await _unitOfWork.BillRepository.GetByIdAsync(billReport.BillId);
             if (userBill == null)
@@ -35,7 +40,7 @@ namespace MovieManagement.Server.Services.EmailService
 
             // Get user email
             string userEmail = (await _unitOfWork.UserRepository.GetByIdAsync(userBill.UserId)).Email;
-            if(userEmail == null)
+            if (userEmail == null)
                 throw new NotFoundException("No user found!");
 
             // Create email
@@ -44,15 +49,33 @@ namespace MovieManagement.Server.Services.EmailService
             message.To.Add(new MailboxAddress("", userEmail));
             message.Subject = "INVOICE";
 
+            // Create body to assign message
+            var bodyBuilder = new BodyBuilder();
+
             // Generate HTML body for the bill report
             string body = _convertFile.GenerateHtmlFromBillReport(billReport);
+            bodyBuilder.HtmlBody = body;
 
-            // Convert HTML to PDF
-            byte[] pdf = _convertFile.ConvertHtmlToPdf(body);
+            // Create QR code Stream
+            byte[] qrCode = _qRCodeGenerator.GenerateQRCode(userBill.BillId.ToString());
+            var qrStream = _qRCodeGenerator.GenerateQRCodeStream(qrCode);
 
-            // Assign body to message
-            var bodyBuilder = new BodyBuilder { HtmlBody = body };
-            message.Body = bodyBuilder.ToMessageBody();
+            // Attach QR code to the email
+            var attachment = new MimePart("image", "png")
+            {
+                Content = new MimeContent(qrStream),
+                ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                ContentTransferEncoding = ContentEncoding.Base64,
+                FileName = "QRCode_Cua_Don_Hang.png"
+            };
+
+            var multipart = new Multipart("mixed")
+            {
+                bodyBuilder.ToMessageBody(),
+                attachment
+            };
+
+            message.Body = multipart;
 
             // Login to email and send message
             using var client = new SmtpClient();

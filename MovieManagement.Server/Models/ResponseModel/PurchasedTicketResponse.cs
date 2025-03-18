@@ -1,7 +1,4 @@
-﻿using System.Data;
-using static MovieManagement.Server.Models.Enums.BillEnum;
-
-namespace MovieManagement.Server.Models.ResponseModel
+﻿namespace MovieManagement.Server.Models.ResponseModel
 {
     public class PurchasedTicketResponse
     {

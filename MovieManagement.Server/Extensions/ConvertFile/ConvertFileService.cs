@@ -1,5 +1,4 @@
-﻿using DinkToPdf;
-using Microsoft.AspNetCore.Html;
+﻿using Microsoft.AspNetCore.Html;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.RequestModel;
@@ -20,18 +19,18 @@ namespace MovieManagement.Server.Extensions.ConvertFile
 
         public string GenerateHtmlFromPurchasedTicket(PurchasedTicketResponse purchasedTicket)
         {
-            string templatePath = "./Templates/PurchasedTicketTemplate.html";
+            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Extensions", "ReportTemplate", "TicketTemplate.html");
             string htmlContent = File.ReadAllText(templatePath, Encoding.UTF8);
             htmlContent = htmlContent
                 .Replace("{{MovieImage}}", purchasedTicket.MovieImage)
-                .Replace("{{MovieName}}", purchasedTicket.MovieImage)
-                .Replace("{{Categories}}", purchasedTicket.MovieImage)
-                .Replace("{{StartDay}}", purchasedTicket.MovieImage)
-                .Replace("{{StartTime}}", purchasedTicket.MovieImage)
-                .Replace("{{RoomName}}", purchasedTicket.MovieImage)
-                .Replace("{{AtColumn}}", purchasedTicket.MovieImage)
-                .Replace("{{AtRow}}", purchasedTicket.MovieImage)
-                .Replace("{{TypeSeat}}", purchasedTicket.MovieImage);
+                .Replace("{{MovieName}}", purchasedTicket.MovieName)
+                .Replace("{{Categories}}", string.Join(", ", purchasedTicket.MovieCategories))
+                .Replace("{{StartDay}}", purchasedTicket.StartDay)
+                .Replace("{{StartTime}}", purchasedTicket.StartTime)
+                .Replace("{{RoomName}}", purchasedTicket.RoomName)
+                .Replace("{{AtColumn}}", purchasedTicket.AtColumn.ToString())
+                .Replace("{{AtRow}}", purchasedTicket.AtRow)
+                .Replace("{{TypeSeat}}", purchasedTicket.SeatType);
             return htmlContent;
         }
         public string GenerateHtmlFromBillReportTemplate(TicketBillResponse ticket)
@@ -50,7 +49,7 @@ namespace MovieManagement.Server.Extensions.ConvertFile
         }
         public string GenerateHtmlFromBillReport(BillReportRequest billReport)
         {
-            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Extensions", "BillReportTemplate", "BillReportTemplate.html");
+            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Extensions", "ReportTemplate", "BillReportTemplate.html");
             if (!File.Exists(templatePath))
                 throw new FileNotFoundException($"Template file not found: {templatePath}");
 
@@ -77,6 +76,7 @@ namespace MovieManagement.Server.Extensions.ConvertFile
             // Replace placeholders
             body = body
                 .Replace("{{CreatedDate}}", billReport.CreatedDate.ToString("MMMM dd, yyyy", new System.Globalization.CultureInfo("en-US")))
+                .Replace("{{billId}}", billReport.BillId.ToString())
                 .Replace("{{TicketList}}", ticketListHTML.ToString())
                 .Replace("{{Total}}", total.ToString("N0"))
                 .Replace("{{Discount}}", discount.ToString("N0"))
@@ -84,27 +84,5 @@ namespace MovieManagement.Server.Extensions.ConvertFile
 
             return body;
         }   
-
-        public byte[] ConvertHtmlToPdf(string htmlContent)
-        {
-            var converter = new BasicConverter(new PdfTools());
-
-            var doc = new HtmlToPdfDocument()
-            {
-                GlobalSettings = {
-                    ColorMode = ColorMode.Color,
-                    Orientation = Orientation.Portrait,
-                    PaperSize = PaperKind.A4,
-                },
-                Objects = {
-                    new ObjectSettings()
-                    {
-                        HtmlContent = htmlContent,
-                        WebSettings = { DefaultEncoding = "utf-8" },
-                    }
-                }
-            };
-            return converter.Convert(doc);
-        }
     }
 }

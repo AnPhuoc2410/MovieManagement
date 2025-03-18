@@ -9,7 +9,5 @@ namespace MovieManagement.Server.Extensions.ConvertFile
         string GenerateHtmlFromPurchasedTicket(PurchasedTicketResponse purchasedTicket);
         string GenerateHtmlFromBillReportTemplate(TicketBillResponse ticket);
         string GenerateHtmlFromBillReport(BillReportRequest billReport);
-
-        byte[] ConvertHtmlToPdf(string htmlContent);
     }
 }
