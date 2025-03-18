@@ -14,6 +14,7 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.JwtService;
 using Newtonsoft.Json;
 
@@ -24,6 +25,10 @@ namespace MovieManagement.Server
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Add System Service UnitOfWork.
+            builder.Services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
+
 
             // Add services to the container.
 
@@ -145,9 +150,6 @@ namespace MovieManagement.Server
             // Register the password hasher
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
-            //Enable role based and policy based authorization
-            builder.Services.AddAuthorization();
-
             // Đăng ký VnPayService
             builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
@@ -156,6 +158,8 @@ namespace MovieManagement.Server
                 options.LowercaseUrls = true; // Forces lowercase routes
             });
 
+            // Add SystemService running in the background.
+            builder.Services.AddHostedService<SystemService>();
 
             var app = builder.Build();
 
