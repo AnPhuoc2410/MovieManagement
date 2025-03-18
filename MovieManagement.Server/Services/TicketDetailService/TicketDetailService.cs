@@ -135,5 +135,19 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
         }
 
+        public async Task<TicketDetailResponseModel> ChangeStatusTicketDetailAsync(Guid ticketId, TicketStatus status)
+        {
+            var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(ticketId);
+            if (ticketDetail == null)
+                throw new NotFoundException("Ticket detail not found!");
+
+            ticketDetail.Status = status;
+            var updatedTicketDetail = await _unitOfWork.TicketDetailRepository.UpdateAsync(ticketDetail);
+            if (updatedTicketDetail == null)
+                throw new DbUpdateException("Fail to update ticket detail status.");
+
+            return _mapper.Map<TicketDetailResponseModel>(updatedTicketDetail);
+        }
+
     }
 }
