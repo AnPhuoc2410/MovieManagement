@@ -94,10 +94,10 @@ namespace MovieManagement.Server.Services.AuthorizationService
             newUser.Gender = dto.Gender;
             newUser.Status = UserStatus.Active; // Active user
             newUser.JoinDate = DateTime.UtcNow;
-            newUser.Address = dto.Address;
-            newUser.Avatar = "https://images.dog.ceo/breeds/pembroke/n02113023_1258.jpg";
-            newUser.IDCard = dto.IDCard;
-            newUser.PhoneNumber = dto.PhoneNumber;
+            newUser.Address = dto.Address.Trim();
+            newUser.Avatar = $"https://api.dicebear.com/9.x/adventurer/svg?seed={dto.FullName.Split().Last()}";
+            newUser.IDCard = dto.IDCard.Trim();
+            newUser.PhoneNumber = dto.PhoneNumber.Trim();
             newUser.Role = 0; //Default role is Member
             newUser.Point = 0;
 

@@ -52,6 +52,7 @@ namespace MovieManagement.Server.Controllers
         /// <param name="role"></param>
         /// <returns></returns>
         /// <response code="200">Get user by role successfully</response>
+        [Authorize(Roles = "Admin")]
         [HttpGet("role/{role}")]
         [ProducesResponseType(typeof(Services.ApiResponse<List<UserDto.UserResponse>>),
             StatusCodes.Status200OK)]

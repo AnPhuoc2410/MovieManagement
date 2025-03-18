@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,6 +15,7 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.Enums;
 using MovieManagement.Server.Services.JwtService;
 using Newtonsoft.Json;
 
@@ -56,9 +58,9 @@ namespace MovieManagement.Server
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("Member", policy => policy.RequireClaim("Role", "0"));
-                options.AddPolicy("Employee", policy => policy.RequireClaim("Role", "1"));
-                options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "2"));
+                options.AddPolicy("Member", policy => policy.RequireClaim(ClaimTypes.Role, UserEnum.Role.Member.ToString()));
+                options.AddPolicy("Employee", policy => policy.RequireClaim(ClaimTypes.Role, UserEnum.Role.Employee.ToString()));
+                options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimTypes.Role, UserEnum.Role.Admin.ToString()));
             });
 
             // Đăng ký JwtService
@@ -67,7 +69,7 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("PhuocConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("TempConnection"))
             );
 
             // Đăng ký UnitOfWork
