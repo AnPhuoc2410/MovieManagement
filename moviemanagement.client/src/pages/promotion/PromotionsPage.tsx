@@ -1,35 +1,23 @@
-import React, { useState, useEffect } from "react";
 import {
-  Container,
-  CardContent,
-  Typography,
   Box,
   Button,
-  Grid,
+  CardContent,
   CardMedia,
+  Container,
+  Grid,
+  Typography,
 } from "@mui/material";
-import Header from "../../components/home/Header";
-import Footer from "../../components/home/Footer";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import dayjs from "dayjs";
-import CloudinaryImage from "../../components/cloudinary/CloudinaryImage";
-import { useTranslation } from "react-i18next";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import api from "../../apis/axios.config";
-import Loader from "../../components/shared/Loading";
-import Aurora from "../../components/shared/Aurora";
 import ScrollToTop from "../../components/common/ScrollToTop";
-
-interface Promotion {
-  promotionId: string;
-  promotionName: string;
-  image?: string;
-  fromDate: string;
-  toDate: string;
-  discount: number;
-  content: string;
-}
+import Footer from "../../components/home/Footer";
+import Header from "../../components/home/Header";
+import Loader from "../../components/shared/Loading";
+import { Promotion } from "../../types/promotion.types";
 
 const PromotionsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -44,7 +32,7 @@ const PromotionsPage: React.FC = () => {
       try {
         setLoading(true);
         const response = await api.get(
-          `Promotions/page/${page}/pageSize/${pageSize}`,
+          `promotions/page/${page}/pageSize/${pageSize}`,
         );
         if (response.data.length === 0 && page > 0) {
           toast.error("Không còn trang tiếp theo");
