@@ -89,16 +89,20 @@ const Payment: React.FC = () => {
       const data = {
         totalTicket: tickets.length,
         amount: total,
-        promotionId: "",
       };
-      const billResponse = await api.post(
-        `bill?userId=${"16223053-AE9B-4A5F-AADE-437781C2A8A5"}`,
+      // const billResponse = await api.post(`bill?userId=${"db5ebacc-3b26-46be-9628-9b1cf6daf50d"}`, data);
+      // console.log(billResponse.data);
+      const response = await api.post(
+        `vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}&userId=${"0633e87b-4712-4cb3-906e-49707cdcc350"}`,
         data,
       );
-      console.log(billResponse.data);
-      const response = await api.get(
-        `vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}`,
+
+      // Save booking info to session storage
+      sessionStorage.setItem(
+        "bookingInfo",
+        JSON.stringify({ selectedTime, selectedDate, tickets, seats, price, total, fullName, email, idNumber, phone }),
       );
+
       window.location.href = response.data;
     } catch (error) {
       console.error(error);

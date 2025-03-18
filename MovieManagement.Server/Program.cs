@@ -72,7 +72,7 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("PhuocConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("NhaConnection"))
             );
 
             // Đăng ký UnitOfWork
@@ -162,7 +162,7 @@ namespace MovieManagement.Server
             builder.Services.AddHangfireServer();
 
             // Đăng ký VnPayService
-            builder.Services.AddSingleton<IVnPayService, VnPayService>();
+            //builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
             builder.Services.Configure<RouteOptions>(options =>
             {
