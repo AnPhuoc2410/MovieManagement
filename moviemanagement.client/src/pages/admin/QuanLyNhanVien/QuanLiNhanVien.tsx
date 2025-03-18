@@ -1,6 +1,6 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Avatar, Box, Chip } from "@mui/material";
+import { Avatar, Box, Button, Chip } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -151,6 +151,19 @@ const QuanLiNhanVien: React.FC = () => {
 
   return (
     <ManagementPageLayout>
+      <Button
+        sx={{
+          marginBottom: "20px",
+          marginLeft: "auto",
+          color: "black",
+          borderColor: "black",
+        }}
+        onClick={() => {
+          navigate("/admin/ql-nhan-vien/them-moi");
+        }}
+      >
+        Thêm nhân viên
+      </Button>
       <Box
         sx={{
           width: "100%",

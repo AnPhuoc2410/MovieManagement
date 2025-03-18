@@ -8,8 +8,6 @@ namespace MovieManagement.Server.Services.UserService
 {
     public interface IUserService
     {
-
-        Task<UserDto.UserResponse> CreateUserAsync(UserDto.CreateUser user);
         Task<bool> RegisterWithGoogle(OAuthRequest account);
         Task<UserDto.UserResponse> GetUserByIdAsync(Guid id);
         Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page, int pageSize);

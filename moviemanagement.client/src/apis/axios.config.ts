@@ -10,7 +10,7 @@ const api = axios.create({
 const handleBefore = (
   config: InternalAxiosRequestConfig,
 ): InternalAxiosRequestConfig => {
-  const token = getCookie("access_token");
+  const token = getCookie("accessToken");
   if (token) {
     config.headers.set("Authorization", `Bearer ${token}`);
   }
