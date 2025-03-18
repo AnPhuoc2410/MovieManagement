@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.FileIO;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
@@ -384,6 +385,17 @@ namespace MovieManagement.Server.Controllers
                 IsSuccess = true,
                 Data = userData
             });
+        }
+
+
+
+
+        [HttpGet]
+        [Authorize(Roles = "Admin,Member")]
+        [Route("Test")]
+        public IActionResult Test()
+        {
+            return Ok("Test");
         }
     }
 }

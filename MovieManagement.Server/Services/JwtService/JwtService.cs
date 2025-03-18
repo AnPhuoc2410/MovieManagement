@@ -27,7 +27,7 @@ namespace MovieManagement.Server.Services.JwtService
             {
                 new Claim(JwtRegisteredClaimNames.Sub, id.ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, userName),
-                new Claim("Role", role.ToString()),
+                new Claim(ClaimTypes.Role, role.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 

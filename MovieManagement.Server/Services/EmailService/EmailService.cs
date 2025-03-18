@@ -28,6 +28,7 @@ namespace MovieManagement.Server.Services.EmailService
         }
         public async Task<bool> SendEmailReportBill(BillReportRequest billReport)
         {
+            //Get user bill
             var userBill = await _unitOfWork.BillRepository.GetByIdAsync(billReport.BillId);
             if (userBill == null)
                 throw new NotFoundException("No bills found!");
@@ -43,8 +44,11 @@ namespace MovieManagement.Server.Services.EmailService
             message.To.Add(new MailboxAddress("", userEmail));
             message.Subject = "INVOICE";
 
-            // Get body from bill report
+            // Generate HTML body for the bill report
             string body = _convertFile.GenerateHtmlFromBillReport(billReport);
+
+            // Convert HTML to PDF
+            byte[] pdf = _convertFile.ConvertHtmlToPdf(body);
 
             // Assign body to message
             var bodyBuilder = new BodyBuilder { HtmlBody = body };
