@@ -13,6 +13,21 @@ namespace MovieManagement.Server.Repositories
         {
             _context = context;
         }
+
+        public async Task<bool> DeleteAsync(long billId)
+        {
+            var entity = await GetByIdAsync(billId);
+            if (entity == null) return false;
+            _context.Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<Bill> GetByIdAsync(long billId)
+        {
+            return await _context.Bills.FindAsync(billId);
+        }
+
         public async Task<List<PurchasedTicketDto>> GetPurchasedTickets(Guid userId)
         {
             return await _context.Bills

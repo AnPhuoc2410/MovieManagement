@@ -154,7 +154,7 @@ namespace MovieManagement.Server
             builder.Services.AddSignalR();
 
             // Đăng ký VnPayService
-            builder.Services.AddSingleton<IVnPayService, VnPayService>();
+            //builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
             builder.Services.Configure<RouteOptions>(options =>
             {

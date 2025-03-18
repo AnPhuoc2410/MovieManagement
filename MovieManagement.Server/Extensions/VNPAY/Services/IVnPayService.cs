@@ -44,6 +44,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
         /// <returns></returns>
         PaymentResult GetPaymentResult(IQueryCollection parameters);
 
-        //void HandleSuccessfulPayment(PaymentResult paymentResult);
+        Task HandleSuccessfulPayment(PaymentResult paymentResult);
+        Task HandleFailurePayment(PaymentResult paymentResult);
     }
 }

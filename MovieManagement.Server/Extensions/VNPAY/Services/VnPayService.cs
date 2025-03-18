@@ -5,6 +5,7 @@ using MovieManagement.Server.Extensions.VNPAY.Models;
 using MovieManagement.Server.Extensions.VNPAY.Utilities;
 using MovieManagement.Server.Services.BillService;
 using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Models.Enums;
 
 namespace MovieManagement.Server.Extensions.VNPAY.Services
 {
@@ -17,6 +18,11 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
         private string _version;
         private string _orderType;
         private readonly IBillService _billService;
+
+        public VnPayService(IBillService billService)
+        {
+            _billService = billService;
+        }
 
         public void Initialize(string tmnCode,
             string hashSecret,
@@ -124,7 +130,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             var responseCode = (ResponseCode)sbyte.Parse(vnp_ResponseCode);
             var transactionStatusCode = (TransactionStatusCode)sbyte.Parse(vnp_TransactionStatus);
 
-            return new PaymentResult
+            var paymentResult = new PaymentResult
             {
                 PaymentId = long.Parse(vnp_TxnRef),
                 VnpayTransactionId = long.Parse(vnp_TransactionNo),
@@ -155,6 +161,20 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
                         : vnp_BankTranNo,
                 }
             };
+
+            if (paymentResult.IsSuccess)
+            {
+                HandleSuccessfulPayment(paymentResult);
+                Console.WriteLine("Updated bill into Success");
+            }
+            else
+            {
+                HandleFailurePayment(paymentResult);
+                Console.WriteLine("Updated bill into failed");
+
+            }
+
+            return paymentResult;
         }
 
         private void EnsureParametersBeforePayment()
@@ -165,9 +185,14 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             }
         }
 
-        public void HandleSuccessfulPayment(PaymentResult paymentResult)
+        public async Task HandleSuccessfulPayment(PaymentResult paymentResult)
         {
-            // Thực hiện hành động sau khi thanh toán thành công tại đây
+            await _billService.UpdateBillAsync(paymentResult.PaymentId, BillEnum.BillStatus.Completed);
+        }
+
+        public async Task HandleFailurePayment(PaymentResult paymentResult)
+        {
+            await _billService.UpdateBillAsync(paymentResult.PaymentId, BillEnum.BillStatus.Cancelled);
         }
     }
 }
