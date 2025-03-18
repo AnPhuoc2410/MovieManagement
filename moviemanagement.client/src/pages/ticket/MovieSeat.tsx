@@ -46,13 +46,27 @@ const MovieSeat: React.FC = () => {
 
     newConnection
       .start()
-      .then(() => console.log("Connected to SignalR"))
+      .then(() => {
+        console.log("Connected to SignalR");
+
+        // Join the specific showTime group after connection is established
+        if (showTimeId) {
+          newConnection.invoke("JoinShowTime", showTimeId)
+            .then(() => console.log(`Joined ShowTime group: ${showTimeId}`))
+            .catch(err => console.error("Error joining ShowTime group:", err));
+        }
+      })
       .catch((err) => console.error("SignalR Connection Error:", err));
 
     return () => {
+      // Leave the group before disconnecting
+      if (newConnection.state === "Connected" && showTimeId) {
+        newConnection.invoke("LeaveShowTime", showTimeId)
+          .catch(err => console.error("Error leaving ShowTime group:", err));
+      }
       newConnection.stop();
     };
-  }, []);
+  }, [showTimeId]);
 
   // Handle what happens when seat timer expires
   const handleSeatsTimeout = useCallback(() => {
@@ -102,13 +116,14 @@ const MovieSeat: React.FC = () => {
 
     try {
       // Create an array of TicketDetailRequest objects for SignalR
-      const ticketRequests = selectedSeats.map((seat) => ({
-        TicketId: seat.ticketId,
-        Version: seat.version,
+      const ticketRequests = selectedSeats.map((ticket) => ({
+        TicketId: ticket.ticketId,
+        Version: ticket.version,
+        // ShowTimeId: showTimeId,
       }));
 
       // Use SignalR to update seat status to PENDING (broadcast to all clients)
-      await connection.invoke("SetSeatPending", ticketRequests);
+      await connection.invoke("SetSeatPending", ticketRequests, showTimeId);
 
       toast.success("Chuyển đến trang thanh toán...");
 
@@ -119,7 +134,8 @@ const MovieSeat: React.FC = () => {
           selectedTime,
           tickets,
           seats: selectedSeats.map((seat) => seat.name),
-          selectedSeatsInfo: selectedSeats, // Pass full seat info for payment confirmation
+          selectedSeatsInfo: selectedSeats,
+          showTimeId, // Pass the showTimeId to the payment page
         },
       });
     } catch (error) {
@@ -184,32 +200,32 @@ const MovieSeat: React.FC = () => {
             }}
           >
             {selectedSeats.length > 0 && lastSelectionTime && (
-                <Paper
-                  elevation={3}
-                  sx={{
-                    p: 3,
-                    backgroundColor: "rgba(27, 38, 53, 0.7)",
-                    color: "white",
-                    borderRadius: 2
-                  }}
-                >
-                  <Typography variant="subtitle1" sx={{ mb: 2 }}>
-                    Thời gian giữ ghế:
-                  </Typography>
-                  <Box sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center"
-                  }}>
-                    <SeatCountdown
-                      seatId="all-seats"
-                      seatName={`${selectedSeats.length} ghế`}
-                      startTime={lastSelectionTime}
-                      onTimeout={handleSeatsTimeout}
-                    />
-                  </Box>
-                </Paper>
-              )}
+              <Paper
+                elevation={3}
+                sx={{
+                  p: 3,
+                  backgroundColor: "rgba(27, 38, 53, 0.7)",
+                  color: "white",
+                  borderRadius: 2
+                }}
+              >
+                <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                  Thời gian giữ ghế:
+                </Typography>
+                <Box sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center"
+                }}>
+                  <SeatCountdown
+                    seatId="all-seats"
+                    seatName={`${selectedSeats.length} ghế`}
+                    startTime={lastSelectionTime}
+                    onTimeout={handleSeatsTimeout}
+                  />
+                </Box>
+              </Paper>
+            )}
             <StepTracker currentStep={2} />
           </Box>
 
