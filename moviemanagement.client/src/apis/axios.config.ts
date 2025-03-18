@@ -4,7 +4,7 @@ import { ENV } from "../env/env.config.ts";
 
 const api = axios.create({
   baseURL: ENV.API_URL,
-  withCredentials: false, // Include credentials with requests
+  withCredentials: false,
 });
 
 const handleBefore = (

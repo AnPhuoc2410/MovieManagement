@@ -28,7 +28,7 @@ async function enableMocking() {
     process.env.NODE_ENV === "production"
   ) {
     return worker.start({
-      onUnhandledRequest: "bypass", // Don't warn about unhandled requests
+      onUnhandledRequest: "bypass",
     });
   }
 }
