@@ -74,6 +74,7 @@ namespace MovieManagement.Server.Extensions.SignalR
             foreach (var ticketRequest in ticketRequests)
             {
                 await _ticketService.ChangeStatusTicketDetailAsync(ticketRequest.TicketId, TicketStatus.Paid);
+                //TODO: Add BillId and Change Status to Paid
                 await Clients.Group(showtimeId).SendAsync("SeatBought", ticketRequest.TicketId);
             }
         }

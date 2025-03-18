@@ -122,7 +122,7 @@ const MovieSeat: React.FC = () => {
         // ShowTimeId: showTimeId,
       }));
 
-      // Use SignalR to update seat status to PENDING (broadcast to all clients)
+      //Call the SetSeatPending method on the server
       await connection.invoke("SetSeatPending", ticketRequests, showTimeId);
 
       toast.success("Chuyển đến trang thanh toán...");
