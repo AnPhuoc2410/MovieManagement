@@ -134,7 +134,27 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return await _unitOfWork.TicketDetailRepository.SaveAsync() == ticketDetails.Count();
         }
 
+        public async Task<bool> PurchasedTicket(List<Guid> list, Guid billId)
+        {
 
+            foreach (var t in list)
+            {
+                var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(t);
+                if (ticketDetail == null)
+                    throw new NotFoundException("Ticket detail not found!");
+                if (ticketDetail.Status != TicketStatus.Pending)
+                    throw new BadRequestException("Ticket is not pending.");
+                ticketDetail.Status = TicketStatus.Paid;
+                ticketDetail.BillId = billId;
+                _unitOfWork.TicketDetailRepository.PrepareUpdate(ticketDetail);
+            }
+            var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
+
+            //Check this line later cause im being lazy
+            return checker == list.Count();
+
+
+        }
 
 
     }

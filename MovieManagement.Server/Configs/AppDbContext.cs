@@ -23,6 +23,8 @@ namespace MovieManagement.Server.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<MovieCategory> MovieCategories { get; set; }        
         public DbSet<OtpCode> OtpCodes { get; set; }
+        public DbSet<MovieTheater> MovieTheaters { get; set; }
+
         public static string GetConnectionString(string connectionStringName)
         {
             var config = new ConfigurationBuilder()
@@ -50,6 +52,7 @@ namespace MovieManagement.Server.Data
             modelBuilder.ApplyConfiguration(new MovieCategoryConfiguration());
             modelBuilder.ApplyConfiguration(new SeatTypeConfiguration());
             modelBuilder.ApplyConfiguration(new OtpCodeConfiguration());
+            modelBuilder.ApplyConfiguration(new MovieTheaterConfiguration());
 
             base.OnModelCreating(modelBuilder);
             // Configure relationships if needed

@@ -46,11 +46,17 @@ namespace MovieManagement.Server.Services.RoomService
             return _mapper.Map<RoomDto>(room);
         }
 
-        public async Task<RoomDto> CreateRoomAsync(RoomDto roomDto)
+        public async Task<RoomDto> CreateRoomAsync(RoomDto roomDto, Guid movieTheaterId)
         {
+            if (roomDto.Row <= 0 || roomDto.Column <= 0)
+                throw new Exception("Invalid row or column number.");
+            var movieTheater = await _unitOfWork.MovieTheaterRepository.GetByIdAsync(movieTheaterId)
+                ?? throw new NotFoundException("Movie theater not found!");
+
             var newRoom = _mapper.Map<Room>(roomDto);
             newRoom.RoomId = Guid.NewGuid();
             newRoom.Total = newRoom.Row * newRoom.Column;
+            newRoom.MovieTheaterId = movieTheaterId;
             var createdRoom = await _unitOfWork.RoomRepository.CreateAsync(newRoom);
             if (createdRoom == null)
                 throw new Exception("Failed to create room.");
