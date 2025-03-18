@@ -58,30 +58,23 @@ namespace MovieManagement.Server.Services.BillService
         }
         public async Task<BillDto> CreateBillAsync(Guid userId, BillRequest billRequest, long paymentId)
         {
-            try
-            {
-                //Checking user is existing
-                var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
-                if (user == null)
-                    throw new NotFoundException("User cannot found!");
+            //Checking user is existing
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+            if (user == null)
+                throw new NotFoundException("User cannot found!");
 
-                //Calculator ticket total
-                var bill = _mapper.Map<Bill>(billRequest);
-                bill.BillId = paymentId;
-                bill.CreatedDate = DateTime.Now;
-                bill.UserId = userId;
-                bill.Status = BillEnum.BillStatus.Pending;
-                bill.Point = bill.TotalTicket;
+            //Calculator ticket total
+            var bill = _mapper.Map<Bill>(billRequest);
+            bill.BillId = paymentId;
+            bill.CreatedDate = DateTime.Now;
+            bill.UserId = userId;
+            bill.Status = BillEnum.BillStatus.Pending;
+            bill.Point = bill.TotalTicket;
 
-                var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateAsync(bill));
-                if (createdBill == null)
-                    throw new Exception("Failed to create bill.");
-                return createdBill;
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("An error occurred while processing into Database", ex);
-            }
+            var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateIdentityAsync(bill));
+            if (createdBill == null)
+                throw new Exception("Failed to create bill.");
+            return createdBill;
         }
         public async Task<BillDto> UpdateBillAsync(Guid billId, BillRequest billRequest)
         {
