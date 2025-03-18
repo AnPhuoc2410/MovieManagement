@@ -19,7 +19,6 @@ const StepTracker: React.FC<StepTrackerProps> = ({
   currentStep,
   paymentStatus,
 }) => {
-
   const { t } = useTranslation();
   const steps = [
     { label: t("step_tracker.select_show_time"), icon: <MovieIcon /> },
@@ -27,7 +26,10 @@ const StepTracker: React.FC<StepTrackerProps> = ({
     { label: t("step_tracker.payment"), icon: <PaymentIcon /> },
     paymentStatus === "success"
       ? { label: t("step_tracker.success"), icon: <CheckCircleIcon /> }
-      : { label: "Hủy Thanh Toán", icon: <CancelOutlined sx={{ color: 'red' }} /> },
+      : {
+          label: "Hủy Thanh Toán",
+          icon: <CancelOutlined sx={{ color: "red" }} />,
+        },
   ];
 
   return (

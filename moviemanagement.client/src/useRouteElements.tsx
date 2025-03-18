@@ -138,7 +138,7 @@ export default function useRouteElements() {
         {
           path: "/admin",
           children: [
-            { path: "", element: <AdminTheme /> },
+            { path: "", element: <Dashboard /> },
             { path: "thong-ke", element: <Dashboard /> },
             {
               path: "khuyen-mai",

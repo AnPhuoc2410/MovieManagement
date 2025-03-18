@@ -5,14 +5,14 @@ import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { fetchUserByRole, Role } from "../../../apis/user.apis";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 
 const QuanLiThanhVien: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
+  const location = useLocation();
   const {
     data: users,
     isLoading,
@@ -34,7 +34,7 @@ const QuanLiThanhVien: React.FC = () => {
         error instanceof Error ? error.message : "Failed to load members",
       );
     }
-  }, [error]);
+  }, [error, location]);
 
   const handleEdit = (id: string) => navigate(`/admin/ql-thanh-vien/${id}`);
 
@@ -138,7 +138,7 @@ const QuanLiThanhVien: React.FC = () => {
           rows={users || []}
           columns={columns}
           loading={isLoading}
-          getRowId={(row) => row.userName}
+          getRowId={(row) => row.userId}
           initialState={{
             pagination: { paginationModel: { pageSize: 10 } },
           }}
