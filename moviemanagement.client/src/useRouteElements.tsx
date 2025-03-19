@@ -7,6 +7,7 @@ import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
 import { ProtectedRoute, RejectedRoute } from "./guards/AuthGuard";
 import TestConnection from "./pages/TestConnetionc";
+import SearchPage from "./pages/movie/SearchPage";
 
 
 // Lazy load components
@@ -57,6 +58,7 @@ const ClientPages = {
   Movie: {
     NowShowing: lazy(() => import("./pages/movie/NowShowingMoviesPage")),
     Upcoming: lazy(() => import("./pages/movie/UpComingMoviesPage")),
+    Search: lazy(() => import("./pages/movie/SearchPage")),
   },
   Promotion: {
     List: lazy(() => import("./pages/promotion/PromotionsPage")),
@@ -116,6 +118,9 @@ export default function useRouteElements() {
             { path: "now-showing", element: <ClientPages.Movie.NowShowing /> },
             { path: "up-coming", element: <ClientPages.Movie.Upcoming /> },
           ],
+        },
+        {
+          path: "search", element: <ClientPages.Movie.Search />,
         },
         {
           path: "/ticket",
