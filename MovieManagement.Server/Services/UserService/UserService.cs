@@ -75,35 +75,6 @@ namespace MovieManagement.Server.Services.UserService
             return true;
         }
 
-
-        public async Task<UserDto.UserResponse> CreateUserAsync(UserDto.CreateUser user)
-        {
-            if (user.Role == Role.Admin)
-                throw new BadRequestException("Admin cannot be created by this method.");
-
-            if (_unitOfWork.UserRepository.IsFieldExisting("Email", user.Email))
-                throw new BadRequestException("Email already exists.");
-
-            if (_unitOfWork.UserRepository.IsFieldExisting("UserName", user.UserName))
-                throw new BadRequestException("Username already exists.");
-
-            if (_unitOfWork.UserRepository.IsFieldExisting("PhoneNumber", user.PhoneNumber))
-                throw new BadRequestException("Phone number already exists.");
-
-            if (_unitOfWork.UserRepository.IsFieldExisting("IDCard", user.IDCard))
-                throw new BadRequestException("ID card number already exists.");
-
-            var newUser = _mapper.Map<User>(user);
-            newUser.Password = new PasswordHasher<User>().HashPassword(newUser, user.Password);
-
-            var createdUser = await _unitOfWork.UserRepository.CreateAsync(newUser);
-
-            if (createdUser == null)
-                throw new BadRequestException("Failed to create user.");
-
-            return _mapper.Map<UserDto.UserResponse>(createdUser);
-        }
-
         public async Task<bool> DeleteUserAsync(Guid id)
         {
             var user = await GetUserByIdAsync(id);

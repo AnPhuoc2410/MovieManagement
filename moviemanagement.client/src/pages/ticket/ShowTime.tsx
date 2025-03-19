@@ -43,7 +43,10 @@ const Ticket: React.FC = () => {
         toast.error("Vui lòng chọn suất chiếu!");
         return;
       }
-      const totalTickets = tickets.reduce((sum, t) => sum + (t.quantity || 0), 0);
+      const totalTickets = tickets.reduce(
+        (sum, t) => sum + (t.quantity || 0),
+        0,
+      );
       if (totalTickets === 0) {
         toast.error("Vui lòng chọn ít nhất 1 vé!");
         return;
@@ -58,7 +61,7 @@ const Ticket: React.FC = () => {
         },
       });
     },
-    [movieId, navigate, showTimeId, selectedDate, selectedTime]
+    [movieId, navigate, showTimeId, selectedDate, selectedTime],
   );
 
   if (!movieId) {

@@ -4,13 +4,13 @@ import { ENV } from "../env/env.config.ts";
 
 const api = axios.create({
   baseURL: ENV.API_URL,
-  withCredentials: false, // Include credentials with requests
+  withCredentials: false,
 });
 
 const handleBefore = (
   config: InternalAxiosRequestConfig,
 ): InternalAxiosRequestConfig => {
-  const token = getCookie("access_token");
+  const token = getCookie("accessToken");
   if (token) {
     config.headers.set("Authorization", `Bearer ${token}`);
   }

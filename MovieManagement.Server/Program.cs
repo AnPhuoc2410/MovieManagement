@@ -1,8 +1,11 @@
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ClaimRequest.API.Middlewares;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Extensions.SignalR;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services;
@@ -61,9 +65,9 @@ namespace MovieManagement.Server
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("Member", policy => policy.RequireClaim("Role", "0"));
-                options.AddPolicy("Employee", policy => policy.RequireClaim("Role", "1"));
-                options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "2"));
+                options.AddPolicy("Member", policy => policy.RequireClaim(ClaimTypes.Role, UserEnum.Role.Member.ToString()));
+                options.AddPolicy("Employee", policy => policy.RequireClaim(ClaimTypes.Role, UserEnum.Role.Employee.ToString()));
+                options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimTypes.Role, UserEnum.Role.Admin.ToString()));
             });
 
             // Đăng ký JwtService
@@ -101,7 +105,8 @@ namespace MovieManagement.Server
                             "https://localhost:7119",
                             "https://eigaa.vercel.app")
                         .AllowAnyMethod()
-                        .AllowAnyHeader());
+                        .AllowAnyHeader()
+                        .AllowCredentials());
             });
 
             // Đăng ký Swagger
@@ -150,6 +155,16 @@ namespace MovieManagement.Server
             // Register the password hasher
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
+            //Enable role based and policy based authorization
+            //builder.Services.AddAuthorization();
+
+            //ADD SignalR
+            builder.Services.AddSignalR();
+
+            //Register Hangfire
+            builder.Services.AddHangfire(config => config.UseMemoryStorage());
+            builder.Services.AddHangfireServer();
+
             // Đăng ký VnPayService
             builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
@@ -184,11 +199,6 @@ namespace MovieManagement.Server
 
             app.UseHttpsRedirection();
 
-            //Enable Websocket support
-            app.UseWebSockets();
-            app.UseRouting();
-
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -198,8 +208,11 @@ namespace MovieManagement.Server
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseRouting();
             app.MapControllers();
             app.UseCors("AllowReactApp");
+            //Enable Websocket support
+            app.MapHub<SeatHub>("/seatHub");
 
             app.MapFallbackToFile("/index.html");
             app.UseHttpsRedirection();

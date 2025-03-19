@@ -22,23 +22,26 @@ interface TicketPriceProps {
   onNext?: (selectedSeats: SeatType[]) => void;
 }
 
-const currencyFormatMap: Record<string, { locale: string, currency: string }> = {
-  en: { locale: 'en-US', currency: 'USD' },
-  jp: { locale: 'ja-JP', currency: 'JPY' },
-  vi: { locale: 'vi-VN', currency: 'VND' }
-};
+const currencyFormatMap: Record<string, { locale: string; currency: string }> =
+  {
+    en: { locale: "en-US", currency: "USD" },
+    jp: { locale: "ja-JP", currency: "JPY" },
+    vi: { locale: "vi-VN", currency: "VND" },
+  };
 
 const exchangeRates = {
   VND: 1,
   USD: 0.000039,
-  JPY: 0.0058
+  JPY: 0.0058,
 };
 
 const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
   const [seatTypes, setSeatTypes] = useState<SeatType[]>([]);
   const { t, i18n } = useTranslation();
-  const [currencyFormat, setCurrencyFormat] = useState({ locale: 'vi-VN', currency: 'VND' });
-
+  const [currencyFormat, setCurrencyFormat] = useState({
+    locale: "vi-VN",
+    currency: "VND",
+  });
 
   useEffect(() => {
     const currentLang = i18n.language;
@@ -67,8 +70,10 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
   const increment = (id: string) => {
     setSeatTypes((prevSeats) =>
       prevSeats.map((seat) =>
-        seat.seatTypeId === id ? { ...seat, quantity: seat.quantity + 1 } : seat
-      )
+        seat.seatTypeId === id
+          ? { ...seat, quantity: seat.quantity + 1 }
+          : seat,
+      ),
     );
   };
 
@@ -77,14 +82,16 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
       prevSeats.map((seat) =>
         seat.seatTypeId === id && seat.quantity > 0
           ? { ...seat, quantity: seat.quantity - 1 }
-          : seat
-      )
+          : seat,
+      ),
     );
   };
 
   const convertPrice = (priceInVND: number, targetCurrency: string) => {
-    if (targetCurrency === 'VND') return priceInVND;
-    return priceInVND * exchangeRates[targetCurrency as keyof typeof exchangeRates];
+    if (targetCurrency === "VND") return priceInVND;
+    return (
+      priceInVND * exchangeRates[targetCurrency as keyof typeof exchangeRates]
+    );
   };
 
   const formatPrice = (price: number) => {
@@ -92,7 +99,10 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
     const convertedPrice = convertPrice(price, currencyFormat.currency);
 
     // For JPY, round to whole number as yen doesn't use decimals
-    const adjustedPrice = currencyFormat.currency === 'JPY' ? Math.round(convertedPrice) : convertedPrice;
+    const adjustedPrice =
+      currencyFormat.currency === "JPY"
+        ? Math.round(convertedPrice)
+        : convertedPrice;
 
     return adjustedPrice.toLocaleString(currencyFormat.locale, {
       style: "currency",
@@ -142,7 +152,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
             900: { slidesPerView: 3 },
           }}
           autoplay={{ delay: 1000 }}
-          loop={true}
+          loop={seatTypes.length > 4}
           modules={[Pagination]}
           style={{
             width: "100%",

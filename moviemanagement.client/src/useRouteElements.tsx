@@ -6,6 +6,8 @@ import AdminTheme from "./shared-theme/AdminTheme";
 import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
 import { ProtectedRoute, RejectedRoute } from "./guards/AuthGuard";
+import TestConnection from "./pages/TestConnetionc";
+
 
 // Lazy load components
 const Home = lazy(() => import("./pages/Home/Home"));
@@ -136,7 +138,7 @@ export default function useRouteElements() {
         {
           path: "/admin",
           children: [
-            { path: "", element: <AdminTheme /> },
+            { path: "", element: <Dashboard /> },
             { path: "thong-ke", element: <Dashboard /> },
             {
               path: "khuyen-mai",
@@ -202,6 +204,10 @@ export default function useRouteElements() {
           ],
         },
       ],
+    },
+    {
+      path: "/testHub",
+      element: <TestConnection />,
     },
     // 404 Route
     {

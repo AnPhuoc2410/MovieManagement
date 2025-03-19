@@ -82,7 +82,10 @@
         "logging_in": "Đang đăng nhập...",
         "captcha_required": "Vui lòng xác thực captcha",
         "unexpected_error": "Đã xảy ra lỗi không mong muốn",
-        "welcome_message": "Xin chào, {{name}}"
+        "wrong_credentials": "Tài khoản hoặc mật khẩu không chính xác",
+        "welcome_message": "Xin chào, {{name}}",
+        "please_complete_captcha": "Vui lòng xác thực captcha",
+        "complete_captcha_to_continue": "Vui lòng xác thực captcha để tiếp tục"
       },
       "signup": {
         "title": "Đăng ký tài khoản",
@@ -259,6 +262,7 @@
           "phone": "Số điện thoại",
           "status": "Trạng thái",
           "join_date": "Ngày tham gia",
+          "address": "Địa chỉ",
           "points": "Điểm thưởng"
         },
         "actions": "Hành động"

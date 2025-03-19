@@ -91,7 +91,10 @@ const Payment: React.FC = () => {
         amount: total,
         promotionId: "",
       };
-      const billResponse = await api.post(`bill?userId=${"16223053-AE9B-4A5F-AADE-437781C2A8A5"}`, data);
+      const billResponse = await api.post(
+        `bill?userId=${"16223053-AE9B-4A5F-AADE-437781C2A8A5"}`,
+        data,
+      );
       console.log(billResponse.data);
       const response = await api.get(
         `vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}`,

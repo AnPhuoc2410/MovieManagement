@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
+using MovieManagement.Server.Extensions.SignalR;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 
