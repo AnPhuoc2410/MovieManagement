@@ -63,19 +63,17 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
     });
   }, [today, t, i18n.language]);
 
-  // Memoized handleDateChange function
   const handleDateChange = useCallback(
     (e: any, newDate: string) => {
       if (newDate) {
         setSelectedDate(newDate);
         onSelectDate(newDate);
-        setSelectedTime(null); // Reset time when date changes
+        setSelectedTime(null);
       }
     },
     [onSelectDate],
   );
 
-  // Memoized time selection handler
   const handleTimeSelect = useCallback(
     (time: string, showTimeId: string) => {
       setSelectedTime(time);

@@ -19,19 +19,30 @@ namespace MovieManagement.Server.Extensions.SignalR
             _ticketService = ticketService;
         }
 
+        //Every client that connects to the hub will be added to a group with the showtimeId
+        public async Task JoinShowTime(string showtimeId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, showtimeId);
+        }
+        //Every client that disconnects from the hub will be removed from the group with the showtimeId
+        public async Task LeaveShowTime(string showTimeId)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"ShowTime-{showTimeId}");
+        }
+
+
         /// <summary>
         /// Sets one or more seats to pending status.
         /// The client should send a list of TicketDetailRequest objects.
         /// </summary>
-        public async Task SetSeatPending(List<TicketDetailRequest> ticketRequests)
+        public async Task SetSeatPending(List<TicketDetailRequest> ticketRequests, string showtimeId)
         {
             try
             {
                 var responses = await _ticketService.UpdateTicketToPending(ticketRequests);
                 foreach (var ticketResponse in responses)
                 {
-                    // Broadcast to all clients that this seat is now pending.
-                    await Clients.All.SendAsync("SeatPending", ticketResponse.SeatId);
+                    await Clients.Group(showtimeId).SendAsync("SeatPending", ticketResponse.SeatId);
                 }
             }
             catch (Exception ex)
@@ -40,10 +51,11 @@ namespace MovieManagement.Server.Extensions.SignalR
             }
         }
 
+
         /// <summary>
         /// Selects a seat for a user. If the seat is not paid within 5 minutes, it will be auto-released.
         /// </summary>
-        public void SelectSeat(string ticketId, string userId)
+        public void SelectSeat(string ticketId, string showtimeId, string userId)
         {
             // Check if there's already a job for this seat
             if (_seatJobTracker.TryGetValue(ticketId, out var existingJobId))
@@ -53,37 +65,26 @@ namespace MovieManagement.Server.Extensions.SignalR
             }
 
             // Schedule a new job and store its ID
-            var newJobId = BackgroundJob.Schedule(() => AutoReleaseSeat(ticketId), TimeSpan.FromMinutes(1));
+            var newJobId = BackgroundJob.Schedule(() => AutoReleaseSeat(ticketId, showtimeId), TimeSpan.FromMinutes(1));
             _seatJobTracker[ticketId] = newJobId;
         }
 
-        /// <summary>
-        /// Confirms the seat purchase by updating its status to "Bought" in the database,
-        /// then notifies all clients.
-        /// </summary>
-        public async Task ConfirmSeatPurchase(List<TicketDetailRequest> ticketRequests)
+        public async Task ConfirmSeatPurchase(List<TicketDetailRequest> ticketRequests, string showtimeId)
         {
-            // Update the ticket status to Bought.
             foreach (var ticketRequest in ticketRequests)
             {
                 await _ticketService.ChangeStatusTicketDetailAsync(ticketRequest.TicketId, TicketStatus.Paid);
-                // Notify all clients that the seat is now bought.
-                await Clients.All.SendAsync("SeatBought", ticketRequest.TicketId);
+                //TODO: Add BillId and Change Status to Paid
+                await Clients.Group(showtimeId).SendAsync("SeatBought", ticketRequest.TicketId);
             }
-            
         }
 
-        /// <summary>
-        /// Automatically releases the seat if payment is not confirmed within 5 minutes.
-        /// Notifies all clients that the seat is available again.
-        /// </summary>
-        public async Task AutoReleaseSeat(string ticketId)
+        public async Task AutoReleaseSeat(string ticketId, string showtimeId)
         {
             await _ticketService.ChangeStatusTicketDetailAsync(Guid.Parse(ticketId), TicketStatus.Created);
-
-            // Notify all clients that the seat is now available
-            await Clients.All.SendAsync("SeatAvailable", ticketId);
+            await Clients.Group(showtimeId).SendAsync("SeatAvailable", ticketId);
         }
+
 
     }
 }
