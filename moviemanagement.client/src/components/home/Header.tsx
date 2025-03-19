@@ -38,6 +38,7 @@ const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   // Profile dropdown menu state
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -53,6 +54,12 @@ const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
 
   const handleLogout = async () => {
     await authLogout();
+  };
+
+  const handleSearch = () => {
+    if (searchValue.trim()) {
+      navigate(`/search?query=${encodeURIComponent(searchValue)}`);
+    }
   };
 
   useEffect(() => {
@@ -233,6 +240,13 @@ const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
                 variant="outlined"
                 size="small"
                 placeholder={t("search")}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
                 sx={{
                   backgroundColor: "white",
                   width: { md: "200px", lg: "300px" },
@@ -247,7 +261,7 @@ const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
                 }}
                 InputProps={{
                   endAdornment: (
-                    <IconButton size="small">
+                    <IconButton size="small" onClick={handleSearch}>
                       <SearchIcon />
                     </IconButton>
                   ),

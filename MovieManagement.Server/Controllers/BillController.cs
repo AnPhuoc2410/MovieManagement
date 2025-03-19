@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
+using MovieManagement.Server.Models.Enums;
 using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.BillService;
@@ -146,7 +147,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BillDto>> GetBillById(Guid billId)
+        public async Task<ActionResult<BillDto>> GetBillById(long billId)
         {
             try
             {
@@ -261,11 +262,11 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BillDto>> CreateBill(Guid userId, [FromBody] BillRequest billRequest)
+        public async Task<ActionResult<BillDto>> CreateBill(Guid userId, [FromBody] BillRequest billRequest, long paymentId)
         {
             try
             {
-                var newBill = await _billService.CreateBillAsync(userId, billRequest);
+                var newBill = await _billService.CreateBillAsync(userId, billRequest, paymentId);
                 if (newBill == null)
                 {
                     var response = new ApiResponse<object>
@@ -315,17 +316,17 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpPut]
-        [Route("{billId:guid}")]
+        [Route("{billId:long}")]
         [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BillDto>> UpdateBill(Guid billId, [FromBody] BillRequest billRequest)
+        public async Task<ActionResult<BillDto>> UpdateBill(long billId, BillEnum.BillStatus billStatus)
         {
             try
             {
-                var updated = await _billService.UpdateBillAsync(billId, billRequest);
+                var updated = await _billService.UpdateBillAsync(billId, billStatus);
                 if (updated == null)
                 {
                     var response = new ApiResponse<object>
@@ -381,7 +382,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteBill(Guid billId)
+        public async Task<IActionResult> DeleteBill(long billId)
         {
             try
             {

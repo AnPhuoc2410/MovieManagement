@@ -6,6 +6,6 @@
 
         public decimal Amount { get; set; }
 
-        public Guid? PromotionId { get; set; }
+        //public Guid? PromotionId { get; set; }
     }
 }
