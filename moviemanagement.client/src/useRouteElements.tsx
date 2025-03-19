@@ -18,6 +18,7 @@ const ForgotPassword = lazy(
 const AdminPages = {
   Ticket: {
     BuyTicket: lazy(() => import("./pages/admin/QuanLyBanVe/QuanLiBanVe")),
+    BuyTicketDetail: lazy(() => import("./pages/admin/QuanLyBanVe/QuanLiBanVeDetail")), 
     BookingDetail: lazy(() => import("./pages/admin/QuanLyDatVe/ChiTietDatVe")),
     BookingManagement: lazy(
       () => import("./pages/admin/QuanLyDatVe/QuanLyDatVe"),
@@ -40,6 +41,11 @@ const AdminPages = {
     ),
     Detail: lazy(
       () => import("./pages/admin/QuanLyPhongChieu/ChiTietPhongChieu"),
+    ),
+  },
+  ShowTime: {
+    Management: lazy(
+      () => import("./pages/admin/QuanLyThoiGianChieu/QuanLiThoiGianChieu"),
     ),
   },
   Member: {
@@ -153,7 +159,13 @@ export default function useRouteElements() {
                 { path: "them-phim", element: <AdminPages.Movie.Add /> },
               ],
             },
-            { path: "ban-ve", element: <AdminPages.Ticket.BuyTicket /> },
+            {
+              path: "ban-ve",
+              children: [
+                { path: "", element: <AdminPages.Ticket.BuyTicket /> }, // Ticket List
+                { path: ":ticketId", element: <AdminPages.Ticket.BuyTicketDetail /> }, // Ticket Detail
+              ],
+            },
             {
               path: "ql-nhan-vien",
               children: [
@@ -174,6 +186,12 @@ export default function useRouteElements() {
               children: [
                 { path: "", element: <AdminPages.Room.Management /> },
                 { path: ":roomId", element: <AdminPages.Room.Detail /> },
+              ],
+            },
+            {
+              path: "ql-thoi-gian-chieu",
+              children: [
+                { path: "", element: <AdminPages.ShowTime.Management /> },
               ],
             },
             {
