@@ -19,7 +19,54 @@ namespace MovieManagement.Server.Models.Configurations
             //    .WithMany(x => x.Categories)
             //    .HasForeignKey(x => x.MovieId);
 
-
+            // Seed data
+            builder.HasData(
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Hoạt hình"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Viễn tưởng"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Kinh dị"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Hài hước"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Tình cảm"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Thần thoại"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Hành động"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Phiêu Lưu"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Gia đình"
+                }
+            );
         }
     }
 }
