@@ -40,5 +40,13 @@ namespace MovieManagement.Server.Repositories
                 .ToListAsync();
             return showTimes;
         }
+
+        public async Task<List<ShowTime>> GetAllInfoAsync()
+        {
+            return await _context.Showtimes
+                .Include(st => st.Movie)
+                .Include(st => st.Room)
+                .ToListAsync();
+        }
     }
 }

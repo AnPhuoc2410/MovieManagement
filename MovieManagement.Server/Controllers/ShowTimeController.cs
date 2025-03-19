@@ -32,7 +32,7 @@ namespace MovieManagement.Server.Controllers
             try
             {
                 var ListShowTime = await _showTimeService.GetAllShowtime();
-                var response = new ApiResponse<IEnumerable<ShowTimeDto>>
+                var response = new ApiResponse<IEnumerable<ShowTimeInfo>>
                 {
                     StatusCode = 200,
                     Message = "Show Time retrieved successfully",

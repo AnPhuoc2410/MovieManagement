@@ -105,9 +105,9 @@ namespace MovieManagement.Server.Services.ShowTimeService
             return await _unitOfWork.ShowtimeRepository.DeleteAsync(showTimeId);
         }
 
-        public async Task<IEnumerable<ShowTimeDto>> GetAllShowtime()
+        public async Task<IEnumerable<ShowTimeInfo>> GetAllShowtime()
         {
-            var showtimes = _mapper.Map<List<ShowTimeDto>>(await _unitOfWork.ShowtimeRepository.GetAllAsync());
+            var showtimes = _mapper.Map<List<ShowTimeInfo>>(await _unitOfWork.ShowtimeRepository.GetAllInfoAsync());
             if (showtimes.Count == 0)
             {
                 throw new NotFoundException("ShowTime does not found!");

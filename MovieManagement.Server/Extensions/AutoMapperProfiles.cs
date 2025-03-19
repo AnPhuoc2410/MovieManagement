@@ -98,8 +98,7 @@ namespace MovieManagement.Server.Extensions
             CreateMap<TicketDetail, TicketDetailResponseModel>();
             //CreateMap<TicketDetailResponseModel, TicketDetail>();
 
-
-
+            CreateMap<ShowTime, ShowTimeInfo>();
 
             CreateMap<UserDto.UserRequest, User>();
         }
