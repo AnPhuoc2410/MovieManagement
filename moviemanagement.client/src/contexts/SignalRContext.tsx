@@ -60,7 +60,6 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (connection && isConnected) {
       try {
         await connection.invoke("JoinShowTime", groupId);
-        console.log(`Joined ShowTime group: ${groupId}`);
       } catch (err) {
         console.error("Error joining ShowTime group:", err);
       }

@@ -13,16 +13,16 @@ const MovieSeat: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { connection, isConnected } = useSignalR();
-  const { showTimeId, selectedTime, selectedDate, tickets } = location.state || {
-    showTimeId: "",
+  const { movieId, selectedTime, selectedDate, tickets } = location.state ||
+  {
+    movieId: "",
     selectedTime: "Not selected",
     selectedDate: "Not selected",
-    tickets: [],
+    tickets: []
   };
 
   // Retrieve the current showTimeId from state or sessionStorage
-  const currentShowTimeId =
-    showTimeId || sessionStorage.getItem("currentShowTimeId") || "";
+  const currentShowTimeId = sessionStorage.getItem("currentShowTimeId") || "";
 
   // State to store selected seats
   const [selectedSeats, setSelectedSeats] = useState<
@@ -31,6 +31,8 @@ const MovieSeat: React.FC = () => {
 
   // Single timestamp for all seat selections
   const [lastSelectionTime, setLastSelectionTime] = useState<number | null>(null);
+  // New state to force reset of countdown timer when seats change
+  const [resetCounter, setResetCounter] = useState<number>(0);
 
   // Ensure we have a consistent user ID for seat selection
   useEffect(() => {
@@ -50,14 +52,16 @@ const MovieSeat: React.FC = () => {
     setSelectedSeats([]);
   }, []);
 
-  // Updated handler to update the timestamp whenever a seat is selected
+  // Updated handler to update the timestamp whenever a seat is selected.
   const handleSetSelectedSeats = useCallback(
     (updater: React.SetStateAction<any[]>) => {
       setSelectedSeats((prevSeats) => {
         const newSeats =
           typeof updater === "function" ? updater(prevSeats) : updater;
-        if (newSeats.length > prevSeats.length) {
+        if (newSeats.length !== prevSeats.length) {
+          // Whenever seats are added or removed, reset the countdown
           setLastSelectionTime(Date.now());
+          setResetCounter(prev => prev + 1);
         }
         return newSeats;
       });
@@ -71,14 +75,12 @@ const MovieSeat: React.FC = () => {
     0
   );
 
-  // Update the timer when seats are selected
+  // Also update lastSelectionTime if there are no seats
   useEffect(() => {
-    if (selectedSeats.length > 0 && !lastSelectionTime) {
-      setLastSelectionTime(Date.now());
-    } else if (selectedSeats.length === 0) {
+    if (selectedSeats.length === 0) {
       setLastSelectionTime(null);
     }
-  }, [selectedSeats, lastSelectionTime]);
+  }, [selectedSeats]);
 
   const handleNext = async () => {
     if (selectedSeats.length !== maxSeats) {
@@ -106,12 +108,15 @@ const MovieSeat: React.FC = () => {
       // Navigate to the payment page, passing the current showTimeId along with other state
       navigate("/ticket/payment", {
         state: {
+          movieId,
           selectedDate,
           selectedTime,
           tickets,
           seats: selectedSeats.map((seat) => seat.name),
           selectedSeatsInfo: selectedSeats,
           showTimeId: currentShowTimeId,
+          lastSelectionTime,
+          resetCounter,
         },
       });
     } catch (error) {
@@ -198,7 +203,8 @@ const MovieSeat: React.FC = () => {
                   <SeatCountdown
                     seatId="all-seats"
                     seatName={`${selectedSeats.length} ghế`}
-                    startTime={lastSelectionTime}
+                    startTime={lastSelectionTime!}
+                    resetTrigger={resetCounter}
                     onTimeout={handleSeatsTimeout}
                   />
                 </Box>
@@ -260,7 +266,8 @@ const MovieSeat: React.FC = () => {
                       <SeatCountdown
                         seatId="all-seats-mobile"
                         seatName={`${selectedSeats.length} ghế`}
-                        startTime={lastSelectionTime}
+                        startTime={lastSelectionTime!}
+                        resetTrigger={resetCounter}
                         onTimeout={handleSeatsTimeout}
                       />
                     </Box>
