@@ -1,12 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Services.QRService;
 
 namespace MovieManagement.Server.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class QRCodeController : Controller
     {
-        public IActionResult Index()
+        private readonly IQRCodeService _qrCodeService;
+
+        public QRCodeController(IQRCodeService qrCodeService)
         {
-            return View();
+            _qrCodeService = qrCodeService;
+        }
+
+        [HttpPut("verify")]
+        public async Task<ActionResult> CheckQRCode(string code)
+        {
+            bool isValid = await _qrCodeService.CheckQRCode(code);
+            if (isValid)
+            {
+                return Ok();
+            }
+            return BadRequest();
         }
     }
 }

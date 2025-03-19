@@ -3,7 +3,7 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Models.ResponseModel;
-using System.Drawing;
+using IronPdf;
 using System.Text;
 
 namespace MovieManagement.Server.Extensions.ConvertFile
@@ -83,11 +83,6 @@ namespace MovieManagement.Server.Extensions.ConvertFile
                 .Replace("{{Amount}}", billReport.Amount.ToString("N0"));
 
             return body;
-        }
-
-        public string GenerateImageFromHTML(string htmlContent)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,6 +1,9 @@
-﻿using QRCoder;
+﻿using MovieManagement.Server.Data;
+using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.Enums;
+using MovieManagement.Server.Models.ResponseModel;
+using QRCoder;
 using System.Drawing;
-using ZXing;
 using ZXing.Windows.Compatibility;
 
 namespace MovieManagement.Server.Services.QRService
@@ -59,11 +62,36 @@ namespace MovieManagement.Server.Services.QRService
 
         public async Task<bool> CheckQRCode(string qrCode)
         {
-            if (Guid.TryParse(qrCode, out Guid qrCodeGuid))
+            // Doi sang kieu Guid
+            Guid.TryParse(qrCode, out Guid qrCodeGuid);
+
+            // Kiem tra user bill
+            var userBill = await _unitOfWork.BillRepository.GetByIdAsync(qrCodeGuid);
+
+            // Check bill is completed?
+            if (userBill.Status == BillEnum.BillStatus.Completed)
             {
-                return await _unitOfWork.BillRepository.GetByIdAsync(qrCodeGuid) != null;
+                return false;
             }
-            return false;
+
+            // Change status
+            userBill.Status = BillEnum.BillStatus.Completed;
+
+            //Get ticket detail
+            List<TicketDetail> tickets = await _unitOfWork.TicketDetailRepository.GetTicketByBillIdAsync(userBill.BillId);
+
+            foreach (var ticket in tickets)
+            {
+                var userTicket = await _unitOfWork.TicketDetailRepository.GetByIdAsync(ticket.TicketId);
+                if (userTicket.Status == TicketEnum.TicketStatus.Received)
+                    throw new Exception("Ticket was used!");
+                userTicket.Status = TicketEnum.TicketStatus.Received;
+                await _unitOfWork.TicketDetailRepository.UpdateAsync(ticket);
+            }
+
+            await _unitOfWork.BillRepository.UpdateAsync(userBill);
+
+            return true;
         }
     }
 }

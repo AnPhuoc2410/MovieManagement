@@ -5,15 +5,10 @@ using MimeKit;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Extensions.ConvertFile;
-using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.Enums;
 using MovieManagement.Server.Models.RequestModel;
-using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Services.QRService;
-using System.Collections.Concurrent;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MovieManagement.Server.Services.EmailService
 {
@@ -40,8 +35,8 @@ namespace MovieManagement.Server.Services.EmailService
             if (userBill == null)
                 throw new NotFoundException("No bills found!");
 
-            if(userBill.Status != BillEnum.BillStatus.Paid)
-                throw new BadRequestException("Bill is not paid!");
+            //if (userBill.Status != BillEnum.BillStatus.Paid)
+            //    throw new BadRequestException("Bill is not paid!");
 
             // Get user email
             string userEmail = (await _unitOfWork.UserRepository.GetByIdAsync(userBill.UserId)).Email;
@@ -59,7 +54,7 @@ namespace MovieManagement.Server.Services.EmailService
 
             // Create QR code Stream
             byte[] qrCode = _qRCodeGenerator.GenerateQRCode(userBill.BillId.ToString());
-            var qrBase64= _qRCodeGenerator.QRCodeImageToBase64(qrCode);
+            var qrBase64 = _qRCodeGenerator.QRCodeImageToBase64(qrCode);
             string qrCodeHtml = $"<img src='cid:qrcode' alt='QR Code' style='width: 100px; height: 100px;' />";
 
             body = body.Replace("{{QRCode}}", qrCodeHtml);
@@ -98,6 +93,7 @@ namespace MovieManagement.Server.Services.EmailService
             await client.DisconnectAsync(true);
             return true;
         }
+
         public async Task<bool> SendOtpEmail(string userEmail)
         {
             try

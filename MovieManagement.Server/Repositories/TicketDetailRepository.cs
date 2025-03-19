@@ -15,6 +15,13 @@ namespace MovieManagement.Server.Repositories
             _context = context;
         }
 
+        public async Task<List<TicketDetail>> GetTicketByBillIdAsync(Guid billId)
+        {
+            return await _context.TicketDetails
+                .Where(b => b.BillId == billId)
+                .ToListAsync();
+        }
+
         public async Task<List<TicketDetail>> GetTicketByShowTimeId(Guid showTimeId)
         {
             return await _context.TicketDetails
