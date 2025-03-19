@@ -9,5 +9,8 @@
 
         //Các hàm sử lý QR code (khi giải mã)
         string DecodeQRCode(Stream qrCodeImage);
+
+        // Ham kiem tra QR code
+        Task<bool> CheckQRCode(string qrCode);
     }
 }

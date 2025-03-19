@@ -7,6 +7,13 @@ namespace MovieManagement.Server.Services.QRService
 {
     public class QRCodeService : IQRCodeService
     {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public QRCodeService(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
         public byte[] GenerateQRCode(string text)
         {
             byte[] qrCodeImage = null;
@@ -48,6 +55,15 @@ namespace MovieManagement.Server.Services.QRService
                 throw new Exception("QR code not found!");
             }
             return qrInformation.Text;
+        }
+
+        public async Task<bool> CheckQRCode(string qrCode)
+        {
+            if (Guid.TryParse(qrCode, out Guid qrCodeGuid))
+            {
+                return await _unitOfWork.BillRepository.GetByIdAsync(qrCodeGuid) != null;
+            }
+            return false;
         }
     }
 }
