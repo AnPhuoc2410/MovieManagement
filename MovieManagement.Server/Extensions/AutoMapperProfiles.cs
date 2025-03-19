@@ -71,6 +71,9 @@ namespace MovieManagement.Server.Extensions
             CreateMap<Movie, MovieDto>();
             CreateMap<MovieDto, Movie>();
 
+            CreateMap<MovieTheater, MovieTheaterDto>();
+            CreateMap<MovieTheaterDto, MovieTheater>();
+
             CreateMap<Movie, MoviePreview>();
             CreateMap<MoviePreview, Movie>();
 
