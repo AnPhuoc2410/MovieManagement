@@ -5,69 +5,80 @@ import toast from "react-hot-toast";
 import api from "../../apis/axios.config";
 import { TicketDetail } from "../../types/ticketdetail.types";
 import { SelectedSeat } from "../../types/selectedseat.types";
+import { useSignalR } from "../../contexts/SignalRContext";
 
 interface SeatProps {
   showTimeId: string;
-  selectedSeats: { id: string; name: string; version: string; ticketId: string; isMine?: boolean }[];
-  setSelectedSeats: React.Dispatch<
-    React.SetStateAction<{ id: string; name: string; version: string; ticketId: string; isMine?: boolean }[]>
-  >;
-  connection: any;
+  selectedSeats: SelectedSeat[];
+  setSelectedSeats: React.Dispatch<React.SetStateAction<SelectedSeat[]>>;
+  groupConnected: boolean;
 }
 
-const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelectedSeats, connection }) => {
+const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelectedSeats, groupConnected }) => {
+  const { connection } = useSignalR(); // Get the shared SignalR connection
   const [seats, setSeats] = useState<TicketDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Listen for backend status updates (pending and bought) via SignalR.
-  useEffect(() => {
-    if (!connection) return;
+  // Determine the effective showTimeId: use the prop if provided, otherwise fallback to sessionStorage.
+  const effectiveShowTimeId = showTimeId || sessionStorage.getItem("currentShowTimeId") || "";
 
-    connection.on("SeatPending", (seatId: string) => {
+  // Listen for backend status updates (pending, bought, etc.) via SignalR.
+  useEffect(() => {
+    if (!connection || !groupConnected) return;
+
+    const handleSeatPending = (seatId: string) => {
       setSeats((prev) =>
         prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
       );
-    });
+    };
 
-    connection.on("SeatBought", (seatId: string) => {
+    const handleSeatBought = (seatId: string) => {
       setSeats((prev) =>
         prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 2 } : ticket))
       );
-    });
+    };
 
-    connection.on("SeatSelected", (seatId: string, userId: string) => {
+    const handleSeatSelected = (seatId: string, userId: string) => {
       const currentUserId = localStorage.getItem("userId") || "anonymous";
-      // Mark seats selected by others with special status
       if (userId !== currentUserId) {
         setSeats((prev) =>
           prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
         );
       }
-    });
+    };
 
-    connection.on("SeatAvailable", (seatId: string) => {
+    const handleSeatAvailable = (ticketId: string) => {
+      console.log("Received SeatAvailable event for:", ticketId);
+
       setSeats((prev) =>
-        prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 0 } : ticket))
+        prev.map((ticket) =>
+          ticket.ticketId === ticketId ? { ...ticket, status: 0 } : ticket
+        )
       );
+      // Remove auto-released seats from the current selection using ticketId
+      setSelectedSeats((prev) => prev.filter(seat => seat.ticketId !== ticketId));
+    };
 
-      // If this was our seat that got auto-released, we need to remove it from selections
-      setSelectedSeats((prev) => prev.filter(seat => seat.id !== seatId));
-    });
+
+    connection.on("SeatPending", handleSeatPending);
+    connection.on("SeatBought", handleSeatBought);
+    connection.on("SeatSelected", handleSeatSelected);
+    connection.on("SeatAvailable", handleSeatAvailable);
 
     return () => {
-      connection.off("SeatPending");
-      connection.off("SeatBought");
-      connection.off("SeatSelected");
-      connection.off("SeatAvailable");
+      connection.off("SeatPending", handleSeatPending);
+      connection.off("SeatBought", handleSeatBought);
+      connection.off("SeatSelected", handleSeatSelected);
+      connection.off("SeatAvailable", handleSeatAvailable);
     };
-  }, [connection, setSelectedSeats]);
+  }, [connection, groupConnected, setSelectedSeats]);
 
-  // Fetch ticket data by showTimeId.
+  // Fetch ticket data by effectiveShowTimeId.
   useEffect(() => {
     const fetchSeats = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`ticketdetail/getbyroomid/${showTimeId}`);
+        const response = await api.get(`ticketdetail/getbyroomid/${effectiveShowTimeId}`);
         if (response.data?.data) {
           setSeats(response.data.data);
         } else {
@@ -79,9 +90,10 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
         setLoading(false);
       }
     };
-    fetchSeats();
-  }, [showTimeId]);
-
+    if (effectiveShowTimeId) {
+      fetchSeats();
+    }
+  }, [effectiveShowTimeId]);
 
   const handleSeatClick = async (ticket: TicketDetail) => {
     if (!connection) {
@@ -96,19 +108,14 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
       version: ticket.version,
       ticketId: ticket.ticketId,
       isMine: true,
-      selectedAt: Date.now() // Add timestamp when seat is selected
+      selectedAt: Date.now(),
     };
 
     try {
       const userId = localStorage.getItem("userId") || "anonymous";
+      // Invoke the server method to select a seat using effectiveShowTimeId
+      await connection.invoke("SelectSeat", ticket.ticketId, effectiveShowTimeId, userId);
 
-      // Include the showTime ID when selecting a seat
-      await connection.invoke(
-        "SelectSeat",
-        ticket.ticketId,
-        showTimeId,
-        userId
-      );
       setSelectedSeats((prevSeats) => {
         const existingSeat = prevSeats.find((s) => s.ticketId === ticket.ticketId);
         if (existingSeat) {

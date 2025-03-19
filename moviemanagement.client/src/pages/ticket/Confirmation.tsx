@@ -9,20 +9,28 @@ import {
   Divider,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSignalR } from "../../contexts/SignalRContext";
 import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HomeIcon from "@mui/icons-material/Home";
 import { CancelOutlined } from "@mui/icons-material";
+import toast from "react-hot-toast";
 
 const Confirmation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [paymentStatus, setPaymentStatus] = useState<"success" | "failure">();
+  const { connection, joinGroup, leaveGroup, isConnected } = useSignalR();
+  const [seatsUpdated, setSeatsUpdated] = useState(false);
+
+  const queryParams = new URLSearchParams(location.search);
+  const isSuccess = queryParams.get("isSuccess") === "true";
 
   // Extract details from location.state (with defaults)
   const bookingInfo = JSON.parse(sessionStorage.getItem("bookingInfo") || "{}");
+  const { showTimeId } = bookingInfo;
 
   const {
     selectedTime = "Not selected",
@@ -38,28 +46,74 @@ const Confirmation: React.FC = () => {
     idNumber = "",
     phone = "",
     total = seats.length * price,
+    selectedSeatsInfo = [],
   } = bookingInfo;
 
   const handleHome = () => {
     navigate("/");
   };
 
-  const handlePayment = async () => {
-    const queryParams = new URLSearchParams(location.search);
-    const isSuccess = queryParams.get("isSuccess");
-
-    if (isSuccess === "true") {
+  useEffect(() => {
+    if (isSuccess) {
       console.log("Payment successful!");
       setPaymentStatus("success");
     } else {
       console.log("Payment failed or not completed.");
       setPaymentStatus("failure");
     }
-  };
+  }, [isSuccess]);
 
   useEffect(() => {
-    handlePayment();
-  }, []);
+    if (isConnected && showTimeId) {
+      joinGroup(showTimeId)
+        .then(() => {
+          console.log(`Confirmation page joined ShowTime group: ${showTimeId}`);
+
+          // Only update seat status if payment was successful and we haven't updated already
+          if (connection && isSuccess && selectedSeatsInfo?.length && !seatsUpdated) {
+            try {
+              // Extract just the ticketIds from the seat info
+              const ticketIds = selectedSeatsInfo.map((seat: { ticketId: any; }) => seat.ticketId);
+
+              // Update seat status to purchased
+              connection.invoke("SetSeatsBought", ticketIds, showTimeId)
+                .then(() => {
+                  console.log("Seats marked as purchased:", ticketIds);
+                  setSeatsUpdated(true);
+                  toast.success("Ghế đã được đặt thành công!");
+                })
+                .catch(error => {
+                  console.error("Error finalizing seat purchase:", error);
+                  toast.error("Không thể cập nhật trạng thái ghế!");
+                });
+            } catch (error) {
+              console.error("Error preparing seat purchase update:", error);
+            }
+          } else if (!isSuccess && connection && selectedSeatsInfo?.length) {
+            // If payment failed, release the seats
+            try {
+              const ticketIds = selectedSeatsInfo.map((seat: { ticketId: any; }) => seat.ticketId);
+              connection.invoke("ReleasePendingSeats", ticketIds, showTimeId)
+                .then(() => console.log("Seats released due to payment failure"))
+                .catch(err => console.error("Error releasing seats:", err));
+            } catch (error) {
+              console.error("Error releasing seats after payment failure:", error);
+            }
+          }
+        })
+        .catch(err => console.error("Error joining ShowTime group:", err));
+    }
+
+    // Cleanup when leaving the page
+    return () => {
+      if (isConnected && showTimeId) {
+        leaveGroup(showTimeId)
+          .then(() => console.log(`Confirmation page left ShowTime group: ${showTimeId}`))
+          .catch(err => console.error("Error leaving ShowTime group:", err));
+      }
+    };
+  }, [isConnected, showTimeId, connection, isSuccess, selectedSeatsInfo, seatsUpdated, joinGroup, leaveGroup]);
+
 
   return (
     <Box
@@ -438,7 +492,7 @@ const Confirmation: React.FC = () => {
                       color: "rgba(255, 255, 255, 0.8)",
                     }}
                   >
-                    Giao dịch đã bị hủy. Nếu cần hỗ trợ, 
+                    Giao dịch đã bị hủy. Nếu cần hỗ trợ,
                     vui lòng liên hệ với chúng tôi.
                   </Typography>
                 </Box>

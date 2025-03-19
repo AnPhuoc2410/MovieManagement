@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -13,38 +13,58 @@ import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import toast from "react-hot-toast";
-import { ca } from "date-fns/locale";
-import axios from "axios";
 import api from "../../apis/axios.config";
+import { useSignalR } from "../../contexts/SignalRContext";
 
 const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { connection, isConnected } = useSignalR();
 
-  // Get basic booking info from location.state
-  const { selectedTime, selectedDate, tickets, seats } = location.state || {
-    selectedTime: "Not selected",
-    selectedDate: "Not selected",
-    tickets: [],
-    seats: [] as string[],
-  };
-
-  // Calculate total ticket price from the tickets array
-  const totalPrice = (tickets || []).reduce(
-    (sum: number, t: any) => sum + t.price * (t.quantity || 0),
-    0,
-  );
-
-  // Additional info with defaults
+  // Retrieve showtime details from location state or fallback to defaults
   const {
+    selectedTime = "Not selected",
+    selectedDate = "Not selected",
+    tickets = [],
+    seats = [] as string[],
+    showTimeId = "",
+    selectedSeatsInfo = [],
     movieTitle = "Phim Mặc Định",
     screen = "Màn hình 1",
-    showDate = selectedDate,
-    showTime = selectedTime,
-    price = totalPrice,
   } = location.state || {};
 
+  // Determine effective showTimeId from state or session storage
+  const effectiveShowTimeId =
+    showTimeId || sessionStorage.getItem("currentShowTimeId") || "";
+
+  // Handle page refresh or navigation without confirmation:
+  // (For instance, you might want to release pending seats if the page is refreshed)
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (connection && isConnected && effectiveShowTimeId && selectedSeatsInfo?.length) {
+        e.preventDefault();
+        e.returnValue = "";
+        return "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [connection, isConnected, effectiveShowTimeId, selectedSeatsInfo]);
+
+  // Calculate total ticket price
+  const totalPrice = (tickets || []).reduce(
+    (sum: number, t: any) => sum + t.price * (t.quantity || 0),
+    0
+  );
   const total = totalPrice;
+
+  // Additional info with defaults
+  const showDate = selectedDate;
+  const showTime = selectedTime;
+  const price = totalPrice;
 
   // Customer form fields and error states
   const [fullName, setFullName] = useState("");
@@ -90,41 +110,40 @@ const Payment: React.FC = () => {
         totalTicket: tickets.length,
         amount: total,
       };
-      // const billResponse = await api.post(`bill?userId=${"db5ebacc-3b26-46be-9628-9b1cf6daf50d"}`, data);
-      // console.log(billResponse.data);
+
       const response = await api.post(
-        `vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}&userId=${"16223053-AE9B-4A5F-AADE-437781C2A8A5"}`,
-        data,
+        `vnpay/createpaymenturl?money=${total}&description=${encodeURIComponent(
+          `Payment for movie tickets: ${movieTitle}`
+        )}&userId=${"e5c69f1e-c731-420f-badb-723f897e8819"}`,
+        data
       );
 
-      // Save booking info to session storage
+      // Save booking info to session storage so you can retrieve it later if needed.
       sessionStorage.setItem(
         "bookingInfo",
-        JSON.stringify({ selectedTime, selectedDate, tickets, seats, price, total, fullName, email, idNumber, phone }),
+        JSON.stringify({
+          selectedTime,
+          selectedDate,
+          tickets,
+          seats,
+          price,
+          total,
+          fullName,
+          email,
+          idNumber,
+          phone,
+          showTimeId: effectiveShowTimeId,
+          selectedSeatsInfo,
+        })
       );
 
+      // Redirect to VNPay payment URL
       window.location.href = response.data;
     } catch (error) {
       console.error(error);
       toast.error("Đặt vé thất bại!");
       return;
     }
-
-    // toast.success("Đặt vé thành công!");
-    // navigate("/ticket/confirmation", {
-    //   state: {
-    //     movieTitle,
-    //     screen,
-    //     showDate,
-    //     showTime,
-    //     seats,
-    //     total,
-    //     fullName,
-    //     email,
-    //     idNumber,
-    //     phone,
-    //   },
-    // });
   };
 
   return (
@@ -274,8 +293,7 @@ const Payment: React.FC = () => {
                         Thông Tin Vé
                       </Typography>
                       <Typography variant="body1" gutterBottom>
-                        <strong>Ghế:</strong>{" "}
-                        {seats.join(", ") || "Chưa chọn ghế"}
+                        <strong>Ghế:</strong> {seats.join(", ") || "Chưa chọn ghế"}
                       </Typography>
                       <Typography variant="body1" gutterBottom>
                         <strong>Giá:</strong>{" "}
@@ -363,9 +381,7 @@ const Payment: React.FC = () => {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         error={phoneError}
-                        helperText={
-                          phoneError ? "Vui lòng nhập số điện thoại" : ""
-                        }
+                        helperText={phoneError ? "Vui lòng nhập số điện thoại" : ""}
                         InputLabelProps={{ style: { color: "white" } }}
                         sx={{ input: { color: "white" } }}
                       />
