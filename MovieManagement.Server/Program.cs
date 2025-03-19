@@ -15,11 +15,11 @@ using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
 using MovieManagement.Server.Extensions.ConvertFile;
-using MovieManagement.Server.Extensions.QRCode;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.Enums;
 using MovieManagement.Server.Services.JwtService;
+using MovieManagement.Server.Services.QRService;
 using Newtonsoft.Json;
 
 namespace MovieManagement.Server
@@ -160,7 +160,7 @@ namespace MovieManagement.Server
             builder.Services.AddScoped<IConvertFileService, ConvertFileService>();
 
             // Đăng ký QR Code
-            builder.Services.AddScoped<QRCodeGenerator>();
+            builder.Services.AddScoped<IQRCodeService ,QRCodeService>();
 
             builder.Services.Configure<RouteOptions>(options =>
             {

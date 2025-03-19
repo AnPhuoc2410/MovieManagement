@@ -202,9 +202,9 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost("send/bill")]
-        public async Task<ActionResult<bool>> GetBillByEmail(BillReportRequest request)
+        public async Task<ActionResult<bool>> GetBillByEmail(Guid billId)
         {
-            var result = await _emailService.SendEmailReportBill(request);
+            var result = await _emailService.SendEmailReportBill(billId);
             return Ok();
         }
 

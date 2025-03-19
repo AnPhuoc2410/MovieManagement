@@ -1,17 +1,17 @@
 ﻿using QRCoder;
 
-namespace MovieManagement.Server.Extensions.QRCode
+namespace MovieManagement.Server.Services.QRService
 {
-    public class QRCodeGenerator : IQRCodeGenerator
+    public class QRCodeService : IQRCodeService
     {
         public byte[] GenerateQRCode(string text)
         {
             byte[] qrCodeImage = null;
             if (!string.IsNullOrEmpty(text))
             {
-                using (var qrGenerator = new QRCoder.QRCodeGenerator())
+                using (var qrGenerator = new QRCodeGenerator())
                 {
-                    var qrCodeData = qrGenerator.CreateQrCode(text, QRCoder.QRCodeGenerator.ECCLevel.Q);
+                    var qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
                     var qrCode = new BitmapByteQRCode(qrCodeData);
                     qrCodeImage = qrCode.GetGraphic(20);
                 }

@@ -1,6 +1,6 @@
-﻿namespace MovieManagement.Server.Extensions.QRCode
+﻿namespace MovieManagement.Server.Services.QRService
 {
-    public interface IQRCodeGenerator
+    public interface IQRCodeService
     {
         byte[] GenerateQRCode(string text);
         string QRCodeImageToBase64(byte[] qrCodeImage);

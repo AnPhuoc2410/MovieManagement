@@ -1,14 +1,16 @@
-﻿using MailKit.Net.Smtp;
+﻿using AutoMapper;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity;
 using MimeKit;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Extensions.ConvertFile;
-using MovieManagement.Server.Extensions.QRCode;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.Enums;
 using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Models.ResponseModel;
+using MovieManagement.Server.Services.QRService;
 using System.Collections.Concurrent;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,24 +21,27 @@ namespace MovieManagement.Server.Services.EmailService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConvertFileService _convertFile;
-        private readonly IQRCodeGenerator _qRCodeGenerator;
+        private readonly IQRCodeService _qRCodeGenerator;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public EmailService(IUnitOfWork unitOfWork, IConfiguration configuration, IConvertFileService convertFile, QRCodeGenerator qRCodeGenerator)
+        public EmailService(IUnitOfWork unitOfWork, IConfiguration configuration, IConvertFileService convertFile, IQRCodeService qRCodeGenerator, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _convertFile = convertFile;
             _qRCodeGenerator = qRCodeGenerator;
+            _mapper = mapper;
         }
-        public async Task<bool> SendEmailReportBill(BillReportRequest billReport)
+        public async Task<bool> SendEmailReportBill(Guid billId)
         {
-            // Nhớ kiểm tra trạng thái của bill xem có phải đã thanh toán không
-
             //Get user bill
-            var userBill = await _unitOfWork.BillRepository.GetByIdAsync(billReport.BillId);
+            var userBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
             if (userBill == null)
                 throw new NotFoundException("No bills found!");
+
+            if(userBill.Status != BillEnum.BillStatus.Paid)
+                throw new BadRequestException("Bill is not paid!");
 
             // Get user email
             string userEmail = (await _unitOfWork.UserRepository.GetByIdAsync(userBill.UserId)).Email;
@@ -49,30 +54,38 @@ namespace MovieManagement.Server.Services.EmailService
             message.To.Add(new MailboxAddress("", userEmail));
             message.Subject = "INVOICE";
 
-            // Create body to assign message
-            var bodyBuilder = new BodyBuilder();
-
             // Generate HTML body for the bill report
-            string body = _convertFile.GenerateHtmlFromBillReport(billReport);
-            bodyBuilder.HtmlBody = body;
+            string body = _convertFile.GenerateHtmlFromBillReport(_mapper.Map<BillReportRequest>(userBill));
 
             // Create QR code Stream
             byte[] qrCode = _qRCodeGenerator.GenerateQRCode(userBill.BillId.ToString());
-            var qrStream = _qRCodeGenerator.GenerateQRCodeStream(qrCode);
+            var qrBase64= _qRCodeGenerator.QRCodeImageToBase64(qrCode);
+            string qrCodeHtml = $"<img src='cid:qrcode' alt='QR Code' style='width: 100px; height: 100px;' />";
 
-            // Attach QR code to the email
-            var attachment = new MimePart("image", "png")
+            body = body.Replace("{{QRCode}}", qrCodeHtml);
+
+            // Creat html body
+            var bodyBuilder = new BodyBuilder
             {
-                Content = new MimeContent(qrStream),
-                ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
-                ContentTransferEncoding = ContentEncoding.Base64,
-                FileName = "QRCode_Cua_Don_Hang.png"
+                HtmlBody = body
             };
 
-            var multipart = new Multipart("mixed")
+            // Khai báo attachment và gán CID cho attachment
+            var qrStream = new MemoryStream(qrCode);
+            var qrAttachment = new MimePart("image", "png")
+            {
+                Content = new MimeContent(qrStream),
+                ContentDisposition = new ContentDisposition(ContentDisposition.Inline),
+                ContentTransferEncoding = ContentEncoding.Base64,
+                ContentId = "qrcode",
+                FileName = "qrcode.png"
+            };
+
+            // Tạo multipart để gửi email, related sẽ khai báo cho email biết có attachment inline
+            var multipart = new Multipart("related")
             {
                 bodyBuilder.ToMessageBody(),
-                attachment
+                qrAttachment
             };
 
             message.Body = multipart;

@@ -58,6 +58,8 @@ namespace MovieManagement.Server.Extensions
 
             CreateMap<BillRequest, Bill>();
 
+            CreateMap<Bill, BillRequest>();
+
             //Bill Report for user
             CreateMap<Bill, BillReportRequest>();
 

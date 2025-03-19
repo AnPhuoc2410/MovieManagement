@@ -83,6 +83,11 @@ namespace MovieManagement.Server.Extensions.ConvertFile
                 .Replace("{{Amount}}", billReport.Amount.ToString("N0"));
 
             return body;
-        }   
+        }
+
+        public string GenerateImageFromHTML(string htmlContent)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
