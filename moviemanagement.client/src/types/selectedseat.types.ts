@@ -4,5 +4,6 @@ export type SelectedSeat = {
   version: string;
   ticketId: string;
   isMine?: boolean;
+  selectedAt?: number;
 };
 

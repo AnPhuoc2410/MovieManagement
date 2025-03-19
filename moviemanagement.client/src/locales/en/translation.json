@@ -82,8 +82,11 @@
         "remember_me": "Remember me",
         "logging_in": "Logging in...",
         "captcha_required": "Please complete the captcha verification",
+        "wrong_credentials": "Incorrect username or password",
         "unexpected_error": "An unexpected error occurred",
-        "welcome_message": "Welcome back, {{name}}"
+        "welcome_message": "Welcome back, {{name}}",
+        "please_complete_captcha": "Please complete the captcha verification",
+        "complete_captcha_to_continue": "Please complete the captcha verification to continue"
       },
       "signup": {
         "title": "Sign Up",
@@ -260,6 +263,7 @@
           "email": "Email",
           "phone": "Phone Number",
           "status": "Status",
+          "address": "Address",
           "join_date": "Join Date",
           "points": "Points"
         },

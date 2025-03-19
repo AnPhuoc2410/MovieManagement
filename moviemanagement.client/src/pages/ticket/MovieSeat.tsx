@@ -1,14 +1,14 @@
-import { Box, Button, Container, Grid, Typography } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import { Box, Button, Container, Grid, Typography, Paper } from "@mui/material";
+import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SeatCinema from "../../components/Ticket/SeatCinema";
 import StepTracker from "../../components/Ticket/StepTracker";
+import SeatCountdown from "../../components/Ticket/SeatCountdown";
 import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import toast from "react-hot-toast";
 import api from "../../apis/axios.config";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-
 
 const MovieSeat: React.FC = () => {
   const location = useLocation();
@@ -23,12 +23,22 @@ const MovieSeat: React.FC = () => {
 
   // State to store selected seats
   const [selectedSeats, setSelectedSeats] = useState<
-    { id: string; name: string; version: string; ticketId: string }[]
+    { id: string; name: string; version: string; ticketId: string; isMine?: boolean; selectedAt?: number }[]
   >([]);
+
+  // Single timestamp for all seat selections
+  const [lastSelectionTime, setLastSelectionTime] = useState<number | null>(null);
+
+  // Ensure we have a consistent user ID for seat selection
+  useEffect(() => {
+    if (!localStorage.getItem("userId")) {
+      localStorage.setItem("userId", Math.random().toString(36).substring(2, 15));
+    }
+  }, []);
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl('https://localhost:7119/seatSelectionHub') // Replace with your SignalR hub URL
+      .withUrl('https://localhost:7119/seatHub')
       .withAutomaticReconnect()
       .build();
 
@@ -44,11 +54,40 @@ const MovieSeat: React.FC = () => {
     };
   }, []);
 
+  // Handle what happens when seat timer expires
+  const handleSeatsTimeout = useCallback(() => {
+    toast.error(`Thời gian giữ chỗ đã hết cho tất cả ghế đã chọn.`);
+    setSelectedSeats([]);
+  }, []);
+
+  // Updated handler to update the timestamp whenever a seat is selected
+  const handleSetSelectedSeats = useCallback((updater: React.SetStateAction<any[]>) => {
+    setSelectedSeats((prevSeats) => {
+      const newSeats = typeof updater === 'function' ? updater(prevSeats) : updater;
+
+      // If any new seat is added, update the last selection time
+      if (newSeats.length > prevSeats.length) {
+        setLastSelectionTime(Date.now());
+      }
+
+      return newSeats;
+    });
+  }, []);
+
   // Calculate the total number of seats that should be selected based on ticket quantities
   const maxSeats = (tickets || []).reduce(
     (acc: number, ticket: any) => acc + (ticket.quantity || 0),
     0,
   );
+
+  // Update the timer when seats are selected
+  useEffect(() => {
+    if (selectedSeats.length > 0 && !lastSelectionTime) {
+      setLastSelectionTime(Date.now());
+    } else if (selectedSeats.length === 0) {
+      setLastSelectionTime(null);
+    }
+  }, [selectedSeats]);
 
   const handleNext = async () => {
     if (selectedSeats.length !== maxSeats) {
@@ -65,13 +104,13 @@ const MovieSeat: React.FC = () => {
       // Create an array of TicketDetailRequest objects for SignalR
       const ticketRequests = selectedSeats.map((seat) => ({
         TicketId: seat.ticketId,
-        Version: seat.version, // Use the version as received from your API response
+        Version: seat.version,
       }));
 
       // Use SignalR to update seat status to PENDING (broadcast to all clients)
       await connection.invoke("SetSeatPending", ticketRequests);
 
-      toast.success("Ghế đã được cập nhật thành trạng thái PENDING. Chuyển đến trang thanh toán...");
+      toast.success("Chuyển đến trang thanh toán...");
 
       // Navigate directly to the payment page
       navigate("/ticket/payment", {
@@ -80,6 +119,7 @@ const MovieSeat: React.FC = () => {
           selectedTime,
           tickets,
           seats: selectedSeats.map((seat) => seat.name),
+          selectedSeatsInfo: selectedSeats, // Pass full seat info for payment confirmation
         },
       });
     } catch (error) {
@@ -87,8 +127,6 @@ const MovieSeat: React.FC = () => {
       toast.error("Lỗi khi đặt chỗ! Có thể ghế đã được người khác chọn.");
     }
   };
-
-
 
   return (
     <Box
@@ -145,6 +183,33 @@ const MovieSeat: React.FC = () => {
               flexShrink: 0,
             }}
           >
+            {selectedSeats.length > 0 && lastSelectionTime && (
+                <Paper
+                  elevation={3}
+                  sx={{
+                    p: 3,
+                    backgroundColor: "rgba(27, 38, 53, 0.7)",
+                    color: "white",
+                    borderRadius: 2
+                  }}
+                >
+                  <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                    Thời gian giữ ghế:
+                  </Typography>
+                  <Box sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center"
+                  }}>
+                    <SeatCountdown
+                      seatId="all-seats"
+                      seatName={`${selectedSeats.length} ghế`}
+                      startTime={lastSelectionTime}
+                      onTimeout={handleSeatsTimeout}
+                    />
+                  </Box>
+                </Paper>
+              )}
             <StepTracker currentStep={2} />
           </Box>
 
@@ -176,6 +241,37 @@ const MovieSeat: React.FC = () => {
                 Chọn Ghế
               </Typography>
 
+              {/* Mobile timer display */}
+              {selectedSeats.length > 0 && lastSelectionTime && (
+                <Box sx={{ display: { xs: "block", md: "none" }, mb: 3 }}>
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      p: 2,
+                      backgroundColor: "rgba(27, 38, 53, 0.7)",
+                      color: "white",
+                      borderRadius: 2
+                    }}
+                  >
+                    <Typography variant="subtitle2" sx={{ mb: 2 }}>
+                      Thời gian giữ ghế:
+                    </Typography>
+                    <Box sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center"
+                    }}>
+                      <SeatCountdown
+                        seatId="all-seats-mobile"
+                        seatName={`${selectedSeats.length} ghế`}
+                        startTime={lastSelectionTime}
+                        onTimeout={handleSeatsTimeout}
+                      />
+                    </Box>
+                  </Paper>
+                </Box>
+              )}
+
               <Box
                 sx={{
                   backgroundColor: "rgba(11, 13, 26, 0.6)",
@@ -188,7 +284,7 @@ const MovieSeat: React.FC = () => {
                 <SeatCinema
                   showTimeId={showTimeId}
                   selectedSeats={selectedSeats}
-                  setSelectedSeats={setSelectedSeats}
+                  setSelectedSeats={handleSetSelectedSeats}
                   connection={connection}
                 />
 

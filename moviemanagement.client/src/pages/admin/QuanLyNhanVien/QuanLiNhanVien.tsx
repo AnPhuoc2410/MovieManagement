@@ -6,14 +6,16 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { doInActiveUser, fetchUserByRole, Role } from "../../../apis/user.apis";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import { UserResponse } from "../../../types/users.type";
 import XoaNhanVien from "./XoaNhanVien";
+import { dateFormatter } from "../../../utils/dateTime.utils";
 
 const QuanLiNhanVien: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const [selectedEmployee, setSelectedEmployee] = useState<UserResponse | null>(
     null,
@@ -41,7 +43,7 @@ const QuanLiNhanVien: React.FC = () => {
         error instanceof Error ? error.message : "Failed to load employees",
       );
     }
-  }, [error]);
+  }, [error, location]);
 
   const handleEdit = (id: string) => navigate(`/admin/ql-nhan-vien/${id}`);
 
@@ -118,17 +120,9 @@ const QuanLiNhanVien: React.FC = () => {
         ),
       },
       {
-        field: "joinDate",
-        headerName: t("common.table_header.user.join_date"),
+        field: "address",
+        headerName: t("common.table_header.user.address"),
         width: 130,
-        valueFormatter: (params: { value: string | number | Date }) => {
-          const date = new Date(params.value);
-
-          // Check if the date is valid
-          if (isNaN(date.getTime())) {
-            return "Invalid Date";
-          }
-        },
       },
       {
         field: "actions",
@@ -183,7 +177,7 @@ const QuanLiNhanVien: React.FC = () => {
           rows={employees || []}
           columns={columns}
           loading={isLoading}
-          getRowId={(row) => row.userName}
+          getRowId={(row) => row.userId}
           initialState={{
             pagination: { paginationModel: { pageSize: 10 } },
           }}

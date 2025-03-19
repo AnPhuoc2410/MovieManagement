@@ -19,7 +19,6 @@ const StepTracker: React.FC<StepTrackerProps> = ({
   currentStep,
   paymentStatus,
 }) => {
-
   const { t } = useTranslation();
   const steps = [
     { label: t("step_tracker.select_show_time"), icon: <MovieIcon /> },
