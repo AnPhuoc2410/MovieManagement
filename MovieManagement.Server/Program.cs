@@ -84,8 +84,7 @@ namespace MovieManagement.Server
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                options.JsonSerializerOptions.DefaultIgnoreCondition =
-                    JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
