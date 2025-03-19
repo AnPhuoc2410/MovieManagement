@@ -18,6 +18,7 @@ using MovieManagement.Server.Extensions;
 using MovieManagement.Server.Extensions.SignalR;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.Enums;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.JwtService;
 using Newtonsoft.Json;

@@ -134,7 +134,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return await _unitOfWork.TicketDetailRepository.SaveAsync() == ticketDetails.Count();
         }
 
-        public async Task<bool> PurchasedTicket(List<Guid> list, Guid billId)
+        public async Task<bool> PurchasedTicket(List<Guid> list, long billId)
         {
 
             foreach (var t in list)
