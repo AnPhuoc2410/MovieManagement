@@ -93,7 +93,7 @@ const Payment: React.FC = () => {
       // const billResponse = await api.post(`bill?userId=${"db5ebacc-3b26-46be-9628-9b1cf6daf50d"}`, data);
       // console.log(billResponse.data);
       const response = await api.post(
-        `vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}&userId=${"16223053-AE9B-4A5F-AADE-437781C2A8A5"}`,
+        `vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}&userId=${"8a636df7-d95d-4578-bc7a-97706cd6f97a"}`,
         data,
       );
 
