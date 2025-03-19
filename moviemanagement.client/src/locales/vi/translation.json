@@ -8,6 +8,7 @@
     "see_more": "Xem Thêm",
     "now_showing": "PHIM ĐANG CHIẾU",
     "upcoming": "PHIM SẮP CHIẾU",
+    "search_result": "KẾT QUẢ TÌM KIẾM",
     "promotions": "KHUYẾN MÃI",
     "list_promotions": "TẤT CẢ ƯU ĐÃI",
     "quick_booking": "ĐẶT VÉ NHANH",
@@ -22,6 +23,7 @@
     "select_theater4": "Cinestar Kiên Giang (Rạch Sỏi)",
     "select_theater5": "Cinestar Lâm Đồng (Đức Trọng)",
     "select_theater6": "Cinestar Đà Lạt (TP.Đà Lạt)",
+    "no_search_result": "Không tìm thấy phim nào phù hợp.",
     "footer": {
       "slogan": "HẠNH PHÚC, TỎA SÁNG",
       "book_ticket": "ĐẶT VÉ",

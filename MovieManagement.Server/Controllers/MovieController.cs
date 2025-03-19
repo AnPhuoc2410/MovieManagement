@@ -323,11 +323,11 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> GetMoviesByNameRelative(string searchValue, int page, int pageSize)
+        public async Task<ActionResult> GetMoviesByNameRelative(string searchValue)
         {
             try
             {
-                var movies = await _movieService.GetMoviesByNameRelative(searchValue, page, pageSize);
+                var movies = await _movieService.GetMoviesByNameRelative(searchValue);
                 if (movies == null)
                 {
                     var response = new ApiResponse<object>

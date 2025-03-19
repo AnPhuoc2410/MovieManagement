@@ -185,6 +185,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
         public void HandleSuccessfulPayment(PaymentResult paymentResult)
         {
             _billService.UpdateBill(paymentResult.PaymentId, BillEnum.BillStatus.Completed);
+            //TODO: HERE CALL TICKETSERVICE TO UPDATE TICKET BillID
         }
 
         public void HandleFailurePayment(PaymentResult paymentResult)

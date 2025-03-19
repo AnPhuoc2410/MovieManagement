@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import LanguageSelector from "../common/LanguageSelector";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -36,6 +36,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
   const { isAuthenticated, authLogout, userDetails } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation(); // Access current location
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -56,9 +57,16 @@ const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
     await authLogout();
   };
 
+  useEffect(() => {
+    // Retrieve searchValue from URL query parameters
+    const params = new URLSearchParams(location.search);
+    const keyword = params.get("keyword") || "";
+    setSearchValue(decodeURIComponent(keyword));
+  }, [location.search]);
+
   const handleSearch = () => {
     if (searchValue.trim()) {
-      navigate(`/search?query=${encodeURIComponent(searchValue)}`);
+      navigate(`/search?keyword=${encodeURIComponent(searchValue)}`);
     }
   };
 

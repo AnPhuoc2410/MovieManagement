@@ -4,6 +4,7 @@ using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories.IRepositories;
+using System.Drawing.Printing;
 
 namespace MovieManagement.Server.Repositories
 {
@@ -33,7 +34,7 @@ namespace MovieManagement.Server.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<Movie>> GetMoviesByNameRelative(string name, int page, int pageSize)
+        public async Task<List<Movie>> GetMoviesByNameRelativePage(string name, int page, int pageSize)
         {
             return await _context.Movies
                 .Where(m => m.MovieName.ToLower().Contains(name.ToLower()) && m.IsDeleted == false)
@@ -76,6 +77,12 @@ namespace MovieManagement.Server.Repositories
             movie.IsDeleted = true;
             await _context.SaveChangesAsync();
             return movie;
+        }
+
+        public async Task<List<Movie>> GetMoviesByNameRelative(string searchValue)
+        {
+            return await _context.Movies
+                .Where(m => m.MovieName.ToLower().Contains(searchValue.ToLower()) && m.IsDeleted == false).ToListAsync();
         }
     }
 }
