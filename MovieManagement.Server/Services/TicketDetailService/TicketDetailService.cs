@@ -151,7 +151,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
 
             //Check this line later cause im being lazy
-            return checker == list.Count();
+            return checker > 0;
 
 
         }

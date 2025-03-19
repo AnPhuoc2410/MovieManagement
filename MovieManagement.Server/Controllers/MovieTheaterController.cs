@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Services.MovieTheaterService;
 
@@ -57,10 +58,13 @@ namespace MovieManagement.Server.Controllers
 
         [HttpDelete]
         [Route("delete/{movieTheaterId}")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteMovieTheaterAsync(Guid movieTheaterId)
         {
             var result = await _movieTheaterService.DeleteMovieTheaterAsync(movieTheaterId);
-            return Ok(result);
+            return NoContent();
         }
 
 
