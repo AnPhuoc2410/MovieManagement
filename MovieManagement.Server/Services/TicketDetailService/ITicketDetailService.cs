@@ -22,5 +22,6 @@ namespace MovieManagement.Server.Services.TicketDetailServices
         Task<bool> DeleteRemainingTicket(Guid showTimeId);
         Task<bool> PurchasedTicket(List<Guid> list, long billId);
 
+        Task<IEnumerable<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(long billId);
     }
 }

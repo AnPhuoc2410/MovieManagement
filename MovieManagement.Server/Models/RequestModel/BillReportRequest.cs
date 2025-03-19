@@ -1,11 +1,10 @@
 ﻿using static MovieManagement.Server.Models.Enums.BillEnum;
 
-namespace MovieManagement.Server.Models.DTOs
+namespace MovieManagement.Server.Models.RequestModel
 {
-    public class BillDto
+    public class BillReportRequest
     {
-
-        public long? BillId { get; set; }
+        public Guid BillId { get; set; }
 
         public DateTime CreatedDate { get; set; }
 
@@ -19,10 +18,8 @@ namespace MovieManagement.Server.Models.DTOs
 
         public Guid UserId { get; set; }
 
-        public Guid PromotionId { get; set; }
+        public Guid? PromotionId { get; set; }
 
-        public BillStatus Status { get; set; } // 0: Hủy đặt vé; 1: Chờ nhận vé; 2: Đã nhận vé; 3: Đã xem phim
-
-
+        public BillStatus Status { get; set; }
     }
 }

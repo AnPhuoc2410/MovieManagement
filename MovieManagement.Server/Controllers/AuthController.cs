@@ -213,5 +213,16 @@ namespace MovieManagement.Server.Controllers
                 Data = userData
             });
         }
+
+
+
+
+        [HttpGet]
+        [Authorize(Roles = "Admin,Member")]
+        [Route("Test")]
+        public IActionResult Test()
+        {
+            return Ok("Test");
+        }
     }
 }
