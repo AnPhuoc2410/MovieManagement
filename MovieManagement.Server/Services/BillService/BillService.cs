@@ -40,7 +40,7 @@ namespace MovieManagement.Server.Services.BillService
             var bills = await _unitOfWork.BillRepository.GetPageAsync(page, sizePage);
             return _mapper.Map<List<BillDto>>(bills);
         }
-        public async Task<BillDto> GetBillByIdAsync(Guid billId)
+        public async Task<BillDto> GetBillByIdAsync(long billId)
         {
             try
             {
@@ -56,46 +56,41 @@ namespace MovieManagement.Server.Services.BillService
                 throw new Exception("Couldn't access into database due to systems error.", ex);
             }
         }
-        public async Task<BillDto> CreateBillAsync(Guid userId, BillRequest billRequest)
+        public async Task<BillDto> CreateBillAsync(Guid userId, BillRequest billRequest, long paymentId)
         {
-            try
-            {
-                //Checking user is existing
-                var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
-                if (user == null)
-                    throw new NotFoundException("User cannot found!");
+            //Checking user is existing
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+            if (user == null)
+                throw new NotFoundException("User cannot found!");
 
-                //Calculator ticket total
-                var bill = _mapper.Map<Bill>(billRequest);
-                bill.CreatedDate = DateTime.Now;
-                bill.UserId = userId;
-                bill.Status = BillEnum.BillStatus.Pending;
-                bill.Point = bill.TotalTicket;
+            //Calculator ticket total
+            var bill = _mapper.Map<Bill>(billRequest);
+            bill.BillId = paymentId;
+            bill.CreatedDate = DateTime.Now;
+            bill.UserId = userId;
+            bill.Status = BillEnum.BillStatus.Pending;
+            bill.Point = bill.TotalTicket;
 
-                var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateAsync(bill));
-                if (createdBill == null)
-                    throw new Exception("Failed to create bill.");
-                return createdBill;
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("An error occurred while processing into Database", ex);
-            }
+            var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateIdentityAsync(bill));
+            if (createdBill == null)
+                throw new Exception("Failed to create bill.");
+            return createdBill;
         }
-        public async Task<BillDto> UpdateBillAsync(Guid billId, BillRequest billRequest)
+        public async Task<BillDto> UpdateBillAsync(long billId, BillEnum.BillStatus billStatus)
         {
             var existingBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
             if (existingBill == null)
                 throw new NotFoundException("Bill cannot found!");
 
-            existingBill = _mapper.Map(billRequest, existingBill);
+            //existingBill = _mapper.Map(billRequest, existingBill);
+            existingBill.Status = billStatus;
             var updatedBill = await _unitOfWork.BillRepository.UpdateAsync(existingBill);
             if (updatedBill == null)
                 throw new DbUpdateException("Bill cannot update!");
             return _mapper.Map<BillDto>(updatedBill);
 
         }
-        public async Task<bool> DeleteBillAsync(Guid billId)
+        public async Task<bool> DeleteBillAsync(long billId)
         {
             try
             {
@@ -122,6 +117,20 @@ namespace MovieManagement.Server.Services.BillService
             {
                 throw new ApplicationException("Couldn't access into database due to systems error.", ex);
             }
+        }
+
+        public BillDto UpdateBill(long billId, BillEnum.BillStatus billStatus)
+        {
+            var existingBill = _unitOfWork.BillRepository.GetById(billId);
+            if (existingBill == null)
+                throw new NotFoundException("Bill cannot found!");
+
+            //existingBill = _mapper.Map(billRequest, existingBill);
+            existingBill.Status = billStatus;
+            var updatedBill = _unitOfWork.BillRepository.Update(existingBill);
+            if (updatedBill == null)
+                throw new DbUpdateException("Bill cannot update!");
+            return _mapper.Map<BillDto>(updatedBill);
         }
     }
 }

@@ -6,6 +6,9 @@ import AdminTheme from "./shared-theme/AdminTheme";
 import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
 import { ProtectedRoute, RejectedRoute } from "./guards/AuthGuard";
+import TestConnection from "./pages/TestConnetionc";
+import SearchPage from "./pages/movie/SearchPage";
+
 
 // Lazy load components
 const Home = lazy(() => import("./pages/Home/Home"));
@@ -61,6 +64,7 @@ const ClientPages = {
   Movie: {
     NowShowing: lazy(() => import("./pages/movie/NowShowingMoviesPage")),
     Upcoming: lazy(() => import("./pages/movie/UpComingMoviesPage")),
+    Search: lazy(() => import("./pages/movie/SearchPage")),
   },
   Promotion: {
     List: lazy(() => import("./pages/promotion/PromotionsPage")),
@@ -122,6 +126,9 @@ export default function useRouteElements() {
           ],
         },
         {
+          path: "search", element: <ClientPages.Movie.Search />,
+        },
+        {
           path: "/ticket",
           children: [
             { path: ":movieId", element: <ClientPages.Ticket.Booking /> },
@@ -142,7 +149,7 @@ export default function useRouteElements() {
         {
           path: "/admin",
           children: [
-            { path: "", element: <AdminTheme /> },
+            { path: "", element: <Dashboard /> },
             { path: "thong-ke", element: <Dashboard /> },
             {
               path: "khuyen-mai",
@@ -220,6 +227,10 @@ export default function useRouteElements() {
           ],
         },
       ],
+    },
+    {
+      path: "/testHub",
+      element: <TestConnection />,
     },
     // 404 Route
     {

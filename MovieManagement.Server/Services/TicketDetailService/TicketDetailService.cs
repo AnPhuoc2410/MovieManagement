@@ -24,65 +24,37 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 
         public async Task<TicketDetailDto> CreateTicketDetailAsync(TicketDetailDto ticketDetail)
         {
-            try
-            {
-                var newTicketDetail = _mapper.Map<TicketDetail>(ticketDetail);
-                newTicketDetail.TicketId = Guid.NewGuid();
-                newTicketDetail.Version = new byte[8];
-                var createdTicketDetail = await _unitOfWork.TicketDetailRepository.CreateAsync(newTicketDetail);
-                if (createdTicketDetail == null)
-                    throw new Exception("Failed to create ticket detail.");
-                return _mapper.Map<TicketDetailDto>(createdTicketDetail);
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("An error occurred while processing into the database.", ex);
-            }
+            var newTicketDetail = _mapper.Map<TicketDetail>(ticketDetail);
+            newTicketDetail.TicketId = Guid.NewGuid();
+            newTicketDetail.Version = new byte[8];
+            var createdTicketDetail = await _unitOfWork.TicketDetailRepository.CreateAsync(newTicketDetail);
+            if (createdTicketDetail == null)
+                throw new Exception("Failed to create ticket detail.");
+            return _mapper.Map<TicketDetailDto>(createdTicketDetail);
         }
 
         public async Task<TicketDetailDto> GetTicketDetailByIdAsync(Guid id)
         {
-            try
-            {
-                var ticketDetails = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id);
-                if (ticketDetails == null)
-                    throw new NotFoundException("Ticket not found");
-                return _mapper.Map<TicketDetailDto>(ticketDetails);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            var ticketDetails = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id);
+            if (ticketDetails == null)
+                throw new NotFoundException("Ticket not found");
+            return _mapper.Map<TicketDetailDto>(ticketDetails);
         }
 
         public async Task<IEnumerable<TicketDetailDto>> GetTicketDetailPageAsync(int page, int pageSize)
         {
-            try
-            {
-                var ticketDetails = await _unitOfWork.TicketDetailRepository.GetPageAsync(page, pageSize);
-                if (ticketDetails == null)
-                    throw new NotFoundException("Ticket details not found!");
-                return _mapper.Map<List<TicketDetailDto>>(ticketDetails);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            var ticketDetails = await _unitOfWork.TicketDetailRepository.GetPageAsync(page, pageSize);
+            if (ticketDetails == null)
+                throw new NotFoundException("Ticket details not found!");
+            return _mapper.Map<List<TicketDetailDto>>(ticketDetails);
         }
 
         public async Task<IEnumerable<TicketDetailDto>> GetAllTicketDetailsAsync()
         {
-            try
-            {
-                var ticketDetails = await _unitOfWork.TicketDetailRepository.GetAllAsync();
-                if (ticketDetails == null)
-                    throw new NotFoundException("No ticket details found!");
-                return _mapper.Map<List<TicketDetailDto>>(ticketDetails);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            var ticketDetails = await _unitOfWork.TicketDetailRepository.GetAllAsync();
+            if (ticketDetails == null)
+                throw new NotFoundException("No ticket details found!");
+            return _mapper.Map<List<TicketDetailDto>>(ticketDetails);
         }
 
         public async Task<TicketDetailDto> UpdateTicketDetailAsync(Guid id, TicketDetailDto ticketDetail)
@@ -119,9 +91,10 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             List<TicketDetail> ticketDetails = new List<TicketDetail>();
             foreach (var t in Tickets)
             {
-                var current = await _unitOfWork.TicketDetailRepository.GetTicketByIdAndVersion(t.TicketId, t.Version);
-                if (current == null)
-                    throw new NotFoundException("Version conflicted.");
+                var current = await _unitOfWork.TicketDetailRepository.GetTicketByIdAndVersion(t.TicketId, t.Version)
+                ?? throw new NotFoundException("Version conflicted.");
+                if (current.ShowTime.EndTime.CompareTo(DateTime.Now) < 0)
+                    throw new BadRequestException("Show time is over.");
                 if (current.Status != TicketStatus.Created)
                     throw new BadRequestException($"Ticket is on other status.");
                 current.Status = TicketStatus.Pending;
@@ -134,6 +107,55 @@ namespace MovieManagement.Server.Services.TicketDetailServices
                 throw new DbUpdateException("Fail to update ticket detail.");
             return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
         }
+
+
+        public async Task<TicketDetailResponseModel> ChangeStatusTicketDetailAsync(Guid ticketId, TicketStatus status)
+        {
+            var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(ticketId);
+            if (ticketDetail == null)
+                throw new NotFoundException("Ticket detail not found!");
+
+            ticketDetail.Status = status;
+            var updatedTicketDetail = await _unitOfWork.TicketDetailRepository.UpdateAsync(ticketDetail);
+            if (updatedTicketDetail == null)
+                throw new DbUpdateException("Fail to update ticket detail status.");
+
+            return _mapper.Map<TicketDetailResponseModel>(updatedTicketDetail);
+        }
+
+        public async Task<bool> DeleteRemainingTicket(Guid showTimeId)
+        {
+            var ticketDetails = (await _unitOfWork.TicketDetailRepository.GetTicketByShowTimeId(showTimeId)).Where(t => t.Status == TicketStatus.Created)
+                ?? throw new NotFoundException("Ticket details not found!");
+            foreach (var t in ticketDetails)
+            {
+                _unitOfWork.TicketDetailRepository.PrepareRemove(t);
+            }
+            return await _unitOfWork.TicketDetailRepository.SaveAsync() == ticketDetails.Count();
+        }
+
+        public async Task<bool> PurchasedTicket(List<Guid> list, long billId)
+        {
+
+            foreach (var t in list)
+            {
+                var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(t);
+                if (ticketDetail == null)
+                    throw new NotFoundException("Ticket detail not found!");
+                if (ticketDetail.Status != TicketStatus.Pending)
+                    throw new BadRequestException("Ticket is not pending.");
+                ticketDetail.Status = TicketStatus.Paid;
+                ticketDetail.BillId = billId;
+                _unitOfWork.TicketDetailRepository.PrepareUpdate(ticketDetail);
+            }
+            var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
+
+            //Check this line later cause im being lazy
+            return checker == list.Count();
+
+
+        }
+
 
     }
 }

@@ -71,6 +71,9 @@ namespace MovieManagement.Server.Extensions
             CreateMap<Movie, MovieDto>();
             CreateMap<MovieDto, Movie>();
 
+            CreateMap<MovieTheater, MovieTheaterDto>();
+            CreateMap<MovieTheaterDto, MovieTheater>();
+
             CreateMap<Movie, MoviePreview>();
             CreateMap<MoviePreview, Movie>();
 
@@ -95,8 +98,7 @@ namespace MovieManagement.Server.Extensions
             CreateMap<TicketDetail, TicketDetailResponseModel>();
             //CreateMap<TicketDetailResponseModel, TicketDetail>();
 
-
-
+            CreateMap<ShowTime, ShowTimeInfo>();
 
             CreateMap<UserDto.UserRequest, User>();
         }

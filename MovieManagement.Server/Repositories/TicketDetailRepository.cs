@@ -2,6 +2,7 @@
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories.IRepositories;
+using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Repositories
 {
@@ -29,6 +30,14 @@ namespace MovieManagement.Server.Repositories
         {
             return await _context.TicketDetails
                 .FirstOrDefaultAsync(td => td.TicketId == id && td.Version == version);
+        }
+
+        public async Task<List<TicketDetail>> GetRemainingsTickets()
+        {
+            return await _context.TicketDetails
+                .Include(td => td.ShowTime)
+                .Where(td => td.Status == TicketStatus.Created && td.ShowTime.EndTime < DateTime.Now)
+                .ToListAsync();
         }
 
 

@@ -6,5 +6,6 @@ namespace MovieManagement.Server.Repositories.IRepositories
     {
         Task<List<TicketDetail>> GetTicketByShowTimeId(Guid showTimeId);
         Task<TicketDetail> GetTicketByIdAndVersion(Guid id, byte[] version);
+        Task<List<TicketDetail>> GetRemainingsTickets();
     }
 }

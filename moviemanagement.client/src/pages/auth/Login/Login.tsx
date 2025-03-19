@@ -27,7 +27,9 @@ import { GoogleLogin } from "@react-oauth/google";
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(() => {
+    return localStorage.getItem("rememberMe") === "true";
+  });
   const navigate = useNavigate();
   const { authLogin } = useAuth();
   const { t } = useTranslation();
@@ -35,9 +37,13 @@ export const Login = () => {
   const recaptchaRef = createRef<ReCAPTCHA>();
 
   const validationSchema = yup.object({
-    email: yup.string().required(t("auth.login.validation.email_required")),
+    email: yup
+      .string()
+      .transform((value) => value.trim())
+      .required(t("auth.login.validation.email_required")),
     password: yup
       .string()
+      .transform((value) => value.trim())
       .test(
         "is-valid-password",
         t("auth.login.validation.password_length"),
@@ -56,20 +62,36 @@ export const Login = () => {
   };
 
   const handleRememberMe = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRememberMe(event.target.checked);
+    const checked = event.target.checked;
+    setRememberMe(checked);
+    localStorage.setItem("rememberMe", checked.toString());
   };
 
   const handleCaptchaChange = (token: string | null) => {
     setCaptchaToken(token);
   };
 
+  const resetCaptcha = () => {
+    recaptchaRef.current?.reset();
+    setCaptchaToken(null);
+  };
+
   const formik = useFormik({
     initialValues: {
-      email: "",
+      email:
+        localStorage.getItem("rememberMe") === "true"
+          ? localStorage.getItem("lastLoginEmail") || ""
+          : "",
       password: "",
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      // Trim the values before submitting
+      const trimmedValues = {
+        email: values.email.trim(),
+        password: values.password.trim(),
+      };
+
       if (!captchaToken) {
         toast.error(t("auth.login.captcha_required"));
         return;
@@ -80,12 +102,19 @@ export const Login = () => {
 
       try {
         const response = await login({
-          ...values,
+          ...trimmedValues,
         });
         toast.dismiss(toastId);
 
         if (response.isSuccess) {
           const tokenData = response.data.token;
+
+          // Save email for remember me
+          if (rememberMe) {
+            localStorage.setItem("lastLoginEmail", trimmedValues.email);
+          } else {
+            localStorage.removeItem("lastLoginEmail");
+          }
 
           // Login and extract user details through auth context
           const userDetails = await authLogin({
@@ -109,11 +138,9 @@ export const Login = () => {
         }
       } catch (error) {
         toast.dismiss(toastId);
-        toast.error(t("auth.login.unexpected_error"));
-        console.error("Login error:", error);
+        toast.error(t("auth.login.wrong_credentials"));
         // Reset captcha on error
-        recaptchaRef.current?.reset();
-        setCaptchaToken(null);
+        resetCaptcha();
       } finally {
         setLoading(false);
       }
@@ -281,6 +308,14 @@ export const Login = () => {
           theme="light"
           size="normal"
         />
+        {!captchaToken && (
+          <Typography
+            variant="caption"
+            sx={{ color: "#666", mt: 1, display: "block" }}
+          >
+            {t("auth.login.please_complete_captcha")}
+          </Typography>
+        )}
       </Box>
 
       <Button
@@ -289,8 +324,8 @@ export const Login = () => {
         type="submit"
         disabled={loading || !captchaToken}
         sx={{
-          backgroundColor: "#e6c300",
-          color: "black",
+          backgroundColor: !captchaToken ? "#f5f5f5" : "#e6c300",
+          color: !captchaToken ? "#bdbdbd" : "black",
           py: 1.5,
           height: "48px",
           borderRadius: 1.5,
@@ -300,8 +335,8 @@ export const Login = () => {
           boxShadow: 2,
           transition: "all 0.2s",
           "&:hover": {
-            backgroundColor: "#e6c300",
-            boxShadow: 4,
+            backgroundColor: !captchaToken ? "#f5f5f5" : "#e6c300",
+            boxShadow: !captchaToken ? 1 : 4,
           },
           "&:disabled": {
             backgroundColor: "#fafafa",
@@ -309,7 +344,11 @@ export const Login = () => {
           },
         }}
       >
-        {loading ? t("auth.login.processing") : t("auth.login.login_button")}
+        {loading
+          ? t("auth.login.processing")
+          : !captchaToken
+            ? t("auth.login.complete_captcha_to_continue")
+            : t("auth.login.login_button")}
       </Button>
 
       <Divider sx={{ my: 1.5 }} />

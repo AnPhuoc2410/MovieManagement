@@ -175,6 +175,26 @@ namespace MovieManagement.Server.Repositories
             return false;
         }
 
+        public async Task<T> CreateIdentityAsync(T entity)
+        {
+            var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                var table = entity.ToString().Split('.').Last();
+                _context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT [dbo].[{table}] ON");
+                _context.Add(entity);
+                var count = await _context.SaveChangesAsync();
+                _context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT [dbo].[{table}] OFF");
+                transaction.Commit();
+                return entity;
+            }
+            catch (Exception err)
+            {
+                transaction.Rollback();
+                return null;
+            }
+        }
+
         #region Separating asigned entities and save operators        
 
         public void PrepareCreate(T entity)

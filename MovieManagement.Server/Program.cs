@@ -1,8 +1,11 @@
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ClaimRequest.API.Middlewares;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,8 +15,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Extensions.SignalR;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.Enums;
+using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.JwtService;
 using Newtonsoft.Json;
 
@@ -24,6 +30,10 @@ namespace MovieManagement.Server
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Add System Service UnitOfWork.
+            builder.Services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
+
 
             // Add services to the container.
 
@@ -56,9 +66,9 @@ namespace MovieManagement.Server
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("Member", policy => policy.RequireClaim("Role", "0"));
-                options.AddPolicy("Employee", policy => policy.RequireClaim("Role", "1"));
-                options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "2"));
+                options.AddPolicy("Member", policy => policy.RequireClaim(ClaimTypes.Role, UserEnum.Role.Member.ToString()));
+                options.AddPolicy("Employee", policy => policy.RequireClaim(ClaimTypes.Role, UserEnum.Role.Employee.ToString()));
+                options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimTypes.Role, UserEnum.Role.Admin.ToString()));
             });
 
             // Đăng ký JwtService
@@ -96,7 +106,8 @@ namespace MovieManagement.Server
                             "https://localhost:7119",
                             "https://eigaa.vercel.app")
                         .AllowAnyMethod()
-                        .AllowAnyHeader());
+                        .AllowAnyHeader()
+                        .AllowCredentials());
             });
 
             // Đăng ký Swagger
@@ -146,30 +157,25 @@ namespace MovieManagement.Server
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
             //Enable role based and policy based authorization
-            builder.Services.AddAuthorization();
+            //builder.Services.AddAuthorization();
+
+            //ADD SignalR
+            builder.Services.AddSignalR();
+
+            //Register Hangfire
+            builder.Services.AddHangfire(config => config.UseMemoryStorage());
+            builder.Services.AddHangfireServer();
 
             // Đăng ký VnPayService
-            builder.Services.AddSingleton<IVnPayService, VnPayService>();
+            //builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
             builder.Services.Configure<RouteOptions>(options =>
             {
                 options.LowercaseUrls = true; // Forces lowercase routes
             });
-            builder.Services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme =
-                        JwtBearerDefaults.AuthenticationScheme; // Added missing assignment
-                })
-                .AddCookie()
-                .AddGoogle(options =>
-                {
-                    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-                    options.ClientSecret =
-                        builder.Configuration["Authentication:Google:ClientSecret"];
-                    options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
-                    options.SaveTokens = true;
-                });
+
+            // Add SystemService running in the background.
+            builder.Services.AddHostedService<SystemService>();
 
             var app = builder.Build();
 
@@ -194,11 +200,6 @@ namespace MovieManagement.Server
 
             app.UseHttpsRedirection();
 
-            //Enable Websocket support
-            app.UseWebSockets();
-            app.UseRouting();
-
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -208,8 +209,11 @@ namespace MovieManagement.Server
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseRouting();
             app.MapControllers();
             app.UseCors("AllowReactApp");
+            //Enable Websocket support
+            app.MapHub<SeatHub>("/seatHub");
 
             app.MapFallbackToFile("/index.html");
             app.UseHttpsRedirection();

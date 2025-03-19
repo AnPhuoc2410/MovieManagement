@@ -19,16 +19,17 @@ const StepTracker: React.FC<StepTrackerProps> = ({
   currentStep,
   paymentStatus,
 }) => {
-
   const { t } = useTranslation();
   const steps = [
     { label: t("step_tracker.select_show_time"), icon: <MovieIcon /> },
     { label: t("step_tracker.select_seat"), icon: <EventSeatIcon /> },
     { label: t("step_tracker.payment"), icon: <PaymentIcon /> },
-    paymentStatus === "success"
-      ? { label: t("step_tracker.success"), icon: <CheckCircleIcon /> }
-      : { label: "Hủy Thanh Toán", icon: <CancelOutlined sx={{ color: 'red' }} /> },
   ];
+
+  const finalStep =
+    paymentStatus === "failure"
+      ? { label: "Hủy Thanh Toán", icon: <CancelOutlined  /> }
+      : { label: "Thành Công", icon: <CheckCircleIcon /> };
 
   return (
     <Box
@@ -80,13 +81,13 @@ const StepTracker: React.FC<StepTrackerProps> = ({
           },
         }}
       >
-        {[...steps].map((step, index) => (
+        {[...steps, finalStep].map((step, index) => (
           <Step key={index}>
             <StepLabel
               StepIconComponent={() => (
                 <Box
                   sx={{
-                    color: index < currentStep ? "#834bff" : "gray",
+                    color: index < currentStep ? (index == 3 && paymentStatus == "failure") ? "red" : "#834bff" : "gray",
                     display: "flex",
                     alignItems: "center",
                     transition: "color 0.3s ease",

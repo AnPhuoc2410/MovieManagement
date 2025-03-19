@@ -15,6 +15,9 @@ export const fetchUserByRole = async (
   const response = await api.get<ApiResponse<UserResponse[]>>(
     `/users/role/${role}`,
   );
+
+  console.log(`Fetched ${role} users:`, response.data);
+
   return response.data;
 };
 

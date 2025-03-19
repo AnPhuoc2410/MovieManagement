@@ -8,6 +8,7 @@
     "see_more": "See More",
     "now_showing": "NOW SHOWING",
     "upcoming": "UPCOMING",
+    "search_result": "SEARCH RESULTS",
     "promotions": "PROMOTIONS",
     "list_promotions": "See more Promotions",
     "quick_booking": "Quick Booking",
@@ -22,6 +23,7 @@
     "select_theater4": "Kien Giang Theater (Rach Soi)",
     "select_theater5": "Lam Dong Theater (Duc Trong)",
     "select_theater6": "Da Lat Theater (Da Lat City)",
+    "no_search_result": "No movies found. Please try again!",
     "oops": "OOPS!",
     "footer": {
       "slogan": "BE HAPPY, BE A STAR",
@@ -82,8 +84,11 @@
         "remember_me": "Remember me",
         "logging_in": "Logging in...",
         "captcha_required": "Please complete the captcha verification",
+        "wrong_credentials": "Incorrect username or password",
         "unexpected_error": "An unexpected error occurred",
-        "welcome_message": "Welcome back, {{name}}"
+        "welcome_message": "Welcome back, {{name}}",
+        "please_complete_captcha": "Please complete the captcha verification",
+        "complete_captcha_to_continue": "Please complete the captcha verification to continue"
       },
       "signup": {
         "title": "Sign Up",
@@ -260,6 +265,7 @@
           "email": "Email",
           "phone": "Phone Number",
           "status": "Status",
+          "address": "Address",
           "join_date": "Join Date",
           "points": "Points"
         },

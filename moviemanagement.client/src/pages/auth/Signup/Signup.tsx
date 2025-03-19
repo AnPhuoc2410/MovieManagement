@@ -249,7 +249,7 @@ export const Signup = () => {
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-5 justify-center items-center">
       <Stepper activeStep={activeStep} sx={stepperStyle}>
         {steps.map((label) => (
           <Step key={label}>
@@ -524,6 +524,6 @@ export const Signup = () => {
           </Typography>
         </Box>
       </form>
-    </>
+    </div>
   );
 };

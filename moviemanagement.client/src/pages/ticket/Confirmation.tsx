@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -14,19 +14,19 @@ import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HomeIcon from "@mui/icons-material/Home";
+import { CancelOutlined } from "@mui/icons-material";
 
 const Confirmation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [paymentStatus, setPaymentStatus] = useState<"success" | "failure">();
 
   // Extract details from location.state (with defaults)
-  const { selectedTime, selectedDate, paymentStatus } = location.state || {
-    selectedTime: "Not selected",
-    selectedDate: "Not selected",
-    paymentStatus: "success",
-  };
+  const bookingInfo = JSON.parse(sessionStorage.getItem("bookingInfo") || "{}");
 
   const {
+    selectedTime = "Not selected",
+    selectedDate = "Not selected",
     movieTitle = "Phim Mặc Định",
     screen = "Màn hình 1",
     showDate = selectedDate,
@@ -37,13 +37,29 @@ const Confirmation: React.FC = () => {
     email = "",
     idNumber = "",
     phone = "",
-  } = location.state || {};
-
-  const total = seats.length * price;
+    total = seats.length * price,
+  } = bookingInfo;
 
   const handleHome = () => {
     navigate("/");
   };
+
+  const handlePayment = async () => {
+    const queryParams = new URLSearchParams(location.search);
+    const isSuccess = queryParams.get("isSuccess");
+
+    if (isSuccess === "true") {
+      console.log("Payment successful!");
+      setPaymentStatus("success");
+    } else {
+      console.log("Payment failed or not completed.");
+      setPaymentStatus("failure");
+    }
+  };
+
+  useEffect(() => {
+    handlePayment();
+  }, []);
 
   return (
     <Box
@@ -115,7 +131,7 @@ const Confirmation: React.FC = () => {
           >
             {/* Show StepTracker on mobile */}
             <Box sx={{ display: { xs: "block", md: "none" }, mb: 2 }}>
-              <StepTracker currentStep={4} />
+              <StepTracker currentStep={4} paymentStatus={paymentStatus} />
             </Box>
 
             <Grid container spacing={4}>
@@ -305,66 +321,129 @@ const Confirmation: React.FC = () => {
             </Grid>
             {/* Success Message */}
             {/* Success Message - Compact Version */}
-            <Paper
-              elevation={3}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                py: 2,
-                px: 3,
-                backgroundColor: "rgba(46, 125, 50, 0.15)",
-                borderLeft: "4px solid #4caf50",
-                borderRadius: 1,
-                mb: 3,
-                maxWidth: { xs: "100%", md: "80%" },
-                mx: "auto",
-                position: "relative",
-                overflow: "hidden",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background:
-                    "radial-gradient(circle at top right, rgba(76, 175, 80, 0.15), transparent 70%)",
-                  zIndex: 0,
-                },
-              }}
-            >
-              <CheckCircleOutlineIcon
+            {paymentStatus === "success" ? (
+              <Paper
+                elevation={3}
                 sx={{
-                  fontSize: 40,
-                  mr: 2,
-                  color: "#4caf50",
-                  filter: "drop-shadow(0 0 6px rgba(76, 175, 80, 0.4))",
-                  zIndex: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  py: 2,
+                  px: 3,
+                  backgroundColor: "rgba(46, 125, 50, 0.15)",
+                  borderLeft: "4px solid #4caf50",
+                  borderRadius: 1,
+                  mb: 3,
+                  maxWidth: { xs: "100%", md: "80%" },
+                  mx: "auto",
+                  position: "relative",
+                  overflow: "hidden",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background:
+                      "radial-gradient(circle at top right, rgba(76, 175, 80, 0.15), transparent 70%)",
+                    zIndex: 0,
+                  },
                 }}
-              />
-              <Box sx={{ flex: 1, zIndex: 1 }}>
-                <Typography
-                  variant="h6"
-                  fontWeight="bold"
-                  gutterBottom={false}
-                  fontFamily={"JetBrains Mono"}
-                  sx={{ mb: 0.5 }}
-                  color="primary.light"
-                >
-                  Đặt Vé Thành Công!
-                </Typography>
-                <Typography
-                  variant="body2"
+              >
+                <CheckCircleOutlineIcon
                   sx={{
-                    color: "rgba(255, 255, 255, 0.8)",
+                    fontSize: 40,
+                    mr: 2,
+                    color: "#4caf50",
+                    filter: "drop-shadow(0 0 6px rgba(76, 175, 80, 0.4))",
+                    zIndex: 1,
                   }}
-                >
-                  Cảm ơn bạn đã đặt vé. Vui lòng kiểm tra email để xem thông tin
-                  vé.
-                </Typography>
-              </Box>
-            </Paper>
+                />
+                <Box sx={{ flex: 1, zIndex: 1 }}>
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    gutterBottom={false}
+                    fontFamily={"JetBrains Mono"}
+                    sx={{ mb: 0.5 }}
+                    color="primary.light"
+                  >
+                    Đặt Vé Thành Công!
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "rgba(255, 255, 255, 0.8)",
+                    }}
+                  >
+                    Cảm ơn bạn đã đặt vé. Vui lòng kiểm tra email để xem thông
+                    tin vé.
+                  </Typography>
+                </Box>
+              </Paper>
+            ) : (
+              <Paper
+                elevation={3}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  py: 2,
+                  px: 3,
+                  backgroundColor: "rgba(255, 0, 0, 0.15)",
+                  borderLeft: "4px solid #f44336",
+                  borderRadius: 1,
+                  mb: 3,
+                  maxWidth: { xs: "100%", md: "80%" },
+                  mx: "auto",
+                  position: "relative",
+                  overflow: "hidden",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background:
+                      "radial-gradient(circle at top right, rgba(255, 0, 0, 0.15), transparent 70%)",
+                    zIndex: 0,
+                  },
+                }}
+              >
+                <CancelOutlined
+                  sx={{
+                    fontSize: 40,
+                    mr: 2,
+                    color: "#f44336",
+                    filter: "drop-shadow(0 0 6px rgba(255, 0, 0, 0.4))",
+                    zIndex: 1,
+                  }}
+                />
+                <Box sx={{ flex: 1, zIndex: 1 }}>
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    gutterBottom={false}
+                    fontFamily={"JetBrains Mono"}
+                    sx={{ mb: 0.5 }}
+                    color="primary.light"
+                  >
+                    Đặt vé thất bại!
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "rgba(255, 255, 255, 0.8)",
+                    }}
+                  >
+                    Giao dịch đã bị hủy. Nếu cần hỗ trợ, 
+                    vui lòng liên hệ với chúng tôi.
+                  </Typography>
+                </Box>
+              </Paper>
+            )}
           </Box>
         </Box>
       </Container>

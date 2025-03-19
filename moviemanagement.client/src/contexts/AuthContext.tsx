@@ -83,13 +83,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const authLogout = async () => {
     const token = getCookie("accessToken");
     if (token) {
-      await doLogout(token);
+      // await doLogout(token);
+      setIsAuthenticated(false);
+      setAuthData(null);
+      setUserDetails(null); // Clear the user details on logout
+      eraseCookie("accessToken");
+      eraseCookie("expires");
     }
-    setIsAuthenticated(false);
-    setAuthData(null);
-    setUserDetails(null); // Clear the user details on logout
-    eraseCookie("accessToken");
-    eraseCookie("expires");
     toast.success("Đăng xuất thành công", { removeDelay: 2500 });
     navigate("/");
   };

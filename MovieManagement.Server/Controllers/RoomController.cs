@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
@@ -202,11 +203,11 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<RoomDto>> CreateRoomAsync([FromBody] RoomDto roomDto)
+        public async Task<ActionResult<RoomDto>> CreateRoomAsync([FromBody] RoomDto roomDto, Guid MovieTheaterId)
         {
             try
             {
-                var newRoom = await _roomService.CreateRoomAsync(roomDto);
+                var newRoom = await _roomService.CreateRoomAsync(roomDto, MovieTheaterId);
                 if (newRoom == null)
                 {
                     var response = new ApiResponse<object>

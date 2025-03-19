@@ -5,7 +5,7 @@ namespace MovieManagement.Server.Models.DTOs
     public class BillDto
     {
 
-        public Guid? BillId { get; set; }
+        public long? BillId { get; set; }
 
         public DateTime CreatedDate { get; set; }
 

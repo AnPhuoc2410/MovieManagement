@@ -27,17 +27,18 @@ namespace MovieManagement.Server.Controllers
         /// <response code="400">Bad request from client side</response>
         /// <response code="401" >Unauthorized Access</response>
         /// <response code="500">Internal Server Error</response>
+        [Authorize(Roles = "Member,Employee,Admin")]
         [HttpGet("detail/{userId:guid}")]
-        [ProducesResponseType(typeof(Services.ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>),
+        [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
             StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDto>> GetUserByIdAsync(Guid userId)
         {
             var user = await _userService.GetUserByIdAsync(userId);
-            return Ok(new Services.ApiResponse<UserDto.UserResponse>
+            return Ok(new ApiResponse<UserDto.UserResponse>
             {
                 Message = "Get User by Id success",
                 StatusCode = 200,
@@ -52,18 +53,19 @@ namespace MovieManagement.Server.Controllers
         /// <param name="role"></param>
         /// <returns></returns>
         /// <response code="200">Get user by role successfully</response>
+        [Authorize(Roles = "Admin")]
         [HttpGet("role/{role}")]
-        [ProducesResponseType(typeof(Services.ApiResponse<List<UserDto.UserResponse>>),
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserDto.UserResponse>>),
             StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>),
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
             StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUserByRoleAsync(Role role)
         {
             var users = await _userService.GetUserByRoleAsync(role);
-            return Ok(new Services.ApiResponse<List<UserDto.UserResponse>>
+            return Ok(new ApiResponse<IEnumerable<UserDto.UserResponse>>
             {
                 StatusCode = 200,
                 Message = "Get user by role successfully",
@@ -72,7 +74,7 @@ namespace MovieManagement.Server.Controllers
             });
         }
 
-        
+        [Authorize(Roles = "Member,Employee,Admin")]
         [HttpGet("page/{page:int}/limit/{limit:int}")]
         [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status400BadRequest)]
@@ -83,7 +85,13 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetPageAsync(int page, int limit)
         {
             var users = await _userService.GetUserPageAsync(page, limit);
-            return Ok(users);
+            return Ok(new ApiResponse<IEnumerable<UserDto.UserResponse>>
+            {
+                StatusCode = 200,
+                Message = "Get user by role successfully",
+                IsSuccess = true,
+                Data = users
+            });
         }
 
         /// <summary>
@@ -91,18 +99,19 @@ namespace MovieManagement.Server.Controllers
         /// </summary>
         /// <param name="userId"></param>
         /// <response code="200">User updated successfully</response>
+        [Authorize(Roles = "Member,Employee,Admin")]
         [HttpPatch("{userId:guid}")]
-        [ProducesResponseType(typeof(Services.ApiResponse<UserDto.UpdateRequest>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>),
+        [ProducesResponseType(typeof(ApiResponse<UserDto.UpdateRequest>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
             StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDto>> UpdateUserAsync(Guid userId,
             UserDto.UpdateRequest updateReq)
         {
             await _userService.UpdateUserAsync(userId, updateReq);
-            return Ok(new Services.ApiResponse<object>
+            return Ok(new ApiResponse<object>
             {
                 StatusCode = 200,
                 Message = "User updated successfully",
@@ -123,13 +132,13 @@ namespace MovieManagement.Server.Controllers
         /// <response code="401" >Unauthorized Access</response>
         /// <response code="500">Internal Server Error</response>
         ///
-        // [Authorize(Policy = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{empId:guid}")]
         [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(Services.ApiResponse<object>),
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
             StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteUserAsync(Guid empId)
         {

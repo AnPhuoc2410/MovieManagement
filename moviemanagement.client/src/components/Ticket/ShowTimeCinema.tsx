@@ -63,19 +63,17 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
     });
   }, [today, t, i18n.language]);
 
-  // Memoized handleDateChange function
   const handleDateChange = useCallback(
     (e: any, newDate: string) => {
       if (newDate) {
         setSelectedDate(newDate);
         onSelectDate(newDate);
-        setSelectedTime(null); // Reset time when date changes
+        setSelectedTime(null);
       }
     },
     [onSelectDate],
   );
 
-  // Memoized time selection handler
   const handleTimeSelect = useCallback(
     (time: string, showTimeId: string) => {
       setSelectedTime(time);
@@ -267,20 +265,19 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                   backgroundColor: "transparent",
                 }}
               >
-                <MenuItem value="hcm">{t("showtime_cinema.location.HCM")}</MenuItem>
-                <MenuItem value="hn">{t("showtime_cinema.location.HaNoi")}</MenuItem>
-                <MenuItem value="dn">{t("showtime_cinema.location.DaNang")}</MenuItem>
+                <MenuItem value="hcm">
+                  {t("showtime_cinema.location.HCM")}
+                </MenuItem>
+                <MenuItem value="hn">
+                  {t("showtime_cinema.location.HaNoi")}
+                </MenuItem>
+                <MenuItem value="dn">
+                  {t("showtime_cinema.location.DaNang")}
+                </MenuItem>
               </Select>
             </FormControl>
           </Grid>
         </Grid>
-
-        {/* Loading state */}
-        {isLoading && (
-          <Typography textAlign="center" sx={{ py: 2 }}>
-            {t("showtime_cinema.title.loading_showtime")}
-          </Typography>
-        )}
 
         {/* Cinema List or No Showtime Message - conditionally rendered */}
         {!isLoading && (

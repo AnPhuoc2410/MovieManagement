@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.FileIO;
+using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.RequestModel;
@@ -175,67 +176,6 @@ namespace MovieManagement.Server.Controllers
                 IsSuccess = true
             });
         }
-
-        //[HttpPost("GoogleAuth/Login")]
-        //public async Task<IActionResult> Login()
-        //{
-        //    var properties = new AuthenticationProperties { RedirectUri = "/GoogleAuth/Callback" };
-        //    return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-        //}
-
-        //[HttpGet("GoogleAuth/Callback")]
-        //[ProducesResponseType(typeof(ApiResponse<AuthDto>), StatusCodes.Status200OK)]
-        //[ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        //public async Task<IActionResult> Callback()
-        //{
-        //    try
-        //    {
-        //        var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
-
-        //        if (result.Succeeded != true)
-        //        {
-        //            return BadRequest("External authentication error");
-        //        }
-
-        //        var email = result.Principal.FindFirstValue(ClaimTypes.Email);
-        //        var name = result.Principal.FindFirstValue(ClaimTypes.Name);
-        //        var picture = result.Principal.FindFirstValue("picture");
-
-        //        if (email == null)
-        //        {
-        //            return BadRequest("Failed to get user information from Google");
-        //        }
-
-        //        var account = new OAuthRequest
-        //        {
-        //            Email = email,
-        //            FullName = name,
-        //            Avatar = picture
-        //        };
-
-        //        await _userService.RegisterWithGoogle(account);
-
-        //        var identity = new ClaimsIdentity(GoogleDefaults.AuthenticationScheme);
-        //        identity.AddClaim(new Claim(ClaimTypes.Email, email));
-        //        identity.AddClaim(new Claim(ClaimTypes.Name, name));
-        //        identity.AddClaim(new Claim("picture", picture));
-
-        //        var principal = new ClaimsPrincipal(identity);
-        //        await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
-        //        return Redirect("/");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var response = new ApiResponse<object>
-        //        {
-        //            StatusCode = 400,
-        //            Message = "Bad request from client side",
-        //            IsSuccess = false,
-        //            Reason = ex.Message
-        //        };
-        //        return BadRequest(response);
-        //    }
-        //}
 
         //[HttpPost("Logout")]
         //public async Task<IActionResult> Logout()

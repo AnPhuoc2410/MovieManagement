@@ -16,8 +16,9 @@ namespace MovieManagement.Server.Repositories.IRepositories
         Task<Movie> GetMovieById(Guid movieId);
         Task<List<Movie>> GetMoviesNowShowing(int page, int pageSize);
         Task<List<Movie>> GetMoviesUpComing(int page, int pageSize);
-        Task<List<Movie>> GetMoviesByNameRelative(string name, int page, int pageSize);
+        Task<List<Movie>> GetMoviesByNameRelativePage(string name, int page, int pageSize);
         Task<List<Movie>> GetMoviesByCategory(Guid categoryId, int page, int pageSize);
         Task<Movie> SetMovieDeleted(Guid movieId);
+        Task<List<Movie>> GetMoviesByNameRelative(string searchValue);
     }
 }

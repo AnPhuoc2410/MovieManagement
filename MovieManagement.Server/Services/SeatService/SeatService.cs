@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
+using MovieManagement.Server.Extensions.SignalR;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 
@@ -19,101 +21,59 @@ namespace MovieManagement.Server.Services.SeatService
         }
         public async Task<IEnumerable<SeatDto>> GetAllSeatAsync()
         {
-            try
-            {
-                var seats = await _unitOfWork.SeatRepository.GetAllAsync();
-                if (seats == null)
-                    throw new NotFoundException("Seats not found!");
-                return _mapper.Map<List<SeatDto>>(seats);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            var seats = await _unitOfWork.SeatRepository.GetAllAsync();
+            if (seats == null)
+                throw new NotFoundException("Seats not found!");
+            return _mapper.Map<List<SeatDto>>(seats);
         }
 
         public async Task<IEnumerable<SeatDto>> GetSeatPageAsync(int page, int pageSize)
         {
-            try
-            {
-                var seats = await _unitOfWork.SeatRepository.GetPageAsync(page, pageSize);
-                if (seats == null)
-                    throw new NotFoundException("Seats not found!");
-                return _mapper.Map<List<SeatDto>>(seats);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            var seats = await _unitOfWork.SeatRepository.GetPageAsync(page, pageSize);
+            if (seats == null)
+                throw new NotFoundException("Seats not found!");
+            return _mapper.Map<List<SeatDto>>(seats);
         }
 
         public async Task<SeatDto> GetSeatByIdAsync(Guid seatId)
         {
-            try
-            {
-                var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
-                if (seat == null)
-                    throw new NotFoundException("Seat not found!");
-                return _mapper.Map<SeatDto>(seat);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
+            if (seat == null)
+                throw new NotFoundException("Seat not found!");
+            return _mapper.Map<SeatDto>(seat);
         }
 
         public async Task<SeatDto> CreateSeatAsync(SeatDto seat)
         {
-            try
-            {
-                var newSeat = _mapper.Map<Seat>(seat);
-                newSeat.SeatId = Guid.NewGuid();
-                var createdSeat = await _unitOfWork.SeatRepository.CreateAsync(newSeat);
-                if (createdSeat == null)
-                    throw new Exception("Failed to create seat.");
-                return _mapper.Map<SeatDto>(createdSeat);
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("An error occurred while processing into the database.", ex);
-            }
+            var newSeat = _mapper.Map<Seat>(seat);
+            newSeat.SeatId = Guid.NewGuid();
+            var createdSeat = await _unitOfWork.SeatRepository.CreateAsync(newSeat);
+            if (createdSeat == null)
+                throw new Exception("Failed to create seat.");
+            return _mapper.Map<SeatDto>(createdSeat);
         }
 
         public async Task<SeatDto> UpdateSeatAsync(Guid seatId, SeatDto seatDto)
         {
-            try
-            {
-                var existingSeat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
-                if (existingSeat == null)
-                    throw new NotFoundException("Seat not found!");
+            var existingSeat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
+            if (existingSeat == null)
+                throw new NotFoundException("Seat not found!");
 
-                _mapper.Map(seatDto, existingSeat);
+            _mapper.Map(seatDto, existingSeat);
 
-                var updatedSeat = await _unitOfWork.SeatRepository.UpdateAsync(existingSeat);
-                if (updatedSeat == null)
-                    throw new DbUpdateException("Fail to update seat.");
-                return _mapper.Map<SeatDto>(updatedSeat);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            var updatedSeat = await _unitOfWork.SeatRepository.UpdateAsync(existingSeat);
+            if (updatedSeat == null)
+                throw new DbUpdateException("Fail to update seat.");
+            return _mapper.Map<SeatDto>(updatedSeat);
         }
 
         public async Task<bool> DeleteSeatAsync(Guid seatId)
         {
-            try
-            {
-                var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
-                if (seat == null)
-                    throw new NotFoundException("Seat not found!");
+            var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
+            if (seat == null)
+                throw new NotFoundException("Seat not found!");
 
-                return await _unitOfWork.SeatRepository.DeleteAsync(seatId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access the database due to a system error.", ex);
-            }
+            return await _unitOfWork.SeatRepository.DeleteAsync(seatId);
         }
 
         public async Task<bool> CreateByRoomIdAsync(Guid roomId, Guid SeatTypeId)
