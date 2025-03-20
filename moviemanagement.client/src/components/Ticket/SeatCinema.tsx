@@ -47,16 +47,16 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
       }
     };
 
-    const handleSeatAvailable = (ticketId: string) => {
-      console.log("Received SeatAvailable event for:", ticketId);
+    const handleSeatAvailable = (seatId: string) => {
+      console.log("Received SeatAvailable event for:", seatId);
 
       setSeats((prev) =>
         prev.map((ticket) =>
-          ticket.ticketId === ticketId ? { ...ticket, status: 0 } : ticket
+          ticket.seatId === seatId ? { ...ticket, status: 0 } : ticket
         )
       );
       // Remove auto-released seats from the current selection using ticketId
-      setSelectedSeats((prev) => prev.filter(seat => seat.ticketId !== ticketId));
+      setSelectedSeats((prev) => prev.filter(seat => seat.id !== seatId));
     };
 
 
@@ -113,9 +113,36 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
 
     try {
       const userId = localStorage.getItem("userId") || "anonymous";
-      // Invoke the server method to select a seat using effectiveShowTimeId
-      await connection.invoke("SelectSeat", ticket.ticketId, effectiveShowTimeId, userId);
 
+      // Prepare the updated seats selection based on the user's action
+      let updatedSeats: SelectedSeat[] = [...selectedSeats]; // Start with current selection
+      const existingSeatIndex = selectedSeats.findIndex(s => s.ticketId === ticket.ticketId);
+
+      if (existingSeatIndex !== -1) {
+        if (selectedSeats[existingSeatIndex].id === ticket.seatId) {
+          // User is deselecting this seat
+          updatedSeats = updatedSeats.filter(s => s.ticketId !== ticket.ticketId);
+        } else {
+          // User is changing from one seat to another with the same ticketId
+          updatedSeats[existingSeatIndex] = seatInfo;
+        }
+      } else {
+        // User is selecting a new seat
+        updatedSeats.push(seatInfo);
+      }
+
+      // Create ticket requests from the updated selection
+      const ticketRequests = updatedSeats.map(seat => ({
+        TicketId: seat.ticketId,
+        Version: seat.version
+      }));
+
+      console.log("Selecting seat:", seatName, ticketRequests, effectiveShowTimeId, userId);
+
+      // Send the COMPLETE updated selection to server
+      await connection.invoke("SelectSeat", ticketRequests, effectiveShowTimeId, userId);
+
+      // Update local state if server operation succeeded
       setSelectedSeats((prevSeats) => {
         const existingSeat = prevSeats.find((s) => s.ticketId === ticket.ticketId);
         if (existingSeat) {

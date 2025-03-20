@@ -7,6 +7,7 @@ import {
   Paper,
   Button,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSignalR } from "../../contexts/SignalRContext";
@@ -15,6 +16,7 @@ import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HomeIcon from "@mui/icons-material/Home";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { CancelOutlined } from "@mui/icons-material";
 import toast from "react-hot-toast";
 
@@ -25,12 +27,14 @@ const Confirmation: React.FC = () => {
   const { connection, joinGroup, leaveGroup, isConnected } = useSignalR();
   const [seatsUpdated, setSeatsUpdated] = useState(false);
 
+  // Extract query param from VNPay redirection
   const queryParams = new URLSearchParams(location.search);
   const isSuccess = queryParams.get("isSuccess") === "true";
 
-  // Extract details from location.state (with defaults)
+  // Extract booking info from session storage
   const bookingInfo = JSON.parse(sessionStorage.getItem("bookingInfo") || "{}");
-  const { showTimeId } = bookingInfo;
+  // Assume bookingInfo contains movieId and showTimeId
+  const { showTimeId, movieId } = bookingInfo;
 
   const {
     selectedTime = "Not selected",
@@ -49,9 +53,24 @@ const Confirmation: React.FC = () => {
     selectedSeatsInfo = [],
   } = bookingInfo;
 
+  // Navigation handlers
   const handleHome = () => {
     navigate("/");
   };
+
+  const handleBackToTicket = () => {
+    if (movieId) {
+      navigate(`/ticket/${movieId}`, { replace: true });
+    } else {
+      navigate("/movies/now-showing", { replace: true });
+    }
+  };
+
+  // Display a spinner until the SignalR connection is ready
+  const [isConnectionReady, setIsConnectionReady] = useState(isConnected);
+  useEffect(() => {
+    setIsConnectionReady(isConnected);
+  }, [isConnected]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -63,57 +82,75 @@ const Confirmation: React.FC = () => {
     }
   }, [isSuccess]);
 
+  // Rejoin the SignalR group and update seat statuses
   useEffect(() => {
-    if (isConnected && showTimeId) {
-      joinGroup(showTimeId)
-        .then(() => {
-          console.log(`Confirmation page joined ShowTime group: ${showTimeId}`);
-
-          // Only update seat status if payment was successful and we haven't updated already
-          if (connection && isSuccess && selectedSeatsInfo?.length && !seatsUpdated) {
-            try {
-              // Extract just the ticketIds from the seat info
-              const ticketIds = selectedSeatsInfo.map((seat: { ticketId: any; }) => seat.ticketId);
-
-              // Update seat status to purchased
-              connection.invoke("SetSeatsBought", ticketIds, showTimeId)
-                .then(() => {
-                  console.log("Seats marked as purchased:", ticketIds);
-                  setSeatsUpdated(true);
-                  toast.success("Ghế đã được đặt thành công!");
-                })
-                .catch(error => {
-                  console.error("Error finalizing seat purchase:", error);
-                  toast.error("Không thể cập nhật trạng thái ghế!");
-                });
-            } catch (error) {
-              console.error("Error preparing seat purchase update:", error);
-            }
-          } else if (!isSuccess && connection && selectedSeatsInfo?.length) {
-            // If payment failed, release the seats
-            try {
-              const ticketIds = selectedSeatsInfo.map((seat: { ticketId: any; }) => seat.ticketId);
-              connection.invoke("ReleasePendingSeats", ticketIds, showTimeId)
-                .then(() => console.log("Seats released due to payment failure"))
-                .catch(err => console.error("Error releasing seats:", err));
-            } catch (error) {
-              console.error("Error releasing seats after payment failure:", error);
-            }
-          }
-        })
-        .catch(err => console.error("Error joining ShowTime group:", err));
+    if (!isConnected || !showTimeId) {
+      console.log("Waiting for SignalR connection or missing showTimeId...");
+      return;
     }
 
-    // Cleanup when leaving the page
+    joinGroup(showTimeId)
+      .then(() => {
+        console.log(`Confirmation page joined ShowTime group: ${showTimeId}`);
+
+        if (connection) {
+          if (isSuccess && selectedSeatsInfo?.length && !seatsUpdated) {
+            const ticketIds = selectedSeatsInfo.map(
+              (seat: { ticketId: any }) => seat.ticketId
+            );
+            connection
+              .invoke("SetSeatsBought", ticketIds, showTimeId)
+              .then(() => {
+                console.log("Seats marked as purchased:", ticketIds);
+                setSeatsUpdated(true);
+                toast.success("Ghế đã được đặt thành công!");
+              })
+              .catch((error) => {
+                console.error("Error finalizing seat purchase:", error);
+                toast.error("Không thể cập nhật trạng thái ghế!");
+              });
+          } else if (!isSuccess && selectedSeatsInfo?.length) {
+            const ticketIds = selectedSeatsInfo.map(
+              (seat: { ticketId: any }) => seat.ticketId
+            );
+            connection
+              .invoke("ReleasePendingSeats", ticketIds, showTimeId)
+              .then(() => console.log("Seats released due to payment failure"))
+              .catch((err) => console.error("Error releasing seats:", err));
+          }
+        }
+      })
+      .catch((err) => console.error("Error joining ShowTime group:", err));
+
     return () => {
       if (isConnected && showTimeId) {
         leaveGroup(showTimeId)
-          .then(() => console.log(`Confirmation page left ShowTime group: ${showTimeId}`))
-          .catch(err => console.error("Error leaving ShowTime group:", err));
+          .then(() =>
+            console.log(`Confirmation page left ShowTime group: ${showTimeId}`)
+          )
+          .catch((err) => console.error("Error leaving ShowTime group:", err));
       }
     };
   }, [isConnected, showTimeId, connection, isSuccess, selectedSeatsInfo, seatsUpdated, joinGroup, leaveGroup]);
 
+  if (!isConnectionReady) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#0B0D1A",
+        }}
+      >
+        <CircularProgress color="primary" />
+        <Typography sx={{ ml: 2, color: "white" }}>
+          Đang kết nối đến máy chủ...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -139,7 +176,6 @@ const Confirmation: React.FC = () => {
       }}
     >
       <Header />
-
       <Container
         maxWidth="xl"
         sx={{
@@ -158,7 +194,7 @@ const Confirmation: React.FC = () => {
             minHeight: "100vh",
           }}
         >
-          {/* Sticky StepTracker for desktop */}
+          {/* Sidebar StepTracker (Desktop) */}
           <Box
             sx={{
               display: { xs: "none", md: "block" },
@@ -183,7 +219,7 @@ const Confirmation: React.FC = () => {
               pb: 4,
             }}
           >
-            {/* Show StepTracker on mobile */}
+            {/* Mobile StepTracker */}
             <Box sx={{ display: { xs: "block", md: "none" }, mb: 2 }}>
               <StepTracker currentStep={4} paymentStatus={paymentStatus} />
             </Box>
@@ -236,7 +272,7 @@ const Confirmation: React.FC = () => {
                   />
 
                   <Grid container spacing={3}>
-                    {/* Thông Tin Phim */}
+                    {/* Movie Details */}
                     <Grid item xs={12} sm={6}>
                       <Typography
                         variant="h6"
@@ -263,8 +299,7 @@ const Confirmation: React.FC = () => {
                         <strong>Giờ chiếu:</strong> {showTime}
                       </Typography>
                     </Grid>
-
-                    {/* Thông Tin Vé */}
+                    {/* Ticket Details */}
                     <Grid item xs={12} sm={6}>
                       <Typography
                         variant="h6"
@@ -346,7 +381,13 @@ const Confirmation: React.FC = () => {
                   </Box>
                 </Paper>
 
-                <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                    mt: 4,
+                  }}
+                >
                   <Button
                     variant="contained"
                     color="primary"
@@ -370,11 +411,31 @@ const Confirmation: React.FC = () => {
                   >
                     Về Trang Chủ
                   </Button>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={handleBackToTicket}
+                    startIcon={<ArrowBackIcon />}
+                    sx={{
+                      px: 4,
+                      py: 1.5,
+                      fontSize: "1rem",
+                      borderRadius: 2,
+                      textTransform: "none",
+                      fontWeight: "bold",
+                      borderColor: "#90caf9",
+                      color: "#90caf9",
+                      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
+                      "&:hover": {
+                        background: "rgba(144, 202, 249, 0.1)",
+                      },
+                    }}
+                  >
+                    Quay lại Đặt Vé
+                  </Button>
                 </Box>
               </Grid>
             </Grid>
-            {/* Success Message */}
-            {/* Success Message - Compact Version */}
             {paymentStatus === "success" ? (
               <Paper
                 elevation={3}
@@ -431,8 +492,7 @@ const Confirmation: React.FC = () => {
                       color: "rgba(255, 255, 255, 0.8)",
                     }}
                   >
-                    Cảm ơn bạn đã đặt vé. Vui lòng kiểm tra email để xem thông
-                    tin vé.
+                    Cảm ơn bạn đã đặt vé. Vui lòng kiểm tra email để xem thông tin vé.
                   </Typography>
                 </Box>
               </Paper>
@@ -492,8 +552,7 @@ const Confirmation: React.FC = () => {
                       color: "rgba(255, 255, 255, 0.8)",
                     }}
                   >
-                    Giao dịch đã bị hủy. Nếu cần hỗ trợ,
-                    vui lòng liên hệ với chúng tôi.
+                    Giao dịch đã bị hủy. Nếu cần hỗ trợ, vui lòng liên hệ với chúng tôi.
                   </Typography>
                 </Box>
               </Paper>
