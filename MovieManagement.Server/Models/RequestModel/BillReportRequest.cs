@@ -4,7 +4,7 @@ namespace MovieManagement.Server.Models.RequestModel
 {
     public class BillReportRequest
     {
-        public Guid BillId { get; set; }
+        public long BillId { get; set; }
 
         public DateTime CreatedDate { get; set; }
 

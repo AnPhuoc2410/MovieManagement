@@ -145,7 +145,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("{billId:guid}")]
+        [Route("{billId:long}")]
         [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -204,7 +204,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost("send/bill")]
-        public async Task<ActionResult<bool>> GetBillByEmail(Guid billId)
+        public async Task<ActionResult<bool>> GetBillByEmail(long billId)
         {
             var result = await _emailService.SendEmailReportBill(billId);
             return Ok();
@@ -261,126 +261,6 @@ namespace MovieManagement.Server.Controllers
                 {
                     StatusCode = 500,
                     Message = "An error occurred while creating Bill",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
-
-
-        [HttpPut]
-        [Route("{billId:long}")]
-        [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BillDto>> UpdateBill(long billId, BillEnum.BillStatus billStatus)
-        {
-            try
-            {
-                var updated = await _billService.UpdateBillAsync(billId, billStatus);
-                if (updated == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Bill not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(updated);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while updating bill",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
-
-
-        [HttpDelete]
-        [Route("{billId:guid}")]
-        [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteBill(long billId)
-        {
-            try
-            {
-                bool isDeleted = await _billService.DeleteBillAsync(billId);
-                if (!isDeleted)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Bill not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(isDeleted);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while updating bill",
                     IsSuccess = false,
                     Reason = ex.Message
                 };

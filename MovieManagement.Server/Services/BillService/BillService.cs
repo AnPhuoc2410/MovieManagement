@@ -112,20 +112,6 @@ namespace MovieManagement.Server.Services.BillService
                 throw new Exception("Couldn't access into database due to systems error.", ex);
             }
         }
-        public async Task<IEnumerable<PurchasedTicketDto>> GetPurchasedTicketsAsync(Guid userId)
-        {
-            try
-            {
-                var bill = _unitOfWork.BillRepository.GetPurchasedTickets(userId);
-                if (bill == null)
-                    throw new NotFoundException("Bill of user is not found!");
-                return (IEnumerable<PurchasedTicketDto>)bill;
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Couldn't access into database due to systems error.", ex);
-            }
-        }
 
         public BillDto UpdateBill(long billId, BillEnum.BillStatus billStatus)
         {

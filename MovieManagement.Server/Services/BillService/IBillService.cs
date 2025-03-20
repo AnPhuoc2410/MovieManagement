@@ -15,6 +15,5 @@ namespace MovieManagement.Server.Services.BillService
         public Task<BillDto> UpdateBillAsync(long billId, BillEnum.BillStatus billStatus);
         public BillDto UpdateBill(long billId, BillEnum.BillStatus billStatus);
         public Task<bool> DeleteBillAsync(long billId);
-        public Task<IEnumerable<PurchasedTicketDto>> GetPurchasedTicketsAsync(Guid userId); 
     }
 }

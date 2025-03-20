@@ -28,7 +28,7 @@ namespace MovieManagement.Server.Services.EmailService
             _qRCodeGenerator = qRCodeGenerator;
             _mapper = mapper;
         }
-        public async Task<bool> SendEmailReportBill(Guid billId)
+        public async Task<bool> SendEmailReportBill(long billId)
         {
             //Get user bill
             var userBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);

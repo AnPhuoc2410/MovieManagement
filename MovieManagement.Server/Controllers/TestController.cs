@@ -15,7 +15,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet("ticket-details")]
-        public async Task<IActionResult> GetTicketDetails(Guid billId)
+        public async Task<IActionResult> GetTicketDetails(long billId)
         {
             var ticketDetails = await _ticketDetailService.GetPurchasedTicketsByBillId(billId);
             return Ok(ticketDetails);

@@ -3,7 +3,6 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Models.ResponseModel;
-using IronPdf;
 using System.Text;
 
 namespace MovieManagement.Server.Extensions.ConvertFile
