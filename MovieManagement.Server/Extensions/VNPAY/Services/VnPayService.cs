@@ -73,7 +73,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
 
             foreach (var id in billRequest.Tickets)
             {
-                var ticket = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id) 
+                var ticket = await _unitOfWork.TicketDetailRepository.GetTicketInfo(id) 
                     ?? throw new NotFoundException("Ticket not found.");
                 request.Description += $" - {id}";
                 totalMoney += ticket.Seat.SeatType.Price;

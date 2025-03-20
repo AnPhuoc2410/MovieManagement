@@ -68,6 +68,7 @@ namespace MovieManagement.Server.Repositories
         public async Task<TicketDetail> GetTicketByIdAndVersion(Guid id, byte[] version)
         {
             return await _context.TicketDetails
+                .Include(td => td.ShowTime)
                 .FirstOrDefaultAsync(td => td.TicketId == id && td.Version == version);
         }
 
@@ -77,6 +78,14 @@ namespace MovieManagement.Server.Repositories
                 .Include(td => td.ShowTime)
                 .Where(td => td.Status == TicketStatus.Created && td.ShowTime.EndTime < DateTime.Now)
                 .ToListAsync();
+        }
+
+        public async Task<TicketDetail> GetTicketInfo(Guid Id)
+        {
+            return await _context.TicketDetails
+                .Include(td => td.Seat)
+                    .ThenInclude(s => s.SeatType)
+                .FirstOrDefaultAsync(td => td.TicketId == Id);
         }
 
 

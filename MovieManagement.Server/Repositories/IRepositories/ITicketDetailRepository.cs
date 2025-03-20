@@ -10,5 +10,7 @@ namespace MovieManagement.Server.Repositories.IRepositories
         Task<TicketDetail> GetTicketByIdAndVersion(Guid id, byte[] version);
         Task<List<TicketDetail>> GetRemainingsTickets();
         Task<List<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(long billId);
+
+        Task<TicketDetail> GetTicketInfo(Guid Id);
     }
 }

@@ -10,10 +10,10 @@
 
         public int Column { get; set; }
 
-        public int Total { get; set; }
+        public int? Total { get; set; }
 
-        public Guid MovieTheaterId { get; set; }
+        public Guid? MovieTheaterId { get; set; }
 
-        public virtual MovieTheaterDto MovieTheater { get; set; }
+        public virtual MovieTheaterDto? MovieTheater { get; set; }
     }
 }
