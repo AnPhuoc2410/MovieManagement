@@ -59,12 +59,12 @@
         Task<T> CreateAsync(T entity);
         Task<T> UpdateAsync(T entity);
         Task<bool> DeleteAsync(Guid id);
+        Task<bool> DeleteAsync(long id);
         Task<bool> DeleteAsync(T Entity);
         Task<bool> DeleteComposeAsync(Guid id, Guid id2);
         
         //Soft Delete
         bool SoftDelete(Guid id);
-        bool SoftDelete(long id);
         bool SoftDelete(T entity);
         Task<bool> SoftDeleteAsync(Guid id);
         Task<bool> SoftDeleteAsync(T entity);

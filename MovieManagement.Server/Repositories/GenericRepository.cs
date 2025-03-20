@@ -131,14 +131,6 @@ namespace MovieManagement.Server.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> DeleteAsync(long id)
-        {
-            var entity = await GetByIdAsync(id);
-            if (entity == null) return false;
-            _context.Remove(entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
         public async Task<bool> DeleteComposeAsync(Guid id, Guid id2)
         {
             var entity = await GetByComposeIdAsync(id, id2);
