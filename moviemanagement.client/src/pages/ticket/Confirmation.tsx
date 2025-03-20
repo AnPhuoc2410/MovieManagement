@@ -33,8 +33,8 @@ const Confirmation: React.FC = () => {
 
   // Extract booking info from session storage
   const bookingInfo = JSON.parse(sessionStorage.getItem("bookingInfo") || "{}");
-  // Assume bookingInfo contains movieId and showTimeId
-  const { showTimeId, movieId } = bookingInfo;
+  const showTimeId = sessionStorage.getItem("currentShowTimeId") || "";
+
 
   const {
     selectedTime = "Not selected",
@@ -51,6 +51,7 @@ const Confirmation: React.FC = () => {
     phone = "",
     total = seats.length * price,
     selectedSeatsInfo = [],
+    movieId,
   } = bookingInfo;
 
   // Navigation handlers
@@ -84,40 +85,59 @@ const Confirmation: React.FC = () => {
 
   // Rejoin the SignalR group and update seat statuses
   useEffect(() => {
-    if (!isConnected || !showTimeId) {
+    if (!isConnected || !showTimeId || !connection) {
       console.log("Waiting for SignalR connection or missing showTimeId...");
       return;
     }
 
+    // First join the SignalR group
     joinGroup(showTimeId)
       .then(() => {
         console.log(`Confirmation page joined ShowTime group: ${showTimeId}`);
 
-        if (connection) {
-          if (isSuccess && selectedSeatsInfo?.length && !seatsUpdated) {
-            const ticketIds = selectedSeatsInfo.map(
-              (seat: { ticketId: any }) => seat.ticketId
-            );
-            connection
-              .invoke("SetSeatsBought", ticketIds, showTimeId)
+        const seatsToConfirm = selectedSeatsInfo?.length > 0
+          ? selectedSeatsInfo
+          : JSON.parse(sessionStorage.getItem("selectedSeats") || "[]");
+
+        // If payment was successful and we haven't updated the seats yet
+        if (isSuccess && !seatsUpdated) {
+          // Get selected seats from sessionStorage if they don't exist in the state
+          if (seatsToConfirm?.length > 0) {
+            // Format the seats for the server
+            const ticketRequests = seatsToConfirm.map((seat: { ticketId: any; version: any; }) => ({
+              TicketId: seat.ticketId,
+              Version: seat.version
+            }));
+
+            console.log("Attempting to confirm seat purchase:", ticketRequests);
+
+            // Call the SignalR method
+            connection.invoke("ConfirmSeatPurchase", ticketRequests, showTimeId)
               .then(() => {
-                console.log("Seats marked as purchased:", ticketIds);
+                console.log("Seats marked as purchased:", ticketRequests);
                 setSeatsUpdated(true);
                 toast.success("Ghế đã được đặt thành công!");
+
+                // Optional: Store the fact that seats were updated
+                sessionStorage.setItem("seatsUpdated", "true");
               })
               .catch((error) => {
                 console.error("Error finalizing seat purchase:", error);
-                toast.error("Không thể cập nhật trạng thái ghế!");
+                toast.error("Không thể cập nhật trạng thái ghế: " + error.message);
               });
-          } else if (!isSuccess && selectedSeatsInfo?.length) {
-            const ticketIds = selectedSeatsInfo.map(
-              (seat: { ticketId: any }) => seat.ticketId
-            );
-            connection
-              .invoke("ReleasePendingSeats", ticketIds, showTimeId)
-              .then(() => console.log("Seats released due to payment failure"))
-              .catch((err) => console.error("Error releasing seats:", err));
+          } else {
+            console.error("No seats to confirm purchase for!");
+            toast.error("Không tìm thấy thông tin ghế để xác nhận!");
           }
+        } else if (!isSuccess && selectedSeatsInfo?.length) {
+          // Handle the failed payment case as before
+          const ticketRequests = seatsToConfirm.map((seat: { ticketId: any; version: any; }) => ({
+            TicketId: seat.ticketId,
+            Version: seat.version
+          }));
+          connection.invoke("ReleasePendingSeats", ticketRequests, showTimeId)
+            .then(() => console.log("Seats released due to payment failure"))
+            .catch((err) => console.error("Error releasing seats:", err));
         }
       })
       .catch((err) => console.error("Error joining ShowTime group:", err));
@@ -125,9 +145,7 @@ const Confirmation: React.FC = () => {
     return () => {
       if (isConnected && showTimeId) {
         leaveGroup(showTimeId)
-          .then(() =>
-            console.log(`Confirmation page left ShowTime group: ${showTimeId}`)
-          )
+          .then(() => console.log(`Confirmation page left ShowTime group: ${showTimeId}`))
           .catch((err) => console.error("Error leaving ShowTime group:", err));
       }
     };

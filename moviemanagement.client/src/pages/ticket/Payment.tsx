@@ -133,7 +133,6 @@ const Payment: React.FC = () => {
           email,
           idNumber,
           phone,
-          showTimeId: effectiveShowTimeId,
           selectedSeatsInfo,
           lastSelectionTime,
           resetCounter,
