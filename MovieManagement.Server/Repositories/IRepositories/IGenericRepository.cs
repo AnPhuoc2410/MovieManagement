@@ -68,6 +68,7 @@
         bool SoftDelete(T entity);
         Task<bool> SoftDeleteAsync(Guid id);
         Task<bool> SoftDeleteAsync(T entity);
+        Task<bool> SoftDeleteAsync(long id);
 
         Task<T> CreateIdentityAsync(T entity);
 

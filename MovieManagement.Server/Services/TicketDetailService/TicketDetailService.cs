@@ -134,12 +134,12 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return await _unitOfWork.TicketDetailRepository.SaveAsync() == ticketDetails.Count();
         }
 
-        public async Task<bool> PurchasedTicket(List<Guid> list, long billId)
+        public bool PurchasedTicket(List<Guid> list, long billId)
         {
 
             foreach (var t in list)
             {
-                var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(t);
+                var ticketDetail = _unitOfWork.TicketDetailRepository.GetById(t);
                 if (ticketDetail == null)
                     throw new NotFoundException("Ticket detail not found!");
                 if (ticketDetail.Status != TicketStatus.Pending)
@@ -148,7 +148,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
                 ticketDetail.BillId = billId;
                 _unitOfWork.TicketDetailRepository.PrepareUpdate(ticketDetail);
             }
-            var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
+            var checker = _unitOfWork.TicketDetailRepository.Save();
 
             //Check this line later cause im being lazy
             return checker > 0;

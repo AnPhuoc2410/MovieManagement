@@ -28,10 +28,10 @@ namespace MovieManagement.Server.Services.EmailService
             _qRCodeGenerator = qRCodeGenerator;
             _mapper = mapper;
         }
-        public async Task<bool> SendEmailReportBill(long billId)
+        public bool SendEmailReportBill(long billId)
         {
             //Get user bill
-            var userBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
+            var userBill = _unitOfWork.BillRepository.GetById(billId);
             if (userBill == null)
                 throw new NotFoundException("No bills found!");
 
@@ -39,7 +39,7 @@ namespace MovieManagement.Server.Services.EmailService
                 throw new BadRequestException("Bill is not paid!");
 
             // Get user email
-            string userEmail = (await _unitOfWork.UserRepository.GetByIdAsync(userBill.UserId)).Email;
+            string userEmail = (_unitOfWork.UserRepository.GetById(userBill.UserId)).Email;
             if (userEmail == null)
                 throw new NotFoundException("No user found!");
 
@@ -87,10 +87,10 @@ namespace MovieManagement.Server.Services.EmailService
 
             // Login to email and send message
             using var client = new SmtpClient();
-            await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-            await client.AuthenticateAsync(_configuration["Account:AppEmail"], _configuration["Account:AppPassword"]);
-            await client.SendAsync(message);
-            await client.DisconnectAsync(true);
+            client.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+            client.Authenticate(_configuration["Account:AppEmail"], _configuration["Account:AppPassword"]);
+            client.Send(message);
+            client.Disconnect(true);
             return true;
         }
 

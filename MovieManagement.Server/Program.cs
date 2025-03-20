@@ -169,7 +169,7 @@ namespace MovieManagement.Server
             builder.Services.AddHangfireServer();
 
             // Đăng ký VnPayService
-            //builder.Services.AddSingleton<IVnPayService, VnPayService>();
+            builder.Services.AddScoped<IVnPayService, VnPayService>();
 
             // Đăng ký ConvertFile
             builder.Services.AddScoped<IConvertFileService, ConvertFileService>();

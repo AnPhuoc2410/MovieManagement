@@ -201,7 +201,21 @@ namespace MovieManagement.Server.Repositories
 
             return false;
         }
+        public async Task<bool> SoftDeleteAsync(long id)
+        {
+            var entity = await _context.Set<T>().FindAsync(id);
+            if (entity == null) return false;
 
+            var statusProperty = entity.GetType().GetProperty("Status");
+            if (statusProperty != null)
+            {
+                statusProperty.SetValue(entity, 0); // Set the status to 0 (soft delete)
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
         public async Task<T> CreateIdentityAsync(T entity)
         {
             var transaction = _context.Database.BeginTransaction();

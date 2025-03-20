@@ -207,6 +207,13 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
+        [HttpGet("ticket-details")]
+        public async Task<IActionResult> GetTicketDetails(long billId)
+        {
+            var ticketDetails = await _ticketDetailService.GetPurchasedTicketsByBillId(billId);
+            return Ok(ticketDetails);
+        }
+
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<TicketDetailDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]

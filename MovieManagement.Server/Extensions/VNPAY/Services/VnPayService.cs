@@ -9,6 +9,7 @@ using MovieManagement.Server.Models.Enums;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Services.TicketDetailServices;
+using MovieManagement.Server.Services.EmailService;
 
 namespace MovieManagement.Server.Extensions.VNPAY.Services
 {
@@ -23,12 +24,14 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
         private readonly IBillService _billService;
         private readonly ITicketDetailService _ticketDetailService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailService _emailService;
 
-        public VnPayService(IBillService billService, IUnitOfWork unitOfWork, ITicketDetailService ticketDetailService)
+        public VnPayService(IBillService billService, IUnitOfWork unitOfWork, ITicketDetailService ticketDetailService, IEmailService emailService)
         {
             _billService = billService;
             _unitOfWork = unitOfWork;
             _ticketDetailService = ticketDetailService;
+            _emailService = emailService;
         }
 
         public void Initialize(string tmnCode,
@@ -210,11 +213,13 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             }
         }
 
-        public async void HandleSuccessfulPayment(PaymentResult paymentResult)
+        public void HandleSuccessfulPayment(PaymentResult paymentResult)
         {
-            await _billService.UpdateBillAsync(paymentResult.PaymentId, BillEnum.BillStatus.Completed);
+            _billService.UpdateBill(paymentResult.PaymentId, BillEnum.BillStatus.Completed);
             //TODO: HERE CALL TICKETSERVICE TO UPDATE TICKET BillID
-            await _ticketDetailService.PurchasedTicket(GetTickets(paymentResult.Description), paymentResult.PaymentId);
+            _ticketDetailService.PurchasedTicket(GetTickets(paymentResult.Description), paymentResult.PaymentId);
+
+            _emailService.SendEmailReportBill(paymentResult.PaymentId);
         }
 
         private List<Guid> GetTickets(string description)
