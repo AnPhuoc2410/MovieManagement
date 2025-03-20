@@ -151,11 +151,24 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
 
             //Check this line later cause im being lazy
-            return checker == list.Count();
+            return checker > 0;
 
 
         }
 
+
+        public async Task<IEnumerable<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(long billId)
+        {
+            if (billId == null)
+                throw new BadRequestException("BillId is invalid!");
+            var isExist = await _unitOfWork.BillRepository.GetByIdAsync(billId);
+            if (isExist == null)
+                throw new NotFoundException("Bill not found!");
+            List<PurchasedTicketResponse> purchasedTicketResponses = await _unitOfWork.TicketDetailRepository.GetPurchasedTicketsByBillId(billId);
+            if (purchasedTicketResponses == null)
+                throw new NotFoundException("No purchased ticket found!");
+            return purchasedTicketResponses;
+        }
 
     }
 }

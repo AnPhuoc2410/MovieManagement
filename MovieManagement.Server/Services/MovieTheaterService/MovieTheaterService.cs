@@ -19,19 +19,22 @@ namespace MovieManagement.Server.Services.MovieTheaterService
 
         public async Task<IEnumerable<MovieTheaterDto>> GetAllMovieTheatersAsync()
         {
-            var movieTheaters = await _unitOfWork.MovieTheaterRepository.GetAllAsync() ?? throw new NotFoundException("Movie theaters not found!");
-            return _mapper.Map<List<MovieTheaterDto>>(movieTheaters);
+            var movieTheaters = await _unitOfWork.MovieTheaterRepository.GetAllAsync() 
+                ?? throw new NotFoundException("Movie theaters not found!");
+            return _mapper.Map<IEnumerable<MovieTheaterDto>>(movieTheaters);
         }
 
         public async Task<MovieTheaterDto> GetMovieTheaterByIdAsync(Guid movieTheaterId)
         {
-            var movieTheater = await _unitOfWork.MovieTheaterRepository.GetByIdAsync(movieTheaterId) ?? throw new NotFoundException("Movie theater not found!");
+            var movieTheater = await _unitOfWork.MovieTheaterRepository.GetByIdAsync(movieTheaterId) 
+                ?? throw new NotFoundException("Movie theater not found!");
             return _mapper.Map<MovieTheaterDto>(movieTheater);
         }
 
         public async Task<IEnumerable<MovieTheaterDto>> GetMovieTheaterPageAsync(int page, int pageSize)
         {
-            var movieTheaters = await _unitOfWork.MovieTheaterRepository.GetPageAsync(page, pageSize) ?? throw new NotFoundException("Movie theater not found!");
+            var movieTheaters = await _unitOfWork.MovieTheaterRepository.GetPageAsync(page, pageSize) 
+                ?? throw new NotFoundException("Movie theater not found!");
             return _mapper.Map<List<MovieTheaterDto>>(movieTheaters);
         }
 
@@ -46,7 +49,8 @@ namespace MovieManagement.Server.Services.MovieTheaterService
 
         public async Task<MovieTheaterDto> UpdateMovieTheaterAsync(Guid movieTheaterId, MovieTheaterDto movieTheater)
         {
-            var movieTheaterToUpdate = await _unitOfWork.MovieTheaterRepository.GetByIdAsync(movieTheaterId) ?? throw new NotFoundException("Movie theater not found!");
+            var movieTheaterToUpdate = await _unitOfWork.MovieTheaterRepository.GetByIdAsync(movieTheaterId) 
+                ?? throw new NotFoundException("Movie theater not found!");
             movieTheater.MovieTheaterId = movieTheaterId;
             movieTheater.CreatedDate = movieTheaterToUpdate.CreatedDate;
             movieTheater.UpdatedDate = DateTime.Now;
@@ -56,7 +60,8 @@ namespace MovieManagement.Server.Services.MovieTheaterService
 
         public async Task<bool> DeleteMovieTheaterAsync(Guid movieTheaterId)
         {
-            var movieTheater = await _unitOfWork.MovieTheaterRepository.GetByIdAsync(movieTheaterId) ?? throw new NotFoundException("Movie theater not found!");
+            var movieTheater = await _unitOfWork.MovieTheaterRepository.GetByIdAsync(movieTheaterId) 
+                ?? throw new NotFoundException("Movie theater not found!");
             return await _unitOfWork.MovieTheaterRepository.DeleteAsync(movieTheater);
         }
 

@@ -57,7 +57,13 @@ namespace MovieManagement.Server.Extensions
 
             CreateMap<Bill, BillDto>();
             CreateMap<BillDto, Bill>();
+
             CreateMap<BillRequest, Bill>();
+
+            CreateMap<Bill, BillRequest>();
+
+            //Bill Report for user
+            CreateMap<Bill, BillReportRequest>();
 
             CreateMap<SeatType, SeatTypeDto>();
             CreateMap<SeatTypeDto, SeatType>();

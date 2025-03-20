@@ -6,6 +6,9 @@ using MovieManagement.Server.Extensions.VNPAY.Utilities;
 using MovieManagement.Server.Services.BillService;
 using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Models.Enums;
+using MovieManagement.Server.Data;
+using MovieManagement.Server.Exceptions;
+using MovieManagement.Server.Services.TicketDetailServices;
 
 namespace MovieManagement.Server.Extensions.VNPAY.Services
 {
@@ -18,10 +21,14 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
         private string _version;
         private string _orderType;
         private readonly IBillService _billService;
+        private readonly ITicketDetailService _ticketDetailService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public VnPayService(IBillService billService)
+        public VnPayService(IBillService billService, IUnitOfWork unitOfWork, ITicketDetailService ticketDetailService)
         {
             _billService = billService;
+            _unitOfWork = unitOfWork;
+            _ticketDetailService = ticketDetailService;
         }
 
         public void Initialize(string tmnCode,
@@ -51,19 +58,40 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             EnsureParametersBeforePayment();
 
             if (request.Money < 5000 || request.Money > 1000000000)
-            {
                 throw new ArgumentException("Số tiền thanh toán phải nằm trong khoảng 5.000 (VND) đến 1.000.000.000 (VND).");
-            }
 
             if (string.IsNullOrEmpty(request.Description))
-            {
                 throw new ArgumentException("Không được để trống mô tả giao dịch.");
-            }
 
             if (string.IsNullOrEmpty(request.IpAddress))
-            {
                 throw new ArgumentException("Không được để trống địa chỉ IP.");
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) ?? throw new NotFoundException("User not found.");
+            request.Description += $" - {user.UserId}";
+
+            decimal totalMoney = 0;
+
+            foreach (var id in billRequest.Tickets)
+            {
+                var ticket = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id) 
+                    ?? throw new NotFoundException("Ticket not found.");
+                request.Description += $" - {id}";
+                totalMoney += ticket.Seat.SeatType.Price;
             }
+
+            if (billRequest.PromotionId.HasValue)
+            {
+                var promotion = await _unitOfWork.PromotionRepository.GetByIdAsync(billRequest.PromotionId.Value)
+                    ?? throw new NotFoundException("Promotion not found.");
+                totalMoney -= promotion.Discount;
+            }
+
+            if (request.Money != totalMoney)
+                throw new ArgumentException("Số tiền thanh toán không chính xác.");
+
+            billRequest.Amount = totalMoney;
+            billRequest.TotalTicket = billRequest.Tickets.Count;
+
 
             var helper = new PaymentHelper();
             helper.AddRequestData("vnp_Version", _version);
@@ -182,15 +210,30 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             }
         }
 
-        public void HandleSuccessfulPayment(PaymentResult paymentResult)
+        public async void HandleSuccessfulPayment(PaymentResult paymentResult)
         {
-            _billService.UpdateBill(paymentResult.PaymentId, BillEnum.BillStatus.Completed);
+            await _billService.UpdateBillAsync(paymentResult.PaymentId, BillEnum.BillStatus.Completed);
             //TODO: HERE CALL TICKETSERVICE TO UPDATE TICKET BillID
+            await _ticketDetailService.PurchasedTicket(GetTickets(paymentResult.Description), paymentResult.PaymentId);
         }
 
-        public void HandleFailurePayment(PaymentResult paymentResult)
+        private List<Guid> GetTickets(string description)
         {
-            _billService.UpdateBill(paymentResult.PaymentId, BillEnum.BillStatus.Cancelled);
+            var tickets = description.Split(" - ").Skip(2).ToList();
+            List<Guid> ticketIds = new List<Guid>();
+            foreach (var ticket in tickets)
+            {
+                if (Guid.TryParse(ticket, out Guid ticketId))
+                {
+                    ticketIds.Add(ticketId);
+                }
+            }
+            return ticketIds;
+        }
+
+        public async void HandleFailurePayment(PaymentResult paymentResult)
+        {
+            _billService.UpdateBillAsync(paymentResult.PaymentId, BillEnum.BillStatus.Cancelled);
         }
     }
 }

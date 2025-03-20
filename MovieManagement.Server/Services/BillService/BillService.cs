@@ -7,6 +7,7 @@ using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.Enums;
 using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Services.BillService
 {
@@ -59,23 +60,30 @@ namespace MovieManagement.Server.Services.BillService
         public async Task<BillDto> CreateBillAsync(Guid userId, BillRequest billRequest, long paymentId)
         {
             //Checking user is existing
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
-            if (user == null)
-                throw new NotFoundException("User cannot found!");
+            //var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+            //if (user == null)
+            //    throw new NotFoundException("User cannot found!");
 
             //Calculator ticket total
-            var bill = _mapper.Map<Bill>(billRequest);
-            bill.BillId = paymentId;
-            bill.CreatedDate = DateTime.Now;
-            bill.UserId = userId;
-            bill.Status = BillEnum.BillStatus.Pending;
-            bill.Point = bill.TotalTicket;
+            var bill = new Bill 
+            {
+                BillId = paymentId,
+                CreatedDate = DateTime.Now,
+                UserId = userId,
+                Status = BillEnum.BillStatus.Pending,
+                TotalTicket = billRequest.TotalTicket.Value,
+                Amount = billRequest.Amount.Value
+            };
 
             var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateIdentityAsync(bill));
             if (createdBill == null)
                 throw new Exception("Failed to create bill.");
             return createdBill;
         }
+
+
+
+
         public async Task<BillDto> UpdateBillAsync(long billId, BillEnum.BillStatus billStatus)
         {
             var existingBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
@@ -102,20 +110,6 @@ namespace MovieManagement.Server.Services.BillService
             catch (Exception ex)
             {
                 throw new Exception("Couldn't access into database due to systems error.", ex);
-            }
-        }
-        public async Task<IEnumerable<PurchasedTicketDto>> GetPurchasedTicketsAsync(Guid userId)
-        {
-            try
-            {
-                var bill = _unitOfWork.BillRepository.GetPurchasedTickets(userId);
-                if (bill == null)
-                    throw new NotFoundException("Bill of user is not found!");
-                return (IEnumerable<PurchasedTicketDto>)bill;
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Couldn't access into database due to systems error.", ex);
             }
         }
 

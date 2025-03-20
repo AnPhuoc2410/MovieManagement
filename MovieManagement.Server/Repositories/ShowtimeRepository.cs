@@ -46,6 +46,7 @@ namespace MovieManagement.Server.Repositories
             return await _context.Showtimes
                 .Include(st => st.Movie)
                 .Include(st => st.Room)
+                    .ThenInclude(r => r.MovieTheater)
                 .ToListAsync();
         }
     }

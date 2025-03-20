@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Invoice Template Design</title>
+</head>
+<body style="background: linear-gradient(to right, #e67e22,rgb(77, 91, 185)); font-size: 12px; line-height: 20px; color: #2f2929; padding: 0 20px; font-family: 'Ubuntu', sans-serif;">
+    <section>
+        <div class="invoice" style="width: 800px; max-width: 100%; background: #fff; padding: 50px 60px; margin: 20px auto;">
+            <div class="header">
+                <div class="i_row" style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+                    <div class="i_logo" style="width: 40%;">
+                        <p style="font-size: 32px; line-height: 38px; color: #5265a7; font-family: 'Redressed', cursive;">Eigaa Cinema</p>
+                        <p style="font-weight: 700;">MÃ ĐƠN HÀNG: {{billId}}</p>
+                    </div>
+                    <div style="width: 30%"></div>
+                    <div class="i_title" style="text-align: right; width:30%">
+                        <h2 style="font-size: 32px; color: #5265a7;">INVOICE</h2>
+                        <p style="font-weight: 700; font-size: 14px;">{{CreatedDate}}</p>
+                        {{QRCode}}
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="i_table">
+                    <div class="i_table_head" style="border: 2px solid #2f2929; border-width: 2px 0;">
+                        <div class="i_row" style="display: flex;">
+                            <div style="width: 20%; font-weight: 700; padding: 12px 5px;">TÊN PHIM</div>
+                            <div style="width: 15%; font-weight: 700; padding: 12px 5px;">NGÀY CHIẾU</div>
+                            <div style="width: 15%; font-weight: 700; padding: 12px 5px;">GIỜ CHIẾU</div>
+                            <div style="width: 20%; font-weight: 700; padding: 12px 5px;">TÊN GHẾ</div>
+                            <div style="width: 15%; font-weight: 700; padding: 12px 5px;">VỊ TRÍ</div>
+                            <div style="width: 15%; font-weight: 700; padding: 12px 5px;">GIÁ VÉ</div>
+                        </div>
+                    </div>
+                    <div class="i_table_body">
+                        {{TicketList}}
+                    </div>
+                    <div class="i_table_foot">
+                        <div class="i_row" style="display: flex; border-top: 2px solid #2f2929;">
+                            <div style="width: 70%;"></div>
+                            <div style="width: 15%; font-weight: 700; padding: 12px 5px;">Tạm Tính</div>
+                            <div style="width: 15%; padding: 12px 5px;">{{Total}}</div>
+                        </div>
+                        <div class="i_row" style="display: flex;">
+                            <div style="width: 70%;"></div>
+                            <div style="width: 15%; font-weight: 700; padding: 12px 5px;">Giảm Giá</div>
+                            <div style="width: 15%; padding: 12px 5px;">{{Discount}}%</div>
+                        </div>
+                        <div class="i_row" style="display: flex; margin-top: 20px; background: #5265a7; color: #fff; padding: 10px 15px;">
+                            <div style="width: 40%;"></div>
+                            <div style="width: 60%; font-weight: 700; display: flex; justify-content: space-around; text-align: right">
+                                <span style="width: 30%">TỔNG GIÁ TIỀN:</span>
+                                <span style="width: 70%">{{Amount}} VNĐ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
