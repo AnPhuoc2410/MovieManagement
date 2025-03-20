@@ -33,7 +33,7 @@ const AdminPages = {
     Add: lazy(() => import("./pages/admin/QuanLyNhanVien/ThemNhanVien")),
   },
   Movie: {
-    Management: lazy(() => import("./pages/admin/QuanLyPhim/QuanLyPhim")),
+    Management: lazy(() => import("./pages/admin/QuanLyPhim/Movies")),
     Edit: lazy(() => import("./pages/admin/QuanLyPhim/ChinhSuaPhim")),
     Add: lazy(() => import("./pages/admin/QuanLyPhim/ThemPhim")),
   },
