@@ -49,6 +49,11 @@ namespace MovieManagement.Server.Models.Configurations
                 new Category
                 {
                     CategoryId = Guid.NewGuid(),
+                    Name = "Lãng mạn"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
                     Name = "Thần thoại"
                 },
                 new Category
@@ -65,6 +70,31 @@ namespace MovieManagement.Server.Models.Configurations
                 {
                     CategoryId = Guid.NewGuid(),
                     Name = "Gia đình"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Võ thuật"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Chiến tranh"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Kiếm hiệp"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Tâm lý"
+                },
+                new Category
+                {
+                    CategoryId = Guid.NewGuid(),
+                    Name = "Âm nhạc"
                 }
             );
         }
