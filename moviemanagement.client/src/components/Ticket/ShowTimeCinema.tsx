@@ -79,6 +79,8 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
       setSelectedTime(time);
       onSelectTime(time);
       onRoomSelect(showTimeId);
+
+      sessionStorage.setItem("currentShowTimeId", showTimeId);
     },
     [onSelectTime, onRoomSelect],
   );
@@ -89,7 +91,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
     if (!selectedDay) return;
 
     const fromDate = format(selectedDay.date, "yyyy-MM-dd");
-    const toDate = format(addDays(selectedDay.date, 1), "yyyy-MM-dd");
+    const toDate = format(addDays(selectedDay.date, 3), "yyyy-MM-dd");
     const apiKey = `${fromDate}T00:00:00`;
 
     // Create a cache key based on movie, date and city
