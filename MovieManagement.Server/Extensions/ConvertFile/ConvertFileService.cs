@@ -35,7 +35,7 @@ namespace MovieManagement.Server.Extensions.ConvertFile
         public string GenerateHtmlFromBillReportTemplate(TicketBillResponse ticket)
         {
             string ticketList = $@"
-                    <div class=""i_row"" style=""display: flex; border-bottom: 1px solid #2f2929;"">
+                    <div class=""i_row"" style=""display: flex ; border-bottom: 1px solid #2f2929;"">
                             <div style=""width: 20%; padding: 12px 5px;"">{ticket.MovieName}</div>
                             <div style=""width: 15%; padding: 12px 5px;"">{ticket.StartDay}</div>
                             <div style=""width: 15%; padding: 12px 5px;"">{ticket.StartTime}</div>
