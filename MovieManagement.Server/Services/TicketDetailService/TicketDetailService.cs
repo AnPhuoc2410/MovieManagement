@@ -108,19 +108,25 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
         }
 
-
-        public async Task<TicketDetailResponseModel> ChangeStatusTicketDetailAsync(Guid ticketId, TicketStatus status)
+        public async Task<IEnumerable<TicketDetailResponseModel>> ChangeStatusTicketDetailAsync(List<TicketDetailRequest> ticketRequests, TicketStatus status)
         {
-            var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(ticketId);
-            if (ticketDetail == null)
-                throw new NotFoundException("Ticket detail not found!");
+            List<TicketDetail> ticketDetails = new List<TicketDetail>();
+            foreach (var request in ticketRequests)
+            {
+                var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(request.TicketId);
+                if (ticketDetail == null)
+                    throw new NotFoundException("Ticket detail not found!");
 
-            ticketDetail.Status = status;
-            var updatedTicketDetail = await _unitOfWork.TicketDetailRepository.UpdateAsync(ticketDetail);
-            if (updatedTicketDetail == null)
+                ticketDetail.Status = status;
+                _unitOfWork.TicketDetailRepository.PrepareUpdate(ticketDetail);
+                ticketDetails.Add(ticketDetail);
+            }
+
+            var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
+            if (checker != ticketRequests.Count)
                 throw new DbUpdateException("Fail to update ticket detail status.");
 
-            return _mapper.Map<TicketDetailResponseModel>(updatedTicketDetail);
+            return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
         }
 
         public async Task<bool> DeleteRemainingTicket(Guid showTimeId)

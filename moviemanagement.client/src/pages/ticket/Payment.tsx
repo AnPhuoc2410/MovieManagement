@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -13,40 +13,61 @@ import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import toast from "react-hot-toast";
-import { ca } from "date-fns/locale";
-import axios from "axios";
 import api from "../../apis/axios.config";
+import { useSignalR } from "../../contexts/SignalRContext";
+import SeatCountdown from "../../components/Ticket/SeatCountdown";
 
 const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { connection, isConnected } = useSignalR();
 
-  // Get basic booking info from location.state
-  const { selectedTime, selectedDate, tickets, seats } = location.state || {
-    selectedTime: "Not selected",
-    selectedDate: "Not selected",
-    tickets: [],
-    seats: [] as string[],
-  };
-
-  // Calculate total ticket price from the tickets array
-  const totalPrice = (tickets || []).reduce(
-    (sum: number, t: any) => sum + t.price * (t.quantity || 0),
-    0,
-  );
-
-  // Additional info with defaults
+  // Retrieve showtime details and countdown info from location state or fallback to defaults.
   const {
+    movieId = "DefaultMovieId",
+    selectedTime = "Not selected",
+    selectedDate = "Not selected",
+    tickets = [],
+    seats = [] as string[],
+    showTimeId = "",
+    selectedSeatsInfo = [],
     movieTitle = "Phim Mặc Định",
     screen = "Màn hình 1",
-    showDate = selectedDate,
-    showTime = selectedTime,
-    price = totalPrice,
+    lastSelectionTime,  // Passed from MovieSeat to indicate countdown start time
+    resetCounter = 0,   // Optional reset trigger for countdown (if needed)
   } = location.state || {};
 
-  const total = totalPrice;
+  // Determine effective showTimeId from state or session storage
+  const effectiveShowTimeId =
+    showTimeId || sessionStorage.getItem("currentShowTimeId") || "";
 
-  // Customer form fields and error states
+  // Before unload handler to warn user if they refresh or leave
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (connection && isConnected && effectiveShowTimeId && selectedSeatsInfo?.length) {
+        e.preventDefault();
+        e.returnValue = "";
+        return "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [connection, isConnected, effectiveShowTimeId, selectedSeatsInfo]);
+
+  // Calculate total ticket price
+  const totalPrice = (tickets || []).reduce(
+    (sum: number, t: any) => sum + t.price * (t.quantity || 0),
+    0
+  );
+  const total = totalPrice;
+  const price = totalPrice;
+  const showDate = selectedDate;
+  const showTime = selectedTime;
+
+  // Customer form state and error flags
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [idNumber, setIdNumber] = useState("");
@@ -90,41 +111,41 @@ const Payment: React.FC = () => {
         totalTicket: tickets.length,
         amount: total,
       };
-      // const billResponse = await api.post(`bill?userId=${"db5ebacc-3b26-46be-9628-9b1cf6daf50d"}`, data);
-      // console.log(billResponse.data);
+
       const response = await api.post(
-        `vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}&userId=${"16223053-AE9B-4A5F-AADE-437781C2A8A5"}`,
-        data,
+        `vnpay/createpaymenturl?money=${total}&description=${encodeURIComponent(
+          `Payment for movie tickets: ${movieTitle}`
+        )}&userId=${"e5c69f1e-c731-420f-badb-723f897e8819"}`,
+        data
       );
 
-      // Save booking info to session storage
+      // Save booking info to session storage for later retrieval.
       sessionStorage.setItem(
         "bookingInfo",
-        JSON.stringify({ selectedTime, selectedDate, tickets, seats, price, total, fullName, email, idNumber, phone }),
+        JSON.stringify({
+          selectedTime,
+          selectedDate,
+          tickets,
+          seats,
+          price,
+          total,
+          fullName,
+          email,
+          idNumber,
+          phone,
+          selectedSeatsInfo,
+          lastSelectionTime,
+          resetCounter,
+        })
       );
 
+      // Redirect to VNPay payment URL.
       window.location.href = response.data;
     } catch (error) {
       console.error(error);
       toast.error("Đặt vé thất bại!");
       return;
     }
-
-    // toast.success("Đặt vé thành công!");
-    // navigate("/ticket/confirmation", {
-    //   state: {
-    //     movieTitle,
-    //     screen,
-    //     showDate,
-    //     showTime,
-    //     seats,
-    //     total,
-    //     fullName,
-    //     email,
-    //     idNumber,
-    //     phone,
-    //   },
-    // });
   };
 
   return (
@@ -170,7 +191,7 @@ const Payment: React.FC = () => {
             minHeight: "100vh",
           }}
         >
-          {/* Sticky StepTracker for desktop */}
+          {/* StepTracker Sidebar (Desktop) */}
           <Box
             sx={{
               display: { xs: "none", md: "block" },
@@ -182,6 +203,43 @@ const Payment: React.FC = () => {
               flexShrink: 0,
             }}
           >
+            {/* Countdown Timer Banner */}
+            {lastSelectionTime && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mb: 3,
+                }}
+              >
+                <Paper
+                  elevation={3}
+                  sx={{
+                    p: 2,
+                    backgroundColor: "rgba(27, 38, 53, 0.8)",
+                    borderRadius: 2,
+                  }}
+                >
+                  <Typography
+                    variant="subtitle1"
+                    align="center"
+                    sx={{ mb: 1, color: "#fbc02d" }}
+                  >
+                    Thời gian giữ ghế còn lại
+                  </Typography>
+                  <SeatCountdown
+                    seatId="payment-timer"
+                    seatName="Timer"
+                    startTime={lastSelectionTime}
+                    resetTrigger={resetCounter}
+                    onTimeout={() => {
+                      toast.error("Thời gian giữ ghế đã hết. Vui lòng chọn lại ghế.");
+                      navigate(`/ticket/${movieId}`, { replace: true });
+                    }}
+                  />
+                </Paper>
+              </Box>
+            )}
             <StepTracker currentStep={3} />
           </Box>
 
@@ -195,8 +253,45 @@ const Payment: React.FC = () => {
               pb: 4,
             }}
           >
-            {/* Show StepTracker on mobile */}
+            {/* StepTracker (Mobile) */}
             <Box sx={{ display: { xs: "block", md: "none" }, mb: 2 }}>
+              {/* Countdown Timer Banner */}
+              {lastSelectionTime && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    mb: 3,
+                  }}
+                >
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      p: 2,
+                      backgroundColor: "rgba(27, 38, 53, 0.8)",
+                      borderRadius: 2,
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle1"
+                      align="center"
+                      sx={{ mb: 1, color: "#fbc02d" }}
+                    >
+                      Thời gian giữ ghế còn lại
+                    </Typography>
+                    <SeatCountdown
+                      seatId="payment-timer"
+                      seatName="Timer"
+                      startTime={lastSelectionTime}
+                      resetTrigger={resetCounter}
+                      onTimeout={() => {
+                        toast.error("Thời gian giữ ghế đã hết. Vui lòng chọn lại ghế.");
+                        navigate(`/ticket/${movieId}`, { replace: true });
+                      }}
+                    />
+                  </Paper>
+                </Box>
+              )}
               <StepTracker currentStep={3} />
             </Box>
 
@@ -206,12 +301,12 @@ const Payment: React.FC = () => {
               align="center"
               gutterBottom
               fontFamily={"JetBrains Mono"}
-              sx={{ textTransform: "uppercase", mb: 4 }}
+              sx={{ textTransform: "uppercase", mb: 2 }}
             >
               Thanh Toán Vé
             </Typography>
 
-            {/* Payment content */}
+            {/* Payment Info and Form */}
             <Grid container spacing={4}>
               {/* Left Column: Movie Poster */}
               <Grid item xs={12} md={4}>
@@ -237,9 +332,9 @@ const Payment: React.FC = () => {
                 </Paper>
               </Grid>
 
-              {/* Right Column: Movie/Ticket Info & Customer Form */}
+              {/* Right Column: Ticket Info & Customer Form */}
               <Grid item xs={12} md={8}>
-                {/* Combined Movie & Ticket Info */}
+                {/* Movie & Ticket Information */}
                 <Paper
                   sx={{
                     p: 3,
@@ -249,7 +344,7 @@ const Payment: React.FC = () => {
                   }}
                 >
                   <Grid container spacing={3}>
-                    {/* Thông Tin Phim */}
+                    {/* Movie Details */}
                     <Grid item xs={12} sm={6}>
                       <Typography variant="h6" gutterBottom>
                         Thông Tin Phim
@@ -268,14 +363,13 @@ const Payment: React.FC = () => {
                       </Typography>
                     </Grid>
 
-                    {/* Thông Tin Vé */}
+                    {/* Ticket Details */}
                     <Grid item xs={12} sm={6}>
                       <Typography variant="h6" gutterBottom>
                         Thông Tin Vé
                       </Typography>
                       <Typography variant="body1" gutterBottom>
-                        <strong>Ghế:</strong>{" "}
-                        {seats.join(", ") || "Chưa chọn ghế"}
+                        <strong>Ghế:</strong> {seats.join(", ") || "Chưa chọn ghế"}
                       </Typography>
                       <Typography variant="body1" gutterBottom>
                         <strong>Giá:</strong>{" "}
@@ -363,9 +457,7 @@ const Payment: React.FC = () => {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         error={phoneError}
-                        helperText={
-                          phoneError ? "Vui lòng nhập số điện thoại" : ""
-                        }
+                        helperText={phoneError ? "Vui lòng nhập số điện thoại" : ""}
                         InputLabelProps={{ style: { color: "white" } }}
                         sx={{ input: { color: "white" } }}
                       />
