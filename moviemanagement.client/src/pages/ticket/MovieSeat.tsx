@@ -94,6 +94,23 @@ const MovieSeat: React.FC = () => {
     }
 
     try {
+      // First verify if any of the selected seats have been taken since selection
+      const seatIds = selectedSeats.map(seat => seat.id);
+      const userId = localStorage.getItem("userId");
+      // Check seat availability from the current state in SeatCinema
+      const unavailableSeats = selectedSeats.filter(seat => {
+        // Find this seat in the SeatCinema component's state
+        const seatElement = document.querySelector(`[data-seat-id="${seat.id}"]`);
+        return seatElement?.getAttribute('data-status') === '1' ||
+               seatElement?.getAttribute('data-status') === '2';
+      });
+
+      if (unavailableSeats.length > 0) {
+        const seatNames = unavailableSeats.map(seat => seat.name).join(', ');
+        toast.error(`Ghế ${seatNames} đã được người khác chọn. Vui lòng chọn ghế khác.`);
+        return;
+      }
+
       // Create an array of TicketDetailRequest objects for SignalR
       const ticketRequests = selectedSeats.map((ticket) => ({
         TicketId: ticket.ticketId,
@@ -101,7 +118,7 @@ const MovieSeat: React.FC = () => {
       }));
 
       // Call the SetSeatPending method on the server using the current showTimeId
-      await connection.invoke("SetSeatPending", ticketRequests, currentShowTimeId);
+      await connection.invoke("SetSeatPending", ticketRequests, currentShowTimeId, userId);
 
       toast.success("Chuyển đến trang thanh toán...");
 

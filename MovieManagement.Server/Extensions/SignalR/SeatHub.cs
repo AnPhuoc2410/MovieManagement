@@ -28,14 +28,15 @@ namespace MovieManagement.Server.Extensions.SignalR
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, showtimeId);
         }
 
-        public async Task SetSeatPending(List<TicketDetailRequest> ticketRequests, string showtimeId)
+        public async Task SetSeatPending(List<TicketDetailRequest> ticketRequests, string showtimeId, string userId)
         {
             try
             {
                 var responses = await _ticketService.UpdateTicketToPending(ticketRequests);
+
                 foreach (var ticketResponse in responses)
                 {
-                    await Clients.Group(showtimeId).SendAsync("SeatPending", ticketResponse.SeatId);
+                    await Clients.Group(showtimeId).SendAsync("SeatPending", ticketResponse.SeatId, userId);
                 }
             }
             catch (Exception ex)

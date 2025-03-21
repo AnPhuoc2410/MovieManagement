@@ -26,10 +26,24 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
   useEffect(() => {
     if (!connection || !groupConnected) return;
 
-    const handleSeatPending = (seatId: string) => {
-      setSeats((prev) =>
-        prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
-      );
+    const handleSeatPending = (seatId: string, userId: string) => {
+      console.log("Seat marked as pending:", seatId);
+      const currentUserId = localStorage.getItem("userId") || "anonymous";
+      if (userId !== currentUserId) {
+        setSeats((prev) =>
+          prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
+        );
+
+        // Also remove this seat from our selection if we had it selected
+        setSelectedSeats((prev) => {
+          const selectedSeat = prev.find(seat => seat.id === seatId);
+          if (selectedSeat) {
+            toast.error(`Ghế ${selectedSeat.name} đã được người khác chọn.`);
+            return prev.filter(seat => seat.id !== seatId);
+          }
+          return prev;
+        });
+      }
     };
 
     const handleSeatBought = (seatId: string) => {
@@ -98,6 +112,13 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
   const handleSeatClick = async (ticket: TicketDetail) => {
     if (!connection) {
       toast.error("Mất kết nối đến server!");
+      return;
+    }
+
+    // Don't allow selecting seats that are already pending or bought
+    if (ticket.status === 1 || ticket.status === 2) {
+      const statusText = ticket.status === 1 ? "đang được chọn" : "đã được mua";
+      toast.error(`Ghế ${ticket.seat.atRow}${ticket.seat.atColumn} ${statusText} bởi người khác.`);
       return;
     }
 
@@ -229,6 +250,8 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
                     variant="outlined"
                     disabled={disabled}
                     onClick={() => handleSeatClick(ticket)}
+                    data-seat-id={ticket.seatId}
+                    data-status={ticket.status}
                     sx={{
                       minWidth: "50px",
                       minHeight: "50px",
