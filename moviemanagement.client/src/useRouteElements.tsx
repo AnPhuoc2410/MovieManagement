@@ -9,7 +9,6 @@ import { ProtectedRoute, RejectedRoute } from "./guards/AuthGuard";
 import TestConnection from "./pages/TestConnetionc";
 import SearchPage from "./pages/movie/SearchPage";
 
-
 // Lazy load components
 const Home = lazy(() => import("./pages/Home/Home"));
 const AuthForm = lazy(() => import("./pages/auth/AuthForm"));
@@ -35,7 +34,7 @@ const AdminPages = {
   Movie: {
     Management: lazy(() => import("./pages/admin/QuanLyPhim/Movies")),
     Edit: lazy(() => import("./pages/admin/QuanLyPhim/ChinhSuaPhim")),
-    Add: lazy(() => import("./pages/admin/QuanLyPhim/ThemPhim")),
+    Add: lazy(() => import("./pages/admin/QuanLyPhim/MovieDetail")),
   },
   Room: {
     Management: lazy(
@@ -103,7 +102,6 @@ export default function useRouteElements() {
     },
     // Protected Client Routes
     {
-      element: <RejectedRoute />,
       children: [
         {
           path: "/promotions",
@@ -120,7 +118,8 @@ export default function useRouteElements() {
           ],
         },
         {
-          path: "search", element: <ClientPages.Movie.Search />,
+          path: "search",
+          element: <ClientPages.Movie.Search />,
         },
         {
           path: "/ticket",
