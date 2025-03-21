@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -7,26 +7,38 @@ import {
   Paper,
   Button,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSignalR } from "../../contexts/SignalRContext";
 import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HomeIcon from "@mui/icons-material/Home";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { CancelOutlined } from "@mui/icons-material";
+import toast from "react-hot-toast";
 
 const Confirmation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [paymentStatus, setPaymentStatus] = useState<"success" | "failure">();
+  const { connection, joinGroup, leaveGroup, isConnected } = useSignalR();
+  const [seatsUpdated, setSeatsUpdated] = useState(false);
 
-  // Extract details from location.state (with defaults)
-  const { selectedTime, selectedDate, paymentStatus } = location.state || {
-    selectedTime: "Not selected",
-    selectedDate: "Not selected",
-    paymentStatus: "success",
-  };
+  // Extract query param from VNPay redirection
+  const queryParams = new URLSearchParams(location.search);
+  const isSuccess = queryParams.get("isSuccess") === "true";
+
+  // Extract booking info from session storage
+  const bookingInfo = JSON.parse(sessionStorage.getItem("bookingInfo") || "{}");
+  const showTimeId = sessionStorage.getItem("currentShowTimeId") || "";
+
 
   const {
+    selectedTime = "Not selected",
+    selectedDate = "Not selected",
     movieTitle = "Phim Mặc Định",
     screen = "Màn hình 1",
     showDate = selectedDate,
@@ -37,13 +49,126 @@ const Confirmation: React.FC = () => {
     email = "",
     idNumber = "",
     phone = "",
-  } = location.state || {};
+    total = seats.length * price,
+    selectedSeatsInfo = [],
+    movieId,
+  } = bookingInfo;
 
-  const total = seats.length * price;
-
+  // Navigation handlers
   const handleHome = () => {
     navigate("/");
   };
+
+  const handleBackToTicket = () => {
+    if (movieId) {
+      navigate(`/ticket/${movieId}`, { replace: true });
+    } else {
+      navigate("/movies/now-showing", { replace: true });
+    }
+  };
+
+  // Display a spinner until the SignalR connection is ready
+  const [isConnectionReady, setIsConnectionReady] = useState(isConnected);
+  useEffect(() => {
+    setIsConnectionReady(isConnected);
+  }, [isConnected]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("Payment successful!");
+      setPaymentStatus("success");
+    } else {
+      console.log("Payment failed or not completed.");
+      setPaymentStatus("failure");
+    }
+  }, [isSuccess]);
+
+  // Rejoin the SignalR group and update seat statuses
+  useEffect(() => {
+    if (!isConnected || !showTimeId || !connection) {
+      console.log("Waiting for SignalR connection or missing showTimeId...");
+      return;
+    }
+
+    // First join the SignalR group
+    joinGroup(showTimeId)
+      .then(() => {
+        console.log(`Confirmation page joined ShowTime group: ${showTimeId}`);
+
+        const seatsToConfirm = selectedSeatsInfo?.length > 0
+          ? selectedSeatsInfo
+          : JSON.parse(sessionStorage.getItem("selectedSeats") || "[]");
+
+        // If payment was successful and we haven't updated the seats yet
+        if (isSuccess && !seatsUpdated) {
+          // Get selected seats from sessionStorage if they don't exist in the state
+          if (seatsToConfirm?.length > 0) {
+            // Format the seats for the server
+            const ticketRequests = seatsToConfirm.map((seat: { ticketId: any; version: any; }) => ({
+              TicketId: seat.ticketId,
+              Version: seat.version
+            }));
+
+            console.log("Attempting to confirm seat purchase:", ticketRequests);
+
+            // Call the SignalR method
+            connection.invoke("ConfirmSeatPurchase", ticketRequests, showTimeId)
+              .then(() => {
+                console.log("Seats marked as purchased:", ticketRequests);
+                setSeatsUpdated(true);
+                toast.success("Ghế đã được đặt thành công!");
+
+                // Optional: Store the fact that seats were updated
+                sessionStorage.setItem("seatsUpdated", "true");
+              })
+              .catch((error) => {
+                console.error("Error finalizing seat purchase:", error);
+                toast.error("Không thể cập nhật trạng thái ghế: " + error.message);
+              });
+          } else {
+            console.error("No seats to confirm purchase for!");
+            toast.error("Không tìm thấy thông tin ghế để xác nhận!");
+          }
+        } else if (!isSuccess && selectedSeatsInfo?.length) {
+          // Handle the failed payment case as before
+          const ticketRequests = seatsToConfirm.map((seat: { ticketId: any; version: any; }) => ({
+            TicketId: seat.ticketId,
+            Version: seat.version
+          }));
+          connection.invoke("ReleasePendingSeats", ticketRequests, showTimeId)
+            .then(() => console.log("Seats released due to payment failure"))
+            .catch((err) => console.error("Error releasing seats:", err));
+        }
+      })
+      .catch((err) => console.error("Error joining ShowTime group:", err));
+
+    return () => {
+      if (isConnected && showTimeId) {
+        leaveGroup(showTimeId)
+          .then(() => console.log(`Confirmation page left ShowTime group: ${showTimeId}`))
+          .catch((err) => console.error("Error leaving ShowTime group:", err));
+      }
+    };
+  }, [isConnected, showTimeId, connection, isSuccess, selectedSeatsInfo, seatsUpdated, joinGroup, leaveGroup]);
+
+  if (!isConnectionReady) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#0B0D1A",
+        }}
+      >
+        <CircularProgress color="primary" />
+        <Typography sx={{ ml: 2, color: "white" }}>
+          Đang kết nối đến máy chủ...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -69,7 +194,6 @@ const Confirmation: React.FC = () => {
       }}
     >
       <Header />
-
       <Container
         maxWidth="xl"
         sx={{
@@ -88,7 +212,7 @@ const Confirmation: React.FC = () => {
             minHeight: "100vh",
           }}
         >
-          {/* Sticky StepTracker for desktop */}
+          {/* Sidebar StepTracker (Desktop) */}
           <Box
             sx={{
               display: { xs: "none", md: "block" },
@@ -113,9 +237,9 @@ const Confirmation: React.FC = () => {
               pb: 4,
             }}
           >
-            {/* Show StepTracker on mobile */}
+            {/* Mobile StepTracker */}
             <Box sx={{ display: { xs: "block", md: "none" }, mb: 2 }}>
-              <StepTracker currentStep={4} />
+              <StepTracker currentStep={4} paymentStatus={paymentStatus} />
             </Box>
 
             <Grid container spacing={4}>
@@ -166,7 +290,7 @@ const Confirmation: React.FC = () => {
                   />
 
                   <Grid container spacing={3}>
-                    {/* Thông Tin Phim */}
+                    {/* Movie Details */}
                     <Grid item xs={12} sm={6}>
                       <Typography
                         variant="h6"
@@ -193,8 +317,7 @@ const Confirmation: React.FC = () => {
                         <strong>Giờ chiếu:</strong> {showTime}
                       </Typography>
                     </Grid>
-
-                    {/* Thông Tin Vé */}
+                    {/* Ticket Details */}
                     <Grid item xs={12} sm={6}>
                       <Typography
                         variant="h6"
@@ -276,7 +399,13 @@ const Confirmation: React.FC = () => {
                   </Box>
                 </Paper>
 
-                <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                    mt: 4,
+                  }}
+                >
                   <Button
                     variant="contained"
                     color="primary"
@@ -300,71 +429,152 @@ const Confirmation: React.FC = () => {
                   >
                     Về Trang Chủ
                   </Button>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={handleBackToTicket}
+                    startIcon={<ArrowBackIcon />}
+                    sx={{
+                      px: 4,
+                      py: 1.5,
+                      fontSize: "1rem",
+                      borderRadius: 2,
+                      textTransform: "none",
+                      fontWeight: "bold",
+                      borderColor: "#90caf9",
+                      color: "#90caf9",
+                      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
+                      "&:hover": {
+                        background: "rgba(144, 202, 249, 0.1)",
+                      },
+                    }}
+                  >
+                    Quay lại Đặt Vé
+                  </Button>
                 </Box>
               </Grid>
             </Grid>
-            {/* Success Message */}
-            {/* Success Message - Compact Version */}
-            <Paper
-              elevation={3}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                py: 2,
-                px: 3,
-                backgroundColor: "rgba(46, 125, 50, 0.15)",
-                borderLeft: "4px solid #4caf50",
-                borderRadius: 1,
-                mb: 3,
-                maxWidth: { xs: "100%", md: "80%" },
-                mx: "auto",
-                position: "relative",
-                overflow: "hidden",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background:
-                    "radial-gradient(circle at top right, rgba(76, 175, 80, 0.15), transparent 70%)",
-                  zIndex: 0,
-                },
-              }}
-            >
-              <CheckCircleOutlineIcon
+            {paymentStatus === "success" ? (
+              <Paper
+                elevation={3}
                 sx={{
-                  fontSize: 40,
-                  mr: 2,
-                  color: "#4caf50",
-                  filter: "drop-shadow(0 0 6px rgba(76, 175, 80, 0.4))",
-                  zIndex: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  py: 2,
+                  px: 3,
+                  backgroundColor: "rgba(46, 125, 50, 0.15)",
+                  borderLeft: "4px solid #4caf50",
+                  borderRadius: 1,
+                  mb: 3,
+                  maxWidth: { xs: "100%", md: "80%" },
+                  mx: "auto",
+                  position: "relative",
+                  overflow: "hidden",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background:
+                      "radial-gradient(circle at top right, rgba(76, 175, 80, 0.15), transparent 70%)",
+                    zIndex: 0,
+                  },
                 }}
-              />
-              <Box sx={{ flex: 1, zIndex: 1 }}>
-                <Typography
-                  variant="h6"
-                  fontWeight="bold"
-                  gutterBottom={false}
-                  fontFamily={"JetBrains Mono"}
-                  sx={{ mb: 0.5 }}
-                  color="primary.light"
-                >
-                  Đặt Vé Thành Công!
-                </Typography>
-                <Typography
-                  variant="body2"
+              >
+                <CheckCircleOutlineIcon
                   sx={{
-                    color: "rgba(255, 255, 255, 0.8)",
+                    fontSize: 40,
+                    mr: 2,
+                    color: "#4caf50",
+                    filter: "drop-shadow(0 0 6px rgba(76, 175, 80, 0.4))",
+                    zIndex: 1,
                   }}
-                >
-                  Cảm ơn bạn đã đặt vé. Vui lòng kiểm tra email để xem thông tin
-                  vé.
-                </Typography>
-              </Box>
-            </Paper>
+                />
+                <Box sx={{ flex: 1, zIndex: 1 }}>
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    gutterBottom={false}
+                    fontFamily={"JetBrains Mono"}
+                    sx={{ mb: 0.5 }}
+                    color="primary.light"
+                  >
+                    Đặt Vé Thành Công!
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "rgba(255, 255, 255, 0.8)",
+                    }}
+                  >
+                    Cảm ơn bạn đã đặt vé. Vui lòng kiểm tra email để xem thông tin vé.
+                  </Typography>
+                </Box>
+              </Paper>
+            ) : (
+              <Paper
+                elevation={3}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  py: 2,
+                  px: 3,
+                  backgroundColor: "rgba(255, 0, 0, 0.15)",
+                  borderLeft: "4px solid #f44336",
+                  borderRadius: 1,
+                  mb: 3,
+                  maxWidth: { xs: "100%", md: "80%" },
+                  mx: "auto",
+                  position: "relative",
+                  overflow: "hidden",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background:
+                      "radial-gradient(circle at top right, rgba(255, 0, 0, 0.15), transparent 70%)",
+                    zIndex: 0,
+                  },
+                }}
+              >
+                <CancelOutlined
+                  sx={{
+                    fontSize: 40,
+                    mr: 2,
+                    color: "#f44336",
+                    filter: "drop-shadow(0 0 6px rgba(255, 0, 0, 0.4))",
+                    zIndex: 1,
+                  }}
+                />
+                <Box sx={{ flex: 1, zIndex: 1 }}>
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    gutterBottom={false}
+                    fontFamily={"JetBrains Mono"}
+                    sx={{ mb: 0.5 }}
+                    color="primary.light"
+                  >
+                    Đặt vé thất bại!
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "rgba(255, 255, 255, 0.8)",
+                    }}
+                  >
+                    Giao dịch đã bị hủy. Nếu cần hỗ trợ, vui lòng liên hệ với chúng tôi.
+                  </Typography>
+                </Box>
+              </Paper>
+            )}
           </Box>
         </Box>
       </Container>

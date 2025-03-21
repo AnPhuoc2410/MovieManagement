@@ -162,7 +162,7 @@ namespace MovieManagement.Server
             builder.Services.AddHangfireServer();
 
             // Đăng ký VnPayService
-            builder.Services.AddSingleton<IVnPayService, VnPayService>();
+            //builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
             builder.Services.Configure<RouteOptions>(options =>
             {

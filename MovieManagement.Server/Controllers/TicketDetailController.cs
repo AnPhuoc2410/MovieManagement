@@ -523,12 +523,12 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-        [HttpPut("ChangeStatus/{ticketId:guid}/{status}")]
-        public async Task<IActionResult> ChangeStatusTicketDetailAsync(Guid ticketId, TicketStatus status)
+        [HttpPut("ChangeStatus/{status}")]
+        public async Task<IActionResult> ChangeStatusTicketDetailAsync([FromBody] List<TicketDetailRequest> Tickets, TicketStatus status)
         {
             try
             {
-                var ticketDetail = await _ticketDetailService.ChangeStatusTicketDetailAsync(ticketId, status);
+                var ticketDetail = await _ticketDetailService.ChangeStatusTicketDetailAsync(Tickets, status);
                 if (ticketDetail == null)
                 {
                     var response = new ApiResponse<object>
@@ -539,7 +539,7 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
-                return Ok(new ApiResponse<TicketDetailResponseModel>
+                return Ok(new ApiResponse<IEnumerable<TicketDetailResponseModel>>
                 {
                     Data = ticketDetail,
                     StatusCode = 200,

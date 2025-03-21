@@ -1,11 +1,11 @@
 import { lazy } from "react";
-import { useRoutes, Navigate } from "react-router-dom";
-import SplashCursor from "./components/shared/SplashCursor";
+import { Navigate, useRoutes } from "react-router-dom";
 import Dashboard from "./components/shared/Dashboard";
-import AdminTheme from "./shared-theme/AdminTheme";
-import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
-import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
+import { SignalRProvider } from "./contexts/SignalRContext";
 import { ProtectedRoute, RejectedRoute } from "./guards/AuthGuard";
+import TicketWrapper from "./layouts/TicketWrapper";
+import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
+import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import TestConnection from "./pages/TestConnetionc";
 
 
@@ -119,14 +119,16 @@ export default function useRouteElements() {
         },
         {
           path: "/ticket",
+          element: (
+            <SignalRProvider>
+              <TicketWrapper />
+            </SignalRProvider>
+          ),
           children: [
             { path: ":movieId", element: <ClientPages.Ticket.Booking /> },
             { path: "movie-seat", element: <ClientPages.Ticket.Seat /> },
             { path: "payment", element: <ClientPages.Ticket.Payment /> },
-            {
-              path: "confirmation",
-              element: <ClientPages.Ticket.Confirmation />,
-            },
+            { path: "confirmation", element: <ClientPages.Ticket.Confirmation /> },
           ],
         },
       ],

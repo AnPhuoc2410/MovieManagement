@@ -63,24 +63,24 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
     });
   }, [today, t, i18n.language]);
 
-  // Memoized handleDateChange function
   const handleDateChange = useCallback(
     (e: any, newDate: string) => {
       if (newDate) {
         setSelectedDate(newDate);
         onSelectDate(newDate);
-        setSelectedTime(null); // Reset time when date changes
+        setSelectedTime(null);
       }
     },
     [onSelectDate],
   );
 
-  // Memoized time selection handler
   const handleTimeSelect = useCallback(
     (time: string, showTimeId: string) => {
       setSelectedTime(time);
       onSelectTime(time);
       onRoomSelect(showTimeId);
+
+      sessionStorage.setItem("currentShowTimeId", showTimeId);
     },
     [onSelectTime, onRoomSelect],
   );
@@ -91,7 +91,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
     if (!selectedDay) return;
 
     const fromDate = format(selectedDay.date, "yyyy-MM-dd");
-    const toDate = format(addDays(selectedDay.date, 1), "yyyy-MM-dd");
+    const toDate = format(addDays(selectedDay.date, 3), "yyyy-MM-dd");
     const apiKey = `${fromDate}T00:00:00`;
 
     // Create a cache key based on movie, date and city

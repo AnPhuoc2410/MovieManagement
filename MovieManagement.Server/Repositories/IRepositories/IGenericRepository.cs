@@ -64,6 +64,8 @@
         Task<bool> SoftDeleteAsync(Guid id);
         Task<bool> SoftDeleteAsync(T entity);
 
+        Task<T> CreateIdentityAsync(T entity);
+
         void PrepareCreate(T entity);
         void PrepareUpdate(T entity);
         void PrepareRemove(T entity);
