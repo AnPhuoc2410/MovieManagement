@@ -25,9 +25,17 @@ const fetchShowtimes = async (): Promise<ShowTimeType[]> => {
 
 const transformShowTimeForDisplay = (showtime: ShowTimeType): ShowTimeDisplay => {
   return {
-    ...showtime,
+    showTimeId: showtime.showTimeId,
+    movieId: showtime.movieId,
+    roomId: showtime.roomId,
     startTime: new Date(showtime.startTime).toLocaleString(),
     endTime: new Date(showtime.endTime).toLocaleString(),
+    movie: {
+      movieName: showtime.movie?.movieName || 'N/A'
+    },
+    room: {
+      roomName: showtime.room?.roomName || 'N/A'
+    }
   };
 };
 

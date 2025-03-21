@@ -22,6 +22,7 @@ export interface TableData {
   MaNhanVien?: string;
   movieId?: string;
   roomId?: string;
+  showTimeId?: string;
   [key: string]: any;
 }
 
@@ -181,7 +182,8 @@ function ManagementTable<T extends TableData>({
           color="primary"
           onClick={() =>
             onEdit(
-              item.userId ||
+              item.showTimeId ||
+                item.userId ||
                 item.roomId ||
                 item.MaNhanVien ||
                 item.movieId ||
@@ -197,7 +199,8 @@ function ManagementTable<T extends TableData>({
           color="secondary"
           onClick={() =>
             onDelete(
-              item.userId ||
+              item.showTimeId ||
+                item.userId ||
                 item.roomId ||
                 item.MaNhanVien ||
                 item.movieId ||

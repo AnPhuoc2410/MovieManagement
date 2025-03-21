@@ -56,7 +56,7 @@ const ChiTietPhongChieu = () => {
       <Box sx={{ mb: 3, display: "flex", alignItems: "center" }}>
         <TheaterIcon sx={{ mr: 1, color: "primary.main" }} />
         <Typography variant="h5" component="h1">
-          Chi tiết phòng: {room.name}
+          Chi tiết phòng: {room.roomName}
         </Typography>
       </Box>
 

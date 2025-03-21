@@ -7,10 +7,15 @@ import ManagementTable, {
 
 export interface ShowTime extends TableData {
   showTimeId: string;
-  movieId: string;
   roomId: string;
   startTime: string;
   endTime: string;
+  movie: {
+    movieName: string;
+  };
+  room: {
+    roomName: string;
+  };
 }
 
 const ShowTimeTable: React.FC<{
@@ -25,20 +30,32 @@ const ShowTimeTable: React.FC<{
       headerName: "Mã thời gian chiếu",
     },
     {
-      field: "movieId",
-      headerName: "Mã phim",
+      field: "movie",
+      headerName: "Tên phim",
+      renderCell: (item: ShowTime) => item.movie?.movieName || "N/A"
     },
     {
-      field: "roomId",
-      headerName: "Mã phòng chiếu",
+      field: "room",
+      headerName: "Tên phòng chiếu",
+      renderCell: (item: ShowTime) => item.room?.roomName || "N/A"
     },
     {
       field: "startTime",
       headerName: "Thời gian chiếu",
+      renderCell: (item: ShowTime) => {
+        if (!item.startTime) return "N/A";
+        const date = new Date(item.startTime);
+        return date.toLocaleString('vi-VN');
+      }
     },
     {
       field: "endTime",
       headerName: "Thời gian kết thúc",
+      renderCell: (item: ShowTime) => {
+        if (!item.endTime) return "N/A";
+        const date = new Date(item.endTime);
+        return date.toLocaleString('vi-VN');
+      }
     },
   ];
 

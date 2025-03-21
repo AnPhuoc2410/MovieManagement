@@ -50,6 +50,9 @@ const AdminPages = {
     Management: lazy(
       () => import("./pages/admin/QuanLyThoiGianChieu/QuanLiThoiGianChieu"),
     ),
+    Detail: lazy(
+      () => import("./pages/admin/QuanLyThoiGianChieu/ChiTietThoiGianChieu"),
+    ),
   },
   Member: {
     Management: lazy(
@@ -199,6 +202,7 @@ export default function useRouteElements() {
               path: "ql-thoi-gian-chieu",
               children: [
                 { path: "", element: <AdminPages.ShowTime.Management /> },
+                { path: ":id", element: <AdminPages.ShowTime.Detail /> },
               ],
             },
             {
