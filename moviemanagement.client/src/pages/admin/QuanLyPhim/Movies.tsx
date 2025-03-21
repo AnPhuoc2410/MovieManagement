@@ -89,21 +89,10 @@ export default function Movies({
     setValue("image", imageUrl);
   };
 
-  const handleOpen = (movie?: Movie) => {
-    setSelectedMovie(movie || null);
-    reset(
-      movie || {
-        movieId: "",
-        movieName: "",
-        image: "",
-        fromDate: "",
-        director: "",
-        duration: 0,
-        version: 2,
-      },
-    );
-    setUploadedImage(movie?.image || "");
-    setOpen(true);
+  const handleAddMovie = (movie?: Movie) => {
+    navigate(`/admin/ql-phim/them-phim`, {
+      state: { movieId: movie?.movieId || null },
+    });
   };
 
   const handleClose = () => {
@@ -158,7 +147,7 @@ export default function Movies({
   const columns: GridColDef[] = [
     {
       field: "image",
-      headerName: "Ảnh",
+      renderHeader: () => <strong>Ảnh</strong>,
       width: 120,
       renderCell: (params) =>
         params.row.image ? (
@@ -171,24 +160,57 @@ export default function Movies({
           "No image"
         ),
     },
-    { field: "movieName", headerName: "Tên Phim", flex: 1 },
     {
-      field: "fromDate",
-      headerName: "Ngày Chiếu",
-      width: 150,
+      field: "movieName",
+      renderHeader: () => <strong>Tên Phim</strong>,
+      flex: 1,
+    },
+    {
+      field: "postDate",
+      renderHeader: () => <strong>Ngày Đăng</strong>,
+      width: 130,
       renderCell: (params) => (
         <span>
           {params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}
         </span>
       ),
     },
-    { field: "director", headerName: "Đạo Diễn", flex: 0.5 },
-    { field: "duration", headerName: "Thời Lượng (phút)", width: 150 },
-    { field: "version", headerName: "Phiên Bản", width: 100 },
+    {
+      field: "fromDate",
+      renderHeader: () => <strong>Ngày Chiếu</strong>,
+      width: 130,
+      renderCell: (params) => (
+        <span>
+          {params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}
+        </span>
+      ),
+    },
+    {
+      field: "toDate",
+      renderHeader: () => <strong>Kết Thúc</strong>,
+      width: 130,
+      renderCell: (params) => (
+        <span>
+          {params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}
+        </span>
+      ),
+    },
+    {
+      field: "director",
+      renderHeader: () => <strong>Đạo Diễn</strong>,
+      flex: 0.5,
+    },
+    {
+      field: "version",
+      renderHeader: () => <strong>Phiên Bản</strong>,
+      width: 100,
+      align: "center", // Center-align the content
+      headerAlign: "center", // Center-align the header
+    },
     {
       field: "actions",
-      headerName: "Chức năng",
-      width: 150,
+      renderHeader: () => <strong>Chức năng</strong>,
+      width: 120,
       renderCell: (params) => (
         <>
           <IconButton onClick={() => handleEdit(params.row)}>
@@ -230,7 +252,7 @@ export default function Movies({
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
-                onClick={() => handleOpen()}
+                onClick={() => handleAddMovie()}
                 sx={{ mb: 2 }}
               >
                 Thêm Phim
@@ -255,7 +277,7 @@ export default function Movies({
           </Box>
         </Box>
 
-        <Dialog open={open} onClose={handleClose} fullWidth>
+        {/* <Dialog open={open} onClose={handleClose} fullWidth>
           <DialogTitle>{selectedMovie ? "Sửa Phim" : "Tạo Phim"}</DialogTitle>
           <DialogContent>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -291,6 +313,7 @@ export default function Movies({
                     error={!!error}
                     helperText={error ? error.message : ""}
                   />
+                  
                 )}
               />
               <Controller
@@ -375,7 +398,7 @@ export default function Movies({
               </DialogActions>
             </form>
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
       </Box>
     </AppTheme>
   );
