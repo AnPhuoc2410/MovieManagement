@@ -20,7 +20,7 @@
 
         public int Duration { get; set; }
 
-        public int Version { get; set; }
+        public string Version { get; set; }
 
         public string Trailer { get; set; }
 
