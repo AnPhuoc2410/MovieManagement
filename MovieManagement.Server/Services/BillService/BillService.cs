@@ -81,9 +81,6 @@ namespace MovieManagement.Server.Services.BillService
             return createdBill;
         }
 
-
-
-
         public async Task<BillDto> UpdateBillAsync(long billId, BillEnum.BillStatus billStatus)
         {
             var existingBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
