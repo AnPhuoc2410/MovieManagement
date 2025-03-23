@@ -22,20 +22,23 @@ const Payment: React.FC = () => {
   const navigate = useNavigate();
   const { connection, isConnected } = useSignalR();
 
-  // Retrieve showtime details and countdown info from location state or fallback to defaults.
+  // First extract movieData from the location state
   const {
-    movieId = "DefaultMovieId",
+    movieId,
     selectedTime = "Not selected",
     selectedDate = "Not selected",
     tickets = [],
     seats = [] as string[],
     showTimeId = "",
     selectedSeatsInfo = [],
-    movieTitle = "Phim Mặc Định",
-    screen = "Màn hình 1",
-    lastSelectionTime,  // Passed from MovieSeat to indicate countdown start time
-    resetCounter = 0,   // Optional reset trigger for countdown (if needed)
+    movieData = null,
+    lastSelectionTime,
+    resetCounter = 0,
   } = location.state || {};
+
+  // Then reference movieData properties
+  const movieTitle = movieData?.movieName || "Phim Mặc Định";
+  const screen = movieData?.screenName || "Màn hình 1";
 
   // Determine effective showTimeId from state or session storage
   const effectiveShowTimeId =
@@ -114,7 +117,7 @@ const Payment: React.FC = () => {
 
       const response = await api.post(
         `vnpay/createpaymenturl?money=${total}&description=${encodeURIComponent(
-          `Payment for movie tickets: ${movieTitle}`
+          `Payment for movie tickets: ${movieData?.movieName}`
         )}&userId=${"e5c69f1e-c731-420f-badb-723f897e8819"}`,
         data
       );
@@ -136,6 +139,7 @@ const Payment: React.FC = () => {
           selectedSeatsInfo,
           lastSelectionTime,
           resetCounter,
+          movieData,
         })
       );
 
@@ -319,8 +323,8 @@ const Payment: React.FC = () => {
                 >
                   <Box
                     component="img"
-                    src="https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2Fwysiwyg%2FPosters%2F01-2025%2Fden-am-hon-poster.png&w=2048&q=75"
-                    alt="Movie Poster"
+                    src={movieData?.image || "https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2Fwysiwyg%2FPosters%2F01-2025%2Fden-am-hon-poster.png&w=2048&q=75"}
+                    alt={movieData?.movieName || "Movie Poster"}
                     sx={{
                       width: "100%",
                       borderRadius: 2,
