@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Data.MetaDatas;
+using MovieManagement.Server.Models.DTOs;
+using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Services.DashboardService;
 
 namespace MovieManagement.Server.Controllers
@@ -16,9 +20,23 @@ namespace MovieManagement.Server.Controllers
             _dashboardService = dashboardService;
         }
 
-
-
-
-
+        [HttpGet("catogory")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopCategoryResponse.CategoryRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetCategoriesRevenueAsync()
+        {
+            var catogories = await _dashboardService.GetTopCategoryRevenue();
+            var response = new ApiResponse<object>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "Top các thể loại phim có số vé được bán nhiều nhất",
+                Data = catogories
+            };
+            return Ok(response);
+        }
     }
 }

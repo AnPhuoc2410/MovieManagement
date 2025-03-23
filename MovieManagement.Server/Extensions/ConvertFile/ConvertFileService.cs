@@ -79,7 +79,7 @@ namespace MovieManagement.Server.Extensions.ConvertFile
                 .Replace("{{TicketList}}", ticketListHTML.ToString())
                 .Replace("{{Total}}", total.ToString("N0"))
                 .Replace("{{Discount}}", discount.ToString("N0"))
-                .Replace("{{Amount}}", billReport.Amount.ToString("N0"));
+                .Replace("{{TicketsSold}}", billReport.Amount.ToString("N0"));
 
             return body;
         }

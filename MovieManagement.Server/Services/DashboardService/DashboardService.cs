@@ -1,4 +1,8 @@
 ﻿using MovieManagement.Server.Data;
+using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.Enums;
+using MovieManagement.Server.Models.ResponseModel;
+using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Services.DashboardService
 {
@@ -11,9 +15,12 @@ namespace MovieManagement.Server.Services.DashboardService
             _unitOfWork = unitOfWork;
         }
 
-
-
-
+        public async Task<IEnumerable<TopCategoryResponse.CategoryRevenue>> GetTopCategoryRevenue()
+        {
+            // Lấy ra số vé mà thể loại phim đó bán ra được
+            var categoryTicketsSold = await _unitOfWork.CategoryRepository.GetCategoryHaveTicketsSold();
+            return categoryTicketsSold;
+        }
 
         /// <summary>
         /// Hàm lấy danh sách ngày từ ngày bắt đầu đến ngày kết thúc.
@@ -34,9 +41,6 @@ namespace MovieManagement.Server.Services.DashboardService
             }
 
             return dates;
-
         }
-
-
     }
 }

@@ -9,13 +9,11 @@ namespace MovieManagement.Server.Services.ExcelService
 {
     public class ExcelService : IExcelService
     {
-        private readonly IExcelService _excelService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ExcelService(IExcelService excelService, IUnitOfWork unitOfWork, IMapper mapper)
+        public ExcelService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _excelService = excelService;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
