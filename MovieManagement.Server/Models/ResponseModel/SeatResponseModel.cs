@@ -24,7 +24,11 @@ namespace MovieManagement.Server.Models.ResponseModel
         public SeatEnum.SeatStatus Status { get; set; }
 
         public virtual SeatType SeatType { get; set; }
+        [JsonIgnore]
+        public virtual Room Room { get; set; }
 
+        // New property to get the RoomName
+        public string RoomName => Room?.RoomName;
         //public virtual ICollection<TicketDetail> TicketDetail { get; set; } = new List<TicketDetail>();
 
     }

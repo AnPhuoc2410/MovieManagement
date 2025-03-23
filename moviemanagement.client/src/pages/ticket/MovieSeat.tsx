@@ -13,12 +13,13 @@ const MovieSeat: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { connection, isConnected } = useSignalR();
-  const { movieId, selectedTime, selectedDate, tickets } = location.state ||
+  const { movieId, selectedTime, selectedDate, tickets, movieData } = location.state ||
   {
     movieId: "",
     selectedTime: "Not selected",
     selectedDate: "Not selected",
-    tickets: []
+    tickets: [],
+    movieData: {},
   };
 
   // Retrieve the current showTimeId from state or sessionStorage
@@ -26,7 +27,7 @@ const MovieSeat: React.FC = () => {
 
   // State to store selected seats
   const [selectedSeats, setSelectedSeats] = useState<
-    { id: string; name: string; version: string; ticketId: string; isMine?: boolean; selectedAt?: number }[]
+    { id: string; name: string; version: string; ticketId: string; isMine?: boolean; selectedAt?: number; roomName?: string }[]
   >([]);
 
   // Single timestamp for all seat selections
@@ -94,8 +95,6 @@ const MovieSeat: React.FC = () => {
     }
 
     try {
-      // First verify if any of the selected seats have been taken since selection
-      const seatIds = selectedSeats.map(seat => seat.id);
       const userId = localStorage.getItem("userId");
       // Check seat availability from the current state in SeatCinema
       const unavailableSeats = selectedSeats.filter(seat => {
@@ -134,6 +133,8 @@ const MovieSeat: React.FC = () => {
           showTimeId: currentShowTimeId,
           lastSelectionTime,
           resetCounter,
+          movieData,
+          roomName: selectedSeats[0].roomName,
         },
       });
     } catch (error) {

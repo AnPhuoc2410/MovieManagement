@@ -80,9 +80,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
         public async Task<IEnumerable<TicketDetailResponseModel>> GetTicketByShowTimeId(Guid showTimeId)
         {
 
-            var ticketDetails = await _unitOfWork.TicketDetailRepository.GetTicketByShowTimeId(showTimeId);
-            if (ticketDetails == null)
-                throw new NotFoundException("Ticket details not found!");
+            var ticketDetails = await _unitOfWork.TicketDetailRepository.GetTicketByShowTimeId(showTimeId) ?? throw new NotFoundException("Ticket details not found!");
             return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
         }
 
