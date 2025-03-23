@@ -42,12 +42,13 @@ const Confirmation: React.FC = () => {
     movieData = null,
     roomName = "",
     seats = [] as string[],
-    price = 100000,
+    totalPrice = 100000,
+    total = totalPrice, // Default to totalPrice, don't recalculate
+    promotion = null,
     fullName = "",
     email = "",
     idNumber = "",
     phone = "",
-    total = seats.length * price,
     selectedSeatsInfo = [],
     movieId,
   } = bookingInfo;
@@ -244,6 +245,22 @@ const Confirmation: React.FC = () => {
               <StepTracker currentStep={4} paymentStatus={paymentStatus} />
             </Box>
 
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              align="center"
+              gutterBottom
+              fontFamily={"JetBrains Mono"}
+              sx={{
+                textTransform: "uppercase",
+                mb: 2,
+                letterSpacing: "1.2px",
+                lineHeight: "1.5",
+              }}
+            >
+              Thông Tin Đặt Vé
+            </Typography>
+            
             <Grid container spacing={4}>
               {/* Left Column: Movie Poster */}
               <Grid item xs={12} md={4}>
@@ -279,17 +296,6 @@ const Confirmation: React.FC = () => {
                     borderRadius: 2,
                   }}
                 >
-                  <Typography
-                    variant="h5"
-                    fontFamily={"JetBrains Mono"}
-                    sx={{ mb: 3, color: "#90caf9" }}
-                  >
-                    Thông Tin Đặt Vé
-                  </Typography>
-
-                  <Divider
-                    sx={{ mb: 3, borderColor: "rgba(255,255,255,0.1)" }}
-                  />
 
                   <Grid container spacing={3}>
                     {/* Movie Details */}
@@ -299,9 +305,11 @@ const Confirmation: React.FC = () => {
                         gutterBottom
                         sx={{
                           color: "primary.light",
-                          fontSize: "1rem",
+                          fontSize: "1.1rem",
                           fontWeight: "bold",
                           pb: 1,
+                          borderBottom: "1px solid rgba(255,255,255,0.2)",
+                          mb: 2,
                         }}
                       >
                         Thông Tin Phim
@@ -315,9 +323,6 @@ const Confirmation: React.FC = () => {
                       <Typography variant="body1" gutterBottom>
                         <strong>Ngày chiếu:</strong> {showDate}
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        <strong>Giờ chiếu:</strong> {showTime}
-                      </Typography>
                     </Grid>
                     {/* Ticket Details */}
                     <Grid item xs={12} sm={6}>
@@ -326,31 +331,102 @@ const Confirmation: React.FC = () => {
                         gutterBottom
                         sx={{
                           color: "primary.light",
-                          fontSize: "1rem",
+                          fontSize: "1.1rem",
                           fontWeight: "bold",
                           pb: 1,
+                          borderBottom: "1px solid rgba(255,255,255,0.2)",
+                          mb: 2,
                         }}
                       >
                         Thông Tin Vé
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
+                      <Typography variant="body1" gutterBottom sx={{ fontSize: "1.1rem", mb: 1 }}>
                         <strong>Ghế:</strong> {seats.join(", ")}
                       </Typography>
                       <Typography variant="body1" gutterBottom>
-                        <strong>Giá:</strong>{" "}
-                        {price.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
+                        <strong>Giờ chiếu:</strong> {showTime}
                       </Typography>
+                    </Grid>
+
+                    {/* Promotion Details */}
+                    <Grid item xs={12} >
+                      <Typography
+                        variant="h6"
+                        gutterBottom
+                        sx={{
+                          color: "primary.light",
+                          fontSize: "1.1rem",
+                          fontWeight: "bold",
+                          pb: 1,
+                          borderBottom: "1px solid rgba(255,255,255,0.2)",
+                          mb: 2,
+                        }}
+                      >
+                        Khuyến Mãi
+                      </Typography>
+                      {promotion && (
+                        <Box
+                          sx={{
+                            mt: 2,
+                            p: 2,
+                            backgroundColor: "rgba(0,0,0,0.3)",
+                            borderRadius: 2,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 2,
+                          }}
+                        >
+                          {promotion.image && (
+                            <Box
+                              component="img"
+                              src={promotion.image}
+                              alt={promotion.promotionName}
+                              sx={{
+                                width: 80,
+                                height: 80,
+                                objectFit: "contain",
+                                borderRadius: 1,
+                              }}
+                            />
+                          )}
+                          <Box>
+                            <Typography
+                              variant="body1"
+                              sx={{
+                                color: "#4caf50",
+                                fontSize: "1.1rem",
+                                fontWeight: "bold",
+                                mb: 1,
+                              }}
+                            >
+                              {promotion.promotionName}
+                            </Typography>
+                            <Typography variant="body1" sx={{ fontSize: "1.1rem", mb: 1 }}>
+                              <strong>Giá gốc:</strong>{" "}
+                              {totalPrice.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </Typography>
+                            <Typography variant="body1" sx={{ color: "#4caf50", fontSize: "1.1rem" }}>
+                              <strong>Tiết kiệm:</strong>{" "}
+                              {(totalPrice - total).toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      )}
+
                       <Typography
                         variant="body1"
                         gutterBottom
                         sx={{
                           color: "#ffc107",
                           fontWeight: "bold",
-                          fontSize: "1.1rem",
-                          mt: 1,
+                          fontSize: "1.2rem",
+                          mt: 2,
                         }}
                       >
                         <strong>Tổng cộng:</strong>{" "}

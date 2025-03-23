@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Container,
@@ -7,6 +7,11 @@ import {
   Button,
   Grid,
   Paper,
+  FormControlLabel,
+  RadioGroup,
+  CircularProgress,
+  Radio,
+  Checkbox,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import StepTracker from "../../components/Ticket/StepTracker";
@@ -21,6 +26,9 @@ const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { connection, isConnected } = useSignalR();
+  const [promotions, setPromotions] = useState<any[]>([]);
+  const [selectedPromotion, setSelectedPromotion] = useState<any>(null);
+  const [isPromotionsLoading, setIsPromotionsLoading] = useState(false);
 
   // First extract movieData from the location state
   const {
@@ -37,9 +45,10 @@ const Payment: React.FC = () => {
     resetCounter = 0,
   } = location.state || {};
 
-  // Then reference movieData properties
+
   const movieTitle = movieData?.movieName || "Phim Mặc Định";
-  const screen = roomName;
+  const showDate = selectedDate;
+  const showTime = selectedTime;
 
   // Determine effective showTimeId from state or session storage
   const effectiveShowTimeId =
@@ -61,15 +70,46 @@ const Payment: React.FC = () => {
     };
   }, [connection, isConnected, effectiveShowTimeId, selectedSeatsInfo]);
 
-  // Calculate total ticket price
+  useEffect(() => {
+    const fetchPromotions = async () => {
+      setIsPromotionsLoading(true);
+      try {
+        // Adjust the endpoint to match your actual API
+        const response = await api.get('promotions/all');
+
+        // Assuming the API returns the data directly or inside a data property
+        const promotionsData = response.data.data || response.data || [];
+        setPromotions(promotionsData);
+
+        console.log("Loaded promotions:", promotionsData);
+      } catch (error) {
+        console.error("Failed to load promotions", error);
+        toast.error("Không thể tải khuyến mãi");
+      } finally {
+        setIsPromotionsLoading(false);
+      }
+    };
+
+    fetchPromotions();
+  }, []);
+
+  const calculateDiscountedTotal = useCallback((originalTotal: number) => {
+    if (!selectedPromotion) return originalTotal;
+
+    // Calculate discount based on percentage
+    const discount = originalTotal * (selectedPromotion.discount / 100);
+
+    // Return original price minus discount
+    return Math.max(0, originalTotal - discount);
+  }, [selectedPromotion]);
+
+  // Update the total calculation
   const totalPrice = (tickets || []).reduce(
     (sum: number, t: any) => sum + t.price * (t.quantity || 0),
     0
   );
-  const total = totalPrice;
-  const price = totalPrice;
-  const showDate = selectedDate;
-  const showTime = selectedTime;
+  const discountedTotal = calculateDiscountedTotal(totalPrice);
+  const total = discountedTotal;
 
   // Customer form state and error flags
   const [fullName, setFullName] = useState("");
@@ -114,6 +154,8 @@ const Payment: React.FC = () => {
       const data = {
         totalTicket: tickets.length,
         amount: total,
+        promotionId: selectedPromotion?.promotionId || null,
+        originalAmount: totalPrice,
       };
 
       const response = await api.post(
@@ -131,7 +173,7 @@ const Payment: React.FC = () => {
           selectedDate,
           tickets,
           seats,
-          price,
+          totalPrice,
           total,
           fullName,
           email,
@@ -142,6 +184,7 @@ const Payment: React.FC = () => {
           resetCounter,
           movieData,
           roomName,
+          promotion: selectedPromotion,
         })
       );
 
@@ -307,7 +350,12 @@ const Payment: React.FC = () => {
               align="center"
               gutterBottom
               fontFamily={"JetBrains Mono"}
-              sx={{ textTransform: "uppercase", mb: 2 }}
+              sx={{
+                textTransform: "uppercase",
+                mb: 2,
+                letterSpacing: "1.2px",
+                lineHeight: "1.5",
+              }}
             >
               Thanh Toán Vé
             </Typography>
@@ -325,7 +373,7 @@ const Payment: React.FC = () => {
                 >
                   <Box
                     component="img"
-                    src={movieData?.image || "https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2Fwysiwyg%2FPosters%2F01-2025%2Fden-am-hon-poster.png&w=2048&q=75"}
+                    src={movieData?.image}
                     alt={movieData?.movieName || "Movie Poster"}
                     sx={{
                       width: "100%",
@@ -343,43 +391,75 @@ const Payment: React.FC = () => {
                 {/* Movie & Ticket Information */}
                 <Paper
                   sx={{
-                    p: 3,
+                    p: { xs: 3, md: 4 },
                     backgroundColor: "rgba(28, 28, 28, 0.8)",
                     color: "white",
-                    mb: 3,
+                    mb: { xs: 3, md: 4 },
                   }}
                 >
                   <Grid container spacing={3}>
                     {/* Movie Details */}
                     <Grid item xs={12} sm={6}>
-                      <Typography variant="h6" gutterBottom>
+                      <Typography
+                        variant="h6"
+                        gutterBottom
+                        sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}
+                      >
                         Thông Tin Phim
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
+                      <Typography
+                        variant="body1"
+                        gutterBottom
+                        sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
+                      >
                         <strong>Tên phim:</strong> {movieTitle}
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        <strong>Phòng chiếu:</strong> {screen}
+                      <Typography
+                        variant="body1"
+                        gutterBottom
+                        sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
+                      >
+                        <strong>Phòng chiếu:</strong> {roomName}
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
+                      <Typography
+                        variant="body1"
+                        gutterBottom
+                        sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
+                      >
                         <strong>Ngày chiếu:</strong> {showDate}
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
+                      <Typography
+                        variant="body1"
+                        gutterBottom
+                        sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
+                      >
                         <strong>Giờ chiếu:</strong> {showTime}
                       </Typography>
                     </Grid>
 
                     {/* Ticket Details */}
                     <Grid item xs={12} sm={6}>
-                      <Typography variant="h6" gutterBottom>
+                      <Typography
+                        variant="h6"
+                        gutterBottom
+                        sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}
+                      >
                         Thông Tin Vé
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
+                      <Typography
+                        variant="body1"
+                        gutterBottom
+                        sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
+                      >
                         <strong>Ghế:</strong> {seats.join(", ") || "Chưa chọn ghế"}
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
+                      <Typography
+                        variant="body1"
+                        gutterBottom
+                        sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
+                      >
                         <strong>Giá:</strong>{" "}
-                        {price.toLocaleString("vi-VN", {
+                        {totalPrice.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         })}
@@ -390,7 +470,7 @@ const Payment: React.FC = () => {
                         sx={{
                           color: "#fbc02d",
                           fontWeight: "bold",
-                          fontSize: "1.1rem",
+                          fontSize: { xs: "1.2rem", md: "1.4rem" },
                           mt: 1,
                         }}
                       >
@@ -399,7 +479,180 @@ const Payment: React.FC = () => {
                           style: "currency",
                           currency: "VND",
                         })}
+                        {selectedPromotion && (
+                          <Typography
+                            component="span"
+                            sx={{ color: "#4caf50", ml: 1, fontSize: { xs: "1rem", md: "1.1rem" } }}
+                          >
+                            (Đã áp dụng giảm giá)
+                          </Typography>
+                        )}
                       </Typography>
+
+                      {/* Promotions Section */}
+                      <Paper
+                        sx={{
+                          p: { xs: 2, md: 3 },
+                          backgroundColor: "rgba(28, 28, 28, 0.8)",
+                          color: "white",
+                          mb: { xs: 3, md: 4 },
+                        }}
+                      >
+                        <Typography
+                          variant="h6"
+                          gutterBottom
+                          sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}
+                        >
+                          Khuyến Mãi
+                        </Typography>
+
+                        {isPromotionsLoading ? (
+                          <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
+                            <CircularProgress size={28} sx={{ color: "#fbc02d" }} />
+                          </Box>
+                        ) : promotions.length === 0 ? (
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ fontStyle: "italic", fontSize: { xs: "1rem", md: "1.1rem" } }}
+                          >
+                            Hiện không có khuyến mãi nào có sẵn
+                          </Typography>
+                        ) : (
+                          <Box
+                            sx={{
+                              maxHeight: "250px",
+                              overflowY: "auto",
+                              pr: 1,
+                              "&::-webkit-scrollbar": { width: "8px" },
+                              "&::-webkit-scrollbar-track": {
+                                background: "rgba(0,0,0,0.1)",
+                                borderRadius: "4px",
+                              },
+                              "&::-webkit-scrollbar-thumb": {
+                                background: "rgba(255,255,255,0.2)",
+                                borderRadius: "4px",
+                                "&:hover": { background: "rgba(255,255,255,0.3)" },
+                              },
+                            }}
+                          >
+                            {promotions.map((promo) => {
+                              // Check if the promotion is outdated
+                              const isOutdated = new Date(promo.toDate) < new Date();
+                              // Determine if this promotion is currently selected
+                              const isSelected = selectedPromotion?.promotionId === promo.promotionId;
+
+                              return (
+                                <FormControlLabel
+                                  key={promo.promotionId}
+                                  disabled={isOutdated}
+                                  control={
+                                    <Checkbox
+                                      checked={isSelected}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          // Only allow selection if the promotion is not outdated
+                                          if (!isOutdated) {
+                                            setSelectedPromotion(promo);
+                                          }
+                                        } else {
+                                          // Deselect if unchecked
+                                          setSelectedPromotion(null);
+                                        }
+                                      }}
+                                      sx={{
+                                        color: isOutdated ? "grey" : "white",
+                                        "&.Mui-checked": { color: "#fbc02d" },
+                                      }}
+                                    />
+                                  }
+                                  label={
+                                    <Box
+                                      sx={{
+                                        backgroundColor: isOutdated ? "rgba(0,0,0,0.2)" : "transparent",
+                                        p: 1,
+                                        borderRadius: 1,
+                                      }}
+                                    >
+                                      <Typography
+                                        variant="body1"
+                                        fontWeight="bold"
+                                        sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
+                                      >
+                                        {promo.promotionName}
+                                      </Typography>
+                                      <Box sx={{ display: "flex", gap: 2, mb: 1 }}>
+                                        {promo.image && (
+                                          <Box
+                                            component="img"
+                                            src={promo.image}
+                                            sx={{
+                                              width: 80,
+                                              height: 50,
+                                              objectFit: "cover",
+                                              borderRadius: 1,
+                                            }}
+                                          />
+                                        )}
+                                        <Typography
+                                          variant="body2"
+                                          sx={{
+                                            color: isOutdated ? "grey" : "#fbc02d",
+                                            fontSize: { xs: "1rem", md: "1.1rem" },
+                                          }}
+                                        >
+                                          Giảm {promo.discount}%
+                                        </Typography>
+                                      </Box>
+                                      <Typography
+                                        variant="caption"
+                                        sx={{
+                                          color: isOutdated ? "grey" : "#bdbdbd",
+                                          fontSize: { xs: "0.9rem", md: "1rem" },
+                                        }}
+                                      >
+                                        Có hiệu lực từ{" "}
+                                        {new Date(promo.fromDate).toLocaleDateString("vi-VN")} đến{" "}
+                                        {new Date(promo.toDate).toLocaleDateString("vi-VN")}
+                                      </Typography>
+                                    </Box>
+                                  }
+                                  sx={{
+                                    mb: 2,
+                                    alignItems: "flex-start",
+                                    opacity: isOutdated ? 0.5 : 1,
+                                  }}
+                                />
+                              );
+                            })}
+                          </Box>
+                        )}
+                        {/* Display discount amount if promotion selected */}
+                        {selectedPromotion && (
+                          <Box sx={{ mt: 2, borderTop: "1px solid rgba(255,255,255,0.1)", pt: 2 }}>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
+                            >
+                              <strong>Giá gốc:</strong>{" "}
+                              {totalPrice.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{ color: "#4caf50", fontSize: { xs: "1.1rem", md: "1.3rem" } }}
+                            >
+                              <strong>Giảm giá ({selectedPromotion.discount}%):</strong>{" "}
+                              {(totalPrice - discountedTotal).toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </Typography>
+                          </Box>
+                        )}
+                      </Paper>
                     </Grid>
                   </Grid>
                 </Paper>
@@ -407,12 +660,16 @@ const Payment: React.FC = () => {
                 {/* Customer Information Form */}
                 <Paper
                   sx={{
-                    p: 3,
+                    p: { xs: 3, md: 4 },
                     backgroundColor: "rgba(28, 28, 28, 0.8)",
                     color: "white",
                   }}
                 >
-                  <Typography variant="h6" gutterBottom>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}
+                  >
                     Thông Tin Khách Hàng
                   </Typography>
                   <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -425,8 +682,15 @@ const Payment: React.FC = () => {
                         onChange={(e) => setFullName(e.target.value)}
                         error={fullNameError}
                         helperText={fullNameError ? "Vui lòng nhập họ tên" : ""}
-                        InputLabelProps={{ style: { color: "white" } }}
-                        sx={{ input: { color: "white" } }}
+                        sx={{
+                          maxWidth: "400px",
+                          input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& label": { color: "rgba(255,255,255,0.7)", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+                            "&:hover fieldset": { borderColor: "white" },
+                          },
+                        }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -438,8 +702,15 @@ const Payment: React.FC = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         error={emailError}
                         helperText={emailError ? "Vui lòng nhập email" : ""}
-                        InputLabelProps={{ style: { color: "white" } }}
-                        sx={{ input: { color: "white" } }}
+                        sx={{
+                          maxWidth: "400px",
+                          input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& label": { color: "rgba(255,255,255,0.7)", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+                            "&:hover fieldset": { borderColor: "white" },
+                          },
+                        }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -451,8 +722,15 @@ const Payment: React.FC = () => {
                         onChange={(e) => setIdNumber(e.target.value)}
                         error={idNumberError}
                         helperText={idNumberError ? "Vui lòng nhập CMND" : ""}
-                        InputLabelProps={{ style: { color: "white" } }}
-                        sx={{ input: { color: "white" } }}
+                        sx={{
+                          maxWidth: "400px",
+                          input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& label": { color: "rgba(255,255,255,0.7)", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+                            "&:hover fieldset": { borderColor: "white" },
+                          },
+                        }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -464,8 +742,15 @@ const Payment: React.FC = () => {
                         onChange={(e) => setPhone(e.target.value)}
                         error={phoneError}
                         helperText={phoneError ? "Vui lòng nhập số điện thoại" : ""}
-                        InputLabelProps={{ style: { color: "white" } }}
-                        sx={{ input: { color: "white" } }}
+                        sx={{
+                          maxWidth: "400px",
+                          input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& label": { color: "rgba(255,255,255,0.7)", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+                            "&:hover fieldset": { borderColor: "white" },
+                          },
+                        }}
                       />
                     </Grid>
                   </Grid>
@@ -473,13 +758,17 @@ const Payment: React.FC = () => {
                   <Box sx={{ textAlign: "center", mt: 3 }}>
                     <Button
                       variant="contained"
-                      color="primary"
                       onClick={handleConfirm}
                       sx={{
+                        background: "linear-gradient(135deg, #fbc02d 0%, #ff9800 100%)",
+                        color: "#121212",
                         px: 4,
-                        py: 1,
-                        fontSize: "1rem",
+                        py: 1.2,
+                        fontSize: { xs: "1rem", md: "1.2rem" },
                         borderRadius: 2,
+                        "&:hover": {
+                          background: "linear-gradient(135deg, #ff9800 0%, #fbc02d 100%)",
+                        },
                       }}
                     >
                       Xác nhận đặt vé
