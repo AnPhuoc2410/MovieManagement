@@ -67,7 +67,7 @@ namespace MovieManagement.Server.Repositories
                 .ToListAsync();
             return new TopCategoryResponse.Daily
             {
-                Date = day,
+                Day = day.Date,
                 CategoryRevenues = categoryTicketsSold.Select(cts => new TopCategoryResponse.CategoryRevenue
                 {
                     CategoryName = cts.CategoryName,

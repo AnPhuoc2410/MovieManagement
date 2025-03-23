@@ -7,7 +7,7 @@ namespace MovieManagement.Server.Repositories.IRepositories
         Task<bool> CheckStartTimeAsync(DateTime startTime);
         Task<List<ShowTime>> GetShowTimeByRoomIdAsync(Guid roomId);
         Task<List<ShowTime>> GetShowTimeFromDateToDate(Guid movieId, DateTime date1, DateTime date2);
-
         Task<List<ShowTime>> GetAllInfoAsync();
+
     }
 }

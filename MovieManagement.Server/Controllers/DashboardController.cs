@@ -46,7 +46,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetCategoriesDailyRevenueAsync([FromQuery]DateTime from, [FromQuery]DateTime to)
+        public async Task<IActionResult> GetCategoriesDailyRevenueAsync(DateTime from, DateTime to)
         {
             var catogories = await _dashboardService.GetTopCategoryDailyRevenue(from, to);
             var response = new ApiResponse<object>
