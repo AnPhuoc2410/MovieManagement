@@ -7,6 +7,6 @@ namespace MovieManagement.Server.Repositories.IRepositories
     {
         Task<List<TopCategoryResponse.CategoryRevenue>> GetCategoryHaveTicketsSold();
 
-        Task<List<TopCategoryResponse.Daily>> GetCategoryHaveTicketsSoldDaily(DateTime day);
+        Task<TopCategoryResponse.Daily> GetCategoryHaveTicketsSoldDaily(DateTime day);
     }
 }

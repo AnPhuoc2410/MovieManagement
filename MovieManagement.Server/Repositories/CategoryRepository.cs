@@ -52,7 +52,7 @@ namespace MovieManagement.Server.Repositories
                     c.Name,
                     TicketsSold = mc.Movie.Showtimes
                     .SelectMany(st => st.TicketDetails)
-                    .Where(td => td.Status == TicketStatus.Paid && td.Bill.CreatedDate.ToShortDateString() == day.ToShortDateString())
+                    .Where(td => td.Status == TicketStatus.Paid && td.Bill.CreatedDate.Date == day.Date)
                     .Select(td => td.TicketId)
                     .Distinct()
                     .Count()

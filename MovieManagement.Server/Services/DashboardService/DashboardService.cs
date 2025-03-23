@@ -1,8 +1,5 @@
 ﻿using MovieManagement.Server.Data;
-using MovieManagement.Server.Models.Entities;
-using MovieManagement.Server.Models.Enums;
 using MovieManagement.Server.Models.ResponseModel;
-using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Services.DashboardService
 {
@@ -26,9 +23,21 @@ namespace MovieManagement.Server.Services.DashboardService
             return categoryTicketsSold;
         }
 
-        public async Task<IEnumerable<List<TopCategoryResponse.Daily>>> GetTopCategoryDailyRevenue()
+        public async Task<IEnumerable<TopCategoryResponse.Daily>> GetTopCategoryDailyRevenue(DateTime from, DateTime to)
         {
-            return null;
+            // Lấy ra danh sách thời gian chỉnh định theo từng ngày
+            var timeDaily = GetFromTo(from, to);
+
+            // Tạo ra danh sách chứa Top Category mỗi ngày
+            List<TopCategoryResponse.Daily> topCategoryDaily = new List<TopCategoryResponse.Daily>();
+
+            // Thêm từng danh sách vào danh sách chứa Top Category Daily 
+            foreach (var day in timeDaily)
+            {
+                var categoryDayeRevenue = await _unitOfWork.CategoryRepository.GetCategoryHaveTicketsSoldDaily(day);
+                topCategoryDaily.Add(categoryDayeRevenue);
+            }
+            return topCategoryDaily.ToList();
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Services.DashboardService;
+using Org.BouncyCastle.Crypto.Digests;
 
 namespace MovieManagement.Server.Controllers
 {
@@ -34,6 +35,25 @@ namespace MovieManagement.Server.Controllers
                 StatusCode = 200,
                 IsSuccess = true,
                 Message = "Top các thể loại phim có số vé được bán nhiều nhất",
+                Data = catogories
+            };
+            return Ok(response);
+        }
+
+        [HttpGet("catogory/daily")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopCategoryResponse.Daily>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetCategoriesDailyRevenueAsync([FromQuery]DateTime from, [FromQuery]DateTime to)
+        {
+            var catogories = await _dashboardService.GetTopCategoryDailyRevenue(from, to);
+            var response = new ApiResponse<object>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "Top các thể loại phim có số vé được bán nhiều nhất theo từng ngày",
                 Data = catogories
             };
             return Ok(response);
