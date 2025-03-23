@@ -32,13 +32,14 @@ const Payment: React.FC = () => {
     showTimeId = "",
     selectedSeatsInfo = [],
     movieData = null,
+    roomName = "",
     lastSelectionTime,
     resetCounter = 0,
   } = location.state || {};
 
   // Then reference movieData properties
   const movieTitle = movieData?.movieName || "Phim Mặc Định";
-  const screen = movieData?.screenName || "Màn hình 1";
+  const screen = roomName;
 
   // Determine effective showTimeId from state or session storage
   const effectiveShowTimeId =
@@ -140,6 +141,7 @@ const Payment: React.FC = () => {
           lastSelectionTime,
           resetCounter,
           movieData,
+          roomName,
         })
       );
 
@@ -357,7 +359,7 @@ const Payment: React.FC = () => {
                         <strong>Tên phim:</strong> {movieTitle}
                       </Typography>
                       <Typography variant="body1" gutterBottom>
-                        <strong>Màn hình:</strong> {screen}
+                        <strong>Phòng chiếu:</strong> {screen}
                       </Typography>
                       <Typography variant="body1" gutterBottom>
                         <strong>Ngày chiếu:</strong> {showDate}

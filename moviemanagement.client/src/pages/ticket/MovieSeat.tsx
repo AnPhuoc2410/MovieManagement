@@ -27,7 +27,7 @@ const MovieSeat: React.FC = () => {
 
   // State to store selected seats
   const [selectedSeats, setSelectedSeats] = useState<
-    { id: string; name: string; version: string; ticketId: string; isMine?: boolean; selectedAt?: number }[]
+    { id: string; name: string; version: string; ticketId: string; isMine?: boolean; selectedAt?: number; roomName?: string }[]
   >([]);
 
   // Single timestamp for all seat selections
@@ -134,6 +134,7 @@ const MovieSeat: React.FC = () => {
           lastSelectionTime,
           resetCounter,
           movieData,
+          roomName: selectedSeats[0].roomName,
         },
       });
     } catch (error) {

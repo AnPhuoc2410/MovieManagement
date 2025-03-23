@@ -39,10 +39,8 @@ const Confirmation: React.FC = () => {
   const {
     selectedTime = "Not selected",
     selectedDate = "Not selected",
-    movieTitle = "Phim Mặc Định",
-    screen = "Màn hình 1",
-    showDate = selectedDate,
-    showTime = selectedTime,
+    movieData = null,
+    roomName = "",
     seats = [] as string[],
     price = 100000,
     fullName = "",
@@ -53,6 +51,10 @@ const Confirmation: React.FC = () => {
     selectedSeatsInfo = [],
     movieId,
   } = bookingInfo;
+
+  const movieTitle = movieData?.movieName || "Phim Mặc Định";
+  const showDate = selectedDate;
+  const showTime = selectedTime;
 
   // Navigation handlers
   const handleHome = () => {
@@ -254,8 +256,8 @@ const Confirmation: React.FC = () => {
                 >
                   <Box
                     component="img"
-                    src="https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2Fwysiwyg%2FPosters%2F01-2025%2Fden-am-hon-poster.png&w=2048&q=75"
-                    alt="Movie Poster"
+                    src={movieData?.image}
+                    alt={movieData?.movieName}
                     sx={{
                       width: "100%",
                       borderRadius: 1,
@@ -308,7 +310,7 @@ const Confirmation: React.FC = () => {
                         <strong>Tên phim:</strong> {movieTitle}
                       </Typography>
                       <Typography variant="body1" gutterBottom>
-                        <strong>Màn hình:</strong> {screen}
+                        <strong>Phòng Chiếu:</strong> {roomName}
                       </Typography>
                       <Typography variant="body1" gutterBottom>
                         <strong>Ngày chiếu:</strong> {showDate}

@@ -129,6 +129,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
       name: seatName,
       version: ticket.version,
       ticketId: ticket.ticketId,
+      roomName: ticket.seat.roomName,
       isMine: true,
       selectedAt: Date.now(),
     };
