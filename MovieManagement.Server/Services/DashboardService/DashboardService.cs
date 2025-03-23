@@ -12,7 +12,7 @@ namespace MovieManagement.Server.Services.DashboardService
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<TopCategoryResponse.CategoryRevenue>> GetTopCategoryRevenue()
+        public async Task<IEnumerable<TopCategoryResponse.CategoryRevenue>> GetTopCategoryRevenues()
         {
             // Lấy ra số vé mà thể loại phim đó bán ra được
             var categoryTicketsSold = await _unitOfWork.CategoryRepository.GetCategoryHaveTicketsSold();
@@ -23,7 +23,7 @@ namespace MovieManagement.Server.Services.DashboardService
             return categoryTicketsSold;
         }
 
-        public async Task<IEnumerable<TopCategoryResponse.Daily>> GetTopCategoryDailyRevenue(DateTime from, DateTime to)
+        public async Task<IEnumerable<TopCategoryResponse.Daily>> GetTopCategoryDailyRevenues(DateTime from, DateTime to)
         {
             // Lấy ra danh sách thời gian chỉnh định theo từng ngày
             var timeDaily = GetFromTo(from, to);
@@ -38,6 +38,23 @@ namespace MovieManagement.Server.Services.DashboardService
                 topCategoryDaily.Add(categoryDayeRevenue);
             }
             return topCategoryDaily.ToList();
+        }
+
+        public async Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeRevenues()
+        {
+            var hours = GetHoursInDay(); // Lấy danh sách giờ từ 2:00 AM đến 11:00 PM
+            var topShowtimeRevenues = new List<TopShowtimeResponse.ShowtimeRevenue>();
+
+            foreach (var hour in hours)
+            {
+                var showtimeRevenue = await _unitOfWork.ShowtimeRepository.GetTopShowtimeRevenues(hour);
+                if (showtimeRevenue != null)
+                {
+                    topShowtimeRevenues.Add(showtimeRevenue);
+                }
+            }
+
+            return topShowtimeRevenues.OrderByDescending(t => t.TicketsSold);
         }
 
         /// <summary>
@@ -59,6 +76,20 @@ namespace MovieManagement.Server.Services.DashboardService
             }
 
             return dates;
+        }
+
+        private List<DateTime> GetHoursInDay()
+        {
+            var hours = new List<DateTime>();
+            DateTime start = DateTime.Today.AddHours(2);  // 2:00 AM
+            DateTime end = DateTime.Today.AddHours(23);   // 11:00 PM
+
+            for (DateTime current = start; current <= end; current = current.AddHours(1))
+            {
+                hours.Add(current);
+            }
+
+            return hours;
         }
     }
 }

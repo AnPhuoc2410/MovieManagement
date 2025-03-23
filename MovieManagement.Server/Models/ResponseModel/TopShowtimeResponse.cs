@@ -4,8 +4,8 @@
     {
         public class ShowtimeRevenue
         {
-            public DateTime TimeInDay { get; set; }
-            public decimal Amount { get; set; }
+            public int TimeInDay { get; set; }
+            public decimal TicketsSold { get; set; }
         }
 
         public class Daily
