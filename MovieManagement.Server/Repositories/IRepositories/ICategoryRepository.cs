@@ -5,6 +5,8 @@ namespace MovieManagement.Server.Repositories.IRepositories
 {
     public interface ICategoryRepository : IGenericRepository<Category>
     {
-        public Task<List<TopCategoryResponse.CategoryRevenue>> GetCategoryHaveTicketsSold();
+        Task<List<TopCategoryResponse.CategoryRevenue>> GetCategoryHaveTicketsSold();
+
+        Task<List<TopCategoryResponse.Daily>> GetCategoryHaveTicketsSoldDaily(DateTime day);
     }
 }

@@ -37,16 +37,43 @@ namespace MovieManagement.Server.Repositories
                 })
                 .ToListAsync();
 
-            foreach (var cat in categoryTicketsSold)
-            {
-                Console.WriteLine($"Category: {cat.CategoryName}, Tickets Sold: {cat.TicketsSold}");
-            }
-
             return categoryTicketsSold.Select(cts => new TopCategoryResponse.CategoryRevenue
             {
                 CategoryName = cts.CategoryName,
                 TicketsSold = cts.TicketsSold
             }).ToList();
+        }
+
+        public async Task<TopCategoryResponse.Daily> GetCategoryHaveTicketsSoldDaily(DateTime day)
+        {
+            var categoryTicketsSold = await _context.Categories
+                .SelectMany(c => c.MovieCategories.Select(mc => new
+                {
+                    c.Name,
+                    TicketsSold = mc.Movie.Showtimes
+                    .SelectMany(st => st.TicketDetails)
+                    .Where(td => td.Status == TicketStatus.Paid && td.Bill.CreatedDate.ToShortDateString() == day.ToShortDateString())
+                    .Select(td => td.TicketId)
+                    .Distinct()
+                    .Count()
+
+                }))
+                .GroupBy(c => c.Name)
+                .Select(g => new
+                {
+                    CategoryName = g.Key,
+                    TicketsSold = (decimal)g.Sum(t => t.TicketsSold)
+                })
+                .ToListAsync();
+            return new TopCategoryResponse.Daily
+            {
+                Date = day,
+                CategoryRevenues = categoryTicketsSold.Select(cts => new TopCategoryResponse.CategoryRevenue
+                {
+                    CategoryName = cts.CategoryName,
+                    TicketsSold = cts.TicketsSold
+                }).ToList()
+            };
         }
     }
 }

@@ -5,5 +5,6 @@ namespace MovieManagement.Server.Services.DashboardService
     public interface IDashboardService
     {
         Task<IEnumerable<TopCategoryResponse.CategoryRevenue>> GetTopCategoryRevenue();
+        Task<IEnumerable<List<TopCategoryResponse.Daily>>> GetTopCategoryDailyRevenue();
     }
 }

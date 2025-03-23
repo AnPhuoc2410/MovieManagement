@@ -19,7 +19,16 @@ namespace MovieManagement.Server.Services.DashboardService
         {
             // Lấy ra số vé mà thể loại phim đó bán ra được
             var categoryTicketsSold = await _unitOfWork.CategoryRepository.GetCategoryHaveTicketsSold();
+
+            // Sắp xếp theo thứ tự giảm dần
+            categoryTicketsSold = categoryTicketsSold.OrderByDescending(c => c.TicketsSold).ToList();
+
             return categoryTicketsSold;
+        }
+
+        public async Task<IEnumerable<List<TopCategoryResponse.Daily>>> GetTopCategoryDailyRevenue()
+        {
+            return null;
         }
 
         /// <summary>
