@@ -1,4 +1,5 @@
 ﻿using MovieManagement.Server.Data;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Services.DashboardService
 {
@@ -11,9 +12,47 @@ namespace MovieManagement.Server.Services.DashboardService
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<IEnumerable<TopCategoryResponse.CategoryRevenue>> GetTopCategoryRevenues()
+        {
+            // Lấy ra số vé mà thể loại phim đó bán ra được
+            var categoryTicketsSold = await _unitOfWork.CategoryRepository.GetCategoryHaveTicketsSold();
 
+            // Sắp xếp theo thứ tự giảm dần
+            categoryTicketsSold = categoryTicketsSold.OrderByDescending(c => c.TicketsSold).ToList();
 
+            return categoryTicketsSold;
+        }
 
+        public async Task<IEnumerable<TopCategoryResponse.Daily>> GetTopCategoryDailyRevenues(DateTime from, DateTime to)
+        {
+            // Lấy ra danh sách thời gian chỉnh định theo từng ngày
+            var timeDaily = GetFromTo(from, to);
+
+            // Tạo ra danh sách chứa Top Category mỗi ngày
+            List<TopCategoryResponse.Daily> topCategoryDaily = new List<TopCategoryResponse.Daily>();
+
+            // Thêm từng danh sách vào danh sách chứa Top Category Daily 
+            foreach (var day in timeDaily)
+            {
+                var categoryDayeRevenue = await _unitOfWork.CategoryRepository.GetCategoryHaveTicketsSoldDaily(day);
+                topCategoryDaily.Add(categoryDayeRevenue);
+            }
+            return topCategoryDaily.ToList();
+        }
+
+        public async Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeRevenues()
+        {
+            var hours = GetHoursInDay(); // Lấy danh sách giờ từ 2:00 AM đến 11:00 PM
+
+            var topShowtimeRevenues = new List<TopShowtimeResponse.ShowtimeRevenue>();
+
+            foreach (var hour in hours)
+            {
+                var showtimeRevenue = await _unitOfWork.ShowtimeRepository.GetTopShowtimeRevenues(hour);
+            }
+
+            return topShowtimeRevenues.OrderByDescending(t => t.TicketsSold);
+        }
 
         /// <summary>
         /// Hàm lấy danh sách ngày từ ngày bắt đầu đến ngày kết thúc.
@@ -34,9 +73,20 @@ namespace MovieManagement.Server.Services.DashboardService
             }
 
             return dates;
-
         }
 
+        private List<DateTime> GetHoursInDay()
+        {
+            var hours = new List<DateTime>();
+            DateTime start = DateTime.Today.AddHours(2);  // 2:00 AM
+            DateTime end = DateTime.Today.AddHours(23);   // 11:00 PM
 
+            for (DateTime current = start; current <= end; current = current.AddHours(1))
+            {
+                hours.Add(current);
+            }
+
+            return hours;
+        }
     }
 }

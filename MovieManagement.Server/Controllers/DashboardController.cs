@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Data.MetaDatas;
+using MovieManagement.Server.Models.DTOs;
+using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Services.DashboardService;
+using Org.BouncyCastle.Crypto.Digests;
 
 namespace MovieManagement.Server.Controllers
 {
@@ -16,9 +21,61 @@ namespace MovieManagement.Server.Controllers
             _dashboardService = dashboardService;
         }
 
+        [HttpGet("catogory")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopCategoryResponse.CategoryRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetCategoriesRevenueAsync()
+        {
+            var catogories = await _dashboardService.GetTopCategoryRevenues();
+            var response = new ApiResponse<object>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "Top các thể loại phim có số vé được bán nhiều nhất",
+                Data = catogories
+            };
+            return Ok(response);
+        }
 
+        [HttpGet("catogory/daily")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopCategoryResponse.Daily>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetCategoriesDailyRevenueAsync(DateTime from, DateTime to)
+        {
+            var catogories = await _dashboardService.GetTopCategoryDailyRevenues(from, to);
+            var response = new ApiResponse<object>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "Top các thể loại phim có số vé được bán nhiều nhất theo từng ngày",
+                Data = catogories
+            };
+            return Ok(response);
+        }
 
-
-
+        [HttpGet("showtime")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetShowtimesRevenueAsync()
+        {
+            var showtimes = await _dashboardService.GetTopShowtimeRevenues();
+            var response = new ApiResponse<object>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "Top các suất chiếu phim có số vé được bán nhiều nhất",
+                Data = showtimes
+            };
+            return Ok(response);
+        }
     }
 }

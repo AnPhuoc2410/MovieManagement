@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.Enums;
+using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Repositories.IRepositories;
+using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Repositories
 {
@@ -48,6 +51,15 @@ namespace MovieManagement.Server.Repositories
                 .Include(st => st.Room)
                     .ThenInclude(r => r.MovieTheater)
                 .ToListAsync();
+        }
+
+        public async Task<List<ShowTime>> GetTopShowtimeRevenues(DateTime time)
+        {
+            var showtimeRevenue = await _context.Showtimes
+                .Where(st => st.StartTime.Hour >= time.Hour && st.StartTime.Hour < time.AddHours(1).Hour)
+                .Include(st => st.TicketDetails.Select(sd => sd.Status == TicketStatus.Paid).Count())
+                .ToListAsync();
+            return showtimeRevenue;
         }
     }
 }
