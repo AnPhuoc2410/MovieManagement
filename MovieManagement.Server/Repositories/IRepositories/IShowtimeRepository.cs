@@ -11,6 +11,6 @@ namespace MovieManagement.Server.Repositories.IRepositories
         Task<List<ShowTime>> GetAllInfoAsync();
 
         //Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeRevenues(DateTime time);
-        Task<TopShowtimeResponse.ShowtimeRevenue> GetTopShowtimeRevenues(DateTime time);
+        Task<List<ShowTime>> GetTopShowtimeRevenues(DateTime time);
     }
 }

@@ -53,19 +53,13 @@ namespace MovieManagement.Server.Repositories
                 .ToListAsync();
         }
 
-            public async Task<TopShowtimeResponse.ShowtimeRevenue> GetTopShowtimeRevenues(DateTime time)
+        public async Task<List<ShowTime>> GetTopShowtimeRevenues(DateTime time)
         {
-            var showtimeTicketsSold = await _context.TicketDetails
-                .Where(td => td.Status == TicketStatus.Paid && td.ShowTime.StartTime.Hour == time.Hour) // Chỉ lấy vé đã thanh toán
-                .GroupBy(td => td.ShowTime.StartTime.Hour) // Nhóm theo giờ của suất chiếu
-                .Select(g => new TopShowtimeResponse.ShowtimeRevenue
-                {
-                    TimeInDay = g.Key,
-                    TicketsSold = g.Count() // Đếm số vé bán được
-                })
-                .FirstOrDefaultAsync(); // Use FirstOrDefaultAsync to get a single result
-
-            return showtimeTicketsSold;
+            var showtimeRevenue = await _context.Showtimes
+                .Where(st => st.StartTime.Hour >= time.Hour && st.StartTime.Hour < time.AddHours(1).Hour)
+                .Include(st => st.TicketDetails.Select(sd => sd.Status == TicketStatus.Paid).Count())
+                .ToListAsync();
+            return showtimeRevenue;
         }
     }
 }

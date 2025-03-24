@@ -43,15 +43,12 @@ namespace MovieManagement.Server.Services.DashboardService
         public async Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeRevenues()
         {
             var hours = GetHoursInDay(); // Lấy danh sách giờ từ 2:00 AM đến 11:00 PM
+
             var topShowtimeRevenues = new List<TopShowtimeResponse.ShowtimeRevenue>();
 
             foreach (var hour in hours)
             {
                 var showtimeRevenue = await _unitOfWork.ShowtimeRepository.GetTopShowtimeRevenues(hour);
-                if (showtimeRevenue != null)
-                {
-                    topShowtimeRevenues.Add(showtimeRevenue);
-                }
             }
 
             return topShowtimeRevenues.OrderByDescending(t => t.TicketsSold);
