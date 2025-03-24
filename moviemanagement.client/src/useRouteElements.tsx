@@ -6,8 +6,6 @@ import { ProtectedRoute, RejectedRoute } from "./guards/AuthGuard";
 import TicketWrapper from "./layouts/TicketWrapper";
 import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
 import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
-import TestConnection from "./pages/TestConnetionc";
-
 
 // Lazy load components
 const Home = lazy(() => import("./pages/Home/Home"));
@@ -135,7 +133,7 @@ export default function useRouteElements() {
     },
     // Protected Admin Routes
     {
-      element: <ProtectedRoute requireAdmin={true} />,
+      element: <RejectedRoute/>,
       children: [
         {
           path: "/admin",
@@ -206,10 +204,6 @@ export default function useRouteElements() {
           ],
         },
       ],
-    },
-    {
-      path: "/testHub",
-      element: <TestConnection />,
     },
     // 404 Route
     {
