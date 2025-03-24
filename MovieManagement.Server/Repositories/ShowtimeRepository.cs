@@ -57,7 +57,8 @@ namespace MovieManagement.Server.Repositories
         {
             var showtimeRevenue = await _context.Showtimes
                 .Where(st => st.StartTime.Hour >= time.Hour && st.StartTime.Hour < time.AddHours(1).Hour)
-                .Include(st => st.TicketDetails.Select(sd => sd.Status == TicketStatus.Paid).Count())
+                .Include(st => st.TicketDetails.Where(td => td.Status == TicketStatus.Paid))
+                .ThenInclude(td => td.Bill)
                 .ToListAsync();
             return showtimeRevenue;
         }

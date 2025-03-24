@@ -42,18 +42,34 @@ namespace MovieManagement.Server.Services.DashboardService
 
         public async Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeRevenues()
         {
-            var hours = GetHoursInDay(); // Lấy danh sách giờ từ 2:00 AM đến 11:00 PM
-
             var topShowtimeRevenues = new TopShowtimeResponse.ShowtimeRevenue();
 
-            foreach (var hour in hours)
+            // Lấy danh sách giờ từ 2:00 AM đến 11:00 PM
+            foreach (var hour in GetHoursInDay())
             {
-                var showtimeRevenues = await _unitOfWork.ShowtimeRepository.GetTopShowtimeRevenues(hour);
-                topShowtimeRevenues.TopRevenue.Add($"{hour}-{hour.AddHours(1)}",showtimeRevenues.);
+                var showTimes = await _unitOfWork.ShowtimeRepository.GetTopShowtimeRevenues(hour);
+                decimal revenue = 0;
+                var processedBills = new HashSet<long>();
+
+                foreach (var st in showTimes)
+                {
+                    foreach (var td in st.TicketDetails)
+                    {
+                        if (!processedBills.Contains(td.Bill.BillId))
+                        {
+                            revenue += td.Bill.Amount;
+                            processedBills.Add(td.Bill.BillId);
+                        }
+                    }
+                }
+
+                topShowtimeRevenues.TopRevenue
+                    .Add(hour.ToString("HH:mm") + "-" + hour.AddHours(1).ToString("HH:mm"), revenue);
             }
 
-            return topShowtimeRevenues.OrderByDescending(t => t.TicketsSold);
+            return new List<TopShowtimeResponse.ShowtimeRevenue> { topShowtimeRevenues };
         }
+
 
         /// <summary>
         /// Hàm lấy danh sách ngày từ ngày bắt đầu đến ngày kết thúc.
