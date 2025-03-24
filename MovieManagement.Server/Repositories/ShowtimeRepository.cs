@@ -63,10 +63,10 @@ namespace MovieManagement.Server.Repositories
             return showtimeRevenue;
         }
 
-        public async Task<List<ShowTime>> GetTopShowtimeDailyRevenues(DateTime day, DateTime time)
+        public async Task<List<ShowTime>> GetTopShowtimeDailyRevenues(DateTime from, DateTime to, DateTime time)
         {
             var showtimeRevenue = await _context.Showtimes
-                .Where(st => st.StartTime.Hour >= time.Hour && st.StartTime.Hour < time.AddHours(1).Hour && st.StartTime.Day == day.Day)
+                .Where(st => st.StartTime.Hour >= time.Hour && st.StartTime.Hour < time.AddHours(1).Hour && st.StartTime.Day >= from.Day && st.StartTime.Day < to.Day)
                 .Include(st => st.TicketDetails.Where(td => td.Status == TicketStatus.Paid))
                 .ThenInclude(td => td.Bill)
                 .ToListAsync();
