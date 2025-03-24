@@ -4,8 +4,7 @@
     {
         public class ShowtimeRevenue
         {
-            public int TimeInDay { get; set; }
-            public decimal TicketsSold { get; set; }
+            public Dictionary<String, decimal> TopRevenue {  get; set; }
         }
 
         public class Daily

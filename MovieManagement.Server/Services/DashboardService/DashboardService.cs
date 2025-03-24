@@ -44,11 +44,12 @@ namespace MovieManagement.Server.Services.DashboardService
         {
             var hours = GetHoursInDay(); // Lấy danh sách giờ từ 2:00 AM đến 11:00 PM
 
-            var topShowtimeRevenues = new List<TopShowtimeResponse.ShowtimeRevenue>();
+            var topShowtimeRevenues = new TopShowtimeResponse.ShowtimeRevenue();
 
             foreach (var hour in hours)
             {
-                var showtimeRevenue = await _unitOfWork.ShowtimeRepository.GetTopShowtimeRevenues(hour);
+                var showtimeRevenues = await _unitOfWork.ShowtimeRepository.GetTopShowtimeRevenues(hour);
+                topShowtimeRevenues.TopRevenue.Add($"{hour}-{hour.AddHours(1)}",showtimeRevenues.);
             }
 
             return topShowtimeRevenues.OrderByDescending(t => t.TicketsSold);
