@@ -48,6 +48,12 @@ namespace MovieManagement.Server.Services.DashboardService
             foreach (var hour in GetHoursInDay())
             {
                 var showTimes = await _unitOfWork.ShowtimeRepository.GetTopShowtimeRevenues(hour);
+                if (showTimes.Count == 0)
+                {
+                    string key = hour.ToString("HH:mm") + "-" + hour.AddHours(1).ToString("HH:mm");
+                    topShowtimeRevenues.TopRevenue.Add(key, 0);
+                    continue;
+                }
                 decimal revenue = 0;
                 var processedBills = new HashSet<long>();
 
@@ -57,6 +63,7 @@ namespace MovieManagement.Server.Services.DashboardService
                     {
                         if (!processedBills.Contains(td.Bill.BillId))
                         {
+                            Console.WriteLine(td.Bill.BillId);
                             revenue += td.Bill.Amount;
                             processedBills.Add(td.Bill.BillId);
                         }
