@@ -384,8 +384,8 @@ namespace MovieManagement.Server.Controllers
         }
 
 
-        [HttpGet("GetByRoomId/{showTimeId:guid}")]
-        public async Task<IActionResult> GetTicketsByRoomId(Guid showTimeId)
+        [HttpGet("GetByShowTimeId/{showTimeId:guid}")]
+        public async Task<IActionResult> GetByShowTimeId(Guid showTimeId)
         {
             try
             {
