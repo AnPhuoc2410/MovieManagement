@@ -14,7 +14,7 @@ interface SeatCountdownProps {
 const SeatCountdown: React.FC<SeatCountdownProps> = ({ seatId, seatName, startTime, resetTrigger, onTimeout }) => {
   // When seatId or resetTrigger changes, update sessionStorage and reset countdown.
   const [localStartTime, setLocalStartTime] = useState<number>(startTime);
-  const totalTime = 60; // total time in seconds (5 minutes)
+  const totalTime = 300; // total time in seconds (5 minutes)
 
   useEffect(() => {
     // Reset the countdown whenever resetTrigger changes.
@@ -24,7 +24,7 @@ const SeatCountdown: React.FC<SeatCountdownProps> = ({ seatId, seatName, startTi
   }, [seatId, resetTrigger]);
 
   // Calculate end time based on the (possibly updated) localStartTime.
-  const endTime = localStartTime + 60000; // 5 minutes in milliseconds
+  const endTime = localStartTime + 300000; // 5 minutes in milliseconds
 
   const [timeLeft, setTimeLeft] = useState<number>(Math.max(0, Math.floor((endTime - Date.now()) / 1000)));
 

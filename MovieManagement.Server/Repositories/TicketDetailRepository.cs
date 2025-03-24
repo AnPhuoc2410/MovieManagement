@@ -28,7 +28,9 @@ namespace MovieManagement.Server.Repositories
             return await _context.TicketDetails
                 .Where(td => td.ShowTimeId == showTimeId)
                 .Include(td => td.Seat)
-                    .ThenInclude(s => s.SeatType)
+                    .ThenInclude(seat => seat.Room)
+                .Include(td => td.Seat)
+                    .ThenInclude(seat => seat.SeatType)
                 .OrderBy(td => td.Seat.AtRow)
                 .ThenBy(td => td.Seat.AtColumn)
                 .ToListAsync();

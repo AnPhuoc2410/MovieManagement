@@ -74,6 +74,10 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
     [onSelectDate],
   );
 
+  useEffect(() => {
+    onSelectDate(todayFormatted);
+  }, []);
+
   const handleTimeSelect = useCallback(
     (time: string, showTimeId: string) => {
       setSelectedTime(time);
@@ -142,7 +146,6 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
       }
     };
 
-    // Debounce the fetch to avoid multiple simultaneous calls
     const timerId = setTimeout(() => {
       fetchShowtimes();
     }, 100);

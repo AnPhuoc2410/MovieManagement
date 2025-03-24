@@ -6,6 +6,7 @@ import api from "../../apis/axios.config";
 import { TicketDetail } from "../../types/ticketdetail.types";
 import { SelectedSeat } from "../../types/selectedseat.types";
 import { useSignalR } from "../../contexts/SignalRContext";
+import Loader from "../shared/Loading";
 
 interface SeatProps {
   showTimeId: string;
@@ -92,7 +93,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     const fetchSeats = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`ticketdetail/getbyroomid/${effectiveShowTimeId}`);
+        const response = await api.get(`ticketdetail/getbyshowtimeid/${effectiveShowTimeId}`);
         if (response.data?.data) {
           setSeats(response.data.data);
         } else {
@@ -128,6 +129,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
       name: seatName,
       version: ticket.version,
       ticketId: ticket.ticketId,
+      roomName: ticket.seat.roomName,
       isMine: true,
       selectedAt: Date.now(),
     };
@@ -186,6 +188,8 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
       console.error("Error selecting seat:", error);
     }
   };
+
+  if (loading) return <Loader />;
 
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pb: 4, position: "relative" }}>
