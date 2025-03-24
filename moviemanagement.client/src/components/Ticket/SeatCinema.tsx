@@ -88,6 +88,31 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     };
   }, [connection, groupConnected, setSelectedSeats]);
 
+  useEffect(() => {
+    const releaseSeatsOnReturn = async () => {
+      if (connection && selectedSeats.length > 0) {
+        const userId = localStorage.getItem("userId") || "anonymous";
+        const ticketRequests = selectedSeats.map((seat) => ({
+          TicketId: seat.ticketId,
+          Version: seat.version,
+        }));
+
+        try {
+          await connection.invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId);
+          setSelectedSeats([]); // Clear locally stored selections
+          toast('Các ghế đã được hủy do bạn quay lại.', {
+            position: "top-center",
+            });
+        } catch (error) {
+          console.error("Error releasing seats on return:", error);
+        }
+      }
+    };
+
+    releaseSeatsOnReturn();
+  }, [connection]);
+
+
   // Fetch ticket data by effectiveShowTimeId.
   useEffect(() => {
     const fetchSeats = async () => {

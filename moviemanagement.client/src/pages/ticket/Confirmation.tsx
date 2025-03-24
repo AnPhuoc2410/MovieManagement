@@ -92,6 +92,7 @@ const Confirmation: React.FC = () => {
       console.log("Waiting for SignalR connection or missing showTimeId...");
       return;
     }
+    const userId = localStorage.getItem("userId");
 
     // First join the SignalR group
     joinGroup(showTimeId)
@@ -115,14 +116,11 @@ const Confirmation: React.FC = () => {
             console.log("Attempting to confirm seat purchase:", ticketRequests);
 
             // Call the SignalR method
-            connection.invoke("ConfirmSeatPurchase", ticketRequests, showTimeId)
+            connection.invoke("ConfirmSeatPurchase", ticketRequests, showTimeId, userId)
               .then(() => {
                 console.log("Seats marked as purchased:", ticketRequests);
                 setSeatsUpdated(true);
                 toast.success("Ghế đã được đặt thành công!");
-
-                // Optional: Store the fact that seats were updated
-                sessionStorage.setItem("seatsUpdated", "true");
               })
               .catch((error) => {
                 console.error("Error finalizing seat purchase:", error);
@@ -138,7 +136,7 @@ const Confirmation: React.FC = () => {
             TicketId: seat.ticketId,
             Version: seat.version
           }));
-          connection.invoke("ReleasePendingSeats", ticketRequests, showTimeId)
+          connection.invoke("ReleasePendingSeats", ticketRequests, showTimeId, userId)
             .then(() => console.log("Seats released due to payment failure"))
             .catch((err) => console.error("Error releasing seats:", err));
         }
@@ -260,7 +258,7 @@ const Confirmation: React.FC = () => {
             >
               Thông Tin Đặt Vé
             </Typography>
-            
+
             <Grid container spacing={4}>
               {/* Left Column: Movie Poster */}
               <Grid item xs={12} md={4}>
