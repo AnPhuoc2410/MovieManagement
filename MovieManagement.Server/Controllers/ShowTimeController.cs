@@ -350,7 +350,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet("GetShowTimeByDates")]
-        [ProducesResponseType(typeof(ApiResponse<Dictionary<DateTime, Dictionary<string, Dictionary<MovieTheaterDto, List<ShowTimeDto>>>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<Dictionary<DateTime, Dictionary<string, Dictionary<string, List<ShowTimeDto>>>>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
