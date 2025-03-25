@@ -65,12 +65,12 @@ interface Movie {
 
 interface MovieDetailProps {
   onSubmit: (data: Movie) => void;
+  movie?: any; // Add movie prop
 }
 
-export default function MovieDetail({ onSubmit }: MovieDetailProps) {
+export default function MovieDetail({ onSubmit, movie }: MovieDetailProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const movie: Movie | undefined = location.state?.movie;
   const ratings = MovieRatings;
   const versions = MovieVersions;
   const { userDetails } = useAuth();
@@ -85,12 +85,15 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
       actors: "",
       director: "",
       rating: "",
-      duration: 0,
+      duration: movie?.duration || undefined,
       version: "",
       trailer: "",
       content: "",
       userId: userDetails?.userId || "",
-      categoriesIds: [],
+      categoriesIds:
+        movie?.categories?.map(
+          (category: { categoryId: any }) => category.categoryId,
+        ) || [],
     },
   });
 
@@ -137,7 +140,10 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
       toDate: dayjs(data.toDate).toISOString(),
     };
     onSubmit(payload);
+    setIsEditing(false); // Set isEditing to false after submission
   };
+
+  const [isEditing, setIsEditing] = useState(!movie); // Default to true if no movie is provided
 
   return (
     <AppTheme disableCustomTheme={false}>
@@ -186,7 +192,7 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                         textTransform: "uppercase",
                       }}
                     >
-                      {movie ? "Cập Nhật Phim" : "Thêm Phim Mới"}
+                      {movie ? "Chi Tiết Phim" : "Thêm Phim Mới"}
                     </Typography>
                   </ScrollFloat>
                 </Box>
@@ -216,6 +222,9 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                             sx={{ mt: 3 }} // Added margin-top
                             error={!!error}
                             helperText={error ? error.message : ""}
+                            InputProps={{
+                              readOnly: !isEditing, // Make readonly if not editing
+                            }}
                           />
                         )}
                       />
@@ -246,6 +255,7 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                                 },
                               }}
                               format="DD/MM/YYYY"
+                              readOnly={!isEditing} 
                             />
                           </LocalizationProvider>
                         )}
@@ -280,6 +290,7 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                                   },
                                 }}
                                 format="DD/MM/YYYY"
+                                readOnly={!isEditing}
                               />
                             </LocalizationProvider>
                           )}
@@ -303,6 +314,7 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                               {...field}
                               labelId="demo-simple-select-label"
                               id="demo-simple-select"
+                              disabled={!isEditing} // Disable if not editing
                             >
                               {ratings.map((rating) => (
                                 <MenuItem key={rating} value={rating}>
@@ -336,6 +348,7 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                               {...field}
                               labelId="demo-simple-select-label"
                               id="demo-simple-select"
+                              disabled={!isEditing} // Disable if not editing
                             >
                               {versions.map((version) => (
                                 <MenuItem key={version} value={version}>
@@ -368,7 +381,7 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                             type="number"
                             margin="dense"
                             variant="outlined"
-                            value={field.value || null}
+                            value={field.value}
                             error={!!error}
                             helperText={error ? error.message : ""}
                             InputProps={{
@@ -377,6 +390,7 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                                   phút
                                 </InputAdornment>
                               ),
+                              readOnly: !isEditing, // Make readonly if not editing
                             }}
                           />
                         )}
@@ -394,6 +408,9 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                             variant="outlined"
                             error={!!error}
                             helperText={error ? error.message : ""}
+                            InputProps={{
+                              readOnly: !isEditing, // Make readonly if not editing
+                            }}
                           />
                         )}
                       />
@@ -431,7 +448,7 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                                 alt="Uploaded"
                                 style={{ maxWidth: "100%", maxHeight: "100%" }}
                               />
-                              {uploadedImage && (
+                              {uploadedImage && isEditing && (
                                 <Button
                                   onClick={() => {
                                     setUploadedImage("");
@@ -450,14 +467,16 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                                 </Button>
                               )}
                             </Box>
-                            <CloudinaryUploadWidget
-                              uwConfig={uwConfig}
-                              setPublicId={(publicId) => {
-                                const imageUrl = `https://res.cloudinary.com/${ENV.CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;
-                                setUploadedImage(imageUrl);
-                                field.onChange(imageUrl); // Update the field value
-                              }}
-                            />
+                            {isEditing && (
+                              <CloudinaryUploadWidget
+                                uwConfig={uwConfig}
+                                setPublicId={(publicId) => {
+                                  const imageUrl = `https://res.cloudinary.com/${ENV.CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;
+                                  setUploadedImage(imageUrl);
+                                  field.onChange(imageUrl); // Update the field value
+                                }}
+                              />
+                            )}
                             {error && (
                               <Typography
                                 variant="caption"
@@ -487,6 +506,9 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                         sx={{ mt: 3 }} // Added margin-top
                         error={!!error}
                         helperText={error ? error.message : ""}
+                        InputProps={{
+                          readOnly: !isEditing, // Make readonly if not editing
+                        }}
                       />
                     )}
                   />
@@ -504,6 +526,9 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                         variant="outlined"
                         error={!!error}
                         helperText={error ? error.message : ""}
+                        InputProps={{
+                          readOnly: !isEditing, // Make readonly if not editing
+                        }}
                       />
                     )}
                   />
@@ -541,6 +566,7 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                                         );
                                     field.onChange(newValue);
                                   }}
+                                  disabled={!isEditing} // Disable if not editing
                                 />
                               }
                               label={category.name}
@@ -577,6 +603,7 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                           value={field.value}
                           onChange={(val: string) => field.onChange(val)}
                           error={error?.message}
+                          readOnly={!isEditing} // Make readonly if not editing
                         />
                       </Box>
                     )}
@@ -584,14 +611,28 @@ export default function MovieDetail({ onSubmit }: MovieDetailProps) {
                   <Box
                     sx={{ display: "flex", justifyContent: "center", mt: 3 }}
                   >
-                    <Button type="submit" variant="contained">
-                      {movie ? "Cập Nhật Phim" : "Thêm Phim"}
-                    </Button>
+                    {isEditing ? (
+                      <Button type="submit" variant="contained">
+                        {movie ? "Cập Nhật" : "Thêm Phim"}
+                      </Button>
+                    ) : null}
                   </Box>
                 </form>
+                {!isEditing ? (
+                  <Box
+                    sx={{ display: "flex", justifyContent: "center", mt: 1 }}
+                  >
+                    <Button
+                      variant="contained"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      Chỉnh sửa
+                    </Button>
+                  </Box>
+                ) : null}
               </Container>
             </Stack>
-            <Button onClick={() => navigate("/admin/phim")}>Trở lại</Button>
+            <Button onClick={() => navigate("/admin/ql-phim")}>Trở lại</Button>
           </Box>
         </Box>
       </Box>
