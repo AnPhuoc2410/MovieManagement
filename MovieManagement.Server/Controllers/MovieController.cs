@@ -516,7 +516,7 @@ namespace MovieManagement.Server.Controllers
         {
             try
             {
-                var isDeleted = await _movieService.DeleteMovieAsync(movieId);
+                var isDeleted = await _movieService.SetMovieDeleted(movieId) != null;
                 if (!isDeleted)
                 {
                     var response = new ApiResponse<object>

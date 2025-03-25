@@ -4,6 +4,7 @@ using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories.IRepositories;
+using System.Buffers;
 using System.Drawing.Printing;
 
 namespace MovieManagement.Server.Repositories
@@ -83,6 +84,11 @@ namespace MovieManagement.Server.Repositories
         {
             return await _context.Movies
                 .Where(m => m.MovieName.ToLower().Contains(searchValue.ToLower()) && m.IsDeleted == false).ToListAsync();
+        }
+
+        public async Task<List<Movie>> GetAllAsyncDeletedFalse()
+        {
+            return await _context.Movies.Where(m => m.IsDeleted == false).ToListAsync();
         }
     }
 }

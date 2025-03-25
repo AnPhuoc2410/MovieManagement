@@ -23,7 +23,7 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
         {
-            var movies = _mapper.Map<List<MovieDto>>(await _unitOfWork.MovieRepository.GetAllAsync());
+            var movies = _mapper.Map<List<MovieDto>>(await _unitOfWork.MovieRepository.GetAllAsyncDeletedFalse());
             if (movies == null)
             {
                 throw new NotFoundException("Movies do not found!");
