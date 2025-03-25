@@ -67,13 +67,14 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 throw new ApplicationException("Unable to create due to other StartTime.");
             }
 
-            var createdShowTime = await _unitOfWork.ShowtimeRepository.CreateAsync(newShowTime);
+            var createdShowTime = _unitOfWork.ShowtimeRepository.PrepareCreateEntity(newShowTime);
 
             var IsGenerated = CreateTicketByShowTime(createdShowTime.ShowTimeId, room.RoomId);
             if (IsGenerated.Result == 0)
             {
                 throw new ApplicationException("Unable to create due to systems error.");
             }
+            await _unitOfWork.ShowtimeRepository.SaveAsync();
 
             return _mapper.Map<ShowTimeDto>(createdShowTime);
         }
