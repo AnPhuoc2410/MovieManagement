@@ -31,16 +31,7 @@ import TextEdit from "../../../components/admin/TextEdit";
 import { ENV } from "../../../env/env.config";
 import AppTheme from "../../../shared-theme/AppTheme";
 import toast from "react-hot-toast";
-
-interface Promotion {
-  promotionId: string;
-  promotionName: string;
-  discount: number;
-  fromDate: string;
-  toDate: string;
-  content: string;
-  image?: string;
-}
+import { Promotion } from "../../../types/promotion.types";
 
 export default function Promotions({
   disableCustomTheme = false,
@@ -73,8 +64,8 @@ export default function Promotions({
       promotionId: "",
       promotionName: "",
       discount: 0,
-      fromDate: "",
-      toDate: "",
+      fromDate: new Date(),
+      toDate: new Date(),
       content: "",
       image: "",
     },
@@ -99,8 +90,8 @@ export default function Promotions({
         promotionId: "",
         promotionName: "",
         discount: 0,
-        fromDate: "",
-        toDate: "",
+        fromDate: new Date(),
+        toDate: new Date(),
         content: "",
         image: "",
       },

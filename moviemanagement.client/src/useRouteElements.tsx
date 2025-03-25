@@ -17,7 +17,7 @@ const ForgotPassword = lazy(
 // Admin Pages
 const AdminPages = {
   Ticket: {
-    BuyTicket: lazy(() => import("./pages/admin/QuanLyBanVe/SoldTicket")),
+    BuyTicket: lazy(() => import("./pages/admin/QuanLyBanVe/index")),
     BookingDetail: lazy(() => import("./pages/admin/QuanLyDatVe/ChiTietDatVe")),
     BookingManagement: lazy(
       () => import("./pages/admin/QuanLyDatVe/QuanLyDatVe"),
