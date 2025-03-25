@@ -33,7 +33,7 @@ const AdminPages = {
   },
   Movie: {
     Management: lazy(() => import("./pages/admin/QuanLyPhim/Movies")),
-    Edit: lazy(() => import("./pages/admin/QuanLyPhim/ChinhSuaPhim")),
+    Edit: lazy(() => import("./pages/admin/QuanLyPhim/UpdateMovie")),
     Add: lazy(() => import("./pages/admin/QuanLyPhim/AddMovie")),
   },
   Room: {
@@ -155,7 +155,7 @@ export default function useRouteElements() {
               path: "ql-phim",
               children: [
                 { path: "", element: <AdminPages.Movie.Management /> },
-                { path: ":id", element: <AdminPages.Movie.Edit /> },
+                { path: ":movieId", element: <AdminPages.Movie.Edit /> },
                 { path: "them-phim", element: <AdminPages.Movie.Add /> },
               ],
             },
