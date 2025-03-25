@@ -10,7 +10,7 @@ namespace MovieManagement.Server.Repositories.IRepositories
         Task<List<ShowTime>> GetShowTimeFromDateToDate(Guid movieId, DateTime date1, DateTime date2);
         Task<List<ShowTime>> GetAllInfoAsync();
 
-        //Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeRevenues(DateTime time);
+        Task<List<ShowTime>> GetTopShowtimeDailyRevenues(DateTime from, DateTime to, DateTime time);
         Task<List<ShowTime>> GetTopShowtimeRevenues(DateTime time);
     }
 }

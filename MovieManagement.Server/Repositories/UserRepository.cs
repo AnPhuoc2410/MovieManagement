@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Repositories.IRepositories;
 using MovieManagement.Server.Services.JwtService;
+using static MovieManagement.Server.Models.Enums.BillEnum;
+using static MovieManagement.Server.Models.Enums.TicketEnum;
 using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Repositories
@@ -26,14 +29,12 @@ namespace MovieManagement.Server.Repositories
             await _context.SaveChangesAsync();
             return user!=null;
         }
-
         public Task<List<User>> GetUserByRoleAsync(Role role)
         {
             return _context.Users
                 .Where(user => user.Role == role && user.Status == UserStatus.Active)
                 .ToListAsync();
         }
-
         public async Task<bool> IsExistingEmailAsync(string email)
         {
             var user = await _context.Users
@@ -50,7 +51,6 @@ namespace MovieManagement.Server.Repositories
                             .LastOrDefaultAsync();
             return user != null;
         }
-
         public async Task<bool> ResetUserPasswordByUserIdAsync(Guid userId, string currentPassword, string newPassword)
         {
             var user = await _context.Users
@@ -61,7 +61,6 @@ namespace MovieManagement.Server.Repositories
             await _context.SaveChangesAsync();
             return user!=null;
         }
-        
         public User GetUserByUniqueFields(string email, string idCard, string phoneNumber, string userName)
         {
             return _context.Users
@@ -89,13 +88,64 @@ namespace MovieManagement.Server.Repositories
             var user = query.OrderBy(user => user.JoinDate).LastOrDefault();
             return user != null;
         }
-        
         public async Task<User> GetUserByEmailAsync(string email)
         {
             var user = await _context.Users
                  .Where(user => user.Email == email && user.Status != 0)
                  .OrderBy(user => user.JoinDate)
                  .LastOrDefaultAsync();
+            return user;
+        }
+
+        public async Task<List<TopMemberResponse.MemberRevenue>> GetTopMemberRevenue()
+        {
+            var user = await _context.Users
+                .Where(u => u.Role == Role.Member)
+                .Select(u => new TopMemberResponse.MemberRevenue
+                {
+                    MemberName = u.UserName,
+                    TicketsSold = u.Bills
+                        .Where(b => b.Status == BillStatus.Completed)
+                        .Select(b => b.TicketDetails)
+                        .Count(),
+                    CurrentPoint = u.Point,
+                    TotalPoint = u.Bills
+                        .Where(b => b.Status == BillStatus.Completed)
+                        .Sum(b => b.Point)
+                })
+                .OrderByDescending(u => u.TicketsSold)
+                .Take(50)
+                .ToListAsync();
+            return user;
+        }
+
+        public async Task<List<TopMemberResponse.MemberDaily>> GetTopMemberDailyRevenue(DateTime date)
+        {
+            var user = await _context.Users
+                .Where(u => u.Role == Role.Member)
+                .Select(u => new TopMemberResponse.MemberDaily
+                {
+                    Day = date,
+                    MemberRevenues = u.Bills
+                        .Where(b => b.Status == BillStatus.Completed && b.CreatedDate.Day == date.Day)
+                        .SelectMany(b => b.TicketDetails
+                            .Where(td => td.Status == TicketStatus.Paid))
+                        .GroupBy(td => td.Bill.CreatedDate.Day)
+                        .Select(g => new TopMemberResponse.MemberRevenue
+                        {
+                            MemberName = u.UserName,
+                            TicketsSold = u.Bills
+                                .Select(b => b.TicketDetails)
+                                .Count(),
+                            CurrentPoint = u.Point,
+                            TotalPoint = u.Bills
+                                .Sum(b => b.Point)
+                        })
+                        .ToList()
+                })
+                .OrderByDescending(u => u.MemberRevenues.Sum(mr => mr.TicketsSold))
+                .Take(50)
+                .ToListAsync();
             return user;
         }
     }

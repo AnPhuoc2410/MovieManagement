@@ -56,14 +56,13 @@ namespace MovieManagement.Server.Repositories
                     .Select(td => td.TicketId)
                     .Distinct()
                     .Count()
-
                 }))
                 .GroupBy(c => c.Name)
                 .Select(g => new
                 {
                     CategoryName = g.Key,
                     TicketsSold = (decimal)g.Sum(t => t.TicketsSold)
-                })
+                }).OrderByDescending(g => g.TicketsSold)
                 .ToListAsync();
             return new TopCategoryResponse.Daily
             {

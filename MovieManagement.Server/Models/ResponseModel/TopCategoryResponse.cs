@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Runtime.CompilerServices;
-
-namespace MovieManagement.Server.Models.ResponseModel
+﻿namespace MovieManagement.Server.Models.ResponseModel
 {
     public class TopCategoryResponse
     {
