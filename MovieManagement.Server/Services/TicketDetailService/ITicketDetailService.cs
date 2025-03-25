@@ -18,9 +18,10 @@ namespace MovieManagement.Server.Services.TicketDetailServices
         Task<IEnumerable<TicketDetailResponseModel>> GetTicketByShowTimeId(Guid showTimeId);
         Task<IEnumerable<TicketDetailResponseModel>> UpdateTicketToPending(List<TicketDetailRequest> Tickets);
 
-        Task<TicketDetailResponseModel> ChangeStatusTicketDetailAsync(Guid ticketId, TicketStatus status);
         Task<bool> DeleteRemainingTicket(Guid showTimeId);
-        Task<bool> PurchasedTicket(List<Guid> list, long billId);
+        bool PurchasedTicket(List<Guid> list, long billId);
 
+        Task<IEnumerable<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(long billId);
+        Task<IEnumerable<TicketDetailResponseModel>> ChangeStatusTicketDetailAsync(List<TicketDetailRequest> ticketRequests, TicketStatus status);
     }
 }

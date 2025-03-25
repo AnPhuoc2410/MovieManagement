@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.SignalR;
 using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Services.TicketDetailServices;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Extensions.SignalR
@@ -13,78 +10,125 @@ namespace MovieManagement.Server.Extensions.SignalR
     {
         private static Dictionary<string, string> _seatJobTracker = new();
         private readonly ITicketDetailService _ticketService;
+        private readonly IHubContext<SeatHub> _hubContext;
 
-        public SeatHub(ITicketDetailService ticketService)
+        public SeatHub(ITicketDetailService ticketService, IHubContext<SeatHub> hubContext)
         {
             _ticketService = ticketService;
+            _hubContext = hubContext;
         }
 
-        //Every client that connects to the hub will be added to a group with the showtimeId
         public async Task JoinShowTime(string showtimeId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, showtimeId);
         }
-        //Every client that disconnects from the hub will be removed from the group with the showtimeId
-        public async Task LeaveShowTime(string showTimeId)
+
+        public async Task LeaveShowTime(string showtimeId)
         {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"ShowTime-{showTimeId}");
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, showtimeId);
         }
 
-
-        /// <summary>
-        /// Sets one or more seats to pending status.
-        /// The client should send a list of TicketDetailRequest objects.
-        /// </summary>
-        public async Task SetSeatPending(List<TicketDetailRequest> ticketRequests, string showtimeId)
+        public async Task SetSeatPending(List<TicketDetailRequest> ticketRequests, string showtimeId, string userId)
         {
             try
             {
                 var responses = await _ticketService.UpdateTicketToPending(ticketRequests);
+
                 foreach (var ticketResponse in responses)
                 {
-                    await Clients.Group(showtimeId).SendAsync("SeatPending", ticketResponse.SeatId);
+                    await Clients.Group(showtimeId).SendAsync("SeatPending", ticketResponse.SeatId, userId);
                 }
             }
             catch (Exception ex)
             {
-                throw new HubException($"Error setting seat pending: {ex.Message}");
+                Console.WriteLine($"[ERROR] SetSeatPending failed: {ex.Message}");
             }
         }
 
-
-        /// <summary>
-        /// Selects a seat for a user. If the seat is not paid within 5 minutes, it will be auto-released.
-        /// </summary>
-        public void SelectSeat(string ticketId, string showtimeId, string userId)
+        public void SelectSeat(List<TicketDetailRequest> ticketRequests, string showtimeId, string userId)
         {
-            // Check if there's already a job for this seat
-            if (_seatJobTracker.TryGetValue(ticketId, out var existingJobId))
+            foreach (var ticket in ticketRequests)
             {
-                // Cancel the existing Hangfire job to avoid multiple timers
-                BackgroundJob.Delete(existingJobId);
-            }
+                string ticketKey = $"{ticket.TicketId}-{userId}";
 
-            // Schedule a new job and store its ID
-            var newJobId = BackgroundJob.Schedule(() => AutoReleaseSeat(ticketId, showtimeId), TimeSpan.FromMinutes(1));
-            _seatJobTracker[ticketId] = newJobId;
+                if (_seatJobTracker.TryGetValue(ticketKey, out var existingJobId))
+                {
+                    BackgroundJob.Delete(existingJobId);
+                }
+
+                var newJobId = BackgroundJob.Schedule(() => AutoReleaseSeat(ticketRequests, showtimeId), TimeSpan.FromMinutes(1));
+                _seatJobTracker[ticketKey] = newJobId;
+            }
         }
 
-        public async Task ConfirmSeatPurchase(List<TicketDetailRequest> ticketRequests, string showtimeId)
+        public async Task ConfirmSeatPurchase(List<TicketDetailRequest> ticketRequests, string showtimeId, string userId)
         {
-            foreach (var ticketRequest in ticketRequests)
+            try
             {
-                await _ticketService.ChangeStatusTicketDetailAsync(ticketRequest.TicketId, TicketStatus.Paid);
-                //TODO: Add BillId and Change Status to Paid
-                await Clients.Group(showtimeId).SendAsync("SeatBought", ticketRequest.TicketId);
+                var responses = await _ticketService.ChangeStatusTicketDetailAsync(ticketRequests, TicketStatus.Paid);
+                foreach (var ticketResponse in responses)
+                {
+                    await _hubContext.Clients.Group(showtimeId).SendAsync("SeatBought", ticketResponse.SeatId);
+                }
+
+                // Remove auto-release jobs if seats are confirmed
+                foreach (var ticket in ticketRequests)
+                {
+                    string ticketKey = $"{ticket.TicketId}-{userId}";
+                    if (_seatJobTracker.TryGetValue(ticketKey, out var jobId))
+                    {
+                        BackgroundJob.Delete(jobId);
+                        _seatJobTracker.Remove(ticketKey);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] ConfirmSeatPurchase failed: {ex.Message}");
             }
         }
 
-        public async Task AutoReleaseSeat(string ticketId, string showtimeId)
+        public async Task ReleasePendingSeats(List<TicketDetailRequest> ticketRequests, string showtimeId, string userId)
         {
-            await _ticketService.ChangeStatusTicketDetailAsync(Guid.Parse(ticketId), TicketStatus.Created);
-            await Clients.Group(showtimeId).SendAsync("SeatAvailable", ticketId);
+            try
+            {
+                // Only release seats that belong to this user
+                var responses = await _ticketService.ChangeStatusTicketDetailAsync(ticketRequests, TicketStatus.Created);
+
+                foreach (var ticketResponse in responses)
+                {
+                    await _hubContext.Clients.Group(showtimeId).SendAsync("SeatAvailable", ticketResponse.SeatId);
+
+                    // Clean up job tracker
+                    string ticketKey = $"{ticketResponse.TicketId}-{userId}";
+                    if (_seatJobTracker.TryGetValue(ticketKey, out var jobId))
+                    {
+                        BackgroundJob.Delete(jobId);
+                        _seatJobTracker.Remove(ticketKey);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] ReleasePendingSeats failed: {ex.Message}");
+            }
         }
 
-
+        public async Task AutoReleaseSeat(List<TicketDetailRequest> ticketRequests, string showtimeId)
+        {
+            try
+            {
+                var responses = await _ticketService.ChangeStatusTicketDetailAsync(ticketRequests, TicketStatus.Created);
+                foreach (var ticketResponse in responses)
+                {
+                    Console.WriteLine($"[AutoRelease] TicketID: {ticketResponse.TicketId}, SeatID: {ticketResponse.SeatId}");
+                    await _hubContext.Clients.Group(showtimeId).SendAsync("SeatAvailable", ticketResponse.SeatId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] AutoReleaseSeat failed: {ex.Message}");
+            }
+        }
     }
 }

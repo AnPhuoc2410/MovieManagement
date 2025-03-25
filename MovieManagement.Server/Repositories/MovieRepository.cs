@@ -3,8 +3,10 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Repositories.IRepositories;
 using System.Drawing.Printing;
+using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Repositories
 {
@@ -84,5 +86,54 @@ namespace MovieManagement.Server.Repositories
             return await _context.Movies
                 .Where(m => m.MovieName.ToLower().Contains(searchValue.ToLower()) && m.IsDeleted == false).ToListAsync();
         }
+
+        public async Task<List<TopMovieResponse.MovieRevenue>> GetTopMovieRevenue()
+        {
+            var movieRevenue = await _context.Movies
+                .Select(m => new
+                {
+                    m.MovieName,
+                    Revenue = m.Showtimes
+                    .SelectMany(st => st.TicketDetails)
+                    .Where(td => td.Status == TicketStatus.Paid)
+                    .Select(td => td.Bill.Amount)
+                    .Sum()
+                })
+                .OrderByDescending(m => m.Revenue)
+                .ToListAsync();
+            return movieRevenue.Select(mr => new TopMovieResponse.MovieRevenue
+            {
+                MovieName = mr.MovieName,
+                Revenue = mr.Revenue
+            }).ToList();
+        }
+
+        public async Task<TopMovieResponse.MovieDaily> GetTopMovieDailyRevenue(DateTime time)
+        {
+            var movieRevenue = await _context.Movies
+                .Where(m => m.Showtimes.Any(st => st.TicketDetails.Any(td => td.Bill.CreatedDate.Day == time.Day)))
+                .Select(m => new
+                {
+                    m.MovieName,
+                    Revenue = m.Showtimes
+                        .SelectMany(st => st.TicketDetails)
+                        .Where(td => td.Bill.CreatedDate.Day == time.Day && td.Status == TicketStatus.Paid)
+                        .Select(td => td.Bill.Amount)
+                        .Sum()
+                })
+                .OrderByDescending(m => m.Revenue)
+                .ToListAsync();
+
+            return new TopMovieResponse.MovieDaily
+            {
+                Day = time,
+                MovieRevenues = movieRevenue.Select(mr => new TopMovieResponse.MovieRevenue
+                {
+                    MovieName = mr.MovieName,
+                    Revenue = mr.Revenue
+                }).ToList()
+            };
+        }
+
     }
 }

@@ -207,6 +207,12 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
+        [HttpGet("ticket-details")]
+        public async Task<IActionResult> GetTicketDetails(long billId)
+        {
+            var ticketDetails = await _ticketDetailService.GetPurchasedTicketsByBillId(billId);
+            return Ok(ticketDetails);
+        }
 
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<TicketDetailDto>), StatusCodes.Status200OK)]
@@ -385,8 +391,8 @@ namespace MovieManagement.Server.Controllers
         }
 
 
-        [HttpGet("GetByRoomId/{showTimeId:guid}")]
-        public async Task<IActionResult> GetTicketsByRoomId(Guid showTimeId)
+        [HttpGet("GetByShowTimeId/{showTimeId:guid}")]
+        public async Task<IActionResult> GetByShowTimeId(Guid showTimeId)
         {
             try
             {
@@ -524,12 +530,12 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-        [HttpPut("ChangeStatus/{ticketId:guid}/{status}")]
-        public async Task<IActionResult> ChangeStatusTicketDetailAsync(Guid ticketId, TicketStatus status)
+        [HttpPut("ChangeStatus/{status}")]
+        public async Task<IActionResult> ChangeStatusTicketDetailAsync([FromBody] List<TicketDetailRequest> Tickets, TicketStatus status)
         {
             try
             {
-                var ticketDetail = await _ticketDetailService.ChangeStatusTicketDetailAsync(ticketId, status);
+                var ticketDetail = await _ticketDetailService.ChangeStatusTicketDetailAsync(Tickets, status);
                 if (ticketDetail == null)
                 {
                     var response = new ApiResponse<object>
@@ -540,7 +546,7 @@ namespace MovieManagement.Server.Controllers
                     };
                     return NotFound(response);
                 }
-                return Ok(new ApiResponse<TicketDetailResponseModel>
+                return Ok(new ApiResponse<IEnumerable<TicketDetailResponseModel>>
                 {
                     Data = ticketDetail,
                     StatusCode = 200,

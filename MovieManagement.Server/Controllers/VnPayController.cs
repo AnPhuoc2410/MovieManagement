@@ -39,7 +39,7 @@ namespace MovieManagement.Server.Controllers
                 {
                     PaymentId = DateTime.Now.Ticks,
                     Money = money,
-                    Description = description,
+                    Description = $"{description}",
                     IpAddress = ipAddress,
                     BankCode = BankCode.ANY, // Tùy chọn. Mặc định là tất cả phương thức giao dịch
                     CreatedDate = DateTime.Now, // Tùy chọn. Mặc định là thời điểm hiện tại

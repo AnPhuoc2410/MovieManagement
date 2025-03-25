@@ -1,0 +1,17 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Services.TicketDetailServices;
+
+namespace MovieManagement.Server.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class TestController : Controller
+    {
+        private readonly ITicketDetailService _ticketDetailService;
+
+        public TestController(ITicketDetailService ticketDetailService)
+        {
+            _ticketDetailService = ticketDetailService;
+        }
+    }
+}

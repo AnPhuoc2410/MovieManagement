@@ -80,9 +80,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
         public async Task<IEnumerable<TicketDetailResponseModel>> GetTicketByShowTimeId(Guid showTimeId)
         {
 
-            var ticketDetails = await _unitOfWork.TicketDetailRepository.GetTicketByShowTimeId(showTimeId);
-            if (ticketDetails == null)
-                throw new NotFoundException("Ticket details not found!");
+            var ticketDetails = await _unitOfWork.TicketDetailRepository.GetTicketByShowTimeId(showTimeId) ?? throw new NotFoundException("Ticket details not found!");
             return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
         }
 
@@ -108,19 +106,25 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
         }
 
-
-        public async Task<TicketDetailResponseModel> ChangeStatusTicketDetailAsync(Guid ticketId, TicketStatus status)
+        public async Task<IEnumerable<TicketDetailResponseModel>> ChangeStatusTicketDetailAsync(List<TicketDetailRequest> ticketRequests, TicketStatus status)
         {
-            var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(ticketId);
-            if (ticketDetail == null)
-                throw new NotFoundException("Ticket detail not found!");
+            List<TicketDetail> ticketDetails = new List<TicketDetail>();
+            foreach (var request in ticketRequests)
+            {
+                var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(request.TicketId);
+                if (ticketDetail == null)
+                    throw new NotFoundException("Ticket detail not found!");
 
-            ticketDetail.Status = status;
-            var updatedTicketDetail = await _unitOfWork.TicketDetailRepository.UpdateAsync(ticketDetail);
-            if (updatedTicketDetail == null)
+                ticketDetail.Status = status;
+                _unitOfWork.TicketDetailRepository.PrepareUpdate(ticketDetail);
+                ticketDetails.Add(ticketDetail);
+            }
+
+            var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
+            if (checker != ticketRequests.Count)
                 throw new DbUpdateException("Fail to update ticket detail status.");
 
-            return _mapper.Map<TicketDetailResponseModel>(updatedTicketDetail);
+            return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
         }
 
         public async Task<bool> DeleteRemainingTicket(Guid showTimeId)
@@ -134,12 +138,12 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return await _unitOfWork.TicketDetailRepository.SaveAsync() == ticketDetails.Count();
         }
 
-        public async Task<bool> PurchasedTicket(List<Guid> list, long billId)
+        public bool PurchasedTicket(List<Guid> list, long billId)
         {
 
             foreach (var t in list)
             {
-                var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(t);
+                var ticketDetail = _unitOfWork.TicketDetailRepository.GetById(t);
                 if (ticketDetail == null)
                     throw new NotFoundException("Ticket detail not found!");
                 if (ticketDetail.Status != TicketStatus.Pending)
@@ -148,14 +152,27 @@ namespace MovieManagement.Server.Services.TicketDetailServices
                 ticketDetail.BillId = billId;
                 _unitOfWork.TicketDetailRepository.PrepareUpdate(ticketDetail);
             }
-            var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
+            var checker = _unitOfWork.TicketDetailRepository.Save();
 
             //Check this line later cause im being lazy
-            return checker == list.Count();
+            return checker > 0;
 
 
         }
 
+
+        public async Task<IEnumerable<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(long billId)
+        {
+            if (billId == null)
+                throw new BadRequestException("BillId is invalid!");
+            var isExist = await _unitOfWork.BillRepository.GetByIdAsync(billId);
+            if (isExist == null)
+                throw new NotFoundException("Bill not found!");
+            List<PurchasedTicketResponse> purchasedTicketResponses = await _unitOfWork.TicketDetailRepository.GetPurchasedTicketsByBillId(billId);
+            if (purchasedTicketResponses == null)
+                throw new NotFoundException("No purchased ticket found!");
+            return purchasedTicketResponses;
+        }
 
     }
 }

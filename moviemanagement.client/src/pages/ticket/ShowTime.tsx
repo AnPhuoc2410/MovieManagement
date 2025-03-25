@@ -15,6 +15,7 @@ const Ticket: React.FC = () => {
   const navigate = useNavigate();
   const { movieId } = useParams();
   const { t } = useTranslation();
+  const [movieData, setMovieData] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [showTimeId, setShowTimeId] = useState<string>("");
@@ -35,6 +36,10 @@ const Ticket: React.FC = () => {
 
   const handleShowtimeAvailability = useCallback((available: boolean) => {
     setShowTicketPrice(available);
+  }, []);
+
+  const handleMovieLoad = useCallback((movie: any) => {
+    setMovieData(movie);
   }, []);
 
   const handleTicketSelection = useCallback(
@@ -58,10 +63,11 @@ const Ticket: React.FC = () => {
           selectedDate,
           selectedTime,
           tickets,
+          movieData,
         },
       });
     },
-    [movieId, navigate, showTimeId, selectedDate, selectedTime],
+    [movieId, navigate, showTimeId, selectedDate, selectedTime, movieData],
   );
 
   if (!movieId) {
@@ -171,7 +177,7 @@ const Ticket: React.FC = () => {
             </Box>
 
             {/* Movie details */}
-            <MovieDetail />
+            <MovieDetail onMovieLoad={handleMovieLoad} />
 
             {/* ShowTimeCinema component for picking date, time, and room */}
             <ShowTimeCinema

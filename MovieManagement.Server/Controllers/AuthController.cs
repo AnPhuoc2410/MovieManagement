@@ -33,8 +33,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public IActionResult Signup([FromBody] AuthDto.RegisterRequest registerDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -213,6 +212,17 @@ namespace MovieManagement.Server.Controllers
                 IsSuccess = true,
                 Data = userData
             });
+        }
+
+
+
+
+        [HttpGet]
+        [Authorize(Roles = "Admin,Member")]
+        [Route("Test")]
+        public IActionResult Test()
+        {
+            return Ok("Test");
         }
     }
 }

@@ -1,14 +1,12 @@
 import { lazy } from "react";
-import { useRoutes, Navigate } from "react-router-dom";
-import SplashCursor from "./components/shared/SplashCursor";
+import { Navigate, useRoutes } from "react-router-dom";
 import Dashboard from "./components/shared/Dashboard";
-import AdminTheme from "./shared-theme/AdminTheme";
-import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
-import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
+import { SignalRProvider } from "./contexts/SignalRContext";
 import { ProtectedRoute, RejectedRoute } from "./guards/AuthGuard";
-import TestConnection from "./pages/TestConnetionc";
+import TicketWrapper from "./layouts/TicketWrapper";
+import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
+import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import SearchPage from "./pages/movie/SearchPage";
-
 
 // Lazy load components
 const Home = lazy(() => import("./pages/Home/Home"));
@@ -20,13 +18,11 @@ const ForgotPassword = lazy(
 // Admin Pages
 const AdminPages = {
   Ticket: {
-    BuyTicket: lazy(() => import("./pages/admin/QuanLyBanVe/QuanLiBanVe")),
-    BuyTicketDetail: lazy(() => import("./pages/admin/QuanLyBanVe/QuanLiBanVeDetail")), 
-    BookingDetail: lazy(() => import("./pages/admin/QuanLyDatVe/ChiTietDatVe")),
-    BookingManagement: lazy(
-      () => import("./pages/admin/QuanLyDatVe/QuanLyDatVe"),
-    ),
-    TicketInfo: lazy(() => import("./pages/admin/QuanLyDatVe/ThongTinNhanVe")),
+    BuyTicket: lazy(() => import("./pages/admin/QuanLyBanVe/index")),
+    Booking: lazy(() => import("./pages/admin/QuanLyBanVe/ShowTime")),
+    Seat: lazy(() => import("./pages/admin/QuanLyBanVe/MovieSeat")),
+    Payment: lazy(() => import("./pages/admin/QuanLyBanVe/Payment")),
+    Confirmation: lazy(() => import("./pages/admin/QuanLyBanVe/Confirmation")),
   },
   Staff: {
     Management: lazy(() => import("./pages/admin/QuanLyNhanVien")),
@@ -34,9 +30,9 @@ const AdminPages = {
     Add: lazy(() => import("./pages/admin/QuanLyNhanVien/ThemNhanVien")),
   },
   Movie: {
-    Management: lazy(() => import("./pages/admin/QuanLyPhim/QuanLyPhim")),
+    Management: lazy(() => import("./pages/admin/QuanLyPhim/Movies")),
     Edit: lazy(() => import("./pages/admin/QuanLyPhim/ChinhSuaPhim")),
-    Add: lazy(() => import("./pages/admin/QuanLyPhim/ThemPhim")),
+    Add: lazy(() => import("./pages/admin/QuanLyPhim/MovieDetail")),
   },
   Room: {
     Management: lazy(
@@ -112,7 +108,6 @@ export default function useRouteElements() {
     },
     // Protected Client Routes
     {
-      element: <RejectedRoute />,
       children: [
         {
           path: "/promotions",
@@ -129,18 +124,21 @@ export default function useRouteElements() {
           ],
         },
         {
-          path: "search", element: <ClientPages.Movie.Search />,
+          path: "search",
+          element: <ClientPages.Movie.Search />,
         },
         {
           path: "/ticket",
+          element: (
+            <SignalRProvider>
+              <TicketWrapper />
+            </SignalRProvider>
+          ),
           children: [
             { path: ":movieId", element: <ClientPages.Ticket.Booking /> },
             { path: "movie-seat", element: <ClientPages.Ticket.Seat /> },
             { path: "payment", element: <ClientPages.Ticket.Payment /> },
-            {
-              path: "confirmation",
-              element: <ClientPages.Ticket.Confirmation />,
-            },
+            { path: "confirmation", element: <ClientPages.Ticket.Confirmation /> },
           ],
         },
       ],
@@ -170,10 +168,18 @@ export default function useRouteElements() {
               ],
             },
             {
-              path: "ban-ve",
+              path: "ql-ban-ve",
+              element: (
+                <SignalRProvider>
+                  <TicketWrapper />
+                </SignalRProvider>
+              ),
               children: [
-                { path: "", element: <AdminPages.Ticket.BuyTicket /> }, // Ticket List
-                { path: ":ticketId", element: <AdminPages.Ticket.BuyTicketDetail /> }, // Ticket Detail
+                { path: "", element: <AdminPages.Ticket.BuyTicket /> },
+                { path: "ticket/:movieId", element: <AdminPages.Ticket.Booking /> },
+                { path: "movie-seat", element: <AdminPages.Ticket.Seat /> },
+                { path: "payment", element: <AdminPages.Ticket.Payment /> },
+                { path: "confirmation", element: <AdminPages.Ticket.Confirmation /> },
               ],
             },
             {
@@ -231,10 +237,6 @@ export default function useRouteElements() {
           ],
         },
       ],
-    },
-    {
-      path: "/testHub",
-      element: <TestConnection />,
     },
     // 404 Route
     {
