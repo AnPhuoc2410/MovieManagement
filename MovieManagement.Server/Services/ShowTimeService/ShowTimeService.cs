@@ -70,11 +70,10 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var createdShowTime = _unitOfWork.ShowtimeRepository.PrepareCreateEntity(newShowTime);
 
             var IsGenerated = CreateTicketByShowTime(createdShowTime.ShowTimeId, room.RoomId);
-            if (IsGenerated.Result == 0)
+            if (IsGenerated.Result <= 1)
             {
                 throw new ApplicationException("Unable to create due to systems error.");
             }
-            await _unitOfWork.ShowtimeRepository.SaveAsync();
 
             return _mapper.Map<ShowTimeDto>(createdShowTime);
         }
@@ -82,6 +81,12 @@ namespace MovieManagement.Server.Services.ShowTimeService
         private async Task<int> CreateTicketByShowTime(Guid showTimeId, Guid roomId)
         {
             var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
+
+            if (seats.Count == 0)
+            {
+                throw new NotFoundException("Seats does not found!");
+            }
+
             foreach (var s in seats)
             {
                 _unitOfWork.TicketDetailRepository.PrepareCreate(new TicketDetail
