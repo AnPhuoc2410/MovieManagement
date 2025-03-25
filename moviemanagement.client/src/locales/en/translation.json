@@ -8,6 +8,7 @@
     "see_more": "See More",
     "now_showing": "NOW SHOWING",
     "upcoming": "UPCOMING",
+    "search_result": "SEARCH RESULTS",
     "promotions": "PROMOTIONS",
     "list_promotions": "See more Promotions",
     "quick_booking": "Quick Booking",
@@ -22,6 +23,7 @@
     "select_theater4": "Kien Giang Theater (Rach Soi)",
     "select_theater5": "Lam Dong Theater (Duc Trong)",
     "select_theater6": "Da Lat Theater (Da Lat City)",
+    "no_search_result": "No movies found. Please try again!",
     "oops": "OOPS!",
     "footer": {
       "slogan": "BE HAPPY, BE A STAR",

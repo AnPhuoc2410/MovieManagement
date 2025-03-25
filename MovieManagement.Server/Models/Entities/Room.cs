@@ -15,6 +15,10 @@ namespace MovieManagement.Server.Models.Entities
 
         public int Total { get; set; }
 
+        public Guid MovieTheaterId { get; set; }
+
+        public virtual MovieTheater MovieTheater { get; set; }
+
         public virtual ICollection<Seat> Seats { get; set; } = new List<Seat>();
 
         public virtual ICollection<ShowTime> Showtimes { get; set; } = new List<ShowTime>();    

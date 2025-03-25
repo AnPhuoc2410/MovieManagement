@@ -88,7 +88,7 @@ namespace MovieManagement.Server.Services.CategoryService
             {
                 var existingCategory = _mapper.Map<Category>(categoryDto);
                 if (existingCategory == null) 
-                    throw new NotFoundException("Catogory cannot found!");
+                    throw new NotFoundException("Category cannot found!");
                 return _mapper.Map<CategoryDto>(await _unitOfWork.CategoryRepository.UpdateAsync(existingCategory));
             }
             catch (Exception ex)

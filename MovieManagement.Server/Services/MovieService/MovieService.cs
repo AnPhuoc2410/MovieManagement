@@ -136,9 +136,9 @@ namespace MovieManagement.Server.Services.MovieService
             return _mapper.Map<IEnumerable<MoviePreview>>(moviesUpComing);
         }
 
-        public async Task<IEnumerable<MoviePreview>> GetMoviesByNameRelative(string name, int page, int pageSize)
+        public async Task<IEnumerable<MoviePreview>> GetMoviesByNameRelativePage(string name, int page, int pageSize)
         {
-            var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelative(name, page, pageSize);
+            var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelativePage(name, page, pageSize);
             return _mapper.Map<IEnumerable<MoviePreview>>(movies);
         }
 
@@ -154,5 +154,10 @@ namespace MovieManagement.Server.Services.MovieService
             return _mapper.Map<IEnumerable<MovieDto>>(movies);
         }
 
+        public async Task<IEnumerable<MoviePreview>> GetMoviesByNameRelative(string searchValue)
+        {
+            var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelative(searchValue);
+            return _mapper.Map<IEnumerable<MoviePreview>>(movies);
+        }
     }
 }

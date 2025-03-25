@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -15,11 +16,14 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Extensions.ConvertFile;
 using MovieManagement.Server.Extensions.SignalR;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.Enums;
+using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.JwtService;
+using MovieManagement.Server.Services.QRService;
 using Newtonsoft.Json;
 
 namespace MovieManagement.Server
@@ -29,6 +33,10 @@ namespace MovieManagement.Server
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Add System Service UnitOfWork.
+            builder.Services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
+
 
             // Add services to the container.
 
@@ -84,8 +92,7 @@ namespace MovieManagement.Server
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                options.JsonSerializerOptions.DefaultIgnoreCondition =
-                    JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
@@ -152,7 +159,7 @@ namespace MovieManagement.Server
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
             //Enable role based and policy based authorization
-            builder.Services.AddAuthorization();
+            //builder.Services.AddAuthorization();
 
             //ADD SignalR
             builder.Services.AddSignalR();
@@ -162,25 +169,26 @@ namespace MovieManagement.Server
             builder.Services.AddHangfireServer();
 
             // Đăng ký VnPayService
-            //builder.Services.AddSingleton<IVnPayService, VnPayService>();
+            builder.Services.AddScoped<IVnPayService, VnPayService>();
+
+            // Đăng ký ConvertFile
+            builder.Services.AddScoped<IConvertFileService, ConvertFileService>();
+
+            // Đăng ký QR Code
+            builder.Services.AddScoped<IQRCodeService ,QRCodeService>();
 
             builder.Services.Configure<RouteOptions>(options =>
             {
                 options.LowercaseUrls = true; // Forces lowercase routes
             });
 
+            // Add SystemService running in the background.
+            builder.Services.AddHostedService<SystemService>();
 
             var app = builder.Build();
 
-
             app.UseDefaultFiles();
             app.UseStaticFiles();
-
-            // Check khi nao Migration se duoc apply
-            //if (builder.Configuration.GetValue<bool>("ApplyMigrations", false))
-            //{
-            //    app.ApplyMigrations();
-            //}
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

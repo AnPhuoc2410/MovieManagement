@@ -3,6 +3,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
@@ -206,6 +207,12 @@ namespace MovieManagement.Server.Controllers
             }
         }
 
+        [HttpGet("ticket-details")]
+        public async Task<IActionResult> GetTicketDetails(long billId)
+        {
+            var ticketDetails = await _ticketDetailService.GetPurchasedTicketsByBillId(billId);
+            return Ok(ticketDetails);
+        }
 
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<TicketDetailDto>), StatusCodes.Status200OK)]
@@ -559,6 +566,48 @@ namespace MovieManagement.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
+
+       
+
+
+        [HttpDelete("DeleteRemainingTicket/{showTimeId:guid}")]
+        public async Task<IActionResult> DeleteRemainingTicket(Guid showTimeId)
+        {
+            try
+            {
+                var isDeleted = await _ticketDetailService.DeleteRemainingTicket(showTimeId);
+                if (!isDeleted)
+                {
+                    var response = new ApiResponse<object>
+                    {
+                        StatusCode = 404,
+                        Message = "Ticket detail not found",
+                        IsSuccess = false
+                    };
+                    return NotFound(response);
+                }
+                return Ok(new ApiResponse<object>
+                {
+                    Data = isDeleted,
+                    StatusCode = 200,
+                    Message = "Delete remaining ticket successfully",
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponse<object>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while deleting remaining ticket",
+                    IsSuccess = false,
+                    Reason = ex.Message
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
 
     }
 }

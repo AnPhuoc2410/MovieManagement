@@ -30,7 +30,6 @@ const Payment: React.FC = () => {
   const [selectedPromotion, setSelectedPromotion] = useState<any>(null);
   const [isPromotionsLoading, setIsPromotionsLoading] = useState(false);
 
-  // First extract movieData from the location state
   const {
     movieId,
     selectedTime = "Not selected",
@@ -55,11 +54,28 @@ const Payment: React.FC = () => {
     showTimeId || sessionStorage.getItem("currentShowTimeId") || "";
 
   // Before unload handler to warn user if they refresh or leave
+  // Update your existing beforeunload handler
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (connection && isConnected && effectiveShowTimeId && selectedSeatsInfo?.length) {
+        // Add warning
         e.preventDefault();
         e.returnValue = "";
+
+        // Try to release seats using navigator.sendBeacon (works during page unload)
+        const userId = localStorage.getItem("userId") || "anonymous";
+        const payload = JSON.stringify({
+          ticketRequests: selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
+            TicketId: seat.ticketId,
+            Version: seat.version
+          })),
+          showtimeId: effectiveShowTimeId,
+          userId
+        });
+
+        // Use beacon API to send the release request
+        navigator.sendBeacon('/api/seats/release-pending', payload);
+
         return "";
       }
     };
@@ -69,6 +85,45 @@ const Payment: React.FC = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [connection, isConnected, effectiveShowTimeId, selectedSeatsInfo]);
+
+  useEffect(() => {
+    // Cleanup function runs when component unmounts
+    return () => {
+      if (connection && isConnected && selectedSeatsInfo?.length > 0) {
+        const userId = localStorage.getItem("userId") || "anonymous";
+        const ticketRequests = selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
+          TicketId: seat.ticketId,
+          Version: seat.version,
+        }));
+
+        connection.invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId)
+          .catch(err => console.error("Failed to release seats on unmount:", err));
+      }
+    };
+  }, [connection, isConnected, selectedSeatsInfo, effectiveShowTimeId]);
+
+  const handleBack = async () => {
+    if (connection && selectedSeatsInfo?.length > 0) {
+      try {
+        const userId = localStorage.getItem("userId") || "anonymous";
+        const ticketRequests = selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
+          TicketId: seat.ticketId,
+          Version: seat.version
+        }));
+
+        await connection.invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId);
+        toast.success("Đã hủy đặt chỗ");
+        navigate(-1);
+      } catch (error) {
+        console.error("Error releasing seats:", error);
+        toast.error("Lỗi khi hủy đặt chỗ");
+        // Navigate anyway as fallback
+        navigate(-1);
+      }
+    } else {
+      navigate(-1);
+    }
+  };
 
   useEffect(() => {
     const fetchPromotions = async () => {
@@ -756,6 +811,25 @@ const Payment: React.FC = () => {
                   </Grid>
 
                   <Box sx={{ textAlign: "center", mt: 3 }}>
+                    <Button
+                      variant="outlined"
+                      onClick={handleBack}
+                      sx={{
+                        color: "#fbc02d",
+                        borderColor: "#fbc02d",
+                        mr: 2,
+                        px: 4,
+                        py: 1.2,
+                        fontSize: { xs: "1rem", md: "1.2rem" },
+                        borderRadius: 2,
+                        "&:hover": {
+                          borderColor: "#ff9800",
+                          backgroundColor: "rgba(251, 192, 45, 0.1)"
+                        }
+                      }}
+                    >
+                      Quay lại
+                    </Button>
                     <Button
                       variant="contained"
                       onClick={handleConfirm}

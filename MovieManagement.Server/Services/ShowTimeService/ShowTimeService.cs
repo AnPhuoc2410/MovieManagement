@@ -97,36 +97,22 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
         public async Task<bool> DeleteShowtimeAsync(Guid showTimeId)
         {
-            try
+            var showTime = await _unitOfWork.ShowtimeRepository.GetByIdAsync(showTimeId);
+            if (showTime == null)
             {
-                var showTime = await _unitOfWork.ShowtimeRepository.GetByIdAsync(showTimeId);
-                if (showTime == null)
-                {
-                    throw new NotFoundException("ShowTime does not found!");
-                }
-                return await _unitOfWork.ShowtimeRepository.DeleteAsync(showTimeId);
+                throw new NotFoundException("ShowTime does not found!");
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
-            }
+            return await _unitOfWork.ShowtimeRepository.DeleteAsync(showTimeId);
         }
 
-        public async Task<IEnumerable<ShowTimeDto>> GetAllShowtime()
+        public async Task<IEnumerable<ShowTimeInfo>> GetAllShowtime()
         {
-            try
+            var showtimes = _mapper.Map<List<ShowTimeInfo>>(await _unitOfWork.ShowtimeRepository.GetAllInfoAsync());
+            if (showtimes.Count == 0)
             {
-                var showtimes = _mapper.Map<List<ShowTimeDto>>(await _unitOfWork.ShowtimeRepository.GetAllAsync());
-                if (showtimes.Count == 0)
-                {
-                    throw new NotFoundException("ShowTime does not found!");
-                }
-                return showtimes;
+                throw new NotFoundException("ShowTime does not found!");
             }
-            catch (SqlException ex)
-            {
-                throw new ApplicationException("Couldn't access into database due to systems error.", ex);
-            }
+            return showtimes;
         }
 
 
@@ -138,19 +124,12 @@ namespace MovieManagement.Server.Services.ShowTimeService
         
         public async Task<ShowTimeDto> GetShowtimeByIdAsync(Guid showTimeId)
         {
-            try
+            var showTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.GetByIdAsync(showTimeId));
+            if (showTime == null)
             {
-                var showTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.GetByIdAsync(showTimeId));
-                if (showTime == null)
-                {
-                    throw new NotFoundException("ShowTime does not found!");
-                }
-                return showTime;
+                throw new NotFoundException("ShowTime does not found!");
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
-            }
+            return showTime;
         }
 
         public async Task<ShowTimeDto> UpdateShowtimeAsync(Guid showTimeId, ShowTimeDto showtime)

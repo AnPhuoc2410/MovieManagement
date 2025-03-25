@@ -15,16 +15,7 @@ import dayjs from "dayjs";
 import { ENV } from "../../../env/env.config";
 import AppTheme from "../../../shared-theme/AppTheme";
 import toast from "react-hot-toast";
-
-interface Promotion {
-  promotionId: string;
-  promotionName: string;
-  discount: number;
-  fromDate: string;
-  toDate: string;
-  content: string;
-  image?: string;
-}
+import { Promotion } from "../../../types/promotion.types";
 
 export default function PromotionDetail() {
   const location = useLocation();
@@ -42,8 +33,8 @@ export default function PromotionDetail() {
       promotionId: "",
       promotionName: "",
       discount: 0,
-      fromDate: "",
-      toDate: "",
+      fromDate: new Date(),
+      toDate: new Date(),
       content: "",
       image: "",
     },

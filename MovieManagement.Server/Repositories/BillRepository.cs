@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
-using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Repositories.IRepositories;
 
 namespace MovieManagement.Server.Repositories
@@ -14,42 +14,29 @@ namespace MovieManagement.Server.Repositories
             _context = context;
         }
 
-        public async Task<bool> DeleteAsync(long billId)
-        {
-            var entity = await GetByIdAsync(billId);
-            if (entity == null) return false;
-            _context.Remove(entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+        
 
-        public Bill GetById(long billId)
-        {
-            return _context.Bills.Find(billId);
-        }
-
-        public async Task<Bill> GetByIdAsync(long billId)
-        {
-            return await _context.Bills.FindAsync(billId);
-        }
-
-        public async Task<List<PurchasedTicketDto>> GetPurchasedTickets(Guid userId)
+        public async Task<List<TicketBillResponse>> GetPurchasedTicketsForBill(long billId)
         {
             return await _context.Bills
-                .Where(b => b.UserId == userId)
+                .Where(b => b.BillId == billId)
                 .Include(b => b.TicketDetails)
                     .ThenInclude(td => td.ShowTime)
                         .ThenInclude(st => st.Room)
                 .Include(b => b.TicketDetails)
                     .ThenInclude(td => td.ShowTime)
                         .ThenInclude(st => st.Movie)
-                .SelectMany(b => b.TicketDetails.Select(td => new PurchasedTicketDto
+                .Include(b => b.TicketDetails)
+                    .ThenInclude(td => td.Seat)
+                .SelectMany(b => b.TicketDetails.Select(td => new TicketBillResponse
                 {
                     MovieName = td.ShowTime.Movie.MovieName,
-                    CreateDate = b.CreatedDate,
-                    StartDay = td.ShowTime.StartTime.ToShortTimeString(),
-                    Showtime = td.ShowTime.StartTime.ToShortTimeString(),
-                    RoomName = td.ShowTime.Room.RoomName,
+                    StartDay = td.ShowTime.StartTime.ToString("dd/MM/yyyy"),
+                    StartTime = td.ShowTime.StartTime.ToString("HH:mm:ss"),
+                    SeatType = td.Seat.SeatType.TypeName,
+                    AtRow = td.Seat.AtRow,
+                    AtColumn = td.Seat.AtColumn,
+                    Price = td.Seat.SeatType.Price,
                     Status = b.Status
                 }))
                 .ToListAsync();
