@@ -350,18 +350,18 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet("GetShowTimeByDates")]
-        [ProducesResponseType(typeof(ApiResponse<ShowTimeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<Dictionary<DateTime, Dictionary<string, Dictionary<MovieTheaterDto, List<ShowTimeDto>>>>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate)
+        public async Task<ActionResult> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate, string location)
         {
             try
             {
-                var showTime = await _showTimeService.GetShowTimeFromDateToDate(movieId, fromDate, toDate);
+                var showTime = await _showTimeService.GetShowTimeFromDateToDate(movieId, fromDate, toDate, location);
 
-                var response = new ApiResponse<Dictionary<DateTime, List<ShowTimeDto>>>
+                var response = new ApiResponse<Dictionary<DateTime, Dictionary<string, Dictionary<string, List<ShowTimeDto>>>>>
                 {
                     StatusCode = 200,
                     Message = "Show Time retrieved successfully",

@@ -159,8 +159,10 @@ namespace MovieManagement.Server.Services.ShowTimeService
             }
 
 
-            existingShowTime.StartTime = new DateTime(existingShowTime.StartTime.Year, existingShowTime.StartTime.Month, existingShowTime.StartTime.Day, existingShowTime.StartTime.Hour, existingShowTime.StartTime.Minute, 0);
+            existingShowTime.StartTime = new DateTime(showtime.StartTime.Year, showtime.StartTime.Month, showtime.StartTime.Day, showtime.StartTime.Hour, showtime.StartTime.Minute, 0);
             existingShowTime.EndTime = existingShowTime.StartTime.Add(TimeSpan.FromMinutes(movie.Duration));
+            existingShowTime.MovieId = showtime.MovieId;
+            existingShowTime.RoomId = showtime.RoomId;
 
             if (existingShowTime.StartTime < DateTime.Now)
             {
@@ -194,7 +196,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             return updatedShowTime;
         }
 
-        public async Task<Dictionary<DateTime, List<ShowTimeDto>>> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate)
+        public async Task<Dictionary<DateTime, Dictionary<string, Dictionary<string, List<ShowTimeDto>>>>> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate, string location)
         {
             var movie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
             if (movie == null)
@@ -212,13 +214,26 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 throw new ApplicationException("This movie schedule can not be leak.");
             }
 
-            var showTimes = await _unitOfWork.ShowtimeRepository.GetShowTimeFromDateToDate(movieId, fromDate, toDate);
+            var showTimes = await _unitOfWork.ShowtimeRepository.GetShowTimeFromDateToDate(movieId, fromDate, toDate, location);
+
             if (showTimes == null)
             {
                 throw new NotFoundException("ShowTime does not found.");
             }
-            var dictionary = showTimes.GroupBy(st => st.StartTime.Date)
-                .ToDictionary(g => g.Key, g => _mapper.Map<List<ShowTimeDto>>(g.ToList()));
+
+            var dictionary = showTimes
+                .GroupBy(st => st.StartTime.Date)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.GroupBy(st => st.Room.MovieTheater.location)
+                          .ToDictionary(
+                              x => x.Key,
+                              x => x.GroupBy(st => st.Room.MovieTheater)
+                              .ToDictionary(x => $"{x.Key.Name} - {x.Key.Address}",
+                                    x => x.Select(st => _mapper.Map<ShowTimeDto>(st)).ToList()
+                              )
+                          )
+                );
 
             return dictionary;
         }

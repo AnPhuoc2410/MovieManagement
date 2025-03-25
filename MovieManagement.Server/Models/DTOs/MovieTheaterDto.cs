@@ -5,6 +5,7 @@
 
         public Guid? MovieTheaterId { get; set; }
         public string Name { get; set; }
+        public string Location { get; set; }
         public string Address { get; set; }
         public string Image { get; set; }
         public bool IsDeleted { get; set; }

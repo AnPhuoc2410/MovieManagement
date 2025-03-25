@@ -12,6 +12,6 @@ namespace MovieManagement.Server.Services.ShowTimeService
         Task<ShowTimeDto> UpdateShowtimeAsync(Guid showTimeId, ShowTimeDto showtime);
         Task<bool> DeleteShowtimeAsync(Guid showTimeId);
 
-        Task<Dictionary<DateTime, List<ShowTimeDto>>> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate);
+        Task<Dictionary<DateTime, Dictionary<string, Dictionary<string, List<ShowTimeDto>>>>> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate, string location);
     }
 }
