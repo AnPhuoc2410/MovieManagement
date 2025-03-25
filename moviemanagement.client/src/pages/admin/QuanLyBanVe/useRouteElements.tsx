@@ -18,10 +18,11 @@ const ForgotPassword = lazy(
 const AdminPages = {
   Ticket: {
     BuyTicket: lazy(() => import("./pages/admin/QuanLyBanVe/index")),
-    Booking: lazy(() => import("./pages/admin/QuanLyBanVe/ShowTime")),
-    Seat: lazy(() => import("./pages/admin/QuanLyBanVe/MovieSeat")),
-    Payment: lazy(() => import("./pages/admin/QuanLyBanVe/Payment")),
-    Confirmation: lazy(() => import("./pages/admin/QuanLyBanVe/Confirmation")),
+    BookingDetail: lazy(() => import("./pages/admin/QuanLyDatVe/ChiTietDatVe")),
+    BookingManagement: lazy(
+      () => import("./pages/admin/QuanLyDatVe/QuanLyDatVe"),
+    ),
+    TicketInfo: lazy(() => import("./pages/admin/QuanLyDatVe/ThongTinNhanVe")),
   },
   Staff: {
     Management: lazy(() => import("./pages/admin/QuanLyNhanVien")),
@@ -132,7 +133,7 @@ export default function useRouteElements() {
     },
     // Protected Admin Routes
     {
-      element: <RejectedRoute />,
+      element: <RejectedRoute/>,
       children: [
         {
           path: "/admin",
@@ -154,21 +155,7 @@ export default function useRouteElements() {
                 { path: "them-phim", element: <AdminPages.Movie.Add /> },
               ],
             },
-            {
-              path: "ql-ban-ve",
-              element: (
-                <SignalRProvider>
-                  <TicketWrapper />
-                </SignalRProvider>
-              ),
-              children: [
-                { path: "", element: <AdminPages.Ticket.BuyTicket /> },
-                { path: "ticket/:movieId", element: <AdminPages.Ticket.Booking /> },
-                { path: "movie-seat", element: <AdminPages.Ticket.Seat /> },
-                { path: "payment", element: <AdminPages.Ticket.Payment /> },
-                { path: "confirmation", element: <AdminPages.Ticket.Confirmation /> },
-              ],
-            },
+            { path: "ban-ve", element: <AdminPages.Ticket.BuyTicket /> },
             {
               path: "ql-nhan-vien",
               children: [
@@ -189,6 +176,17 @@ export default function useRouteElements() {
               children: [
                 { path: "", element: <AdminPages.Room.Management /> },
                 { path: ":roomId", element: <AdminPages.Room.Detail /> },
+              ],
+            },
+            {
+              path: "ql-dat-ve",
+              children: [
+                { path: "", element: <AdminPages.Ticket.BookingManagement /> },
+                { path: ":bId", element: <AdminPages.Ticket.BookingDetail /> },
+                {
+                  path: "thong-tin-nhan-ve/:bId",
+                  element: <AdminPages.Ticket.TicketInfo />,
+                },
               ],
             },
           ],

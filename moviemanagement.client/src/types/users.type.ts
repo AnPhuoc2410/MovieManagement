@@ -66,3 +66,12 @@ export type UpdatePasswordDTO = {
   email: string;
   new_password: string;
 };
+
+export type UserInfo = {
+  id: string;
+  userName: string;
+  email: string;
+  phoneNumber: string;
+  membershipPoints: number;
+  avatarUrl?: string;
+}
