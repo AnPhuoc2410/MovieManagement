@@ -108,9 +108,7 @@ namespace MovieManagement.Server.Services.UserService
         public async Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page,
             int pageSize)
         {
-            var users = await _unitOfWork.UserRepository.GetPageAsync(page, pageSize);
-            if (users == null)
-                throw new NotFoundException("Users not found!");
+            var users = await _unitOfWork.UserRepository.GetPageAsync(page, pageSize) ?? throw new NotFoundException("User not found!");
             return _mapper.Map<List<UserDto.UserResponse>>(users);
         }
 

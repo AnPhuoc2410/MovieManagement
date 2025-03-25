@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import LanguageSelector from "../common/LanguageSelector";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -36,8 +36,10 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
   const { isAuthenticated, authLogout, userDetails } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation(); // Access current location
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   // Profile dropdown menu state
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -53,6 +55,19 @@ const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
 
   const handleLogout = async () => {
     await authLogout();
+  };
+
+  useEffect(() => {
+    // Retrieve searchValue from URL query parameters
+    const params = new URLSearchParams(location.search);
+    const keyword = params.get("keyword") || "";
+    setSearchValue(decodeURIComponent(keyword));
+  }, [location.search]);
+
+  const handleSearch = () => {
+    if (searchValue.trim()) {
+      navigate(`/search?keyword=${encodeURIComponent(searchValue)}`);
+    }
   };
 
   useEffect(() => {
@@ -233,6 +248,13 @@ const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
                 variant="outlined"
                 size="small"
                 placeholder={t("search")}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
                 sx={{
                   backgroundColor: "white",
                   width: { md: "200px", lg: "300px" },
@@ -247,7 +269,7 @@ const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
                 }}
                 InputProps={{
                   endAdornment: (
-                    <IconButton size="small">
+                    <IconButton size="small" onClick={handleSearch}>
                       <SearchIcon />
                     </IconButton>
                   ),

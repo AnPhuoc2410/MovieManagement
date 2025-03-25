@@ -57,7 +57,13 @@ namespace MovieManagement.Server.Extensions
 
             CreateMap<Bill, BillDto>();
             CreateMap<BillDto, Bill>();
+
             CreateMap<BillRequest, Bill>();
+
+            CreateMap<Bill, BillRequest>();
+
+            //Bill Report for user
+            CreateMap<Bill, BillReportRequest>();
 
             CreateMap<SeatType, SeatTypeDto>();
             CreateMap<SeatTypeDto, SeatType>();
@@ -70,6 +76,9 @@ namespace MovieManagement.Server.Extensions
 
             CreateMap<Movie, MovieDto>();
             CreateMap<MovieDto, Movie>();
+
+            CreateMap<MovieTheater, MovieTheaterDto>();
+            CreateMap<MovieTheaterDto, MovieTheater>();
 
             CreateMap<Movie, MoviePreview>();
             CreateMap<MoviePreview, Movie>();
@@ -95,8 +104,7 @@ namespace MovieManagement.Server.Extensions
             CreateMap<TicketDetail, TicketDetailResponseModel>();
             //CreateMap<TicketDetailResponseModel, TicketDetail>();
 
-
-
+            CreateMap<ShowTime, ShowTimeInfo>();
 
             CreateMap<UserDto.UserRequest, User>();
         }

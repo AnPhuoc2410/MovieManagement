@@ -8,6 +8,7 @@
     "see_more": "もっと見る",
     "now_showing": "上映中",
     "upcoming": "近日公開",
+    "search_result": "検索結果",
     "promotions": "プロモーション",
     "list_promotions": "もっと見るプロモーション",
     "quick_booking": "クイック予約",
@@ -22,6 +23,7 @@
     "select_theater4": "Kien Giang 劇場 (Rach Soi)",
     "select_theater5": "Lam Dong 劇場 (Duc Trong)",
     "select_theater6": "Da Lat 劇場 (Da Lat City)",
+    "no_search_result": "該当する映画が見つかりませんでした。",
     "footer": {
       "slogan": "幸せに、スターに",
       "book_ticket": "チケット予約",

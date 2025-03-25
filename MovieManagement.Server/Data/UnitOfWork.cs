@@ -30,7 +30,9 @@ namespace MovieManagement.Server.Data
 
         public IOtpCodeRepository OtpCodeRepository { get; private set; }
 
-        public UnitOfWork(AppDbContext context, IBillRepository billRepository, ICategoryRepository categoryRepository, IUserRepository userRepository,  IMovieRepository movieRepository, IPromotionRepository promotionRepository, IRoomRepository roomRepository, ISeatRepository seatRepository, IShowtimeRepository showtimeRepository, ITicketDetailRepository ticketDetailRepository, ISeatTypeRepository seatTypeRepository, IMovieCategoryRepository movieCategoryRepository, IOtpCodeRepository otpCodeRepository)
+        public IMovieTheaterRepository MovieTheaterRepository { get; private set; }
+
+        public UnitOfWork(AppDbContext context, IBillRepository billRepository, ICategoryRepository categoryRepository, IUserRepository userRepository,  IMovieRepository movieRepository, IPromotionRepository promotionRepository, IRoomRepository roomRepository, ISeatRepository seatRepository, IShowtimeRepository showtimeRepository, ITicketDetailRepository ticketDetailRepository, ISeatTypeRepository seatTypeRepository, IMovieCategoryRepository movieCategoryRepository, IOtpCodeRepository otpCodeRepository, IMovieTheaterRepository movieTheaterRepository)
         {
             _context = context;
             BillRepository = billRepository;
@@ -45,6 +47,7 @@ namespace MovieManagement.Server.Data
             SeatTypeRepository = seatTypeRepository;
             MovieCategoryRepository = movieCategoryRepository;
             OtpCodeRepository = otpCodeRepository;
+            MovieTheaterRepository = movieTheaterRepository;
         }
 
         public async Task<int> CompleteAsync()
