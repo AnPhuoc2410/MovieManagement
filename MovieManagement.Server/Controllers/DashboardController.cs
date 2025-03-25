@@ -33,7 +33,7 @@ namespace MovieManagement.Server.Controllers
             {
                 StatusCode = 200,
                 IsSuccess = true,
-                Message = "Top thành viên mua nhiều vé nhất",
+                Message = "Top member with the highest number of tickets purchased",
                 Data = movies
             };
             return Ok(response);
@@ -52,7 +52,7 @@ namespace MovieManagement.Server.Controllers
             {
                 StatusCode = 200,
                 IsSuccess = true,
-                Message = "Top thành viên mua nhiều vé nhất theo ngày",
+                Message = "Top member with the highest number of tickets purchased each day",
                 Data = movies
             };
             return Ok(response);
@@ -71,7 +71,7 @@ namespace MovieManagement.Server.Controllers
             {
                 StatusCode = 200,
                 IsSuccess = true,
-                Message = "Top các phim có doanh thu cao nhất",
+                Message = "Top grossing movies",
                 Data = movies
             };
             return Ok(response);
@@ -90,7 +90,7 @@ namespace MovieManagement.Server.Controllers
             {
                 StatusCode = 200,
                 IsSuccess = true,
-                Message = "Top các phim có doanh thu cao nhất theo từng ngày",
+                Message = "Top grossing movies each day",
                 Data = movies
             };
             return Ok(response);
@@ -109,7 +109,7 @@ namespace MovieManagement.Server.Controllers
             {
                 StatusCode = 200,
                 IsSuccess = true,
-                Message = "Top các thể loại phim có số vé được bán nhiều nhất",
+                Message = "Top movie genres with the most tickets sold",
                 Data = catogories
             };
             return Ok(response);
@@ -128,7 +128,7 @@ namespace MovieManagement.Server.Controllers
             {
                 StatusCode = 200,
                 IsSuccess = true,
-                Message = "Top các thể loại phim có số vé được bán nhiều nhất theo từng ngày",
+                Message = "Top movie genres with the most tickets sold by day",
                 Data = catogories
             };
             return Ok(response);
@@ -147,7 +147,7 @@ namespace MovieManagement.Server.Controllers
             {
                 StatusCode = 200,
                 IsSuccess = true,
-                Message = "Top các suất chiếu phim có số vé được bán nhiều nhất",
+                Message = "Top movie screenings with the most tickets sold",
                 Data = showtimes
             };
             return Ok(response);
@@ -166,7 +166,7 @@ namespace MovieManagement.Server.Controllers
             {
                 StatusCode = 200,
                 IsSuccess = true,
-                Message = "Top các suất chiếu phim có số vé được bán nhiều nhất",
+                Message = "Top movie screenings with the most tickets sold",
                 Data = showtimes
             };
             return Ok(response);

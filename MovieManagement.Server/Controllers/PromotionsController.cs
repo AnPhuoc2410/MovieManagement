@@ -28,54 +28,15 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllPromotionsAsync()
         {
-            try
+            var promotions = await _promotionService.GetAllPromotionsAsync();
+            var response = new ApiResponse<object>
             {
-                var promotions = await _promotionService.GetAllPromotionsAsync();
-                if (promotions == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Promotion not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(promotions);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while retrieving promotions",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Get all promotions is success",
+                IsSuccess = true,
+                Data = promotions
+            };
+            return Ok(response);
         }
 
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
