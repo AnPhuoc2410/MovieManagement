@@ -10,9 +10,9 @@ export default function AddMovie() {
   const handleAddMovie = async (movieData: any) => {
     try {
       console.log(movieData);
-      const response = await api.post("movie", movieData);
+      const response = await api.post(`movie?employeeId=${movieData.userId}`, movieData);
       toast.success("Thêm phim mới thành công");
-      navigate(`/admin/ql-phim/${response.data.movieId}`);
+      navigate(`/admin/ql-phim/${response.data.data.movieId}`);
     } catch (error: any) {
       toast.error("Lỗi khi thêm phim mới: " + error.message);
       console.log(error.message);
