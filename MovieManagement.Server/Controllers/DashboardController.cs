@@ -20,6 +20,24 @@ namespace MovieManagement.Server.Controllers
         {
             _dashboardService = dashboardService;
         }
+        [HttpGet("member")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopMemberResponse.MemberRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetMembersRevenueAsync()
+        {
+            var movies = await _dashboardService.GetTopMemberRevenues();
+            var response = new ApiResponse<object>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "Top thành viên mua nhiều vé nhất",
+                Data = movies
+            };
+            return Ok(response);
+        }
 
         [HttpGet("movie")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopMovieResponse.MovieRevenue>>), StatusCodes.Status200OK)]

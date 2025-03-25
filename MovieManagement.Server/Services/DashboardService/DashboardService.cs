@@ -11,6 +11,13 @@ namespace MovieManagement.Server.Services.DashboardService
         {
             _unitOfWork = unitOfWork;
         }
+
+        public  async Task<IEnumerable<TopMemberResponse.MemberRevenue>> GetTopMemberRevenues()
+        {
+            var topMembers = await _unitOfWork.UserRepository.GetTopMemberRevenue();
+            return topMembers;
+        }
+
         public async Task<IEnumerable<TopMovieResponse.MovieRevenue>> GetTopMovieRevenues()
         {
             var topMovies = await _unitOfWork.MovieRepository.GetTopMovieRevenue();

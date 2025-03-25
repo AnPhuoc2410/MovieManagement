@@ -4,6 +4,8 @@ namespace MovieManagement.Server.Services.DashboardService
 {
     public interface IDashboardService
     {
+        Task<IEnumerable<TopMemberResponse.MemberRevenue>> GetTopMemberRevenues();
+
         Task<IEnumerable<TopMovieResponse.MovieRevenue>> GetTopMovieRevenues();
         Task<IEnumerable<TopMovieResponse.MovieDaily>> GetTopMovieDailyRevenues(DateTime from, DateTime to);
 
