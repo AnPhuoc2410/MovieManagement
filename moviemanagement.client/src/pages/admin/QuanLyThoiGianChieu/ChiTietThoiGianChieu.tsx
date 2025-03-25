@@ -26,10 +26,14 @@ import AppNavbar from '../../../components/mui/AppNavbar';
 import Header from '../../../components/mui/Header';
 import SideMenu from '../../../components/mui/SideMenu';
 import AppTheme from '../../../shared-theme/AppTheme';
+import { useState, useEffect } from 'react';
 
 const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomTheme?: boolean }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [selectedMovieId, setSelectedMovieId] = useState<string>('');
+  const [selectedRoomId, setSelectedRoomId] = useState<string>('');
+  const [isModified, setIsModified] = useState<boolean>(false);
 
   // Fetch showtime details
   const { data: showtime, isLoading: isLoadingShowtime, error: showtimeError } = useQuery<ShowTime, Error>(
@@ -46,13 +50,21 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     }
   );
 
+  // Update local state when showtime data is loaded
+  useEffect(() => {
+    if (showtime) {
+      setSelectedMovieId(showtime.movieId || '');
+      setSelectedRoomId(showtime.roomId || '');
+    }
+  }, [showtime]);
+
   // Fetch movies list
   const { data: movies, isLoading: isLoadingMovies } = useQuery(
     'movies',
     async () => {
       const response = await axios.get('https://localhost:7119/api/movie/all');
       console.log('Movies API Response:', response.data);
-      return Array.isArray(response.data) ? response.data : response.data.data || [];
+      return response.data?.data || [];
     }
   );
 
@@ -62,9 +74,40 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     async () => {
       const response = await axios.get('https://localhost:7119/api/room/all');
       console.log('Rooms API Response:', response.data);
-      return Array.isArray(response.data) ? response.data : response.data.data || [];
+      
+      // Handle both cases - direct array or nested data property
+      return Array.isArray(response.data) ? response.data : response.data?.data || [];
     }
   );
+
+  const handleMovieChange = (event: any) => {
+    setSelectedMovieId(event.target.value);
+    setIsModified(true);
+  };
+
+  const handleRoomChange = (event: any) => {
+    setSelectedRoomId(event.target.value);
+    setIsModified(true);
+  };
+
+  const handleSave = async () => {
+    try {
+      if (!showtime) return;
+      
+      const updatedShowtime = {
+        ...showtime,
+        movieId: selectedMovieId,
+        roomId: selectedRoomId
+      };
+      
+      await axios.put(`https://localhost:7119/api/showtime/${id}`, updatedShowtime);
+      alert('Lịch chiếu đã được cập nhật thành công!');
+      setIsModified(false);
+    } catch (error) {
+      console.error('Error updating showtime:', error);
+      alert('Đã xảy ra lỗi khi cập nhật lịch chiếu!');
+    }
+  };
 
   const handleBack = () => {
     navigate('/admin/ql-thoi-gian-chieu');
@@ -174,8 +217,8 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                     <Typography variant="subtitle1">Phim</Typography>
                     <FormControl fullWidth size="small">
                       <Select
-                        value={showtime.movieId || ''}
-                        disabled
+                        value={selectedMovieId}
+                        onChange={handleMovieChange}
                         displayEmpty
                       >
                         <MenuItem value="">
@@ -183,7 +226,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                         </MenuItem>
                         {Array.isArray(movies) && movies.map((movie: any) => (
                           <MenuItem key={movie.movieId} value={movie.movieId}>
-                            {movie.title || movie.name}
+                            {movie.movieName}
                           </MenuItem>
                         ))}
                       </Select>
@@ -194,8 +237,8 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                     <Typography variant="subtitle1">Phòng chiếu</Typography>
                     <FormControl fullWidth size="small">
                       <Select
-                        value={showtime.roomId || ''}
-                        disabled
+                        value={selectedRoomId}
+                        onChange={handleRoomChange}
                         displayEmpty
                       >
                         <MenuItem value="">
@@ -203,7 +246,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                         </MenuItem>
                         {Array.isArray(rooms) && rooms.map((room: any) => (
                           <MenuItem key={room.roomId} value={room.roomId}>
-                            {room.name}
+                            {room.roomName || room.name}
                           </MenuItem>
                         ))}
                       </Select>
@@ -233,15 +276,27 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                   </Box>
 
                   <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', gap: 2 }}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="large"
-                      onClick={handleEdit}
-                      sx={{ minWidth: 150 }}
-                    >
-                      Chỉnh sửa
-                    </Button>
+                    {isModified ? (
+                      <Button
+                        variant="contained"
+                        color="success"
+                        size="large"
+                        onClick={handleSave}
+                        sx={{ minWidth: 150 }}
+                      >
+                        Lưu thay đổi
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        onClick={handleEdit}
+                        sx={{ minWidth: 150 }}
+                      >
+                        Chỉnh sửa
+                      </Button>
+                    )}
                     <Button
                       variant="outlined"
                       size="large"
