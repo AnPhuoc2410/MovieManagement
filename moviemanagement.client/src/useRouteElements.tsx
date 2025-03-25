@@ -211,17 +211,6 @@ export default function useRouteElements() {
                 { path: ":id", element: <AdminPages.ShowTime.Detail /> },
               ],
             },
-            {
-              path: "ql-dat-ve",
-              children: [
-                { path: "", element: <AdminPages.Ticket.BookingManagement /> },
-                { path: ":bId", element: <AdminPages.Ticket.BookingDetail /> },
-                {
-                  path: "thong-tin-nhan-ve/:bId",
-                  element: <AdminPages.Ticket.TicketInfo />,
-                },
-              ],
-            },
           ],
         },
       ],
