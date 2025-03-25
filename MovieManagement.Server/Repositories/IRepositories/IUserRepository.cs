@@ -16,6 +16,7 @@ namespace MovieManagement.Server.Repositories.IRepositories
         bool IsFieldExisting(string fieldName, string fieldValue, Guid? excludeUserId = null);
 
         Task<List<TopMemberResponse.MemberRevenue>> GetTopMemberRevenue();
+        Task<List<TopMemberResponse.MemberDaily>> GetTopMemberDailyRevenue(DateTime date);
     }
 
 }

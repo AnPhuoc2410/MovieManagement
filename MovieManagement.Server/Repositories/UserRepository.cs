@@ -105,8 +105,8 @@ namespace MovieManagement.Server.Repositories
                 {
                     MemberName = u.UserName,
                     TicketsSold = u.Bills
-                        .SelectMany(b => b.TicketDetails
-                            .Where(td => td.Status == TicketStatus.Paid))
+                        .Where(b => b.Status == BillStatus.Completed)
+                        .Select(b => b.TicketDetails)
                         .Count(),
                     CurrentPoint = u.Point,
                     TotalPoint = u.Bills
@@ -114,6 +114,36 @@ namespace MovieManagement.Server.Repositories
                         .Sum(b => b.Point)
                 })
                 .OrderByDescending(u => u.TicketsSold)
+                .Take(50)
+                .ToListAsync();
+            return user;
+        }
+
+        public async Task<List<TopMemberResponse.MemberDaily>> GetTopMemberDailyRevenue(DateTime date)
+        {
+            var user = await _context.Users
+                .Where(u => u.Role == Role.Member)
+                .Select(u => new TopMemberResponse.MemberDaily
+                {
+                    Day = date,
+                    MemberRevenues = u.Bills
+                        .Where(b => b.Status == BillStatus.Completed && b.CreatedDate.Day == date.Day)
+                        .SelectMany(b => b.TicketDetails
+                            .Where(td => td.Status == TicketStatus.Paid))
+                        .GroupBy(td => td.Bill.CreatedDate.Day)
+                        .Select(g => new TopMemberResponse.MemberRevenue
+                        {
+                            MemberName = u.UserName,
+                            TicketsSold = u.Bills
+                                .Select(b => b.TicketDetails)
+                                .Count(),
+                            CurrentPoint = u.Point,
+                            TotalPoint = u.Bills
+                                .Sum(b => b.Point)
+                        })
+                        .ToList()
+                })
+                .OrderByDescending(u => u.MemberRevenues.Sum(mr => mr.TicketsSold))
                 .Take(50)
                 .ToListAsync();
             return user;

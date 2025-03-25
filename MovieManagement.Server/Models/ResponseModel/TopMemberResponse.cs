@@ -9,5 +9,10 @@
             public decimal CurrentPoint { get; set; }
             public decimal TotalPoint { get; set; }
         }
+        public class MemberDaily
+        {
+            public DateTime Day { get; set; }
+            public List<MemberRevenue> MemberRevenues { get; set; }
+        }
     }
 }

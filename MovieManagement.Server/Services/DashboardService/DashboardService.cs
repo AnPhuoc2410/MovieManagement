@@ -17,6 +17,17 @@ namespace MovieManagement.Server.Services.DashboardService
             var topMembers = await _unitOfWork.UserRepository.GetTopMemberRevenue();
             return topMembers;
         }
+        public async Task<IEnumerable<TopMemberResponse.MemberDaily>> GetTopMemberDailyRevenues(DateTime from, DateTime to)
+        {
+            var timeDaily = GetFromTo(from, to);
+            List<TopMemberResponse.MemberDaily> topMemberDaily = new List<TopMemberResponse.MemberDaily>();
+            foreach (var day in timeDaily)
+            {
+                var memberDayRevenue = await _unitOfWork.UserRepository.GetTopMemberDailyRevenue(day);
+                topMemberDaily.AddRange(memberDayRevenue);
+            }
+            return topMemberDaily;
+        }
 
         public async Task<IEnumerable<TopMovieResponse.MovieRevenue>> GetTopMovieRevenues()
         {
