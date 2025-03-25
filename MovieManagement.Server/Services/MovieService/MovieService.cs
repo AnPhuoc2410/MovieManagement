@@ -57,15 +57,17 @@ namespace MovieManagement.Server.Services.MovieService
         {
 
             movieRequest.UserId = employeeId;
-            var movie = await _unitOfWork.MovieRepository.CreateAsync(_mapper.Map<Movie>(movieRequest));
-            var response = _mapper.Map<MovieDto>(movie);
+            var movie = _mapper.Map<Movie>(movieRequest);
+            movie.PostDate = DateTime.Now;
+            var response = _mapper.Map<MovieDto>(await _unitOfWork.MovieRepository.CreateAsync(movie));
+            //var response = _mapper.Map<MovieDto>(movie);
 
             if(movieRequest.CategoriesIds.Count != 0)
                 foreach (var categoryId in movieRequest.CategoriesIds)
                 {
                     var movieCategory = new MovieCategory
                     {
-                        MovieId = movie.MovieId.Value,
+                        MovieId = response.MovieId.Value,
                         CategoryId = categoryId
                     };
                     _unitOfWork.MovieCategoryRepository.Create(movieCategory);

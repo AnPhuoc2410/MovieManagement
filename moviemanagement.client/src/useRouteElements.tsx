@@ -34,7 +34,7 @@ const AdminPages = {
   Movie: {
     Management: lazy(() => import("./pages/admin/QuanLyPhim/Movies")),
     Edit: lazy(() => import("./pages/admin/QuanLyPhim/ChinhSuaPhim")),
-    Add: lazy(() => import("./pages/admin/QuanLyPhim/MovieDetail")),
+    Add: lazy(() => import("./pages/admin/QuanLyPhim/AddMovie")),
   },
   Room: {
     Management: lazy(

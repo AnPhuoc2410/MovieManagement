@@ -20,18 +20,18 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import TextEdit from "../../../components/admin/TextEdit";
-import AppNavbar from "../../../components/mui/AppNavbar";
-import SideMenu from "../../../components/mui/SideMenu";
+import TextEdit from "./TextEdit";
+import AppNavbar from "../mui/AppNavbar";
+import SideMenu from "../mui/SideMenu";
 
-import CloudinaryUploadWidget from "../../../components/cloudinary/CloudinaryUploadWidget";
+import CloudinaryUploadWidget from "../cloudinary/CloudinaryUploadWidget";
 
 import dayjs from "dayjs";
-import { ENV } from "../../../env/env.config";
-import AppTheme from "../../../shared-theme/AppTheme";
+import { ENV } from "../../env/env.config";
+import AppTheme from "../../shared-theme/AppTheme";
 import toast from "react-hot-toast";
-import Header from "../../../components/mui/Header";
-import ScrollFloat from "../../../components/shared/ScrollFloat";
+import Header from "../mui/Header";
+import ScrollFloat from "../shared/ScrollFloat";
 import {
   DateField,
   DatePicker,
@@ -39,17 +39,17 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Movie } from "@mui/icons-material";
-import { MovieRatings } from "../../../data/movieRating.data";
-import { MovieVersions } from "../../../data/movieVersion.data";
-import api from "../../../apis/axios.config";
-import { Category } from "../../../types/category.types";
+import { MovieRatings } from "../../data/movieRating.data";
+import { MovieVersions } from "../../data/movieVersion.data";
+import api from "../../apis/axios.config";
+import { Category } from "../../types/category.types";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"; // Import DeleteForeverIcon
+import { useAuth } from "../../contexts/AuthContext";
 
 interface Movie {
   movieId?: string;
   movieName: string;
   image?: string;
-  postDate: string;
   fromDate: string;
   toDate: string;
   actors: string;
@@ -63,18 +63,23 @@ interface Movie {
   categoriesIds: string[];
 }
 
-export default function MovieDetail() {
+interface MovieDetailProps {
+  onSubmit: (data: Movie) => void;
+}
+
+export default function MovieDetail({ onSubmit }: MovieDetailProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const movie: Movie | undefined = location.state?.movie;
   const ratings = MovieRatings;
   const versions = MovieVersions;
+  const { userDetails } = useAuth();
+  // const currentUserId = localStorage.getItem("userId") || "anonymous";
 
   const { watch, control, handleSubmit, reset, setValue } = useForm<Movie>({
     defaultValues: {
       movieName: "",
       image: "",
-      postDate: "",
       fromDate: "",
       toDate: "",
       actors: "",
@@ -84,7 +89,7 @@ export default function MovieDetail() {
       version: "",
       trailer: "",
       content: "",
-      userId: "",
+      userId: userDetails?.userId || "",
       categoriesIds: [],
     },
   });
@@ -125,42 +130,13 @@ export default function MovieDetail() {
     setValue("image", imageUrl);
   };
 
-  const onSubmit = async (data: Movie) => {
-    try {
-      const payload = {
-        ...data,
-        movieId: data.movieId ? data.movieId : null,
-        postDate: dayjs(data.postDate).toISOString(),
-        fromDate: dayjs(data.fromDate).toISOString(),
-        toDate: dayjs(data.toDate).toISOString(),
-      };
-
-      if (data.movieId) {
-        await axios.put(
-          `https://localhost:7119/api/movies/${data.movieId}`,
-          payload,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          },
-        );
-        toast.success("Cập nhật phim thành công", { removeDelay: 3000 });
-      } else {
-        await axios.post("https://localhost:7119/api/movies", payload, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        toast.success("Thêm phim mới thành công", { removeDelay: 3000 });
-      }
-
-      setTimeout(() => {
-        navigate("/admin/phim");
-      }, 3000);
-    } catch (error) {
-      toast.error(`Lỗi khi lưu phim: ${error}`);
-    }
+  const handleFormSubmit = (data: Movie) => {
+    const payload = {
+      ...data,
+      fromDate: dayjs(data.fromDate).toISOString(),
+      toDate: dayjs(data.toDate).toISOString(),
+    };
+    onSubmit(payload);
   };
 
   return (
@@ -214,7 +190,7 @@ export default function MovieDetail() {
                     </Typography>
                   </ScrollFloat>
                 </Box>
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form onSubmit={handleSubmit(handleFormSubmit)}>
                   <Stack
                     direction="row"
                     spacing={2}
@@ -224,8 +200,7 @@ export default function MovieDetail() {
                     }}
                   >
                     {/* Left Box with Fields */}
-                    <Box sx={{ flex: 1, maxWidth: 700 }}>
-                      {" "}
+                    <Box sx={{ flex: 1, maxWidth: 750 }}>
                       {/* Reduced width */}
                       <Controller
                         name="movieName"
@@ -436,7 +411,6 @@ export default function MovieDetail() {
                           <Box
                             component="section"
                             sx={{
-                              mr: 5,
                               p: 2,
                               width: 250,
                               maxHeight: "100%", // Match height with the left box
@@ -601,7 +575,7 @@ export default function MovieDetail() {
                         </Typography>
                         <TextEdit
                           value={field.value}
-                          onChange={(val) => field.onChange(val)}
+                          onChange={(val: string) => field.onChange(val)}
                           error={error?.message}
                         />
                       </Box>
