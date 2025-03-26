@@ -75,7 +75,6 @@ namespace MovieManagement.Server.Services.BillService
                 throw new Exception("Failed to create bill.");
             return createdBill;
         }
-
         public async Task<BillDto> UpdateBillAsync(long billId, BillEnum.BillStatus billStatus)
         {
             var existingBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
@@ -102,18 +101,21 @@ namespace MovieManagement.Server.Services.BillService
             }
             return await _unitOfWork.BillRepository.DeleteAsync(billId);
         }
-
         public BillDto UpdateBill(long billId, BillEnum.BillStatus billStatus)
         {
             var existingBill = _unitOfWork.BillRepository.GetById(billId);
             if (existingBill == null)
+            {
                 throw new NotFoundException("Bill cannot found!");
+            }
 
             //existingBill = _mapper.Map(billRequest, existingBill);
             existingBill.Status = billStatus;
             var updatedBill = _unitOfWork.BillRepository.Update(existingBill);
             if (updatedBill == null)
+            {
                 throw new DbUpdateException("Bill cannot update!");
+            }
             return _mapper.Map<BillDto>(updatedBill);
         }
     }
