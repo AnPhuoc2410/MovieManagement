@@ -1,15 +1,12 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import {
   Box,
-  Button,
   Chip,
   Grid,
-  Modal,
-  Typography,
   Paper,
+  Typography
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import api from "../../apis/axios.config";
 import { Movie } from "../../types/movie.types";
@@ -22,10 +19,7 @@ interface MovieDetailProps {
 const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
   const { movieId } = useParams();
   const [movie, setMovie] = useState<Movie>();
-  const [openTrailer, setOpenTrailer] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const { t } = useTranslation();
-  const [trailerUrl, setTrailerUrl] = useState<string>();
 
   const fetchMovieById = async () => {
     try {
@@ -48,15 +42,6 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
   useEffect(() => {
     fetchMovieById();
   }, []);
-
-  const handleOpenTrailer = (url: string) => {
-    let embedUrl = url.replace("youtu.be", "youtube.com/embed");
-    embedUrl = embedUrl.replace("watch?v=", "embed/");
-    embedUrl = embedUrl + "?autoplay=1";
-    setTrailerUrl(embedUrl);
-    setOpenTrailer(true);
-  };
-  const handleCloseTrailer = () => setOpenTrailer(false);
 
   const formatDate = (dateString?: Date) => {
     if (!dateString) return "N/A";
@@ -120,7 +105,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
               sx={{
                 mr: 1,
                 mb: 1,
-                backgroundColor: "primary.main",
+                backgroundColor: "red",
                 color: "white",
               }}
             />
