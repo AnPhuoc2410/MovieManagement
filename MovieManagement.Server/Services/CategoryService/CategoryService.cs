@@ -24,7 +24,7 @@ namespace MovieManagement.Server.Services.CategoryService
             var categories = await _unitOfWork.CategoryRepository.GetAllAsync();
             if (categories == null)
             {
-                throw new NotFoundException("Category does not found!");
+                throw new NotFoundException("Categories not found!");
             }
             return _mapper.Map<List<CategoryDto>>(categories);
         }
@@ -36,8 +36,9 @@ namespace MovieManagement.Server.Services.CategoryService
                 throw new BadRequestException("Page and PageSize is invalid");
             }
             var categories = await _unitOfWork.CategoryRepository.GetPageAsync(page, pageSize);
-            if (categories == null)
-                throw new NotFoundException("Category does not found!");
+            if (categories == null) {
+                throw new NotFoundException("Categories not found!");
+            }
             return _mapper.Map<List<CategoryDto>>(categories);
         }
 
@@ -48,7 +49,7 @@ namespace MovieManagement.Server.Services.CategoryService
                 throw new BadRequestException("Category and Movie Id is invalid");
             }
             var category = _mapper.Map<CategoryDto>(await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId));
-            if (category == null)
+            if(category == null)
             {
                 throw new NotFoundException("Category cannot found!");
             }

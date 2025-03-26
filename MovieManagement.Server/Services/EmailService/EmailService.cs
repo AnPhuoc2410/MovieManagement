@@ -28,6 +28,7 @@ namespace MovieManagement.Server.Services.EmailService
             _qRCodeGenerator = qRCodeGenerator;
             _mapper = mapper;
         }
+
         public bool SendEmailReportBill(long billId)
         {
             //Get user bill

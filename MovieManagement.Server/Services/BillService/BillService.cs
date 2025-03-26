@@ -23,9 +23,9 @@ namespace MovieManagement.Server.Services.BillService
         public async Task<IEnumerable<BillDto>> GetAllBillsAsync()
         {
             var bills = _mapper.Map<List<BillDto>>(await _unitOfWork.BillRepository.GetAllAsync());
-            if (bills == null)
+            if(bills == null)
             {
-                throw new NotFoundException("Movie does not found!");
+                throw new NotFoundException("Bills not found!");
             }
             return bills;
         }
@@ -36,13 +36,13 @@ namespace MovieManagement.Server.Services.BillService
                 throw new Exception("Page and size page is invalid");
             }
             var bills = await _unitOfWork.BillRepository.GetPageAsync(page, sizePage);
-            if (bills == null)
+            if(bills == null)
             {
-                throw new NotFoundException("Bill does not found!");
+                throw new NotFoundException("Bills not found!");
             }
             return _mapper.Map<List<BillDto>>(bills);
         }
-        public async Task<BillDto> GetBillByIdAsync(long billId)
+        public async Task<BillDto> GetBillByIdAsync(long billId) 
         {
             var bill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.GetByIdAsync(billId));
             if (bill == null)

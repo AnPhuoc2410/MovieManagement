@@ -26,6 +26,8 @@ namespace MovieManagement.Server.Services.MovieTheaterService
 
         public async Task<MovieTheaterDto> GetMovieTheaterByIdAsync(Guid movieTheaterId)
         {
+            if(movieTheaterId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var movieTheater = await _unitOfWork.MovieTheaterRepository.GetByIdAsync(movieTheaterId) 
                 ?? throw new NotFoundException("Movie theater not found!");
             return _mapper.Map<MovieTheaterDto>(movieTheater);
@@ -33,6 +35,8 @@ namespace MovieManagement.Server.Services.MovieTheaterService
 
         public async Task<IEnumerable<MovieTheaterDto>> GetMovieTheaterPageAsync(int page, int pageSize)
         {
+            if(page < 0 || pageSize < 1)
+                throw new BadRequestException("Page and PageSize is invalid");
             var movieTheaters = await _unitOfWork.MovieTheaterRepository.GetPageAsync(page, pageSize) 
                 ?? throw new NotFoundException("Movie theater not found!");
             return _mapper.Map<List<MovieTheaterDto>>(movieTheaters);
@@ -44,6 +48,8 @@ namespace MovieManagement.Server.Services.MovieTheaterService
             movieTheater.CreatedDate = DateTime.Now;
             movieTheater.UpdatedDate = DateTime.Now;
             var newMovieTheater = _mapper.Map<MovieTheater>(movieTheater);
+            if(newMovieTheater == null)
+                throw new Exception("Failed to create movie theater.");
             return _mapper.Map<MovieTheaterDto>(await _unitOfWork.MovieTheaterRepository.CreateAsync(newMovieTheater));
         }
 
