@@ -121,7 +121,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
             return _mapper.Map<IEnumerable<ShowTimeDto>>(showtimes);
         }
-        
+
         public async Task<ShowTimeDto> GetShowtimeByIdAsync(Guid showTimeId)
         {
             var showTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.GetByIdAsync(showTimeId));
@@ -157,8 +157,9 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 throw new NotFoundException("ShowTime does not found!");
             }
 
-
-            existingShowTime.StartTime = new DateTime(existingShowTime.StartTime.Year, existingShowTime.StartTime.Month, existingShowTime.StartTime.Day, existingShowTime.StartTime.Hour, existingShowTime.StartTime.Minute, 0);
+            existingShowTime.MovieId = showtime.MovieId;
+            existingShowTime.RoomId = showtime.RoomId;
+            existingShowTime.StartTime = new DateTime(showtime.StartTime.Year, showtime.StartTime.Month, showtime.StartTime.Day, showtime.StartTime.Hour, showtime.StartTime.Minute, 0);
             existingShowTime.EndTime = existingShowTime.StartTime.Add(TimeSpan.FromMinutes(movie.Duration));
 
             if (existingShowTime.StartTime < DateTime.Now)
@@ -176,8 +177,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
             foreach (var st in showTimesByRoom)
             {
-                if ((existingShowTime.StartTime < st.EndTime && existingShowTime.EndTime > st.StartTime) ||
-                    (existingShowTime.EndTime > st.StartTime && existingShowTime.StartTime < st.EndTime))
+                if (existingShowTime.ShowTimeId != st.ShowTimeId &&
+                     existingShowTime.StartTime < st.EndTime && existingShowTime.EndTime > st.StartTime)
                 {
                     throw new ApplicationException("Unable to create due to other StartTime and EndTime.");
                 }
