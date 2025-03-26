@@ -56,7 +56,7 @@ export default function Movies({
   useEffect(() => {
     async function fetchMovies() {
       try {
-        const response = await api.get("/movie/all");
+        const response = await api.get("/movie");
         setMovies(response.data.data);
         console.log("Movies:", response.data.data);
       } catch (error) {
@@ -227,7 +227,7 @@ export default function Movies({
             <DeleteIcon color="error" />
           </IconButton>
         </Popconfirm>
-          
+
         </>
       ),
     },
@@ -322,7 +322,7 @@ export default function Movies({
                     error={!!error}
                     helperText={error ? error.message : ""}
                   />
-                  
+
                 )}
               />
               <Controller

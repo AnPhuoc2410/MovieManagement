@@ -40,7 +40,7 @@ const SearchPage: React.FC = () => {
       try {
         setLoading(true);
         const response = await api.get(
-          `movie/searchmoviesbynamerelative/${encodeURIComponent(keyword)}`,
+          `movie/name-relative/${encodeURIComponent(keyword)}`,
         );
         console.log("Search results:", response.data.data);
         setSearchResults(response.data.data);
