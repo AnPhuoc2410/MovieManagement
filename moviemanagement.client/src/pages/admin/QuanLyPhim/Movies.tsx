@@ -1,6 +1,7 @@
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { Popconfirm } from 'antd';
 import {
   Box,
   Button,
@@ -39,7 +40,7 @@ interface Movie {
   fromDate: string;
   director: string;
   duration: number;
-  version: number;
+  version: string;
 }
 
 export default function Movies({
@@ -73,7 +74,7 @@ export default function Movies({
       fromDate: "",
       director: "",
       duration: 0,
-      version: 2,
+      version: "",
     },
   });
   const navigate = useNavigate();
@@ -128,9 +129,7 @@ export default function Movies({
 
   const handleDelete = async (movieId: string) => {
     try {
-      await axios.delete(`https://localhost:7119/api/movies/${movieId}`, {
-        headers: { "Content-Type": "application/json" },
-      });
+      await api.delete(`movie/${movieId}`);
       setMovies(movies.filter((m) => m.movieId !== movieId));
       toast.success("Đã Xóa Phim");
     } catch (error) {
@@ -139,7 +138,7 @@ export default function Movies({
   };
 
   const handleEdit = (movie: Movie) => {
-    navigate(`/admin/phim/${movie.movieId}`, {
+    navigate(`/admin/ql-phim/${movie.movieId}`, {
       state: { movie },
     });
   };
@@ -216,9 +215,19 @@ export default function Movies({
           <IconButton onClick={() => handleEdit(params.row)}>
             <EditIcon color="primary" />
           </IconButton>
-          <IconButton onClick={() => handleDelete(params.row.movieId)}>
+          <Popconfirm
+          placement="topRight"
+          title={"Xác nhận"}
+          description={"Bạn có chắc chắn muốn xóa phim này không?"}
+          okText="Yes"
+          cancelText="No"
+          onConfirm={() => handleDelete(params.row.movieId)}
+        >
+          <IconButton>
             <DeleteIcon color="error" />
           </IconButton>
+        </Popconfirm>
+          
         </>
       ),
     },

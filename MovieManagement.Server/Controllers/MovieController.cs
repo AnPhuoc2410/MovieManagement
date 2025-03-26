@@ -183,7 +183,7 @@ namespace MovieManagement.Server.Controllers
         [Route("{movieId:guid}")]
         public async Task<IActionResult> DeleteRoomAsync(Guid movieId)
         {
-            var isDeleted = await _movieService.DeleteMovieAsync(movieId);
+            var isDeleted = await _movieService.SetMovieDeleted(movieId) != null;
             var response = new ApiResponse<object>
             {
                 StatusCode = 200,
