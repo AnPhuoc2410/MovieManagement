@@ -66,7 +66,8 @@ namespace MovieManagement.Server.Services.BillService
                 UserId = userId,
                 Status = BillEnum.BillStatus.Pending,
                 TotalTicket = billRequest.TotalTicket.Value,
-                Amount = billRequest.Amount.Value
+                Amount = billRequest.Amount.Value,
+                Point = billRequest.Amount.Value/1000,
             };
 
             var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateIdentityAsync(bill));

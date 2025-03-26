@@ -21,6 +21,7 @@ namespace MovieManagement.Server.Repositories.IRepositories
         Task<List<Movie>> GetMoviesByCategory(Guid categoryId, int page, int pageSize);
         Task<Movie> SetMovieDeleted(Guid movieId);
         Task<List<Movie>> GetMoviesByNameRelative(string searchValue);
+        Task<List<Movie>> GetAllAsyncDeletedFalse();
 
         Task<List<TopMovieResponse.MovieRevenue>> GetTopMovieRevenue();
         Task<TopMovieResponse.MovieDaily> GetTopMovieDailyRevenue(DateTime time);

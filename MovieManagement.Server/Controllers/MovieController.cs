@@ -180,7 +180,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         [Route("{movieId:guid}")]
-        public async Task<IActionResult> DeleteRoomAsync(Guid movieId)
+        public async Task<IActionResult> DeleteMovie(Guid movieId)
         {
             var isDeleted = await _movieService.DeleteMovieAsync(movieId);
             var response = new ApiResponse<bool>
