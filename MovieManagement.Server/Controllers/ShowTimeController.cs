@@ -22,7 +22,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpGet]
         [Route("GetAllShowTime")]
-        [ProducesResponseType(typeof(ApiResponse<ShowTimeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<ShowTimeInfo>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -78,7 +78,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpPut("UpdateShowTime/{id:guid}")]
+        [HttpPut("UpdateShowTime/{showTimeId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

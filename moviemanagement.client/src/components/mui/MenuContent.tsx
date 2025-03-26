@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next"; // Import the translation hook
 
 // Icons
 import ConfirmationNumberRoundedIcon from "@mui/icons-material/ConfirmationNumberRounded";
+import LocalActivityIcon from '@mui/icons-material/LocalActivity';
 import DiscountRoundedIcon from "@mui/icons-material/DiscountRounded";
 import EventSeatRoundedIcon from "@mui/icons-material/EventSeatRounded";
 import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
@@ -49,7 +50,7 @@ export default function MenuContent() {
       text: t("menu.ticketSales"),
       translationKey: "menu.ticketSales",
       icon: <LocalActivityRoundedIcon />,
-      path: "/admin/ban-ve",
+      path: "/admin/ql-ban-ve",
     },
     {
       text: t("menu.ticketBooking"),
@@ -68,6 +69,12 @@ export default function MenuContent() {
       translationKey: "menu.movieManagement",
       icon: <MovieCreationRoundedIcon />,
       path: "/admin/ql-phim",
+    },
+    {
+      text: "Quản lí thời gian chiếu",
+      translationKey: "menu.showTimeManagement",
+      icon: <LocalActivityIcon />,
+      path: "/admin/ql-thoi-gian-chieu",
     },
     {
       text: t("menu.promotions"),
