@@ -27,47 +27,53 @@ import SideMenu from "../../../components/mui/SideMenu";
 import CloudinaryUploadWidget from "../../../components/cloudinary/CloudinaryUploadWidget";
 
 import dayjs from "dayjs";
-import TextEdit from "../../../components/admin/TextEdit";
 import { ENV } from "../../../env/env.config";
 import AppTheme from "../../../shared-theme/AppTheme";
 import toast from "react-hot-toast";
-import { Promotion } from "../../../types/promotion.types";
+import api from "../../../apis/axios.config";
 
-export default function Promotions({
+interface Movie {
+  movieId: string;
+  movieName: string;
+  image?: string;
+  fromDate: string;
+  director: string;
+  duration: number;
+  version: number;
+}
+
+export default function Movies({
   disableCustomTheme = false,
 }: {
   disableCustomTheme?: boolean;
 }) {
-  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [open, setOpen] = useState(false);
-  const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(
-    null,
-  );
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string>("");
 
   useEffect(() => {
-    async function fetchPromotions() {
+    async function fetchMovies() {
       try {
-        const response = await axios.get(
-          "https://localhost:7119/api/promotions/all",
-        );
-        setPromotions(response.data);
+        const response = await api.get("/movie/all");
+        setMovies(response.data.data);
+        console.log("Movies:", response.data.data);
       } catch (error) {
-        console.error("Error fetching promotions:", error);
+        console.error("Error fetching movies:", error);
       }
     }
-    fetchPromotions();
+    fetchMovies();
   }, []);
 
-  const { watch, control, handleSubmit, reset, setValue } = useForm<Promotion>({
+  const { watch, control, handleSubmit, reset, setValue } = useForm<Movie>({
     defaultValues: {
-      promotionId: "",
-      promotionName: "",
-      discount: 0,
-      fromDate: new Date(),
-      toDate: new Date(),
-      content: "",
+      movieId: "",
+      movieName: "",
       image: "",
+      fromDate: "",
+      director: "",
+      duration: 0,
+      version: 2,
     },
   });
   const navigate = useNavigate();
@@ -83,89 +89,96 @@ export default function Promotions({
     setValue("image", imageUrl);
   };
 
-  const handleOpen = (promotion?: Promotion) => {
-    setSelectedPromotion(promotion || null);
-    reset(
-      promotion || {
-        promotionId: "",
-        promotionName: "",
-        discount: 0,
-        fromDate: new Date(),
-        toDate: new Date(),
-        content: "",
-        image: "",
-      },
-    );
-    setUploadedImage(promotion?.image || "");
-    setOpen(true);
+  const handleAddMovie = (movie?: Movie) => {
+    navigate(`/admin/ql-phim/them-phim`, {
+      state: { movieId: movie?.movieId || null },
+    });
   };
 
   const handleClose = () => {
     setOpen(false);
-    setSelectedPromotion(null);
+    setSelectedMovie(null);
     setUploadedImage("");
   };
 
-  const onSubmit = async (data: Promotion) => {
+  const onSubmit = async (data: Movie) => {
     try {
       const payload = {
         ...data,
-        promotionId: data.promotionId || null,
+        movieId: data.movieId || null,
         image:
           data.image?.trim() ||
           "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1741245144/p9qsbq4xr82adzxsushl.png",
       };
 
-      // Create new promotion
+      // Create new movie
       const response = await axios.post(
-        "https://localhost:7119/api/promotions",
+        "https://localhost:7119/api/movies",
         payload,
         { headers: { "Content-Type": "application/json" } },
       );
 
-      setPromotions([...promotions, response.data]);
+      setMovies([...movies, response.data]);
       handleClose();
-      toast.success("Tạo Khuyến Mãi Thành Công");
+      toast.success("Tạo Phim Thành Công");
     } catch (error) {
-      toast.error(`Lỗi tạo khuyến mãi: ${error}`);
+      toast.error(`Lỗi tạo phim: ${error}`);
     }
   };
 
-  const handleDelete = async (promotionId: string) => {
+  const handleDelete = async (movieId: string) => {
     try {
-      await axios.delete(
-        `https://localhost:7119/api/promotions/${promotionId}`,
-        {
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-      setPromotions(promotions.filter((p) => p.promotionId !== promotionId));
-      toast.success("Đã Xóa Khuyến Mãi");
+      await axios.delete(`https://localhost:7119/api/movies/${movieId}`, {
+        headers: { "Content-Type": "application/json" },
+      });
+      setMovies(movies.filter((m) => m.movieId !== movieId));
+      toast.success("Đã Xóa Phim");
     } catch (error) {
-      toast.error(`Lỗi xóa khuyến mãi: ${error}`);
+      toast.error(`Lỗi xóa phim: ${error}`);
     }
   };
 
-  const handleEdit = (promotion: Promotion) => {
-    navigate(`/admin/khuyen-mai/${promotion.promotionId}`, {
-      state: { promotion },
+  const handleEdit = (movie: Movie) => {
+    navigate(`/admin/phim/${movie.movieId}`, {
+      state: { movie },
     });
   };
 
   const columns: GridColDef[] = [
     {
-      field: "promotionId",
-      headerName: "ID",
-      width: 100,
-      sortable: false,
-      filterable: false,
+      field: "image",
+      renderHeader: () => <strong>Ảnh</strong>,
+      width: 120,
+      renderCell: (params) =>
+        params.row.image ? (
+          <img
+            src={params.row.image}
+            alt="Movie"
+            style={{ width: "100%", height: "auto" }}
+          />
+        ) : (
+          "No image"
+        ),
     },
-    { field: "promotionName", headerName: "Tiêu Đề", flex: 1 },
-    { field: "discount", headerName: "Giảm giá (%)", width: 130 },
+    {
+      field: "movieName",
+      renderHeader: () => <strong>Tên Phim</strong>,
+      flex: 1,
+    },
+    {
+      field: "postDate",
+      renderHeader: () => <strong>Ngày Đăng</strong>,
+      width: 130,
+      renderCell: (params) => (
+        <span>
+          {params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}
+        </span>
+      ),
+    },
     {
       field: "fromDate",
-      headerName: "Bắt đầu",
-      width: 150,
+      renderHeader: () => <strong>Ngày Chiếu</strong>,
+      width: 130,
       renderCell: (params) => (
         <span>
           {params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}
@@ -174,40 +187,36 @@ export default function Promotions({
     },
     {
       field: "toDate",
-      headerName: "Kết thúc",
-      width: 150,
+      renderHeader: () => <strong>Kết Thúc</strong>,
+      width: 130,
       renderCell: (params) => (
         <span>
           {params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}
         </span>
       ),
     },
-    { field: "content", headerName: "Chi Tiết", flex: 1 },
     {
-      field: "image",
-      headerName: "Ảnh",
-      width: 120,
-      renderCell: (params) =>
-        params.row.image ? (
-          <img
-            src={params.row.image}
-            alt="Promotion"
-            style={{ width: "100%", height: "auto" }}
-          />
-        ) : (
-          "No image"
-        ),
+      field: "director",
+      renderHeader: () => <strong>Đạo Diễn</strong>,
+      flex: 0.5,
+    },
+    {
+      field: "version",
+      renderHeader: () => <strong>Phiên Bản</strong>,
+      width: 100,
+      align: "center", // Center-align the content
+      headerAlign: "center", // Center-align the header
     },
     {
       field: "actions",
-      headerName: "Chức năng",
-      width: 150,
+      renderHeader: () => <strong>Chức năng</strong>,
+      width: 120,
       renderCell: (params) => (
         <>
           <IconButton onClick={() => handleEdit(params.row)}>
             <EditIcon color="primary" />
           </IconButton>
-          <IconButton onClick={() => handleDelete(params.row.promotionId)}>
+          <IconButton onClick={() => handleDelete(params.row.movieId)}>
             <DeleteIcon color="error" />
           </IconButton>
         </>
@@ -243,39 +252,44 @@ export default function Promotions({
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
-                onClick={() => handleOpen()}
+                onClick={() => handleAddMovie()}
                 sx={{ mb: 2 }}
               >
-                Thêm Khuyến Mãi
+                Thêm Phim
               </Button>
 
-              <Box sx={{ height: 400, width: "100%" }}>
+              <Box sx={{ height: "calc(100vh - 170px)", width: "100%" }}>
                 <DataGrid
-                  rows={promotions}
+                  rows={movies}
                   columns={columns}
-                  pageSizeOptions={[5, 10, 20]}
-                  getRowId={(row) => row.promotionId}
+                  pagination
+                  pageSizeOptions={[3, 5, 10]} // Available page size options
+                  initialState={{
+                    pagination: {
+                      paginationModel: { pageSize: 3 }, // Set default page size to 3
+                    },
+                  }}
+                  getRowId={(row) => row.movieId}
+                  rowHeight={120} // Match the image height
                 />
               </Box>
             </Stack>
           </Box>
         </Box>
 
-        <Dialog open={open} onClose={handleClose} fullWidth>
-          <DialogTitle>
-            {selectedPromotion ? "Sửa Khuyến Mãi" : "Tạo Khuyến Mãi"}
-          </DialogTitle>
+        {/* <Dialog open={open} onClose={handleClose} fullWidth>
+          <DialogTitle>{selectedMovie ? "Sửa Phim" : "Tạo Phim"}</DialogTitle>
           <DialogContent>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Controller
-                name="promotionName"
+                name="movieName"
                 control={control}
-                rules={{ required: "Tiêu đề yêu cầu" }}
+                rules={{ required: "Tên phim yêu cầu" }}
                 render={({ field, fieldState: { error } }) => (
                   <TextField
                     {...field}
                     fullWidth
-                    label="Tiêu đề"
+                    label="Tên Phim"
                     margin="dense"
                     variant="outlined"
                     InputLabelProps={{ shrink: true }}
@@ -285,18 +299,52 @@ export default function Promotions({
                 )}
               />
               <Controller
-                name="discount"
+                name="fromDate"
+                control={control}
+                rules={{ required: "Nhập ngày chiếu" }}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Ngày Chiếu"
+                    type="date"
+                    margin="dense"
+                    InputLabelProps={{ shrink: true }}
+                    error={!!error}
+                    helperText={error ? error.message : ""}
+                  />
+                  
+                )}
+              />
+              <Controller
+                name="director"
+                control={control}
+                rules={{ required: "Nhập đạo diễn" }}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Đạo Diễn"
+                    margin="dense"
+                    variant="outlined"
+                    InputLabelProps={{ shrink: true }}
+                    error={!!error}
+                    helperText={error ? error.message : ""}
+                  />
+                )}
+              />
+              <Controller
+                name="duration"
                 control={control}
                 rules={{
-                  required: "Nhập giảm giá",
-                  min: { value: 1, message: "Giảm giá ít nhất 1%" },
-                  max: { value: 100, message: "Giảm giá không vượt quá 100%" },
+                  required: "Nhập thời lượng",
+                  min: { value: 1, message: "Thời lượng ít nhất 1 phút" },
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <TextField
                     {...field}
                     fullWidth
-                    label="Giảm giá (%)"
+                    label="Thời Lượng (phút)"
                     type="number"
                     margin="dense"
                     error={!!error}
@@ -305,62 +353,23 @@ export default function Promotions({
                 )}
               />
               <Controller
-                name="fromDate"
-                control={control}
-                rules={{ required: "Nhập thời gian bắt đầu" }}
-                render={({ field, fieldState: { error } }) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    label="Bắt đầu"
-                    type="date"
-                    margin="dense"
-                    InputLabelProps={{ shrink: true }}
-                    error={!!error}
-                    helperText={error ? error.message : ""}
-                  />
-                )}
-              />
-              <Controller
-                name="toDate"
+                name="version"
                 control={control}
                 rules={{
-                  required: "Nhập thời gian kết thúc",
-                  validate: (value) => {
-                    const start = watch("fromDate");
-                    if (new Date(value) < new Date(start)) {
-                      return "Thời gian kết thúc phải sau thời gian bắt đầu";
-                    }
-                    return true;
-                  },
-                }}
-                render={({ field, fieldState: { error } }) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    label="Kết thúc"
-                    type="date"
-                    margin="dense"
-                    InputLabelProps={{ shrink: true }}
-                    error={!!error}
-                    helperText={error ? error.message : ""}
-                  />
-                )}
-              />
-              <Controller
-                name="content"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: "Nhập chi tiết",
+                  required: "Nhập phiên bản",
                   validate: (value) =>
-                    value.trim() !== "" || "Chi tiết không được để trống",
+                    [2, 3].includes(value) ||
+                    "Phiên bản chỉ có thể là 2D hoặc 3D",
                 }}
                 render={({ field, fieldState: { error } }) => (
-                  <TextEdit
-                    value={field.value}
-                    onChange={(val) => field.onChange(val)}
-                    error={error?.message}
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Phiên Bản (2D/3D)"
+                    type="number"
+                    margin="dense"
+                    error={!!error}
+                    helperText={error ? error.message : ""}
                   />
                 )}
               />
@@ -384,12 +393,12 @@ export default function Promotions({
                   Hủy
                 </Button>
                 <Button type="submit" variant="contained">
-                  {selectedPromotion ? "Cập nhật" : "Tạo"}
+                  {selectedMovie ? "Cập nhật" : "Tạo"}
                 </Button>
               </DialogActions>
             </form>
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
       </Box>
     </AppTheme>
   );

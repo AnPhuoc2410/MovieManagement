@@ -61,7 +61,7 @@ namespace MovieManagement.Server.Extensions.SignalR
             }
         }
 
-        public async Task ConfirmSeatPurchase(List<TicketDetailRequest> ticketRequests, string showtimeId)
+        public async Task ConfirmSeatPurchase(List<TicketDetailRequest> ticketRequests, string showtimeId, string userId)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace MovieManagement.Server.Extensions.SignalR
                 // Remove auto-release jobs if seats are confirmed
                 foreach (var ticket in ticketRequests)
                 {
-                    string ticketKey = $"{ticket.TicketId}-{Context.ConnectionId}";
+                    string ticketKey = $"{ticket.TicketId}-{userId}";
                     if (_seatJobTracker.TryGetValue(ticketKey, out var jobId))
                     {
                         BackgroundJob.Delete(jobId);
@@ -85,6 +85,32 @@ namespace MovieManagement.Server.Extensions.SignalR
             catch (Exception ex)
             {
                 Console.WriteLine($"[ERROR] ConfirmSeatPurchase failed: {ex.Message}");
+            }
+        }
+
+        public async Task ReleasePendingSeats(List<TicketDetailRequest> ticketRequests, string showtimeId, string userId)
+        {
+            try
+            {
+                // Only release seats that belong to this user
+                var responses = await _ticketService.ChangeStatusTicketDetailAsync(ticketRequests, TicketStatus.Created);
+
+                foreach (var ticketResponse in responses)
+                {
+                    await _hubContext.Clients.Group(showtimeId).SendAsync("SeatAvailable", ticketResponse.SeatId);
+
+                    // Clean up job tracker
+                    string ticketKey = $"{ticketResponse.TicketId}-{userId}";
+                    if (_seatJobTracker.TryGetValue(ticketKey, out var jobId))
+                    {
+                        BackgroundJob.Delete(jobId);
+                        _seatJobTracker.Remove(ticketKey);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] ReleasePendingSeats failed: {ex.Message}");
             }
         }
 

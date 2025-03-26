@@ -10,10 +10,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSignalR } from "../../contexts/SignalRContext";
-import StepTracker from "../../components/Ticket/StepTracker";
-import Footer from "../../components/home/Footer";
-import Header from "../../components/home/Header";
+import { useSignalR } from "../../../contexts/SignalRContext";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HomeIcon from "@mui/icons-material/Home";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -194,7 +191,6 @@ const Confirmation: React.FC = () => {
         },
       }}
     >
-      <Header />
       <Container
         maxWidth="xl"
         sx={{
@@ -213,21 +209,6 @@ const Confirmation: React.FC = () => {
             minHeight: "100vh",
           }}
         >
-          {/* Sidebar StepTracker (Desktop) */}
-          <Box
-            sx={{
-              display: { xs: "none", md: "block" },
-              position: "sticky",
-              top: "100px",
-              alignSelf: "flex-start",
-              height: "fit-content",
-              width: "250px",
-              flexShrink: 0,
-            }}
-          >
-            <StepTracker currentStep={4} paymentStatus={paymentStatus} />
-          </Box>
-
           {/* Main Content */}
           <Box
             sx={{
@@ -238,11 +219,6 @@ const Confirmation: React.FC = () => {
               pb: 4,
             }}
           >
-            {/* Mobile StepTracker */}
-            <Box sx={{ display: { xs: "block", md: "none" }, mb: 2 }}>
-              <StepTracker currentStep={4} paymentStatus={paymentStatus} />
-            </Box>
-
             <Typography
               variant="h4"
               fontWeight="bold"
@@ -654,7 +630,6 @@ const Confirmation: React.FC = () => {
           </Box>
         </Box>
       </Container>
-      <Footer />
     </Box>
   );
 };

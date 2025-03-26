@@ -1,5 +1,5 @@
 import EventSeatIcon from "@mui/icons-material/EventSeat";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, Paper, Divider, useTheme, alpha } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../../apis/axios.config";
@@ -16,6 +16,7 @@ interface SeatProps {
 }
 
 const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelectedSeats, groupConnected }) => {
+  const theme = useTheme();
   const { connection } = useSignalR(); // Get the shared SignalR connection
   const [seats, setSeats] = useState<TicketDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -74,7 +75,6 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
       setSelectedSeats((prev) => prev.filter(seat => seat.id !== seatId));
     };
 
-
     connection.on("SeatPending", handleSeatPending);
     connection.on("SeatBought", handleSeatBought);
     connection.on("SeatSelected", handleSeatSelected);
@@ -102,7 +102,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           setSelectedSeats([]); // Clear locally stored selections
           toast('Các ghế đã được hủy do bạn quay lại.', {
             position: "top-center",
-            });
+          });
         } catch (error) {
           console.error("Error releasing seats on return:", error);
         }
@@ -217,19 +217,59 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
   if (loading) return <Loader />;
 
   return (
-    <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pb: 4, position: "relative" }}>
+    <Paper
+      elevation={2}
+      sx={{
+        p: 3,
+        borderRadius: 2,
+        backgroundColor: theme.palette.background.paper,
+        color: theme.palette.text.primary
+      }}
+    >
+      {/* Seat Legend */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: 2,
+          mb: 4,
+          pb: 2,
+          borderBottom: `1px solid ${alpha(theme.palette.divider, 0.7)}`
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <EventSeatIcon sx={{ color: theme.palette.info.main }} />
+          <Typography variant="body2">Ghế VIP</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <EventSeatIcon sx={{ color: theme.palette.success.main }} />
+          <Typography variant="body2">Ghế đang chọn</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <EventSeatIcon sx={{ color: theme.palette.error.main }} />
+          <Typography variant="body2">Ghế đã bán</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <EventSeatIcon sx={{ color: theme.palette.warning.main }} />
+          <Typography variant="body2">Ghế đã chọn</Typography>
+        </Box>
+      </Box>
+
       {/* Screen Display */}
-      <Box sx={{ textAlign: "center", mb: 2 }}>
+      <Box sx={{ textAlign: "center", mb: 4, mt: 2 }}>
         <Box
           sx={{
             margin: "0 auto",
             width: "80%",
-            height: "70px",
-            borderTop: "6px solid #fff",
+            height: "10px",
+            background: `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.6)} 0%, rgba(0,0,0,0) 100%)`,
             borderRadius: "50% 50% 0 0",
+            padding: "20px 0",
+            position: "relative"
           }}
         />
-        <Typography variant="h6" sx={{ mt: -2, color: "white" }}>
+        <Typography variant="h6" sx={{ mt: 1, color: theme.palette.text.secondary, fontWeight: 500 }}>
           Màn hình
         </Typography>
       </Box>
@@ -253,23 +293,29 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
                 const isBought = ticket.status === 2;
                 const isVip = ticket.seat.seatType.typeName === "VIP";
 
-                let iconColor = "white";
+                // Use theme colors
+                let iconColor = theme.palette.text.primary;
                 let backgroundColor = "transparent";
+                let textColor = theme.palette.text.primary;
                 let disabled = false;
 
                 if (isSelectedByMe) {
-                  iconColor = "green";
-                  backgroundColor = "rgba(0, 255, 0, 0.2)";
+                  iconColor = theme.palette.success.main;
+                  backgroundColor = alpha(theme.palette.success.main, 0.1);
+                  textColor = theme.palette.success.dark;
                 } else if (isBought) {
-                  iconColor = "red";
-                  backgroundColor = "rgba(255, 0, 0, 0.2)";
+                  iconColor = theme.palette.error.main;
+                  backgroundColor = alpha(theme.palette.error.main, 0.1);
+                  textColor = theme.palette.error.dark;
                   disabled = true;
                 } else if (isVip) {
-                  iconColor = "blue";
-                  backgroundColor = "rgba(0, 0, 255, 0.2)";
+                  iconColor = theme.palette.info.main;
+                  backgroundColor = alpha(theme.palette.info.main, 0.05);
+                  textColor = theme.palette.info.dark;
                 } else if (isPending) {
-                  iconColor = "yellow";
-                  backgroundColor = "rgba(255, 255, 0, 0.2)";
+                  iconColor = theme.palette.warning.main;
+                  backgroundColor = alpha(theme.palette.warning.main, 0.1);
+                  textColor = theme.palette.warning.dark;
                   disabled = true;
                 }
 
@@ -285,23 +331,30 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
                       minWidth: "50px",
                       minHeight: "50px",
                       backgroundColor,
-                      color: "white",
+                      color: textColor,
+                      border: `1px solid ${iconColor}`,
                       p: 0.5,
                       fontSize: "0.7rem",
+                      transition: "all 0.2s ease",
                       "&:hover": {
-                        backgroundColor: isSelectedByMe
-                          ? "rgba(0, 255, 0, 0.4)"
-                          : "rgba(255,255,255,0.2)",
+                        backgroundColor: alpha(iconColor, 0.15),
+                        borderColor: iconColor,
                       },
                       "&.Mui-disabled": {
                         backgroundColor,
-                        color: "white",
+                        color: textColor,
+                        borderColor: iconColor,
+                        opacity: 0.6,
                       },
                     }}
                   >
                     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                       <EventSeatIcon sx={{ color: iconColor }} />
-                      <Typography variant="body2" align="center">
+                      <Typography
+                        variant="body2"
+                        align="center"
+                        sx={{ color: textColor }}
+                      >
                         {ticket.seat.atRow}
                         {ticket.seat.atColumn}
                       </Typography>
@@ -313,7 +366,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           ))}
         </Box>
       </Box>
-    </Box>
+    </Paper>
   );
 };
 

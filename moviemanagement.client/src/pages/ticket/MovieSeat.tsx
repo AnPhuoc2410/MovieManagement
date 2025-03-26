@@ -17,7 +17,7 @@ const MovieSeat: React.FC = () => {
   {
     movieId: "",
     selectedTime: "Not selected",
-    selectedDate: "Not selected",
+    selectedDate: new Date().toISOString().split('T')[0],
     tickets: [],
     movieData: {},
   };
