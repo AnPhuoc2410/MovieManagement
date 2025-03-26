@@ -29,35 +29,42 @@ namespace MovieManagement.Server.Services.UserService
         public async Task ChangeUserPasswordByUserId(Guid userId, string currentPassword,
             string newPassword)
         {
-                //Checking userId is existing
-                var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
-                if (user == null)
-                    throw new NotFoundException("User not found!");
+            //Checking userId is existing
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+            if (user == null)
+                throw new NotFoundException("User not found!");
 
-                //Checking new password is blank
-                if (string.IsNullOrEmpty(newPassword))
-                    throw new Exception("New password is blank!");
-                Console.WriteLine($"Stored Hashed Password: {user.Password}");
-                Console.WriteLine($"Input Password: {currentPassword}");
-                //Create PasswordHasher
-                var passwordHasher = new PasswordHasher<User>();
+            //Checking new password is blank
+            if (string.IsNullOrEmpty(newPassword))
+                throw new Exception("New password is blank!");
+            Console.WriteLine($"Stored Hashed Password: {user.Password}");
+            Console.WriteLine($"Input Password: {currentPassword}");
+            //Create PasswordHasher
+            var passwordHasher = new PasswordHasher<User>();
 
-                //Verify password
-                var verificationResult =
-                    new PasswordHasher<User>().VerifyHashedPassword(user, user.Password, currentPassword);
-                Console.WriteLine($"Verification Result: {verificationResult}");
-                if (verificationResult == PasswordVerificationResult.Failed)
-                    throw new Exception("Current password is incorrect.");
+            //Verify password
+            var verificationResult =
+                new PasswordHasher<User>().VerifyHashedPassword(user, user.Password,
+                    currentPassword);
+            Console.WriteLine($"Verification Result: {verificationResult}");
+            if (verificationResult == PasswordVerificationResult.Failed)
+                throw new Exception("Current password is incorrect.");
 
-                //Hash new password
-                user.Password = passwordHasher.HashPassword(user, newPassword);
+            //Hash new password
+            user.Password = passwordHasher.HashPassword(user, newPassword);
 
-                //Update new password
-                var updatedUser =
-                    await _unitOfWork.UserRepository.ResetUserPasswordByUserIdAsync(userId,
-                        user.Password, newPassword);
-                if (updatedUser == null)
-                    throw new Exception("Failed to change password.");
+            //Update new password
+            var updatedUser =
+                await _unitOfWork.UserRepository.ResetUserPasswordByUserIdAsync(userId,
+                    user.Password, newPassword);
+            if (updatedUser == null)
+                throw new Exception("Failed to change password.");
+        }
+
+        public Task<IEnumerable<UserDto.UserResponse>> GetAllUsersAsync()
+        {
+            var users = _unitOfWork.UserRepository.GetAll();
+            return Task.FromResult(_mapper.Map<IEnumerable<UserDto.UserResponse>>(users));
         }
 
         public async Task<bool> RegisterWithGoogle(OAuthRequest account)
@@ -83,7 +90,7 @@ namespace MovieManagement.Server.Services.UserService
 
             if (user.Role != Role.Employee)
                 throw new BadRequestException("Cannot delete this user role");
-            
+
             if (user.Status == UserStatus.Inactive)
                 throw new BadRequestException("User is already inactive!");
 
@@ -92,7 +99,8 @@ namespace MovieManagement.Server.Services.UserService
 
         public async Task<UserDto.UserResponse> GetUserByIdAsync(Guid id)
         {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(id) ?? throw new BadRequestException("User not found hihi!");
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(id) ??
+                       throw new BadRequestException("User not found hihi!");
             return _mapper.Map<UserDto.UserResponse>(user);
         }
 
@@ -105,10 +113,23 @@ namespace MovieManagement.Server.Services.UserService
             return _mapper.Map<List<UserDto.UserResponse>>(usersList);
         }
 
+        public async Task<UserDto.UserResponse> FindUserByPhone(string phone)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserByPhoneAsync(phone);
+            return _mapper.Map<UserDto.UserResponse>(user);
+        }
+
+        public async Task<UserDto.UserResponse> FindUserByIdCard(string idCard)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserByIdCardAsync(idCard);
+            return _mapper.Map<UserDto.UserResponse>(user);
+        }
+
         public async Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page,
             int pageSize)
         {
-            var users = await _unitOfWork.UserRepository.GetPageAsync(page, pageSize) ?? throw new NotFoundException("User not found!");
+            var users = await _unitOfWork.UserRepository.GetPageAsync(page, pageSize) ??
+                        throw new NotFoundException("User not found!");
             return _mapper.Map<List<UserDto.UserResponse>>(users);
         }
 
@@ -138,6 +159,5 @@ namespace MovieManagement.Server.Services.UserService
             _mapper.Map(userDto, existingUser);
             await _unitOfWork.UserRepository.UpdateAsync(existingUser);
         }
-
     }
 }
