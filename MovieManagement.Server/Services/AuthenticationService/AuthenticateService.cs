@@ -1,19 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services.JwtService;
 using MovieManagement.Server.Services.UserService;
-using Microsoft.AspNetCore.Http.HttpResults;
 using MovieManagement.Server.Repositories.IRepositories;
 using MovieManagement.Server.Exceptions;
-using Microsoft.VisualBasic;
 using static MovieManagement.Server.Models.Enums.UserEnum;
-using System.Runtime.ConstrainedExecution;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.VisualBasic.FileIO;
 
@@ -64,13 +58,21 @@ namespace MovieManagement.Server.Services.AuthorizationService
         public UserDto.UserResponse Register(AuthDto.RegisterRequest dto)
         {
             if (dto.Email == null)
+            {
                 throw new Exception("Email is not blank.");
+            }
             if (dto.IDCard == null)
+            {
                 throw new Exception("ID card is not blank.");
+            }
             if (dto.PhoneNumber == null)
-                throw new Exception("Phone number is not blank.");
+            { 
+                throw new Exception("Phone number is not blank."); 
+            }
             if (dto.UserName == null)
+            {
                 throw new Exception("User name is not blank.");
+            }
 
             // Check if any of the unique fields already exist
             var existingUser = _userRepository.GetUserByUniqueFields(dto.Email, dto.IDCard, dto.PhoneNumber, dto.UserName);
@@ -122,7 +124,10 @@ namespace MovieManagement.Server.Services.AuthorizationService
         public async Task<UserDto.UserResponse> ExtractTokenAsync(string token)
         {
             if (token == null)
+            {
                 throw new Exception("Token is not blank.");
+            }
+                
             var jwtToken = _jwtService.ReadTokenWithoutValidation(token);
             if (jwtToken == null)
                 throw new BadRequestException("Invalid token.");
