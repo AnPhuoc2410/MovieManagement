@@ -243,6 +243,12 @@ namespace MovieManagement.Server.Repositories
             _context.Add(entity);
         }
 
+        public T PrepareCreateEntity(T entity)
+        {
+            _context.Add(entity);
+            return entity;
+        }
+
         public void PrepareUpdate(T entity)
         {
             var tracker = _context.Attach(entity);

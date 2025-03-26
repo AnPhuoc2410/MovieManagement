@@ -29,7 +29,7 @@ const NowShowingMovies: React.FC = () => {
       try {
         setLoading(true);
         const response = await api.get(
-          `/movie/getmoviesnowshowing/page/${apiPage}/pagesize/${apiPageSize}`
+          `/movie/showing/page/${apiPage}/size/${apiPageSize}`
         );
         console.log("Now showing movies:", response.data);
         setNowShowingMovies(response.data);

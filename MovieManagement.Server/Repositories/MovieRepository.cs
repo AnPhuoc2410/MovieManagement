@@ -5,6 +5,7 @@ using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Repositories.IRepositories;
+using System.Buffers;
 using System.Drawing.Printing;
 using static MovieManagement.Server.Models.Enums.TicketEnum;
 
@@ -85,6 +86,11 @@ namespace MovieManagement.Server.Repositories
         {
             return await _context.Movies
                 .Where(m => m.MovieName.ToLower().Contains(searchValue.ToLower()) && m.IsDeleted == false).ToListAsync();
+        }
+
+        public async Task<List<Movie>> GetAllAsyncDeletedFalse()
+        {
+            return await _context.Movies.Where(m => m.IsDeleted == false).ToListAsync();
         }
 
         public async Task<List<TopMovieResponse.MovieRevenue>> GetTopMovieRevenue()

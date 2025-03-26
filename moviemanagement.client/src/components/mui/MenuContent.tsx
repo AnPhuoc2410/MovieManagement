@@ -50,7 +50,7 @@ export default function MenuContent() {
       text: t("menu.ticketSales"),
       translationKey: "menu.ticketSales",
       icon: <LocalActivityRoundedIcon />,
-      path: "/admin/ban-ve",
+      path: "/admin/ql-ban-ve",
     },
     {
       text: t("menu.ticketBooking"),

@@ -31,8 +31,8 @@ const AdminPages = {
   },
   Movie: {
     Management: lazy(() => import("./pages/admin/QuanLyPhim/Movies")),
-    Edit: lazy(() => import("./pages/admin/QuanLyPhim/ChinhSuaPhim")),
-    Add: lazy(() => import("./pages/admin/QuanLyPhim/MovieDetail")),
+    Edit: lazy(() => import("./pages/admin/QuanLyPhim/UpdateMovie")),
+    Add: lazy(() => import("./pages/admin/QuanLyPhim/AddMovie")),
   },
   Room: {
     Management: lazy(
@@ -145,7 +145,7 @@ export default function useRouteElements() {
     },
     // Protected Admin Routes
     {
-      element: <RejectedRoute />,
+      element: <ProtectedRoute />,
       children: [
         {
           path: "/admin",
@@ -163,7 +163,7 @@ export default function useRouteElements() {
               path: "ql-phim",
               children: [
                 { path: "", element: <AdminPages.Movie.Management /> },
-                { path: ":id", element: <AdminPages.Movie.Edit /> },
+                { path: ":movieId", element: <AdminPages.Movie.Edit /> },
                 { path: "them-phim", element: <AdminPages.Movie.Add /> },
               ],
             },
@@ -209,17 +209,6 @@ export default function useRouteElements() {
               children: [
                 { path: "", element: <AdminPages.ShowTime.Management /> },
                 { path: ":id", element: <AdminPages.ShowTime.Detail /> },
-              ],
-            },
-            {
-              path: "ql-dat-ve",
-              children: [
-                { path: "", element: <AdminPages.Ticket.BookingManagement /> },
-                { path: ":bId", element: <AdminPages.Ticket.BookingDetail /> },
-                {
-                  path: "thong-tin-nhan-ve/:bId",
-                  element: <AdminPages.Ticket.TicketInfo />,
-                },
               ],
             },
           ],

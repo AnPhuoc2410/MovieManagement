@@ -15,7 +15,7 @@ const AdminNowShowingMovies: React.FC = () => {
       try {
         setLoading(true);
         const response = await api.get(
-          `/movie/getmoviesnowshowing/page/0/pagesize/100`
+          `/movie/showing/page/0/size/100`
         );
         setMovies(response.data);
       } catch (error) {
