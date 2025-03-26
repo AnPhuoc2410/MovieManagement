@@ -73,6 +73,7 @@
         Task<T> CreateIdentityAsync(T entity);
 
         void PrepareCreate(T entity);
+        T PrepareCreateEntity(T entity);
         void PrepareUpdate(T entity);
         void PrepareRemove(T entity);
         int Save();

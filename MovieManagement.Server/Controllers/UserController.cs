@@ -74,24 +74,75 @@ namespace MovieManagement.Server.Controllers
             });
         }
 
-        [Authorize(Roles = "Member,Employee,Admin")]
-        [HttpGet("page/{page:int}/limit/{limit:int}")]
-        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
-            StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetPageAsync(int page, int limit)
+        /// <summary>
+        /// Find user by IdCard Or Phone     
+        /// </summary>
+        /// <param name="idCard"></param>
+        /// <param name="phone"></param>
+        /// <response code="200">Find user by IdCard Or Phone successfully</response>
+        [Authorize(Roles = "Admin")]
+        [HttpGet("find")]
+        public async Task<IActionResult> FindUserByIdCardOrPhoneAsync([FromQuery] string? idCard,
+            [FromQuery] string? phone)
         {
-            var users = await _userService.GetUserPageAsync(page, limit);
-            return Ok(new ApiResponse<IEnumerable<UserDto.UserResponse>>
+            var user = new UserDto.UserResponse();
+            if (idCard == null)
+            {
+                user = await _userService.FindUserByPhone(phone);
+            }
+            else
+            {
+                user = await _userService.FindUserByIdCard(idCard);
+            }
+
+            return Ok(new ApiResponse<UserDto.UserResponse>
             {
                 StatusCode = 200,
-                Message = "Get user by role successfully",
+                Message = "Find user by IdCard Or Phone successfully",
                 IsSuccess = true,
-                Data = users
+                Data = user
             });
+        }
+
+        [Authorize(Roles = "Member,Employee,Admin")]
+        [HttpGet("users")]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
+            StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
+            StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
+            StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
+            StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
+            StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUsersAsync([FromQuery] int? page,
+            [FromQuery] int? limit, [FromQuery] string idCard)
+        {
+            if (page.HasValue && limit.HasValue)
+            {
+                // Nếu page và limit có giá trị, gọi đến dịch vụ để lấy trang dữ liệu
+                var users = await _userService.GetUserPageAsync(page.Value, limit.Value);
+                return Ok(new ApiResponse<IEnumerable<UserDto.UserResponse>>
+                {
+                    StatusCode = 200,
+                    Message = "Get paged users successfully",
+                    IsSuccess = true,
+                    Data = users
+                });
+            }
+            else
+            {
+                // Nếu không có giá trị page và limit, lấy tất cả người dùng
+                var users = await _userService.GetAllUsersAsync();
+                return Ok(new ApiResponse<IEnumerable<UserDto.UserResponse>>
+                {
+                    StatusCode = 200,
+                    Message = "Get all users successfully",
+                    IsSuccess = true,
+                    Data = users
+                });
+            }
         }
 
         /// <summary>
@@ -142,7 +193,6 @@ namespace MovieManagement.Server.Controllers
             StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteUserAsync(Guid empId)
         {
-
             await _userService.DeleteUserAsync(empId);
             return NoContent();
         }
