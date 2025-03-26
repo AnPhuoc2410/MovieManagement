@@ -13,63 +13,71 @@ namespace MovieManagement.Server.Repositories
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
         private readonly AppDbContext _context;
+
         public UserRepository(AppDbContext context) : base(context)
         {
             _context = context;
-
         }
 
         public async Task<bool> ChangeUserPasswordByEmailAsync(string email, string newPassword)
         {
             var user = await _context.Users
-                            .Where(user => user.Email == email)
-                            .OrderBy(user => user.JoinDate)
-                            .LastOrDefaultAsync();
+                .Where(user => user.Email == email)
+                .OrderBy(user => user.JoinDate)
+                .LastOrDefaultAsync();
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
-            return user!=null;
+            return user != null;
         }
+
         public Task<List<User>> GetUserByRoleAsync(Role role)
         {
             return _context.Users
                 .Where(user => user.Role == role && user.Status == UserStatus.Active)
                 .ToListAsync();
         }
+
         public async Task<bool> IsExistingEmailAsync(string email)
         {
             var user = await _context.Users
-                            .Where(user => user.Email == email)
-                            .OrderBy(user => user.JoinDate)
-                            .LastOrDefaultAsync();
+                .Where(user => user.Email == email)
+                .OrderBy(user => user.JoinDate)
+                .LastOrDefaultAsync();
             return user != null;
         }
+
         public async Task<bool> IsExistingUserNameAsync(string userName)
         {
             var user = await _context.Users
-                            .Where(user => user.UserName == userName)
-                            .OrderBy(user => user.JoinDate)
-                            .LastOrDefaultAsync();
+                .Where(user => user.UserName == userName)
+                .OrderBy(user => user.JoinDate)
+                .LastOrDefaultAsync();
             return user != null;
         }
-        public async Task<bool> ResetUserPasswordByUserIdAsync(Guid userId, string currentPassword, string newPassword)
+
+        public async Task<bool> ResetUserPasswordByUserIdAsync(Guid userId, string currentPassword,
+            string newPassword)
         {
             var user = await _context.Users
-                            .Where(user => user.UserId == userId)
-                            .OrderBy(user => user.JoinDate)
-                            .LastOrDefaultAsync();
+                .Where(user => user.UserId == userId)
+                .OrderBy(user => user.JoinDate)
+                .LastOrDefaultAsync();
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
-            return user!=null;
+            return user != null;
         }
-        public User GetUserByUniqueFields(string email, string idCard, string phoneNumber, string userName)
+
+        public User GetUserByUniqueFields(string email, string idCard, string phoneNumber,
+            string userName)
         {
             return _context.Users
-                .Where(user => user.Email == email || 
-                               user.IDCard == idCard || 
-                               user.PhoneNumber == phoneNumber || 
+                .Where(user => user.Email == email ||
+                               user.IDCard == idCard ||
+                               user.PhoneNumber == phoneNumber ||
                                user.UserName == userName)
                 .FirstOrDefault();
         }
+
         public bool IsFieldExisting(string fieldName, string fieldValue, Guid? excludeUserId = null)
         {
             var query = _context.Users.AsQueryable();
@@ -88,12 +96,31 @@ namespace MovieManagement.Server.Repositories
             var user = query.OrderBy(user => user.JoinDate).LastOrDefault();
             return user != null;
         }
+
         public async Task<User> GetUserByEmailAsync(string email)
         {
             var user = await _context.Users
-                 .Where(user => user.Email == email && user.Status != 0)
-                 .OrderBy(user => user.JoinDate)
-                 .LastOrDefaultAsync();
+                .Where(user => user.Email == email && user.Status != 0)
+                .OrderBy(user => user.JoinDate)
+                .LastOrDefaultAsync();
+            return user;
+        }
+
+        public async Task<User> GetUserByIdCardAsync(string idCard)
+        {
+            var user = await _context.Users
+                .Where(user => user.IDCard == idCard)
+                .OrderBy(user => user.JoinDate)
+                .LastOrDefaultAsync();
+            return user;
+        }
+
+        public async Task<User> GetUserByPhoneAsync(string phone)
+        {
+            var user = await _context.Users
+                .Where(user => user.PhoneNumber == phone)
+                .OrderBy(user => user.JoinDate)
+                .LastOrDefaultAsync();
             return user;
         }
 
@@ -119,7 +146,8 @@ namespace MovieManagement.Server.Repositories
             return user;
         }
 
-        public async Task<List<TopMemberResponse.MemberDaily>> GetTopMemberDailyRevenue(DateTime date)
+        public async Task<List<TopMemberResponse.MemberDaily>> GetTopMemberDailyRevenue(
+            DateTime date)
         {
             var user = await _context.Users
                 .Where(u => u.Role == Role.Member)
@@ -127,7 +155,8 @@ namespace MovieManagement.Server.Repositories
                 {
                     Day = date,
                     MemberRevenues = u.Bills
-                        .Where(b => b.Status == BillStatus.Completed && b.CreatedDate.Day == date.Day)
+                        .Where(b =>
+                            b.Status == BillStatus.Completed && b.CreatedDate.Day == date.Day)
                         .SelectMany(b => b.TicketDetails
                             .Where(td => td.Status == TicketStatus.Paid))
                         .GroupBy(td => td.Bill.CreatedDate.Day)
