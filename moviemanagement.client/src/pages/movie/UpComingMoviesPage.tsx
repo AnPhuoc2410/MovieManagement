@@ -32,7 +32,7 @@ const UpComingMoviesPage: React.FC = () => {
       try {
         setLoading(true);
         const response = await api.get(
-          `/movie/getmoviesupcoming/page/${apiPage}/pagesize/${apiPageSize}`
+          `/movie/coming-soon/page/${apiPage}/size/${apiPageSize}`
         );
         console.log("Now showing movies:", response.data);
         setUpComingMovies(response.data);

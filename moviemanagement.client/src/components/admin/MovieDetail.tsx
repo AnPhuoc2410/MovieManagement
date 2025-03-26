@@ -115,9 +115,9 @@ export default function MovieDetail({ onSubmit, movie }: MovieDetailProps) {
 
   const fetchCategories = async () => {
     try {
-      const response = await api.get("category/all");
-      console.log(response.data);
-      setCategories(response.data);
+      const response = await api.get("category");
+      console.log(response.data.data);
+      setCategories(response.data.data);
     } catch (error: any) {
       toast.error("Lỗi khi tải thể loại: " + error.message);
     }

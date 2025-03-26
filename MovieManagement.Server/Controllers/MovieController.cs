@@ -33,7 +33,7 @@ namespace MovieManagement.Server.Controllers
                 IsSuccess = true,
                 Data = movies
             };
-            return NotFound(response);
+            return Ok(response);
         }
 
 
@@ -150,7 +150,7 @@ namespace MovieManagement.Server.Controllers
                 Message = "Movie is created",
                 IsSuccess = true,
             };
-            return NotFound(response);
+            return Ok(response);
         }
 
 
@@ -181,7 +181,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         [Route("{movieId:guid}")]
-        public async Task<IActionResult> DeleteRoomAsync(Guid movieId)
+        public async Task<IActionResult> DeleteMovie(Guid movieId)
         {
             var isDeleted = await _movieService.SetMovieDeleted(movieId) != null;
             var response = new ApiResponse<object>
@@ -190,7 +190,7 @@ namespace MovieManagement.Server.Controllers
                 Message = "Delete movie is success",
                 IsSuccess = true
             };
-            return NotFound(response);
+            return Ok(response);
         }
     }
 }
