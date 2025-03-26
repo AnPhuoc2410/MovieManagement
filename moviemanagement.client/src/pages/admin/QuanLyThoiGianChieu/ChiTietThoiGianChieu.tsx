@@ -17,7 +17,7 @@ import {
   FormControl,
   InputLabel
 } from '@mui/material';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import MovieIcon from '@mui/icons-material/Movie';
 import TheatersIcon from '@mui/icons-material/Theaters';
@@ -34,14 +34,30 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   const [selectedMovieId, setSelectedMovieId] = useState<string>('');
   const [selectedRoomId, setSelectedRoomId] = useState<string>('');
   const [isModified, setIsModified] = useState<boolean>(false);
+  const [startTime, setStartTime] = useState<string>('');
+  const [endTime, setEndTime] = useState<string>('');
+
+  // Format datetime string for datetime-local input
+  const formatDateTimeForInput = (dateTimeString: string | undefined): string => {
+    if (!dateTimeString) return '';
+    try {
+      const date = new Date(dateTimeString);
+      return format(date, "yyyy-MM-dd'T'HH:mm");
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return '';
+    }
+  };
 
   // Fetch showtime details
-  const { data: showtime, isLoading: isLoadingShowtime, error: showtimeError } = useQuery<ShowTime, Error>(
+  const { data: showtime, isLoading: isLoadingShowtime, error: showtimeError } = useQuery<any, Error>(
     ['showtime', id],
     async () => {
       try {
-        const response = await axios.get<ShowTime>(`https://localhost:7119/api/showtime/${id}`);
+        const response = await axios.get(`https://localhost:7119/api/showtime/${id}`);
         console.log('API Response:', response.data);
+        
+        // Based on the screenshot, the response has a data field
         return response.data;
       } catch (error) {
         console.error('Error fetching showtime:', error);
@@ -53,8 +69,19 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   // Update local state when showtime data is loaded
   useEffect(() => {
     if (showtime) {
-      setSelectedMovieId(showtime.movieId || '');
-      setSelectedRoomId(showtime.roomId || '');
+      console.log("Setting movie and room IDs from showtime:", showtime);
+      // Check if the data property exists and use it if available
+      const data = showtime.data || showtime;
+      setSelectedMovieId(data.movieId || '');
+      setSelectedRoomId(data.roomId || '');
+      
+      // Set datetime values for the inputs
+      if (data.startTime) {
+        setStartTime(formatDateTimeForInput(data.startTime));
+      }
+      if (data.endTime) {
+        setEndTime(formatDateTimeForInput(data.endTime));
+      }
     }
   }, [showtime]);
 
@@ -64,7 +91,8 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     async () => {
       const response = await axios.get('https://localhost:7119/api/movie');
       console.log('Movies API Response:', response.data);
-      return response.data?.data || [];
+      // Handle both cases - direct array or nested data property
+      return Array.isArray(response.data) ? response.data : response.data?.data || [];
     }
   );
 
@@ -90,17 +118,41 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     setIsModified(true);
   };
 
+  const handleStartTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStartTime(event.target.value);
+    setIsModified(true);
+  };
+
+  const handleEndTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEndTime(event.target.value);
+    setIsModified(true);
+  };
+
+  const formatDateTime = (dateTimeString: string) => {
+    if (!dateTimeString) return "";
+    // Create a date object but keep the time as selected by user
+    const dt = new Date(dateTimeString);
+    // Format date in yyyy-MM-ddTHH:mm:ss format (no timezone conversion)
+    return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00`;
+  };
+
   const handleSave = async () => {
     try {
       if (!showtime) return;
 
+      const data = showtime.data || showtime;
+      
       const updatedShowtime = {
-        ...showtime,
+        ...data,
         movieId: selectedMovieId,
-        roomId: selectedRoomId
+        roomId: selectedRoomId,
+        startTime: formatDateTime(startTime),
+        endTime: formatDateTime(endTime)
       };
 
-      await axios.put(`https://localhost:7119/api/showtime/${id}`, updatedShowtime);
+      console.log('Sending updated showtime:', updatedShowtime);
+
+      await axios.put(`https://localhost:7119/api/showtime/updateshowtime/${id}`, updatedShowtime);
       alert('Lịch chiếu đã được cập nhật thành công!');
       setIsModified(false);
     } catch (error) {
@@ -135,7 +187,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
               py: 2,
             })}>
               <Typography color="error" variant="h6">
-                Error: {showtimeError.message}
+                Error: {showtimeError instanceof Error ? showtimeError.message : 'Unknown error'}
               </Typography>
               <Button variant="contained" onClick={handleBack} sx={{ mt: 2 }}>
                 Quay lại
@@ -208,7 +260,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                       fullWidth
                       variant="outlined"
                       size="small"
-                      value={showtime.showTimeId}
+                      value={showtime?.data?.showTimeId || showtime?.showTimeId || ''}
                       InputProps={{ readOnly: true }}
                     />
                   </Box>
@@ -259,8 +311,12 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                       fullWidth
                       variant="outlined"
                       size="small"
-                      value={format(new Date(showtime.startTime), 'dd/MM/yyyy HH:mm')}
-                      InputProps={{ readOnly: true }}
+                      type="datetime-local"
+                      value={startTime}
+                      onChange={handleStartTimeChange}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                     />
                   </Box>
 
@@ -268,10 +324,14 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                     <Typography variant="subtitle1">Thời gian kết thúc</Typography>
                     <TextField
                       fullWidth
-                      variant="outlined"
+                      variant="outlined" 
                       size="small"
-                      value={format(new Date(showtime.endTime), 'dd/MM/yyyy HH:mm')}
-                      InputProps={{ readOnly: true }}
+                      type="datetime-local"
+                      value={endTime}
+                      onChange={handleEndTimeChange}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                     />
                   </Box>
 

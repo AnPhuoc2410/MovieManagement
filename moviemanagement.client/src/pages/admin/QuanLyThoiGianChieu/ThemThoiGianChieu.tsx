@@ -33,6 +33,14 @@ interface MovieApiResponse {
   data: Movie[];
 }
 
+interface RoomApiResponse {
+  message: string;
+  statusCode: number;
+  reason: string | null;
+  isSuccess: boolean;
+  data: Room[];
+}
+
 // Component
 const ThemThoiGianChieu = () => {
   const navigate = useNavigate();
@@ -51,7 +59,7 @@ const ThemThoiGianChieu = () => {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await axios.get<MovieApiResponse>("https://localhost:7119/api/movie/all");
+        const response = await axios.get<MovieApiResponse>("https://localhost:7119/api/movie");
         if (response.data.isSuccess) {
           setMovies(response.data.data);
         } else {
@@ -65,8 +73,12 @@ const ThemThoiGianChieu = () => {
 
     const fetchRooms = async () => {
       try {
-        const response = await axios.get<Room[]>("https://localhost:7119/api/room/all");
-        setRooms(response.data);
+        const response = await axios.get<RoomApiResponse>("https://localhost:7119/api/room/all");
+        if (response.data.isSuccess) {
+          setRooms(response.data.data);
+        } else {
+          setMessage({ text: "Failed to load rooms: " + response.data.message, type: "error" });
+        }
       } catch (error) {
         console.error("Failed to fetch rooms:", error);
         setMessage({ text: "Failed to load rooms", type: "error" });
@@ -98,20 +110,42 @@ const ThemThoiGianChieu = () => {
     setMessage({ text: "", type: "" });
 
     try {
+      // Fix timezone issues by keeping the selected time as is without conversion
+      const formatDateTime = (dateTimeString: string) => {
+        if (!dateTimeString) return "";
+        // Create a date object but keep the time as selected by user
+        const dt = new Date(dateTimeString);
+        // Format date in yyyy-MM-ddTHH:mm:ss format (no timezone conversion)
+        return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00`;
+      };
+
       const payload = {
         showTimeId: crypto.randomUUID(),
         movieId: formData.movieId,
         roomId: formData.roomId,
-        startTime: new Date(formData.startTime).toISOString(),
-        endTime: new Date(formData.endTime).toISOString(),
+        startTime: formatDateTime(formData.startTime),
+        endTime: formatDateTime(formData.endTime),
       };
+
+      console.log('Sending payload:', payload); // Debug log
 
       const response = await axios.post(
         "https://localhost:7119/api/showtime/createshowtime",
-        payload
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          validateStatus: function (status) {
+            return status < 500; // Resolve only if the status code is less than 500
+          }
+        }
       );
 
-      if (response.status === 200 || response.status === 201) {
+      console.log('Response:', response); // Debug log
+
+      if (response.data && response.data.isSuccess) {
         setMessage({
           text: "Thời gian chiếu đã được thêm thành công!",
           type: "success",
@@ -124,12 +158,18 @@ const ThemThoiGianChieu = () => {
           endTime: "",
         });
       } else {
-        setMessage({ text: "Failed to create showtime", type: "error" });
+        setMessage({ 
+          text: `Failed to create showtime: ${response.data?.message || 'Unknown error'}`, 
+          type: "error" 
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating showtime:", error);
+      const errorMessage = error.response?.data?.message 
+        || error.message 
+        || "Failed to create showtime. Please try again.";
       setMessage({
-        text: "Failed to create showtime. Please try again.",
+        text: errorMessage,
         type: "error",
       });
     } finally {

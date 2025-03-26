@@ -146,7 +146,7 @@ export default function useRouteElements() {
     },
     // Protected Admin Routes
     {
-      element: <ProtectedRoute />,
+    
       children: [
         {
           path: "/admin",
