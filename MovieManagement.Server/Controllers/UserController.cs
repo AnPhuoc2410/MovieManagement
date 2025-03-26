@@ -33,8 +33,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDto>> GetUserByIdAsync(Guid userId)
         {
             var user = await _userService.GetUserByIdAsync(userId);
@@ -55,13 +54,11 @@ namespace MovieManagement.Server.Controllers
         /// <response code="200">Get user by role successfully</response>
         [Authorize(Roles = "Admin")]
         [HttpGet("role/{role}")]
-        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserDto.UserResponse>>),
-            StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserDto.UserResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUserByRoleAsync(Role role)
         {
             var users = await _userService.GetUserByRoleAsync(role);
@@ -80,8 +77,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
-            StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetPageAsync(int page, int limit)
         {
             var users = await _userService.GetUserPageAsync(page, limit);
@@ -105,10 +101,8 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserDto>> UpdateUserAsync(Guid userId,
-            UserDto.UpdateRequest updateReq)
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserDto>> UpdateUserAsync(Guid userId, UserDto.UpdateRequest updateReq)
         {
             await _userService.UpdateUserAsync(userId, updateReq);
             return Ok(new ApiResponse<object>
@@ -138,8 +132,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteUserAsync(Guid empId)
         {
 
