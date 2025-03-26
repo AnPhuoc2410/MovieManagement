@@ -105,9 +105,10 @@ namespace MovieManagement.Server.Controllers
                         //return Ok(paymentResult);
                         return Redirect("http://localhost:3000/ticket/confirmation?isSuccess=true&paymentId=" + paymentResult.PaymentId);
                     }
-                    else 
+                    else
+                    {
                         return Redirect("http://localhost:3000/ticket/confirmation?isSuccess=false&paymentId=" + paymentResult.PaymentId);
-
+                    }
                     return BadRequest(paymentResult);
                 }
                 catch (Exception ex)

@@ -124,3 +124,4 @@ export const extractUserFromToken = async (
 
   return response.data;
 };
+

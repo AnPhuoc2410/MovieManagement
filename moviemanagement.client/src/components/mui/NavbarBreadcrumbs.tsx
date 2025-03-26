@@ -25,7 +25,7 @@ export default function NavbarBreadcrumbs() {
   const slugToTranslationKey: { [key: string]: string } = {
     "khuyen-mai": "breadcrumbs.promotions",
     "thong-ke": "breadcrumbs.dashboard",
-    phim: "breadcrumbs.movies",
+    "ql-phim": "breadcrumbs.movies",
     "ql-phong-chieu": "breadcrumbs.screeningRooms",
     "ql-dat-ve": "breadcrumbs.ticketBooking",
     "ban-ve": "breadcrumbs.ticketSales",
@@ -39,6 +39,7 @@ export default function NavbarBreadcrumbs() {
     }
 
     const parts = pathname.split("/").filter(Boolean);
+    console.log(parts);
     const breadcrumbs = [t("breadcrumbs.home")];
     const paths = ["/admin/thong-ke"];
 
@@ -54,6 +55,7 @@ export default function NavbarBreadcrumbs() {
         breadcrumbs.push(lastPart.charAt(0).toUpperCase() + lastPart.slice(1));
       }
     }
+    console.log(breadcrumbs, paths);
     return [breadcrumbs, paths];
   }
 
@@ -67,7 +69,7 @@ export default function NavbarBreadcrumbs() {
       {breadcrumbs.map((label, index) => (
         <Typography
           key={index}
-          variant="h4"
+          variant="h5"
           sx={
             index === breadcrumbs.length - 1
               ? { color: "text.primary", fontWeight: 600 }

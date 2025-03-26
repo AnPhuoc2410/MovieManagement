@@ -31,8 +31,8 @@ const AdminPages = {
   },
   Movie: {
     Management: lazy(() => import("./pages/admin/QuanLyPhim/Movies")),
-    Edit: lazy(() => import("./pages/admin/QuanLyPhim/ChinhSuaPhim")),
-    Add: lazy(() => import("./pages/admin/QuanLyPhim/MovieDetail")),
+    Edit: lazy(() => import("./pages/admin/QuanLyPhim/UpdateMovie")),
+    Add: lazy(() => import("./pages/admin/QuanLyPhim/AddMovie")),
   },
   Room: {
     Management: lazy(
@@ -40,6 +40,14 @@ const AdminPages = {
     ),
     Detail: lazy(
       () => import("./pages/admin/QuanLyPhongChieu/ChiTietPhongChieu"),
+    ),
+  },
+  ShowTime: {
+    Management: lazy(
+      () => import("./pages/admin/QuanLyThoiGianChieu/QuanLiThoiGianChieu"),
+    ),
+    Detail: lazy(
+      () => import("./pages/admin/QuanLyThoiGianChieu/ChiTietThoiGianChieu"),
     ),
   },
   Member: {
@@ -137,7 +145,7 @@ export default function useRouteElements() {
     },
     // Protected Admin Routes
     {
-      element: <RejectedRoute />,
+      element: <ProtectedRoute />,
       children: [
         {
           path: "/admin",
@@ -155,7 +163,7 @@ export default function useRouteElements() {
               path: "ql-phim",
               children: [
                 { path: "", element: <AdminPages.Movie.Management /> },
-                { path: ":id", element: <AdminPages.Movie.Edit /> },
+                { path: ":movieId", element: <AdminPages.Movie.Edit /> },
                 { path: "them-phim", element: <AdminPages.Movie.Add /> },
               ],
             },
@@ -194,6 +202,13 @@ export default function useRouteElements() {
               children: [
                 { path: "", element: <AdminPages.Room.Management /> },
                 { path: ":roomId", element: <AdminPages.Room.Detail /> },
+              ],
+            },
+            {
+              path: "ql-thoi-gian-chieu",
+              children: [
+                { path: "", element: <AdminPages.ShowTime.Management /> },
+                { path: ":id", element: <AdminPages.ShowTime.Detail /> },
               ],
             },
           ],

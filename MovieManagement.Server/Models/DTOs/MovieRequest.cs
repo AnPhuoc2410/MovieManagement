@@ -6,7 +6,7 @@
 
         public string Image { get; set; }
 
-        public DateTime PostDate { get; set; }
+        //public DateTime PostDate { get; set; }
 
         public DateTime FromDate { get; set; }
 

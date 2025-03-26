@@ -2,7 +2,7 @@ import { Seat } from "./seat.types";
 
 export interface Room {
   roomId: string;
-  name: string | null;
+  roomName: string | null;
   row: number;
   column: number;
   total: number;

@@ -165,12 +165,9 @@ const ShowTime: React.FC = () => {
                   borderRadius: 2
                 }}
               >
-                <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
+                <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider', textAlign: 'center' }}>
                   <Typography variant="h5" fontWeight="bold" gutterBottom>
                     Đặt Vé Xem Phim
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Vui lòng chọn thông tin suất chiếu và số lượng vé
                   </Typography>
                 </Box>
 
