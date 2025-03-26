@@ -63,7 +63,6 @@ namespace MovieManagement.Server.Controllers
             };
             return Ok(response);
         }
-        }
 
         [HttpGet]
         [Route("{billId:long}")]
