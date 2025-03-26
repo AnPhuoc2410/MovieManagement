@@ -32,11 +32,14 @@
         /// </summary>
         List<T> GetAll();
         T GetById(Guid id);
+        T GetById(long id);
+
         List<T> GetPage(int page, int pageSize);
         T GetByComposeId(Guid id, Guid id2);
         T Create(T entity);
         T Update(T entity);
         bool Delete(Guid id);
+        bool Delete(long id);
         bool Delete(T Entity);
         bool DeleteCompose(Guid id, Guid id2);
         /// <summary>
@@ -50,11 +53,13 @@
         //Asynchronous Interfaces
         Task<List<T>> GetAllAsync();
         Task<T> GetByIdAsync(Guid id);
+        Task<T> GetByIdAsync(long id);
         Task<List<T>> GetPageAsync(int page, int pageSize);
         Task<T> GetByComposeIdAsync(Guid id, Guid id2);
         Task<T> CreateAsync(T entity);
         Task<T> UpdateAsync(T entity);
         Task<bool> DeleteAsync(Guid id);
+        Task<bool> DeleteAsync(long id);
         Task<bool> DeleteAsync(T Entity);
         Task<bool> DeleteComposeAsync(Guid id, Guid id2);
         
@@ -63,10 +68,12 @@
         bool SoftDelete(T entity);
         Task<bool> SoftDeleteAsync(Guid id);
         Task<bool> SoftDeleteAsync(T entity);
+        Task<bool> SoftDeleteAsync(long id);
 
         Task<T> CreateIdentityAsync(T entity);
 
         void PrepareCreate(T entity);
+        T PrepareCreateEntity(T entity);
         void PrepareUpdate(T entity);
         void PrepareRemove(T entity);
         int Save();

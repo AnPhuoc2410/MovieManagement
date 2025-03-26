@@ -40,15 +40,17 @@ namespace MovieManagement.Server.Services.AuthorizationService
 
         public async Task<AuthDto.LoginResponse> Login(AuthDto.LoginRequest dto)
         {
+            if (dto.Email == null || dto.Password == null)
+                throw new Exception("Username/email or password is not null");
             //Check user name
-            var user = await _userRepository.GetUserByEmailAsync(dto.Email) ?? 
-                       throw new BadRequestException("Invalid username/email or password");
-            
+            var user = await _userRepository.GetUserByEmailAsync(dto.Email) ??
+                throw new BadRequestException("Invalid username/email");
+
             //Check password
             var result = new PasswordHasher<User>().VerifyHashedPassword(user, user.Password, dto.Password);
             if (result == PasswordVerificationResult.Failed)
-                throw new BadRequestException("Invalid username/email or password");
-            
+                throw new BadRequestException("Invalid password");
+
             return new AuthDto.LoginResponse
             {
                 Token = new TokenDto.TokenResponse()
@@ -61,6 +63,15 @@ namespace MovieManagement.Server.Services.AuthorizationService
 
         public UserDto.UserResponse Register(AuthDto.RegisterRequest dto)
         {
+            if (dto.Email == null)
+                throw new Exception("Email is not blank.");
+            if (dto.IDCard == null)
+                throw new Exception("ID card is not blank.");
+            if (dto.PhoneNumber == null)
+                throw new Exception("Phone number is not blank.");
+            if (dto.UserName == null)
+                throw new Exception("User name is not blank.");
+
             // Check if any of the unique fields already exist
             var existingUser = _userRepository.GetUserByUniqueFields(dto.Email, dto.IDCard, dto.PhoneNumber, dto.UserName);
             if (existingUser != null)
@@ -86,10 +97,10 @@ namespace MovieManagement.Server.Services.AuthorizationService
             var newUser = _mapper.Map<User>(dto);
             newUser.UserName = dto.UserName.Trim();
             newUser.FullName = dto.FullName.Trim();
-            
-            if (newUser.BirthDate > DateTime.Now) throw new BadRequestException("Birthdate is invalid");
+
+            if (newUser.BirthDate > DateTime.Now) throw new BadRequestException("Birthdate is invalid.");
             newUser.BirthDate = dto.BirthDate;
-            
+
             newUser.Email = dto.Email.Trim();
             newUser.Gender = dto.Gender;
             newUser.Status = UserStatus.Active; // Active user
@@ -110,9 +121,11 @@ namespace MovieManagement.Server.Services.AuthorizationService
 
         public async Task<UserDto.UserResponse> ExtractTokenAsync(string token)
         {
+            if (token == null)
+                throw new Exception("Token is not blank.");
             var jwtToken = _jwtService.ReadTokenWithoutValidation(token);
             if (jwtToken == null)
-                throw new BadRequestException("Invalid token");
+                throw new BadRequestException("Invalid token.");
 
             var userId = jwtToken.Claims
                 .FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;

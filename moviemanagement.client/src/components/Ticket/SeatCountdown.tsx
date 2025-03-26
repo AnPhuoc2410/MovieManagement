@@ -6,14 +6,27 @@ import EventSeatIcon from '@mui/icons-material/EventSeat';
 interface SeatCountdownProps {
   seatId: string;
   seatName: string;
-  startTime: number;
+  startTime: number; // initial start time in milliseconds
+  resetTrigger: number; // changes whenever seats are added/removed
   onTimeout: (seatId: string) => void;
 }
 
-const SeatCountdown: React.FC<SeatCountdownProps> = ({ seatId, seatName, startTime, onTimeout }) => {
-  const [timeLeft, setTimeLeft] = useState<number>(300); // 5 minutes in seconds
-  const totalTime = 300; // Total time in seconds (5 minutes)
-  const endTime = startTime + 300000; // 5 minutes in milliseconds
+const SeatCountdown: React.FC<SeatCountdownProps> = ({ seatId, seatName, startTime, resetTrigger, onTimeout }) => {
+  // When seatId or resetTrigger changes, update sessionStorage and reset countdown.
+  const [localStartTime, setLocalStartTime] = useState<number>(startTime);
+  const totalTime = 300; // total time in seconds (5 minutes)
+
+  useEffect(() => {
+    // Reset the countdown whenever resetTrigger changes.
+    const newStartTime = Date.now();
+    sessionStorage.setItem(`seatCountdown_${seatId}`, newStartTime.toString());
+    setLocalStartTime(newStartTime);
+  }, [seatId, resetTrigger]);
+
+  // Calculate end time based on the (possibly updated) localStartTime.
+  const endTime = localStartTime + 300000; // 5 minutes in milliseconds
+
+  const [timeLeft, setTimeLeft] = useState<number>(Math.max(0, Math.floor((endTime - Date.now()) / 1000)));
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -22,12 +35,13 @@ const SeatCountdown: React.FC<SeatCountdownProps> = ({ seatId, seatName, startTi
 
       if (remaining <= 0) {
         clearInterval(interval);
+        sessionStorage.removeItem(`seatCountdown_${seatId}`);
         onTimeout(seatId);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [seatId, endTime, onTimeout]);
+  }, [endTime, seatId, onTimeout]);
 
   // Format time as MM:SS
   const minutes = Math.floor(timeLeft / 60);
@@ -48,7 +62,7 @@ const SeatCountdown: React.FC<SeatCountdownProps> = ({ seatId, seatName, startTi
     textColor = '#ff9800';
   }
 
-  // For multiple seats, use a more prominent timer display
+  // Use a more prominent timer display if seatName suggests multiple seats
   const isMultiSeat = seatName.includes("ghế");
 
   return (

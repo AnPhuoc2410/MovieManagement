@@ -74,11 +74,17 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
     [onSelectDate],
   );
 
+  useEffect(() => {
+    onSelectDate(todayFormatted);
+  }, []);
+
   const handleTimeSelect = useCallback(
     (time: string, showTimeId: string) => {
       setSelectedTime(time);
       onSelectTime(time);
       onRoomSelect(showTimeId);
+
+      sessionStorage.setItem("currentShowTimeId", showTimeId);
     },
     [onSelectTime, onRoomSelect],
   );
@@ -89,7 +95,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
     if (!selectedDay) return;
 
     const fromDate = format(selectedDay.date, "yyyy-MM-dd");
-    const toDate = format(addDays(selectedDay.date, 1), "yyyy-MM-dd");
+    const toDate = format(addDays(selectedDay.date, 3), "yyyy-MM-dd");
     const apiKey = `${fromDate}T00:00:00`;
 
     // Create a cache key based on movie, date and city
@@ -140,7 +146,6 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
       }
     };
 
-    // Debounce the fetch to avoid multiple simultaneous calls
     const timerId = setTimeout(() => {
       fetchShowtimes();
     }, 100);

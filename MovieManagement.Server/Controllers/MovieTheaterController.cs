@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Services.MovieTheaterService;
 
@@ -17,53 +17,119 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<MovieTheaterDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllMovieTheatersAsync()
         {
             var movieTheaters = await _movieTheaterService.GetAllMovieTheatersAsync();
-            return Ok(movieTheaters);
+            var response = new ApiResponse<IEnumerable<MovieTheaterDto>>
+            {
+                StatusCode = 200,
+                Message = "Get all movie theaters is success",
+                IsSuccess = true,
+                Data = movieTheaters
+            };
+            return Ok(response);
         }
 
         [HttpGet]
         [Route("{movieTheaterId}")]
+        [ProducesResponseType(typeof(ApiResponse<MovieTheaterDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetMovieTheaterByIdAsync(Guid movieTheaterId)
         {
             var movieTheater = await _movieTheaterService.GetMovieTheaterByIdAsync(movieTheaterId);
-            return Ok(movieTheater);
+            var response = new ApiResponse<MovieTheaterDto>
+            {
+                StatusCode = 200,
+                Message = "Get movie theater is success",
+                IsSuccess = true,
+                Data = movieTheater
+            };
+            return Ok(response);
         }
 
         [HttpGet]
         [Route("page/{page}/{pageSize}")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<MovieTheaterDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetMovieTheaterPageAsync(int page, int pageSize)
         {
             var movieTheaters = await _movieTheaterService.GetMovieTheaterPageAsync(page, pageSize);
-            return Ok(movieTheaters);
+            var response = new ApiResponse<IEnumerable<MovieTheaterDto>>
+            {
+                StatusCode = 200,
+                Message = "Get movie theaters is success",
+                IsSuccess = true,
+                Data = movieTheaters
+            };
+            return Ok(response);
         }
 
         [HttpPost]
         [Route("create")]
+        [ProducesResponseType(typeof(ApiResponse<MovieTheaterDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateMovieTheaterAsync([FromBody] MovieTheaterDto movieTheater)
         {
             var newMovieTheater = await _movieTheaterService.CreateMovieTheaterAsync(movieTheater);
-            return Ok(newMovieTheater);
+            var response = new ApiResponse<MovieTheaterDto>
+            {
+                StatusCode = 200,
+                Message = "Create movie theater is success",
+                IsSuccess = true,
+            };
+            return Ok(response);
         }
 
         [HttpPut]
         [Route("update/{movieTheaterId}")]
+        [ProducesResponseType(typeof(ApiResponse<MovieTheaterDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateMovieTheaterAsync(Guid movieTheaterId, [FromBody] MovieTheaterDto movieTheater)
         {
             var updatedMovieTheater = await _movieTheaterService.UpdateMovieTheaterAsync(movieTheaterId, movieTheater);
-            return Ok(updatedMovieTheater);
+            var response = new ApiResponse<MovieTheaterDto>
+            {
+                StatusCode = 200,
+                Message = "Update movie theater is success",
+                IsSuccess = true,
+            };
+            return Ok(response);
         }
 
         [HttpDelete]
         [Route("delete/{movieTheaterId}")]
+        [ProducesResponseType(typeof(ApiResponse<MovieTheaterDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteMovieTheaterAsync(Guid movieTheaterId)
         {
             var result = await _movieTheaterService.DeleteMovieTheaterAsync(movieTheaterId);
-            return Ok(result);
+            var response = new ApiResponse<MovieTheaterDto>
+            {
+                StatusCode = 200,
+                Message = "Delete movie theater is success",
+                IsSuccess = true,
+            };
+            return Ok(response);
         }
-
-
-
     }
 }

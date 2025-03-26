@@ -251,7 +251,7 @@ const ListMovies: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get(
-        `movie/getmoviesnowshowing/page/${page}/pagesize/${pageSize}`,
+        `movie/showing/page/${page}/size/${pageSize}`,
       );
       console.log("Now showing movies:", response.data);
       setNowShowingMovies(response.data);
@@ -266,10 +266,10 @@ const ListMovies: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get(
-        `movie/getmoviesupcoming/page/${page}/pagesize/${pageSize}`,
+        `movie/coming-soon/page/${page}/size/${pageSize}`,
       );
       console.log("Upcoming movies:", response.data);
-      setUpcomingMovies(response.data);
+      setUpcomingMovies(response.data.data);
     } catch (error) {
       console.error("Error fetching upcoming movies:", error);
     } finally {

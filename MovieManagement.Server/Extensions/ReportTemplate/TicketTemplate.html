@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vé Xem Phim</title>
+</head>
+<body style="font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <div style="width: 650px; height: 420px; background: #fff; border-radius: 10px; display: flex; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+        <div style="width: 45%; background: url('{{MovieImage}}') no-repeat center/cover;"></div>
+        <div style="width: 55%; padding: 15px; background: linear-gradient(to right, #e67e22,rgb(77, 91, 185)); color: white; display: flex; flex-direction: column; justify-content: space-between;">
+            <h2 style="margin: 0; text-align: center;">{{MovieName}}</h2>
+            <p style="text-align: center; font-size: 14px;">Thể loại: {{Categories}}</p>
+            <div style="border-top: 2px dashed rgba(255,255,255,0.5); margin: 10px 0;"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="flex: 1; padding-right: 10px;">
+                    <p><strong>Ngày Chiếu:</strong> {{StartDay}}</p>
+                    <p><strong>Giờ Chiếu:</strong> {{StartTime}}</p>
+                    <p><strong>Phòng:</strong> {{RoomName}}</p>
+                    <p><strong>Cột:</strong> {{AtColumn}}</p>
+                    <p><strong>Hàng:</strong> {{AtRow}}</p>
+                    <p><strong>Loại Ghế:</strong> {{TypeSeat}}</p>
+                </div>
+                <div style="width: 90px; height: 90px; display: flex; justify-content: center; align-items: center; background: white; border-radius: 5px; margin-right: 25px;">
+                    <img src="https://via.placeholder.com/80x80" alt="QR Code" style="width: 80px; height: 80px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

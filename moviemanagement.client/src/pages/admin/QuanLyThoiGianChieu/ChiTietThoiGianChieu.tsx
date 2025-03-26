@@ -3,9 +3,9 @@ import { useQuery } from 'react-query';
 import axios from 'axios';
 import { ShowTime } from '../../../types/showtime.types';
 import Loader from '../../../components/shared/Loading/LoadingScreen';
-import { 
-  Box, 
-  Button, 
+import {
+  Box,
+  Button,
   Container,
   Typography,
   TextField,
@@ -62,7 +62,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   const { data: movies, isLoading: isLoadingMovies } = useQuery(
     'movies',
     async () => {
-      const response = await axios.get('https://localhost:7119/api/movie/all');
+      const response = await axios.get('https://localhost:7119/api/movie');
       console.log('Movies API Response:', response.data);
       return response.data?.data || [];
     }
@@ -74,7 +74,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     async () => {
       const response = await axios.get('https://localhost:7119/api/room/all');
       console.log('Rooms API Response:', response.data);
-      
+
       // Handle both cases - direct array or nested data property
       return Array.isArray(response.data) ? response.data : response.data?.data || [];
     }
@@ -93,13 +93,13 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   const handleSave = async () => {
     try {
       if (!showtime) return;
-      
+
       const updatedShowtime = {
         ...showtime,
         movieId: selectedMovieId,
         roomId: selectedRoomId
       };
-      
+
       await axios.put(`https://localhost:7119/api/showtime/${id}`, updatedShowtime);
       alert('Lịch chiếu đã được cập nhật thành công!');
       setIsModified(false);

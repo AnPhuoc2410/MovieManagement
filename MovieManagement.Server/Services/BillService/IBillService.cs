@@ -2,6 +2,7 @@
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.Enums;
 using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Services.BillService
 {
@@ -14,6 +15,5 @@ namespace MovieManagement.Server.Services.BillService
         public Task<BillDto> UpdateBillAsync(long billId, BillEnum.BillStatus billStatus);
         public BillDto UpdateBill(long billId, BillEnum.BillStatus billStatus);
         public Task<bool> DeleteBillAsync(long billId);
-        public Task<IEnumerable<PurchasedTicketDto>> GetPurchasedTicketsAsync(Guid userId); 
     }
 }

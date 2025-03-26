@@ -8,8 +8,8 @@
             Created = 0,
             Pending = 1,
             Paid = 2,
-            Received = 3
-
+            Cancelled = 3,
+            Received = 4
         }
 
     }

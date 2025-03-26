@@ -19,6 +19,11 @@ namespace MovieManagement.Server.Repositories
         {
             return _context.Set<T>().Find(id);
         }
+
+        public T GetById(long id)
+        {
+            return _context.Set<T>().Find(id);
+        }
         public List<T> GetPage(int page, int pageSize)
         {
             return _context.Set<T>().Skip(page * pageSize).Take(pageSize).ToList();
@@ -47,12 +52,29 @@ namespace MovieManagement.Server.Repositories
             _context.SaveChangesAsync();
             return true;
         }
+        public bool Delete(long id)
+        {
+            var entity = GetById(id);
+            if (entity == null) return false;
+            _context.Remove(entity);
+            _context.SaveChangesAsync();
+            return true;
+        }
         public bool Delete(T Entity)
         {
             _context.Remove(Entity);
             _context.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> DeleteAsync(long billId)
+        {
+            var entity = await GetByIdAsync(billId);
+            if (entity == null) return false;
+            _context.Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public bool DeleteCompose(Guid id, Guid id2)
         {
             var entity = GetByComposeId(id, id2);
@@ -70,6 +92,11 @@ namespace MovieManagement.Server.Repositories
         {
             return await _context.Set<T>().FindAsync(id);
         }
+        public async Task<T> GetByIdAsync(long id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
+
         public async Task<List<T>> GetPageAsync(int page, int pageSize)
         {
             return await _context.Set<T>().Skip(page * pageSize).Take(pageSize).ToListAsync();
@@ -174,7 +201,21 @@ namespace MovieManagement.Server.Repositories
 
             return false;
         }
+        public async Task<bool> SoftDeleteAsync(long id)
+        {
+            var entity = await _context.Set<T>().FindAsync(id);
+            if (entity == null) return false;
 
+            var statusProperty = entity.GetType().GetProperty("Status");
+            if (statusProperty != null)
+            {
+                statusProperty.SetValue(entity, 0); // Set the status to 0 (soft delete)
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
         public async Task<T> CreateIdentityAsync(T entity)
         {
             var transaction = _context.Database.BeginTransaction();
@@ -200,6 +241,12 @@ namespace MovieManagement.Server.Repositories
         public void PrepareCreate(T entity)
         {
             _context.Add(entity);
+        }
+
+        public T PrepareCreateEntity(T entity)
+        {
+            _context.Add(entity);
+            return entity;
         }
 
         public void PrepareUpdate(T entity)

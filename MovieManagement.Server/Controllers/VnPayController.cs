@@ -39,7 +39,7 @@ namespace MovieManagement.Server.Controllers
                 {
                     PaymentId = DateTime.Now.Ticks,
                     Money = money,
-                    Description = description,
+                    Description = $"{description}",
                     IpAddress = ipAddress,
                     BankCode = BankCode.ANY, // Tùy chọn. Mặc định là tất cả phương thức giao dịch
                     CreatedDate = DateTime.Now, // Tùy chọn. Mặc định là thời điểm hiện tại
@@ -105,9 +105,10 @@ namespace MovieManagement.Server.Controllers
                         //return Ok(paymentResult);
                         return Redirect("http://localhost:3000/ticket/confirmation?isSuccess=true&paymentId=" + paymentResult.PaymentId);
                     }
-                    else 
+                    else
+                    {
                         return Redirect("http://localhost:3000/ticket/confirmation?isSuccess=false&paymentId=" + paymentResult.PaymentId);
-
+                    }
                     return BadRequest(paymentResult);
                 }
                 catch (Exception ex)

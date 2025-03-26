@@ -15,7 +15,11 @@ import api from "../../apis/axios.config";
 import { Movie } from "../../types/movie.types";
 import Loader from "../shared/Loading";
 
-const MovieDetail: React.FC = () => {
+interface MovieDetailProps {
+  onMovieLoad?: (movie: Movie) => void;
+}
+
+const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
   const { movieId } = useParams();
   const [movie, setMovie] = useState<Movie>();
   const [openTrailer, setOpenTrailer] = useState(false);
@@ -28,6 +32,10 @@ const MovieDetail: React.FC = () => {
       setLoading(true);
       const response = await api.get(`Movie/${movieId}`);
       setMovie(response.data);
+      // Pass the movie data to the parent component when it's loaded
+      if (onMovieLoad) {
+        onMovieLoad(response.data);
+      }
       console.log("Movie detail:", response.data);
     } catch (error: any) {
       console.error("Failed to fetch movie:", error);
