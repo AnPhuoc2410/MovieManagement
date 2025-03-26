@@ -127,7 +127,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
             return _mapper.Map<IEnumerable<ShowTimeDto>>(showtimes);
         }
-        
+
         public async Task<ShowTimeDto> GetShowtimeByIdAsync(Guid showTimeId)
         {
             var showTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.GetByIdAsync(showTimeId));
@@ -200,7 +200,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var updatedShowTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.UpdateAsync(existingShowTime));
             return updatedShowTime;
         }
-        public async Task<Dictionary<string, List<Dictionary<string, object>>>> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate, string location)
+        public async Task<Dictionary<string, Dictionary<string, List<object>>>> GetShowTimeFromDateToDate(
+    Guid movieId, DateTime fromDate, DateTime toDate, string location)
         {
             var movie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
             if (movie == null)
@@ -225,22 +226,38 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 throw new NotFoundException("ShowTime not found.");
             }
 
-            var dictionary = showTimes
+            // Grouping by Date -> Location -> Theater
+            var groupedShowTimes = showTimes
                 .Where(st => st.Room?.MovieTheater != null) // Ensure no null references
-                .GroupBy(st => st.Room.MovieTheater.Location ?? "Unknown Location") // Group by location
+                .GroupBy(st => st.StartTime.Date) // Group by date
                 .ToDictionary(
-                    g => g.Key, // Location as key
-                    g => g.GroupBy(st => st.Room.MovieTheater) // Group by theater
-                          .Select(x => new Dictionary<string, object>
-                          {
-                      { "Name", x.Key.Name },
-                      { "Address", x.Key.Address },
-                      { "ListShowTime", x.Select(st => _mapper.Map<ShowTimeDto>(st)).ToList() }
-                          }).ToList()
+                    dateGroup => dateGroup.Key.ToString("yyyy-MM-dd"), // Format date as key
+                    dateGroup => dateGroup
+                        .GroupBy(st => st.Room.MovieTheater.Location ?? "Unknown Location") // Group by location
+                        .ToDictionary(
+                            locGroup => locGroup.Key, // Location as key
+                            locGroup => locGroup
+                                .GroupBy(st => st.Room.MovieTheater) // Group by theater
+                                .Select(theaterGroup => (object)new
+                                {
+                                    NameTheater = theaterGroup.Key.Name,
+                                    AddressTheater = theaterGroup.Key.Address,
+                                    ListShowTime = theaterGroup.Select(st => new
+                                    {
+                                        showTimeId = st.ShowTimeId,
+                                        movieId = st.MovieId,
+                                        roomId = st.RoomId,
+                                        startTime = st.StartTime,
+                                        endTime = st.EndTime
+                                    }).ToList()
+                                }).ToList()
+                        )
                 );
 
-            return dictionary;
+            return groupedShowTimes;
         }
+
+
 
     }
 }

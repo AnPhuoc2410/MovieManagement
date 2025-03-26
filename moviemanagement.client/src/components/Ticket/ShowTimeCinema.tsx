@@ -96,7 +96,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
 
     const fromDate = format(selectedDay.date, "yyyy-MM-dd");
     const toDate = format(addDays(selectedDay.date, 3), "yyyy-MM-dd");
-    const apiKey = `${fromDate}T00:00:00`;
+    const dateKey = format(selectedDay.date, "yyyy-MM-dd"); // Format for accessing response data
 
     // Create a cache key based on movie, date and city
     const cacheKey = `${movieId}_${fromDate}_${selectedCity}`;
@@ -113,29 +113,31 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
       setIsLoading(true);
       try {
         const response = await axios.get(
-          `https://localhost:7119/api/showtime/getshowtimebydates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}`,
+          `https://localhost:7119/api/showtime/getshowtimebydates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}&location=${selectedCity.toUpperCase()}`,
         );
-        const showtimes: ShowTime[] = response.data.data[apiKey] || [];
 
-        if (showtimes.length === 0) {
+        // Extract data for the selected date and location
+        const dateData = response.data.data[dateKey];
+
+        if (!dateData || !dateData[selectedCity.toUpperCase()] || dateData[selectedCity.toUpperCase()].length === 0) {
           setCinemas([]);
           showtimesCache.set(cacheKey, []);
           onShowtimeAvailability(false);
           return;
         }
 
-        const dummyCinema: Cinema = {
-          name: "Cinema Eiga",
-          address: "S10.06 Origami, Vinhomes Grandpark, Thủ Đức, Hồ Chí Minh",
-          times: showtimes.map((show) => ({
+        // Transform the data to match our Cinema type
+        const cinemaResults: Cinema[] = dateData[selectedCity.toUpperCase()].map((theater: { nameTheater: any; addressTheater: any; listShowTime: { startTime: string | number | Date; showTimeId: any; }[]; }) => ({
+          name: theater.nameTheater,
+          address: theater.addressTheater,
+          times: theater.listShowTime.map((show: { startTime: string | number | Date; showTimeId: any; }) => ({
             time: format(new Date(show.startTime), "HH:mm"),
             showTimeId: show.showTimeId,
           })),
-        };
+        }));
 
-        const cinemaResult = [dummyCinema];
-        setCinemas(cinemaResult);
-        showtimesCache.set(cacheKey, cinemaResult);
+        setCinemas(cinemaResults);
+        showtimesCache.set(cacheKey, cinemaResults);
         onShowtimeAvailability(true);
       } catch (error) {
         console.error("Error fetching showtimes:", error);
