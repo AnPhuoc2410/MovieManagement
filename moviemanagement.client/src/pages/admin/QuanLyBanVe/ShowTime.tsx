@@ -14,7 +14,7 @@ import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
 import AppTheme from "../../../shared-theme/AppTheme";
-import MovieDetail from "../../../components/admin/MovieDetail";
+import MovieAdminDetail from "../../../components/admin/AdminMovieDetail";
 import ShowTimeCinema from "../../../components/admin/ShowTimeCinema";
 import TicketPrice from "../../../components/admin/TicketPrice";
 import { SeatType } from "../../../types/seattype.types";
@@ -181,7 +181,7 @@ const ShowTime: React.FC = () => {
                       mb: 3
                     })}
                   >
-                    <MovieDetail onMovieLoad={handleMovieLoad} />
+                    <MovieAdminDetail onMovieLoad={handleMovieLoad} />
                   </Paper>
 
                   {/* ShowTimeCinema component for picking date, time, and room */}
