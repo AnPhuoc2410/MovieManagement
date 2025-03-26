@@ -131,7 +131,7 @@ namespace MovieManagement.Server.Repositories
                 .Select(u => new TopMemberResponse.MemberRevenue
                 {
                     MemberName = u.UserName,
-                    TicketsSold = u.Bills
+                    PurchasedTicket = u.Bills
                         .Where(b => b.Status == BillStatus.Completed)
                         .Select(b => b.TicketDetails)
                         .Count(),
@@ -140,7 +140,7 @@ namespace MovieManagement.Server.Repositories
                         .Where(b => b.Status == BillStatus.Completed)
                         .Sum(b => b.Point)
                 })
-                .OrderByDescending(u => u.TicketsSold)
+                .OrderByDescending(u => u.PurchasedTicket)
                 .Take(50)
                 .ToListAsync();
             return user;
@@ -163,7 +163,7 @@ namespace MovieManagement.Server.Repositories
                         .Select(g => new TopMemberResponse.MemberRevenue
                         {
                             MemberName = u.UserName,
-                            TicketsSold = u.Bills
+                            PurchasedTicket = u.Bills
                                 .Select(b => b.TicketDetails)
                                 .Count(),
                             CurrentPoint = u.Point,
@@ -172,7 +172,7 @@ namespace MovieManagement.Server.Repositories
                         })
                         .ToList()
                 })
-                .OrderByDescending(u => u.MemberRevenues.Sum(mr => mr.TicketsSold))
+                .OrderByDescending(u => u.MemberRevenues.Sum(mr => mr.PurchasedTicket))
                 .Take(50)
                 .ToListAsync();
             return user;

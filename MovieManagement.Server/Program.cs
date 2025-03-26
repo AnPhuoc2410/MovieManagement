@@ -37,9 +37,7 @@ namespace MovieManagement.Server
             // Add System Service UnitOfWork.
             builder.Services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
-
             // Add services to the container.
-
             builder.Services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
@@ -50,7 +48,7 @@ namespace MovieManagement.Server
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
-            //Đăng ký JWT Authentication
+            // Đăng ký JWT Authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -158,13 +156,13 @@ namespace MovieManagement.Server
             // Register the password hasher
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
-            //Enable role based and policy based authorization
-            //builder.Services.AddAuthorization();
+            // Enable role based and policy based authorization
+            // builder.Services.AddAuthorization();
 
-            //ADD SignalR
+            // ADD SignalR
             builder.Services.AddSignalR();
 
-            //Register Hangfire
+            // Register Hangfire
             builder.Services.AddHangfire(config => config.UseMemoryStorage());
             builder.Services.AddHangfireServer();
 
@@ -175,7 +173,7 @@ namespace MovieManagement.Server
             builder.Services.AddScoped<IConvertFileService, ConvertFileService>();
 
             // Đăng ký QR Code
-            builder.Services.AddScoped<IQRCodeService ,QRCodeService>();
+            builder.Services.AddScoped<IQRCodeService, QRCodeService>();
 
             builder.Services.Configure<RouteOptions>(options =>
             {
@@ -207,13 +205,14 @@ namespace MovieManagement.Server
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseRouting();
             app.MapControllers();
             app.UseCors("AllowReactApp");
-            //Enable Websocket support
+            // Enable Websocket support
             app.MapHub<SeatHub>("/seatHub");
 
             app.MapFallbackToFile("/index.html");

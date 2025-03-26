@@ -30,54 +30,15 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllSeatTypesAsync()
         {
-            try
+            var seatTypes = await _seatTypeService.GetAllSeatTypesAsync();
+            var response = new ApiResponse<object>
             {
-                var seatTypes = await _seatTypeService.GetAllSeatTypesAsync();
-                if (seatTypes == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Seat type not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(seatTypes);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while updating category",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Get all seat types is success",
+                IsSuccess = true,
+                Data = seatTypes
+            };
+            return Ok(response);
         }
 
         [HttpGet]
@@ -89,54 +50,15 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<SeatTypeDto>> GetSeatTypeByIdAsync(Guid seatTypeId)
         {
-            try
+            var seatType = await _seatTypeService.GetSeatTypeByIdAsync(seatTypeId);
+            var response = new ApiResponse<object>
             {
-                var seatType = await _seatTypeService.GetSeatTypeByIdAsync(seatTypeId);
-                if (seatType == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Seat type not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(seatType);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while updating category",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Get seat type is success",
+                IsSuccess = true,
+                Data = seatType
+            };
+            return Ok(response);
         }
 
         [HttpGet]
@@ -148,54 +70,16 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetSeatTypePageAsync(int page, int pageSize)
         {
-            try
+            var seatTypes = await _seatTypeService.GetSeatTypePageAsync(page, pageSize);
+
+            var response = new ApiResponse<object>
             {
-                var seatTypes = await _seatTypeService.GetSeatTypePageAsync(page, pageSize);
-                if (seatTypes == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Seat type not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(seatTypes);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while updating category",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Get seat type is success",
+                IsSuccess = true,
+                Data = seatTypes
+            };
+            return Ok(response);
         }
 
         [HttpPost]
@@ -206,55 +90,14 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<SeatTypeDto>> CreateSeatTypeAsync([FromBody] SeatTypeDto seatTypeDto)
         {
-            try
+            var seat = await _seatTypeService.CreateSeatTypeAsync(seatTypeDto);
+            var response = new ApiResponse<object>
             {
-                var seat = await _seatTypeService.CreateSeatTypeAsync(seatTypeDto);
-
-                if (seat == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Seat type not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(seat);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while updating category",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Create seat type is success",
+                IsSuccess = true,
+            };
+            return Ok(response);
         }
 
         [HttpPut]
@@ -266,54 +109,15 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<SeatTypeDto>> UpdateSeatTypeAsync(Guid seatTypeId, [FromBody] SeatTypeDto seatTypeDto)
         {
-            try
+            var seat = await _seatTypeService.UpdateSeatTypeAsync(seatTypeId, seatTypeDto);
+
+            var response = new ApiResponse<object>
             {
-                var seat = await _seatTypeService.UpdateSeatTypeAsync(seatTypeId, seatTypeDto);
-                if (seat == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Seat type not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(seat);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while updating category",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Update seat type is success",
+                IsSuccess = false
+            };
+            return Ok(response);
         }
 
         [HttpDelete]
@@ -325,54 +129,14 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteSeatTypeAsync(Guid seatTypeId)
         {
-            try
+            bool isDeleted = await _seatTypeService.DeleteSeatTypeAsync(seatTypeId);
+            var response = new ApiResponse<object>
             {
-                bool isDeleted = await _seatTypeService.DeleteSeatTypeAsync(seatTypeId);
-                if (!isDeleted)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Seat type not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(isDeleted);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while updating bill",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Delete seat is success",
+                IsSuccess = true,
+            };
+            return Ok(response);
         }
     }
 }
