@@ -7,6 +7,7 @@ import MenuButton from "./MenuButton";
 import ColorModeIconDropdown from "../../shared-theme/ColorModeIconDropdown";
 
 import Search from "./Search";
+import LanguageSelector from "../common/LanguageSelector";
 
 export default function Header() {
   return (
@@ -30,6 +31,7 @@ export default function Header() {
           <NotificationsRoundedIcon />
         </MenuButton>
         <ColorModeIconDropdown />
+        <LanguageSelector isDarkMode={false} />
       </Stack>
     </Stack>
   );
