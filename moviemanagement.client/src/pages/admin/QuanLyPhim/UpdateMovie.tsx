@@ -14,8 +14,8 @@ export default function UpdateMovie() {
     try {
       console.log("MovieID: ", movieId);
       const response = await api.get(`/movie/${movieId}`);
-      setMovie(response.data);
-      console.log("Movie: ", response.data);
+      setMovie(response.data.data);
+      console.log("Movie: ", response.data.data);
     } catch (error: any) {
       toast.error("Lỗi khi tải thông tin phim: " + error.message);
     }
