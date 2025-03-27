@@ -18,6 +18,7 @@ import { vi as viLocale } from "date-fns/locale";
 import axios from "axios";
 import { ShowTime } from "../../types/showtime.types";
 import { Cinema } from "../../types/cinema.types";
+import { Theater } from "../../types/theater.types";
 import { useTranslation } from "react-i18next";
 
 interface ShowTimeCinemaProps {
@@ -96,17 +97,22 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
 
     const fromDate = format(selectedDay.date, "yyyy-MM-dd");
     const toDate = format(addDays(selectedDay.date, 3), "yyyy-MM-dd");
-    const dateKey = format(selectedDay.date, "yyyy-MM-dd"); // Format for accessing response data
+    const dateKey = format(selectedDay.date, "yyyy-MM-dd");
 
     // Create a cache key based on movie, date and city
     const cacheKey = `${movieId}_${fromDate}_${selectedCity}`;
 
+    // Use a ref to track if the component is still mounted
+    let isMounted = true;
+
     const fetchShowtimes = async () => {
-      // Check if we have cached data
+      // Check if we have cached data (including empty results)
       if (showtimesCache.has(cacheKey)) {
         const cachedCinemas = showtimesCache.get(cacheKey)!;
-        setCinemas(cachedCinemas);
-        onShowtimeAvailability(cachedCinemas.length > 0);
+        if (isMounted) {
+          setCinemas(cachedCinemas);
+          onShowtimeAvailability(cachedCinemas.length > 0);
+        }
         return;
       }
 
@@ -116,21 +122,24 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
           `https://localhost:7119/api/showtime/getshowtimebydates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}&location=${selectedCity.toUpperCase()}`,
         );
 
-        // Extract data for the selected date and location
+        // Return early if component unmounted during API call
+        if (!isMounted) return;
+
         const dateData = response.data.data[dateKey];
 
         if (!dateData || !dateData[selectedCity.toUpperCase()] || dateData[selectedCity.toUpperCase()].length === 0) {
-          setCinemas([]);
-          showtimesCache.set(cacheKey, []);
+          // Create an empty array result and cache it
+          const emptyResult: Cinema[] = [];
+          setCinemas(emptyResult);
+          showtimesCache.set(cacheKey, emptyResult);
           onShowtimeAvailability(false);
           return;
         }
 
-        // Transform the data to match our Cinema type
-        const cinemaResults: Cinema[] = dateData[selectedCity.toUpperCase()].map((theater: { nameTheater: any; addressTheater: any; listShowTime: { startTime: string | number | Date; showTimeId: any; }[]; }) => ({
+        const cinemaResults: Cinema[] = dateData[selectedCity.toUpperCase()].map((theater: Theater) => ({
           name: theater.nameTheater,
           address: theater.addressTheater,
-          times: theater.listShowTime.map((show: { startTime: string | number | Date; showTimeId: any; }) => ({
+          times: theater.listShowTime.map((show: ShowTime) => ({
             time: format(new Date(show.startTime), "HH:mm"),
             showTimeId: show.showTimeId,
           })),
@@ -138,21 +147,31 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
 
         setCinemas(cinemaResults);
         showtimesCache.set(cacheKey, cinemaResults);
-        onShowtimeAvailability(true);
+        onShowtimeAvailability(cinemaResults.length > 0);
       } catch (error) {
         console.error("Error fetching showtimes:", error);
+        // Create and cache empty result on error
+        const emptyResult: Cinema[] = [];
+        setCinemas(emptyResult);
+        showtimesCache.set(cacheKey, emptyResult);
         onShowtimeAvailability(false);
-        setCinemas([]);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
+    // Use a longer timeout for debouncing when parameters change
     const timerId = setTimeout(() => {
       fetchShowtimes();
-    }, 100);
+    }, 300); // Increased from 100ms to 300ms for better debouncing
 
-    return () => clearTimeout(timerId);
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      clearTimeout(timerId);
+    };
   }, [selectedCity, selectedDate, days, movieId, onShowtimeAvailability]);
 
   // Only update parent about availability when cinemas state changes
@@ -278,8 +297,11 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                 <MenuItem value="hn">
                   {t("showtime_cinema.location.HaNoi")}
                 </MenuItem>
-                <MenuItem value="dn">
-                  {t("showtime_cinema.location.DaNang")}
+                <MenuItem value="bd">
+                  {t("showtime_cinema.location.BinhDuong")}
+                </MenuItem>
+                <MenuItem value="bp">
+                  {t("showtime_cinema.location.BinhPhuoc")}
                 </MenuItem>
               </Select>
             </FormControl>

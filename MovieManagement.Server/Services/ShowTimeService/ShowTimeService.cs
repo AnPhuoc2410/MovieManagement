@@ -200,8 +200,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var updatedShowTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.UpdateAsync(existingShowTime));
             return updatedShowTime;
         }
-        public async Task<Dictionary<string, Dictionary<string, List<object>>>> GetShowTimeFromDateToDate(
-    Guid movieId, DateTime fromDate, DateTime toDate, string location)
+        public async Task<Dictionary<string, Dictionary<string, List<object>>>> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate, string location)
         {
             var movie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
             if (movie == null)
@@ -226,18 +225,17 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 throw new NotFoundException("ShowTime not found.");
             }
 
-            // Grouping by Date -> Location -> Theater
             var groupedShowTimes = showTimes
-                .Where(st => st.Room?.MovieTheater != null) // Ensure no null references
-                .GroupBy(st => st.StartTime.Date) // Group by date
+                .Where(st => st.Room?.MovieTheater != null)
+                .GroupBy(st => st.StartTime.Date)
                 .ToDictionary(
-                    dateGroup => dateGroup.Key.ToString("yyyy-MM-dd"), // Format date as key
+                    dateGroup => dateGroup.Key.ToString("yyyy-MM-dd"),
                     dateGroup => dateGroup
-                        .GroupBy(st => st.Room.MovieTheater.Location ?? "Unknown Location") // Group by location
+                        .GroupBy(st => st.Room.MovieTheater.Location ?? "Unknown Location")
                         .ToDictionary(
-                            locGroup => locGroup.Key, // Location as key
+                            locGroup => locGroup.Key,
                             locGroup => locGroup
-                                .GroupBy(st => st.Room.MovieTheater) // Group by theater
+                                .GroupBy(st => st.Room.MovieTheater)
                                 .Select(theaterGroup => (object)new
                                 {
                                     NameTheater = theaterGroup.Key.Name,

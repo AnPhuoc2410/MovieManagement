@@ -223,7 +223,9 @@
       "location": {
         "HaNoi": "Ha Noi",
         "HCM": "Ho Chi Minh City",
-        "DaNang": "Da Nang"
+        "DaNang": "Da Nang",
+        "BinhDuong": "Binh Duong",
+        "BinhPhuoc": "Binh Phuoc"
       },
       "notification": {
         "loading_showtime": "Loading Showtime",

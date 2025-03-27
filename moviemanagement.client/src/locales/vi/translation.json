@@ -222,7 +222,9 @@
       "location": {
         "HaNoi": "Hà Nội",
         "HCM": "Hồ Chí Minh",
-        "DaNang": "Đà Nẵng"
+        "DaNang": "Đà Nẵng",
+        "BinhDuong": "Bình Dương",
+        "BinhPhuoc": "Bình Phước"
       },
       "notification": {
         "loading_showtime": "Đang tải danh sách lịch chiếu...",
