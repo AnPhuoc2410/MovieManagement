@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  Container,
   Typography,
   Grid,
   Paper,
   Button,
   Divider,
   CircularProgress,
+  Stack,
+  CssBaseline,
+  Alert,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSignalR } from "../../../contexts/SignalRContext";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -16,621 +19,353 @@ import HomeIcon from "@mui/icons-material/Home";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { CancelOutlined } from "@mui/icons-material";
 import toast from "react-hot-toast";
+import AppNavbar from "../../../components/mui/AppNavbar";
+import Header from "../../../components/mui/Header";
+import SideMenu from "../../../components/mui/SideMenu";
+import AppTheme from "../../../shared-theme/AppTheme";
 
 const Confirmation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [paymentStatus, setPaymentStatus] = useState<"success" | "failure">();
+  const [paymentStatus, setPaymentStatus] = useState<"success" | "failure">("success"); // Default to success for admin
   const { connection, joinGroup, leaveGroup, isConnected } = useSignalR();
   const [seatsUpdated, setSeatsUpdated] = useState(false);
-
-  // Extract query param from VNPay redirection
-  const queryParams = new URLSearchParams(location.search);
-  const isSuccess = queryParams.get("isSuccess") === "true";
-
-  // Extract booking info from session storage
-  const bookingInfo = JSON.parse(sessionStorage.getItem("bookingInfo") || "{}");
-  const showTimeId = sessionStorage.getItem("currentShowTimeId") || "";
-
+  const [disableCustomTheme] = useState<boolean>(false);
 
   const {
     selectedTime = "Not selected",
     selectedDate = "Not selected",
+    tickets = [],
+    seats = [] as string[],
+    showTimeId = "",
+    selectedSeatsInfo = [],
     movieData = null,
     roomName = "",
-    seats = [] as string[],
-    totalPrice = 100000,
-    total = totalPrice, // Default to totalPrice, don't recalculate
-    promotion = null,
-    fullName = "",
-    email = "",
-    idNumber = "",
-    phone = "",
-    selectedSeatsInfo = [],
-    movieId,
-  } = bookingInfo;
+    totalPrice = 0,
+    selectedUser = null,
+    paymentMethod = "money",
+  } = location.state || {};
 
   const movieTitle = movieData?.movieName || "Phim Mặc Định";
   const showDate = selectedDate;
   const showTime = selectedTime;
+  const effectiveShowTimeId = showTimeId || "";
 
-  // Navigation handlers
-  const handleHome = () => {
-    navigate("/");
+  // Navigate back to ticket selection screen
+  const handleBackToTickets = () => {
+    navigate('/admin/ql-ban-ve');
   };
 
-  const handleBackToTicket = () => {
-    if (movieId) {
-      navigate(`/ticket/${movieId}`, { replace: true });
-    } else {
-      navigate("/movies/now-showing", { replace: true });
-    }
+  // Navigate back to dashboard
+  const handleBackToDashboard = () => {
+    navigate('/admin/dashboard');
   };
 
-  // Display a spinner until the SignalR connection is ready
+  // Display loading spinner while establishing SignalR connection
   const [isConnectionReady, setIsConnectionReady] = useState(isConnected);
   useEffect(() => {
     setIsConnectionReady(isConnected);
   }, [isConnected]);
 
+  // SignalR seat confirmation logic
   useEffect(() => {
-    if (isSuccess) {
-      console.log("Payment successful!");
-      setPaymentStatus("success");
-    } else {
-      console.log("Payment failed or not completed.");
-      setPaymentStatus("failure");
-    }
-  }, [isSuccess]);
-
-  // Rejoin the SignalR group and update seat statuses
-  useEffect(() => {
-    if (!isConnected || !showTimeId || !connection) {
+    if (!isConnected || !effectiveShowTimeId || !connection) {
       console.log("Waiting for SignalR connection or missing showTimeId...");
       return;
     }
-    const userId = localStorage.getItem("userId");
 
-    // First join the SignalR group
-    joinGroup(showTimeId)
+    const userId = localStorage.getItem("userId") || "admin";
+
+    // Join the SignalR group
+    joinGroup(effectiveShowTimeId)
       .then(() => {
-        console.log(`Confirmation page joined ShowTime group: ${showTimeId}`);
+        console.log(`Admin confirmation joined ShowTime group: ${effectiveShowTimeId}`);
 
-        const seatsToConfirm = selectedSeatsInfo?.length > 0
-          ? selectedSeatsInfo
-          : JSON.parse(sessionStorage.getItem("selectedSeats") || "[]");
-
-        // If payment was successful and we haven't updated the seats yet
-        if (isSuccess && !seatsUpdated) {
-          // Get selected seats from sessionStorage if they don't exist in the state
-          if (seatsToConfirm?.length > 0) {
-            // Format the seats for the server
-            const ticketRequests = seatsToConfirm.map((seat: { ticketId: any; version: any; }) => ({
-              TicketId: seat.ticketId,
-              Version: seat.version
-            }));
-
-            console.log("Attempting to confirm seat purchase:", ticketRequests);
-
-            // Call the SignalR method
-            connection.invoke("ConfirmSeatPurchase", ticketRequests, showTimeId, userId)
-              .then(() => {
-                console.log("Seats marked as purchased:", ticketRequests);
-                setSeatsUpdated(true);
-                toast.success("Ghế đã được đặt thành công!");
-              })
-              .catch((error) => {
-                console.error("Error finalizing seat purchase:", error);
-                toast.error("Không thể cập nhật trạng thái ghế: " + error.message);
-              });
-          } else {
-            console.error("No seats to confirm purchase for!");
-            toast.error("Không tìm thấy thông tin ghế để xác nhận!");
-          }
-        } else if (!isSuccess && selectedSeatsInfo?.length) {
-          // Handle the failed payment case as before
-          const ticketRequests = seatsToConfirm.map((seat: { ticketId: any; version: any; }) => ({
+        // Only update seats if they haven't been updated yet
+        if (!seatsUpdated && selectedSeatsInfo?.length > 0) {
+          // Format the seats for the server
+          const ticketRequests = selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
             TicketId: seat.ticketId,
             Version: seat.version
           }));
-          connection.invoke("ReleasePendingSeats", ticketRequests, showTimeId, userId)
-            .then(() => console.log("Seats released due to payment failure"))
-            .catch((err) => console.error("Error releasing seats:", err));
+
+          console.log("Confirming seat purchase:", ticketRequests);
+
+          // Call the SignalR method to confirm purchase
+          connection.invoke("ConfirmSeatPurchase", ticketRequests, effectiveShowTimeId, userId)
+            .then(() => {
+              console.log("Seats marked as purchased:", ticketRequests);
+              setSeatsUpdated(true);
+              toast.success("Ghế đã được đặt thành công!");
+            })
+            .catch((error) => {
+              console.error("Error finalizing seat purchase:", error);
+              toast.error("Không thể cập nhật trạng thái ghế: " + error.message);
+              setPaymentStatus("failure");
+            });
         }
       })
       .catch((err) => console.error("Error joining ShowTime group:", err));
 
     return () => {
-      if (isConnected && showTimeId) {
-        leaveGroup(showTimeId)
-          .then(() => console.log(`Confirmation page left ShowTime group: ${showTimeId}`))
+      if (isConnected && effectiveShowTimeId) {
+        leaveGroup(effectiveShowTimeId)
+          .then(() => console.log(`Admin confirmation left ShowTime group: ${effectiveShowTimeId}`))
           .catch((err) => console.error("Error leaving ShowTime group:", err));
       }
     };
-  }, [isConnected, showTimeId, connection, isSuccess, selectedSeatsInfo, seatsUpdated, joinGroup, leaveGroup]);
+  }, [isConnected, effectiveShowTimeId, connection, selectedSeatsInfo, seatsUpdated, joinGroup, leaveGroup]);
 
   if (!isConnectionReady) {
     return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#0B0D1A",
-        }}
-      >
-        <CircularProgress color="primary" />
-        <Typography sx={{ ml: 2, color: "white" }}>
-          Đang kết nối đến máy chủ...
-        </Typography>
-      </Box>
+      <AppTheme disableCustomTheme={disableCustomTheme}>
+        <CssBaseline enableColorScheme />
+        <Box sx={{ display: "flex", height: "100vh" }}>
+          <SideMenu />
+          <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+            <AppNavbar />
+            <Box
+              component="main"
+              sx={{
+                flexGrow: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CircularProgress color="primary" />
+              <Typography sx={{ ml: 2 }}>
+                Đang kết nối đến máy chủ...
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      </AppTheme>
     );
   }
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        background: `linear-gradient(to bottom,
-          rgba(11, 13, 26, 0.95) 0%,
-          rgba(11, 13, 26, 0.85) 100%
-        )`,
-        position: "relative",
-        "&::before": {
-          content: '""',
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: `radial-gradient(circle at 20% 30%, rgba(78, 46, 131, 0.4) 0%, rgba(78, 46, 131, 0) 50%),
-                      radial-gradient(circle at 75% 15%, rgba(33, 64, 154, 0.4) 0%, rgba(33, 64, 154, 0) 50%),
-                      linear-gradient(135deg, #0B0D1A 0%, #1A1E3C 50%, #3A1155 100%)`,
-          zIndex: -1,
-        },
-      }}
-    >
-      <Container
-        maxWidth="xl"
-        sx={{
-          pt: { xs: "64px", sm: "72px", md: "80px" },
-          pb: { xs: 4, sm: 6, md: 8 },
-          px: { xs: 2, sm: 3, md: 4 },
-          position: "relative",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            gap: { xs: 2, sm: 3, md: 4 },
-            color: "white",
-            position: "relative",
-            minHeight: "100vh",
-          }}
-        >
-          {/* Main Content */}
+    <AppTheme disableCustomTheme={disableCustomTheme}>
+      <CssBaseline enableColorScheme />
+      <Box sx={{ display: "flex", height: "100vh" }}>
+        <SideMenu />
+        <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+          <AppNavbar />
           <Box
-            sx={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              gap: { xs: 2, sm: 3, md: 4 },
-              pb: 4,
-            }}
+            component="main"
+            sx={(theme) => ({
+              flexGrow: 1,
+              backgroundColor: alpha(theme.palette.background.default, 1),
+              overflowY: "auto",
+              px: 3,
+              py: 2,
+            })}
           >
-            <Typography
-              variant="h4"
-              fontWeight="bold"
-              align="center"
-              gutterBottom
-              fontFamily={"JetBrains Mono"}
-              sx={{
-                textTransform: "uppercase",
-                mb: 2,
-                letterSpacing: "1.2px",
-                lineHeight: "1.5",
-              }}
-            >
-              Thông Tin Đặt Vé
-            </Typography>
-
-            <Grid container spacing={4}>
-              {/* Left Column: Movie Poster */}
-              <Grid item xs={12} md={4}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    backgroundColor: "rgba(28, 28, 28, 0.7)",
-                    borderRadius: 2,
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={movieData?.image}
-                    alt={movieData?.movieName}
-                    sx={{
-                      width: "100%",
-                      borderRadius: 1,
-                      objectFit: "cover",
-                      maxHeight: 500,
-                      boxShadow: "0 8px 16px rgba(0,0,0,0.3)",
-                    }}
-                  />
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12} md={8}>
-                <Paper
-                  sx={{
-                    p: 3,
-                    backgroundColor: "rgba(28, 28, 28, 0.7)",
-                    color: "white",
-                    mb: 3,
-                    borderRadius: 2,
-                  }}
-                >
-
-                  <Grid container spacing={3}>
-                    {/* Movie Details */}
-                    <Grid item xs={12} sm={6}>
-                      <Typography
-                        variant="h6"
-                        gutterBottom
-                        sx={{
-                          color: "primary.light",
-                          fontSize: "1.1rem",
-                          fontWeight: "bold",
-                          pb: 1,
-                          borderBottom: "1px solid rgba(255,255,255,0.2)",
-                          mb: 2,
-                        }}
-                      >
-                        Thông Tin Phim
-                      </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        <strong>Tên phim:</strong> {movieTitle}
-                      </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        <strong>Phòng Chiếu:</strong> {roomName}
-                      </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        <strong>Ngày chiếu:</strong> {showDate}
-                      </Typography>
-                    </Grid>
-                    {/* Ticket Details */}
-                    <Grid item xs={12} sm={6}>
-                      <Typography
-                        variant="h6"
-                        gutterBottom
-                        sx={{
-                          color: "primary.light",
-                          fontSize: "1.1rem",
-                          fontWeight: "bold",
-                          pb: 1,
-                          borderBottom: "1px solid rgba(255,255,255,0.2)",
-                          mb: 2,
-                        }}
-                      >
-                        Thông Tin Vé
-                      </Typography>
-                      <Typography variant="body1" gutterBottom sx={{ fontSize: "1.1rem", mb: 1 }}>
-                        <strong>Ghế:</strong> {seats.join(", ")}
-                      </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        <strong>Giờ chiếu:</strong> {showTime}
-                      </Typography>
-                    </Grid>
-
-                    {/* Promotion Details */}
-                    <Grid item xs={12} >
-                      <Typography
-                        variant="h6"
-                        gutterBottom
-                        sx={{
-                          color: "primary.light",
-                          fontSize: "1.1rem",
-                          fontWeight: "bold",
-                          pb: 1,
-                          borderBottom: "1px solid rgba(255,255,255,0.2)",
-                          mb: 2,
-                        }}
-                      >
-                        Khuyến Mãi
-                      </Typography>
-                      {promotion && (
-                        <Box
-                          sx={{
-                            mt: 2,
-                            p: 2,
-                            backgroundColor: "rgba(0,0,0,0.3)",
-                            borderRadius: 2,
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 2,
-                          }}
-                        >
-                          {promotion.image && (
-                            <Box
-                              component="img"
-                              src={promotion.image}
-                              alt={promotion.promotionName}
-                              sx={{
-                                width: 80,
-                                height: 80,
-                                objectFit: "contain",
-                                borderRadius: 1,
-                              }}
-                            />
-                          )}
-                          <Box>
-                            <Typography
-                              variant="body1"
-                              sx={{
-                                color: "#4caf50",
-                                fontSize: "1.1rem",
-                                fontWeight: "bold",
-                                mb: 1,
-                              }}
-                            >
-                              {promotion.promotionName}
-                            </Typography>
-                            <Typography variant="body1" sx={{ fontSize: "1.1rem", mb: 1 }}>
-                              <strong>Giá gốc:</strong>{" "}
-                              {totalPrice.toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })}
-                            </Typography>
-                            <Typography variant="body1" sx={{ color: "#4caf50", fontSize: "1.1rem" }}>
-                              <strong>Tiết kiệm:</strong>{" "}
-                              {(totalPrice - total).toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      )}
-
-                      <Typography
-                        variant="body1"
-                        gutterBottom
-                        sx={{
-                          color: "#ffc107",
-                          fontWeight: "bold",
-                          fontSize: "1.2rem",
-                          mt: 2,
-                        }}
-                      >
-                        <strong>Tổng cộng:</strong>{" "}
-                        {total.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-
-                  <Divider
-                    sx={{ my: 3, borderColor: "rgba(255,255,255,0.1)" }}
-                  />
-
-                  {/* Customer Information */}
-                  <Box>
-                    <Typography
-                      variant="h6"
-                      gutterBottom
-                      sx={{
-                        color: "primary.light",
-                        fontSize: "1rem",
-                        fontWeight: "bold",
-                        pb: 1,
-                      }}
-                    >
-                      Thông Tin Khách Hàng
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="body1" gutterBottom>
-                          <strong>Họ tên:</strong> {fullName}
-                        </Typography>
-                        <Typography variant="body1" gutterBottom>
-                          <strong>Email:</strong> {email}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="body1" gutterBottom>
-                          <strong>CMND:</strong> {idNumber}
-                        </Typography>
-                        <Typography variant="body1" gutterBottom>
-                          <strong>Số điện thoại:</strong> {phone}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </Paper>
-
+            <Stack spacing={3}>
+              <Header />
+              <Paper
+                elevation={2}
+                sx={{
+                  width: "100%",
+                  borderRadius: 2,
+                  overflow: "hidden",
+                }}
+              >
+                {/* Title */}
                 <Box
                   sx={{
-                    display: "flex",
-                    justifyContent: "space-evenly",
-                    mt: 4,
+                    p: 3,
+                    borderBottom: "1px solid",
+                    borderColor: "divider",
                   }}
                 >
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleHome}
-                    startIcon={<HomeIcon />}
-                    sx={{
-                      px: 4,
-                      py: 1.5,
-                      fontSize: "1rem",
-                      borderRadius: 2,
-                      textTransform: "none",
-                      fontWeight: "bold",
-                      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
-                      background:
-                        "linear-gradient(45deg, #1a237e 0%, #3949ab 100%)",
-                      "&:hover": {
-                        background:
-                          "linear-gradient(45deg, #283593 0%, #5c6bc0 100%)",
-                      },
-                    }}
-                  >
-                    Về Trang Chủ
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleBackToTicket}
-                    startIcon={<ArrowBackIcon />}
-                    sx={{
-                      px: 4,
-                      py: 1.5,
-                      fontSize: "1rem",
-                      borderRadius: 2,
-                      textTransform: "none",
-                      fontWeight: "bold",
-                      borderColor: "#90caf9",
-                      color: "#90caf9",
-                      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
-                      "&:hover": {
-                        background: "rgba(144, 202, 249, 0.1)",
-                      },
-                    }}
-                  >
-                    Quay lại Đặt Vé
-                  </Button>
+                  <Typography variant="h5" fontWeight="bold">
+                    Xác Nhận Đặt Vé
+                  </Typography>
                 </Box>
-              </Grid>
-            </Grid>
-            {paymentStatus === "success" ? (
-              <Paper
-                elevation={3}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  py: 2,
-                  px: 3,
-                  backgroundColor: "rgba(46, 125, 50, 0.15)",
-                  borderLeft: "4px solid #4caf50",
-                  borderRadius: 1,
-                  mb: 3,
-                  maxWidth: { xs: "100%", md: "80%" },
-                  mx: "auto",
-                  position: "relative",
-                  overflow: "hidden",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                  "&::before": {
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background:
-                      "radial-gradient(circle at top right, rgba(76, 175, 80, 0.15), transparent 70%)",
-                    zIndex: 0,
-                  },
-                }}
-              >
-                <CheckCircleOutlineIcon
-                  sx={{
-                    fontSize: 40,
-                    mr: 2,
-                    color: "#4caf50",
-                    filter: "drop-shadow(0 0 6px rgba(76, 175, 80, 0.4))",
-                    zIndex: 1,
-                  }}
-                />
-                <Box sx={{ flex: 1, zIndex: 1 }}>
-                  <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    gutterBottom={false}
-                    fontFamily={"JetBrains Mono"}
-                    sx={{ mb: 0.5 }}
-                    color="primary.light"
+
+                {/* Payment Status Alert */}
+                {paymentStatus === "success" ? (
+                  <Alert
+                    severity="success"
+                    icon={<CheckCircleOutlineIcon fontSize="inherit" />}
+                    sx={{ mx: 3, mt: 3 }}
                   >
-                    Đặt Vé Thành Công!
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: "rgba(255, 255, 255, 0.8)",
-                    }}
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Đặt Vé Thành Công!
+                    </Typography>
+                    <Typography variant="body2">
+                      Vé đã được lưu vào hệ thống.
+                    </Typography>
+                  </Alert>
+                ) : (
+                  <Alert
+                    severity="error"
+                    icon={<CancelOutlined fontSize="inherit" />}
+                    sx={{ mx: 3, mt: 3 }}
                   >
-                    Cảm ơn bạn đã đặt vé. Vui lòng kiểm tra email để xem thông tin vé.
-                  </Typography>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Đặt Vé Thất Bại!
+                    </Typography>
+                    <Typography variant="body2">
+                      Đã xảy ra lỗi khi xử lý đặt vé. Vui lòng thử lại.
+                    </Typography>
+                  </Alert>
+                )}
+
+                {/* Main Content */}
+                <Box sx={{ p: 3 }}>
+                  <Grid container spacing={3}>
+                    {/* Left Column: Movie Info */}
+                    <Grid item xs={12} md={4}>
+                      <Paper
+                        elevation={1}
+                        sx={{
+                          p: 2,
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={movieData?.image}
+                          alt={movieData?.movieName || "Movie Poster"}
+                          sx={{
+                            width: "100%",
+                            borderRadius: 2,
+                            objectFit: "contain",
+                            maxHeight: 400,
+                            mb: 2,
+                          }}
+                        />
+                        <Typography variant="h6" gutterBottom>
+                          {movieTitle}
+                        </Typography>
+                        <Divider sx={{ my: 2 }} />
+                        <Box sx={{ mt: 2 }}>
+                          <Typography variant="body1" gutterBottom>
+                            <strong>Phòng chiếu:</strong> {roomName}
+                          </Typography>
+                          <Typography variant="body1" gutterBottom>
+                            <strong>Ngày chiếu:</strong> {showDate}
+                          </Typography>
+                          <Typography variant="body1" gutterBottom>
+                            <strong>Giờ chiếu:</strong> {showTime}
+                          </Typography>
+                          <Typography variant="body1" gutterBottom>
+                            <strong>Ghế:</strong>{" "}
+                            {seats.join(", ") || "Chưa chọn ghế"}
+                          </Typography>
+                        </Box>
+                      </Paper>
+                    </Grid>
+
+                    {/* Right Column: Booking Details */}
+                    <Grid item xs={12} md={8}>
+                      {/* Customer Information Section */}
+                      {selectedUser && (
+                        <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
+                          <Typography variant="h6" gutterBottom>
+                            Thông Tin Khách Hàng
+                          </Typography>
+                          <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                              <Typography variant="body1" gutterBottom>
+                                <strong>Tài khoản:</strong> {selectedUser.userName}
+                              </Typography>
+                              <Typography variant="body1" gutterBottom>
+                                <strong>Email:</strong> {selectedUser.email}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <Typography variant="body1" gutterBottom>
+                                <strong>CMND/CCCD:</strong> {selectedUser.idCard}
+                              </Typography>
+                              <Typography variant="body1" gutterBottom>
+                                <strong>Số điện thoại:</strong> {selectedUser.phoneNumber}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+
+                          <Box sx={{ mt: 2 }}>
+                            <Typography variant="body1">
+                              <strong>Điểm hiện tại:</strong> {selectedUser.point}
+                            </Typography>
+                            <Typography variant="body1">
+                              <strong>Phương thức thanh toán:</strong> {paymentMethod === "money" ? "Tiền mặt" : "Sử dụng điểm"}
+                            </Typography>
+                          </Box>
+                        </Paper>
+                      )}
+
+                      {/* Payment Details */}
+                      <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
+                        <Typography variant="h6" gutterBottom>
+                          Chi Tiết Thanh Toán
+                        </Typography>
+
+                        {tickets.length > 0 && (
+                          <Box sx={{ mb: 2 }}>
+                            <Typography variant="subtitle1" gutterBottom>
+                              Vé đã mua:
+                            </Typography>
+                            {tickets.map((ticket: any, index: number) => (
+                              <Box
+                                key={index}
+                                sx={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  mb: 1
+                                }}
+                              >
+                                <Typography>
+                                  {ticket.name} x{ticket.quantity}
+                                </Typography>
+                                <Typography>
+                                  {(ticket.price * ticket.quantity).toLocaleString('vi-VN')}đ
+                                </Typography>
+                              </Box>
+                            ))}
+                          </Box>
+                        )}
+
+                        <Divider sx={{ my: 2 }} />
+
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <Typography variant="h6">Tổng thanh toán:</Typography>
+                          <Typography variant="h6" color="primary" fontWeight="bold">
+                            {totalPrice.toLocaleString('vi-VN')}đ
+                          </Typography>
+                        </Box>
+                      </Paper>
+
+                      {/* Action Buttons */}
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                        <Button
+                          variant="outlined"
+                          startIcon={<ArrowBackIcon />}
+                          onClick={handleBackToTickets}
+                        >
+                          Quay lại bán vé
+                        </Button>
+                        <Button
+                          variant="contained"
+                          startIcon={<HomeIcon />}
+                          onClick={handleBackToDashboard}
+                        >
+                          Về Dashboard
+                        </Button>
+                      </Box>
+                    </Grid>
+                  </Grid>
                 </Box>
               </Paper>
-            ) : (
-              <Paper
-                elevation={3}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  py: 2,
-                  px: 3,
-                  backgroundColor: "rgba(255, 0, 0, 0.15)",
-                  borderLeft: "4px solid #f44336",
-                  borderRadius: 1,
-                  mb: 3,
-                  maxWidth: { xs: "100%", md: "80%" },
-                  mx: "auto",
-                  position: "relative",
-                  overflow: "hidden",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                  "&::before": {
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background:
-                      "radial-gradient(circle at top right, rgba(255, 0, 0, 0.15), transparent 70%)",
-                    zIndex: 0,
-                  },
-                }}
-              >
-                <CancelOutlined
-                  sx={{
-                    fontSize: 40,
-                    mr: 2,
-                    color: "#f44336",
-                    filter: "drop-shadow(0 0 6px rgba(255, 0, 0, 0.4))",
-                    zIndex: 1,
-                  }}
-                />
-                <Box sx={{ flex: 1, zIndex: 1 }}>
-                  <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    gutterBottom={false}
-                    fontFamily={"JetBrains Mono"}
-                    sx={{ mb: 0.5 }}
-                    color="primary.light"
-                  >
-                    Đặt vé thất bại!
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: "rgba(255, 255, 255, 0.8)",
-                    }}
-                  >
-                    Giao dịch đã bị hủy. Nếu cần hỗ trợ, vui lòng liên hệ với chúng tôi.
-                  </Typography>
-                </Box>
-              </Paper>
-            )}
+            </Stack>
           </Box>
         </Box>
-      </Container>
-    </Box>
+      </Box>
+    </AppTheme>
   );
 };
 
