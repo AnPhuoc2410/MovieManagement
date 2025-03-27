@@ -10,8 +10,9 @@ namespace MovieManagement.Server.Models.Configurations
 
             builder.ToTable("BILL");
             builder.HasKey(x => x.BillId);
-            //builder.Property(x => x.BillId).HasDefaultValueSql("NEWID()");
-            builder.Property(x => x.BillId).ValueGeneratedOnAdd();
+            builder.Property(x => x.BillId).HasDefaultValueSql("NEWID()");
+            //builder.Property(x => x.PaymentId).ValueGeneratedOnAdd();
+            builder.Property(x => x.PaymentId).IsRequired();
             builder.Property(x => x.CreatedDate).IsRequired();
             builder.Property(x => x.Point).HasColumnType("numeric(10,2)");
             builder.Property(x => x.TotalTicket).IsRequired();

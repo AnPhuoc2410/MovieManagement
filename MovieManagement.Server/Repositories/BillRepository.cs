@@ -16,7 +16,9 @@ namespace MovieManagement.Server.Repositories
             _context = context;
         }
 
-        public async Task<List<TicketBillResponse>> GetPurchasedTicketsForBill(long billId)
+        
+
+        public async Task<List<TicketBillResponse>> GetPurchasedTicketsForBill(Guid billId)
         {
             return await _context.Bills
                 .Where(b => b.BillId == billId)

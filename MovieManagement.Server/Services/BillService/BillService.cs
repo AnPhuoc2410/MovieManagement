@@ -42,7 +42,7 @@ namespace MovieManagement.Server.Services.BillService
             }
             return _mapper.Map<List<BillDto>>(bills);
         }
-        public async Task<BillDto> GetBillByIdAsync(long billId) 
+        public async Task<BillDto> GetBillByIdAsync(Guid billId)
         {
             var bill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.GetByIdAsync(billId));
             if (bill == null)
@@ -61,7 +61,7 @@ namespace MovieManagement.Server.Services.BillService
             //Calculator ticket total
             var bill = new Bill
             {
-                BillId = paymentId,
+                PaymentId = paymentId,
                 CreatedDate = DateTime.Now,
                 UserId = userId,
                 Status = BillEnum.BillStatus.Pending,
@@ -70,12 +70,13 @@ namespace MovieManagement.Server.Services.BillService
                 Point = billRequest.Amount.Value/1000,
             };
 
-            var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateIdentityAsync(bill));
+            var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateAsync(bill));
             if (createdBill == null)
                 throw new Exception("Failed to create bill.");
             return createdBill;
         }
-        public async Task<BillDto> UpdateBillAsync(long billId, BillEnum.BillStatus billStatus)
+
+        public async Task<BillDto> UpdateBillAsync(Guid billId, BillEnum.BillStatus billStatus)
         {
             var existingBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
             if (existingBill == null)
@@ -92,7 +93,7 @@ namespace MovieManagement.Server.Services.BillService
             }
             return _mapper.Map<BillDto>(updatedBill);
         }
-        public async Task<bool> DeleteBillAsync(long billId)
+        public async Task<bool> DeleteBillAsync(Guid billId)
         {
             var bill = _unitOfWork.BillRepository.GetByIdAsync(billId);
             if (bill == null)
@@ -101,7 +102,8 @@ namespace MovieManagement.Server.Services.BillService
             }
             return await _unitOfWork.BillRepository.DeleteAsync(billId);
         }
-        public BillDto UpdateBill(long billId, BillEnum.BillStatus billStatus)
+
+        public BillDto UpdateBill(Guid billId, BillEnum.BillStatus billStatus)
         {
             var existingBill = _unitOfWork.BillRepository.GetById(billId);
             if (existingBill == null)

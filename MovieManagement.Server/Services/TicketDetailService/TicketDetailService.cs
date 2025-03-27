@@ -149,7 +149,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return await _unitOfWork.TicketDetailRepository.SaveAsync() == ticketDetails.Count();
         }
 
-        public bool PurchasedTicket(List<Guid> list, long billId)
+        public bool PurchasedTicket(List<Guid> list, Guid billId)
         {
             foreach (var t in list)
             {
@@ -168,8 +168,11 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return checker > 0;
         }
 
-        public async Task<IEnumerable<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(long billId)
+
+        public async Task<IEnumerable<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(Guid billId)
         {
+            if (billId == null)
+                throw new BadRequestException("PaymentId is invalid!");
             var isExist = await _unitOfWork.BillRepository.GetByIdAsync(billId);
             if (isExist == null)
                 throw new NotFoundException("Bill not found!");
