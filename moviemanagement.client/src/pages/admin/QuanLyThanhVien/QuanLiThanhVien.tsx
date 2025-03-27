@@ -1,5 +1,5 @@
 import EditIcon from "@mui/icons-material/Edit";
-import { Avatar, Box, Chip } from "@mui/material";
+import { Avatar, Box, Chip, Grid, Typography } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
@@ -134,6 +134,37 @@ const QuanLiThanhVien: React.FC = () => {
           },
         }}
       >
+        <Box sx={{ flexGrow: 1, padding: 2 }}>
+          <Grid container spacing={2}>
+            {[
+              {
+                id: 1,
+                name: "Tổng số thành viên",
+                description: "This is item 1",
+              },
+              {
+                id: 2,
+                name: "Tổng số thành viên đang hoạt động",
+                description: "This is item 2",
+              },
+              { id: 3, name: "Item 3", description: "This is item 3" },
+            ].map((item) => (
+              <Grid item xs={12} sm={6} md={4} key={item.id}>
+                <Box
+                  sx={{
+                    border: "1px solid #ccc",
+                    borderRadius: "8px",
+                    padding: 2,
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography variant="h6">{item.name}</Typography>
+                  <Typography>{item.description}</Typography>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
         <DataGrid
           rows={users || []}
           columns={columns}

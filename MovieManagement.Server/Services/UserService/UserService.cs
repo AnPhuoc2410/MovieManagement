@@ -113,16 +113,16 @@ namespace MovieManagement.Server.Services.UserService
             return _mapper.Map<List<UserDto.UserResponse>>(usersList);
         }
 
-        public async Task<UserDto.UserResponse> FindUserByPhone(string phone)
+        public async Task<List<UserDto.UserResponse>> FindUserByPhone(string phone)
         {
-            var user = await _unitOfWork.UserRepository.GetUserByPhoneAsync(phone);
-            return _mapper.Map<UserDto.UserResponse>(user);
+            var user = await _unitOfWork.UserRepository.GetUsersByPhoneAsync(phone);
+            return _mapper.Map<List<UserDto.UserResponse>>(user);
         }
 
-        public async Task<UserDto.UserResponse> FindUserByIdCard(string idCard)
+        public async Task<List<UserDto.UserResponse>> FindUserByIdCard(string idCard)
         {
-            var user = await _unitOfWork.UserRepository.GetUserByIdCardAsync(idCard);
-            return _mapper.Map<UserDto.UserResponse>(user);
+            var user = await _unitOfWork.UserRepository.GetUsersByIdCardAsync(idCard);
+            return _mapper.Map<List<UserDto.UserResponse>>(user);
         }
 
         public async Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page,
