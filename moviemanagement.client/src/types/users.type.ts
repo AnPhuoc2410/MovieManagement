@@ -71,6 +71,7 @@ export type UserInfo = {
   userName: string;
   email: string;
   phoneNumber: string;
-  membershipPoints: number;
+  point: number;
   avatarUrl?: string;
+  idCard: string;
 };

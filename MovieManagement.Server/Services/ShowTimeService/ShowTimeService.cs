@@ -127,7 +127,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
             return _mapper.Map<IEnumerable<ShowTimeDto>>(showtimes);
         }
-        
+
         public async Task<ShowTimeDto> GetShowtimeByIdAsync(Guid showTimeId)
         {
             var showTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.GetByIdAsync(showTimeId));
@@ -200,13 +200,12 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var updatedShowTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.UpdateAsync(existingShowTime));
             return updatedShowTime;
         }
-
-        public async Task<Dictionary<DateTime, Dictionary<string, Dictionary<string, List<ShowTimeDto>>>>> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate, string location)
+        public async Task<Dictionary<string, Dictionary<string, List<object>>>> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate, string location)
         {
             var movie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
             if (movie == null)
             {
-                throw new NotFoundException("Movie does not found!");
+                throw new NotFoundException("Movie not found!");
             }
 
             if (fromDate.Date > toDate.Date)
@@ -216,33 +215,45 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
             if (movie.FromDate.Date > DateTime.Now.Date)
             {
-                throw new ApplicationException("This movie schedule can not be leak.");
+                throw new ApplicationException("This movie schedule is not available yet.");
             }
 
             var showTimes = await _unitOfWork.ShowtimeRepository.GetShowTimeFromDateToDate(movieId, fromDate, toDate, location);
 
-            if (showTimes == null)
+            if (showTimes == null || !showTimes.Any())
             {
-                throw new NotFoundException("ShowTime does not found.");
+                throw new NotFoundException("ShowTime not found.");
             }
 
-            var dictionary = showTimes
+            var groupedShowTimes = showTimes
+                .Where(st => st.Room?.MovieTheater != null)
                 .GroupBy(st => st.StartTime.Date)
                 .ToDictionary(
-                    g => g.Key,
-                    g => g.GroupBy(st => st.Room.MovieTheater.location)
-                          .ToDictionary(
-                              x => x.Key,
-                              x => x.GroupBy(st => st.Room.MovieTheater)
-                              .ToDictionary(x => $"{x.Key.Name} - {x.Key.Address}",
-                                    x => x.Select(st => _mapper.Map<ShowTimeDto>(st)).ToList()
-                              )
-                          )
+                    dateGroup => dateGroup.Key.ToString("yyyy-MM-dd"),
+                    dateGroup => dateGroup
+                        .GroupBy(st => st.Room.MovieTheater.Location ?? "Unknown Location")
+                        .ToDictionary(
+                            locGroup => locGroup.Key,
+                            locGroup => locGroup
+                                .GroupBy(st => st.Room.MovieTheater)
+                                .Select(theaterGroup => (object)new
+                                {
+                                    NameTheater = theaterGroup.Key.Name,
+                                    AddressTheater = theaterGroup.Key.Address,
+                                    ListShowTime = theaterGroup.Select(st => new
+                                    {
+                                        showTimeId = st.ShowTimeId,
+                                        movieId = st.MovieId,
+                                        roomId = st.RoomId,
+                                        startTime = st.StartTime,
+                                        endTime = st.EndTime
+                                    }).ToList()
+                                }).ToList()
+                        )
                 );
 
-            return dictionary;
+            return groupedShowTimes;
         }
-
 
 
 

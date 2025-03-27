@@ -53,8 +53,6 @@ const Payment: React.FC = () => {
   const effectiveShowTimeId =
     showTimeId || sessionStorage.getItem("currentShowTimeId") || "";
 
-  // Before unload handler to warn user if they refresh or leave
-  // Update your existing beforeunload handler
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (connection && isConnected && effectiveShowTimeId && selectedSeatsInfo?.length) {
@@ -62,7 +60,6 @@ const Payment: React.FC = () => {
         e.preventDefault();
         e.returnValue = "";
 
-        // Try to release seats using navigator.sendBeacon (works during page unload)
         const userId = localStorage.getItem("userId") || "anonymous";
         const payload = JSON.stringify({
           ticketRequests: selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({

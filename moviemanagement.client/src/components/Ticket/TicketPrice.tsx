@@ -53,14 +53,13 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
     const fetchSeatTypes = async () => {
       try {
         const response = await api.get(`seattype/all`);
-        const seatData = response.data.map((seat: SeatType) => ({
+        const seatData = response.data.data.map((seat: SeatType) => ({
           ...seat,
           quantity: 0,
         }));
         setSeatTypes(seatData);
       } catch (error) {
         console.error("Error fetching seat types:", error);
-        toast.error(t("errors.fetch_seats_failed"));
       }
     };
 

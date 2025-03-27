@@ -40,7 +40,7 @@ namespace MovieManagement.Server.Repositories
             var showTimes = await _context.Showtimes
                 .Include(st => st.Room)
                     .ThenInclude(r => r.MovieTheater)
-                .Where(st => st.MovieId == movieId && st.StartTime.Date >= date1.Date && st.StartTime.Date <= date2.Date && st.StartTime.AddMinutes(15).CompareTo(DateTime.Now) > 0 && st.Room.MovieTheater.location == location)
+                .Where(st => st.MovieId == movieId && st.StartTime.Date >= date1.Date && st.StartTime.Date <= date2.Date && st.StartTime.AddMinutes(15).CompareTo(DateTime.Now) > 0 && st.Room.MovieTheater.Location == location)
                 .OrderBy(st => st.StartTime)
                 .ToListAsync();
             return showTimes;
