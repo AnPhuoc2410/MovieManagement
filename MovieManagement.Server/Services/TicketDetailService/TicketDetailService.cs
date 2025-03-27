@@ -171,7 +171,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 
             user.Point += bill.Point;
 
-            _unitOfWork.UserRepository.PrepareCreate(user);
+            _unitOfWork.UserRepository.PrepareUpdate(user);
 
             var checker = await _unitOfWork.CompleteAsync();
 

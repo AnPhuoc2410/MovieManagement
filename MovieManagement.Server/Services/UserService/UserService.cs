@@ -210,7 +210,7 @@ namespace MovieManagement.Server.Services.UserService
                 PaymentId = null,
                 Status = BillStatus.Paid,
                 CreatedDate = DateTime.Now,
-                Point = billRequest.UsedPoint.Value,
+                Point = -billRequest.UsedPoint.Value,
             };
 
             var moneyBill = new Bill
