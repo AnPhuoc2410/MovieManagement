@@ -31,7 +31,15 @@ namespace MovieManagement.Server.Services.BillService
         }
         public async Task<IEnumerable<BillDto>> GetBillPageAsync(int page, int sizePage)
         {
+            if (page < 0 || sizePage < 1)
+            {
+                throw new Exception("Page and size page is invalid");
+            }
             var bills = await _unitOfWork.BillRepository.GetPageAsync(page, sizePage);
+            if (bills == null)
+            {
+                throw new NotFoundException("Bill does not found!");
+            }
             return _mapper.Map<List<BillDto>>(bills);
         }
         public async Task<BillDto> GetBillByIdAsync(Guid billId)
@@ -51,7 +59,7 @@ namespace MovieManagement.Server.Services.BillService
             //    throw new NotFoundException("User cannot found!");
 
             //Calculator ticket total
-            var bill = new Bill 
+            var bill = new Bill
             {
                 PaymentId = paymentId,
                 CreatedDate = DateTime.Now,
@@ -72,21 +80,26 @@ namespace MovieManagement.Server.Services.BillService
         {
             var existingBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
             if (existingBill == null)
+            {
                 throw new NotFoundException("Bill cannot found!");
+            }
 
             //existingBill = _mapper.Map(billRequest, existingBill);
             existingBill.Status = billStatus;
             var updatedBill = await _unitOfWork.BillRepository.UpdateAsync(existingBill);
             if (updatedBill == null)
+            {
                 throw new DbUpdateException("Bill cannot update!");
+            }
             return _mapper.Map<BillDto>(updatedBill);
-
         }
         public async Task<bool> DeleteBillAsync(Guid billId)
         {
             var bill = _unitOfWork.BillRepository.GetByIdAsync(billId);
             if (bill == null)
+            {
                 throw new NotFoundException("Bill cannot found!");
+            }
             return await _unitOfWork.BillRepository.DeleteAsync(billId);
         }
 

@@ -28,7 +28,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet]
-        [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<BillDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -46,7 +46,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
         [HttpGet("page/{page:int}/size/{pageSize:int}")]
-        [ProducesResponseType(typeof(ApiResponse<BillDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<BillDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -54,7 +54,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult> GetBillPages(int page, int pageSize)
         {
             var bills = await _billService.GetBillPageAsync(page, pageSize);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<BillDto>>
             {
                 StatusCode = 200,
                 Message = "Get bills are a success",
@@ -74,7 +74,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<BillDto>> GetBillById(Guid billId)
         {
             var bill = await _billService.GetBillByIdAsync(billId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<BillDto>
             {
                 StatusCode = 200,
                 Message = "Get bill is success",
@@ -85,10 +85,15 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost("email/send-bill")]
-        public ActionResult<bool> GetBillByEmail(Guid billId)
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public ActionResult<bool> GetBillByEmail(long billId)
         {
             var result = _emailService.SendEmailReportBill(billId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<bool>
             {
                 StatusCode = 200,
                 Message = "Send bill by email is success",
@@ -106,7 +111,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<BillDto>> CreateBill(Guid userId, [FromBody] BillRequest billRequest, long paymentId)
         {
             var newBill = await _billService.CreateBillAsync(userId, billRequest, paymentId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<BillDto>
             {
                 StatusCode = 200,
                 Message = "Create bill is success",
