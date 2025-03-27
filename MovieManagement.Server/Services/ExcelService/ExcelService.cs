@@ -8,6 +8,7 @@ using MovieManagement.Server.Repositories;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Drawing;
+using System.Threading.Tasks;
 
 namespace MovieManagement.Server.Services.ExcelService
 {
@@ -19,41 +20,49 @@ namespace MovieManagement.Server.Services.ExcelService
         {
             _unitOfWork = unitOfWork;
         }
-        public class ThongKe
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public decimal Revenue { get; set; }
-        }
-        public byte[] ExportToExcel()
+        //public class ThongKe
+        //{
+        //    public int Id { get; set; }
+        //    public string Name { get; set; }
+        //    public decimal Revenue { get; set; }
+        //}
+        public async Task<byte[]> ExportToExcel()
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             // Lấy danh sách doanh thu theo ngày
-            var dailyStatistics = _unitOfWork.BillRepository.GetDailyStatisticsAsync();
+            List<RevenueResponse.DailyStatistics> statistics = await _unitOfWork.BillRepository.GetDailyStatisticsAsync();
 
             using (var package = new ExcelPackage())
             {
-                var data = new List<ThongKe>
-        {
-            new ThongKe { Id = 1, Name = "Sản phẩm A", Revenue = 100000 },
-            new ThongKe { Id = 2, Name = "Sản phẩm B", Revenue = 200000 }
-        };
+        //        var data = new List<ThongKe>
+        //{
+        //    new ThongKe { Id = 1, Name = "Sản phẩm A", Revenue = 100000 },
+        //    new ThongKe { Id = 2, Name = "Sản phẩm B", Revenue = 200000 }
+        //};
 
                 var worksheet = package.Workbook.Worksheets.Add("Doanh thu theo ngày");
 
                 // Dòng bắt đầu chứa dữ liệu
                 int startDataRow = 4;
-                for (int i = 0; i < data.Count; i++)
+
+                for (int i = 0; i < statistics.Count; i++)
                 {
-                    worksheet.Cells[startDataRow + i, 1].Value = DateTime.Now.AddDays(i).ToString("dd/MM/yyyy");
-                    worksheet.Cells[startDataRow + i, 2].Value = i + 10; // Giả lập số vé
-                    worksheet.Cells[startDataRow + i, 3].Value = data[i].Revenue;
+                    worksheet.Cells[startDataRow + i, 1].Value = statistics[i].DayTime;
+                    worksheet.Cells[startDataRow + i, 2].Value = statistics[i].TotalTickets;
+                    worksheet.Cells[startDataRow + i, 3].Value = statistics[i].TotalAmount;
                     worksheet.Cells[startDataRow + i, 3].Style.Numberformat.Format = "#,##0 \"VND\"";
                 }
+                //for (int i = 0; i < data.Count; i++)
+                //{
+                //    worksheet.Cells[startDataRow + i, 1].Value = DateTime.Now.AddDays(i).ToString("dd/MM/yyyy");
+                //    worksheet.Cells[startDataRow + i, 2].Value = i + 10; // Giả lập số vé
+                //    worksheet.Cells[startDataRow + i, 3].Value = data[i].Revenue;
+                //    worksheet.Cells[startDataRow + i, 3].Style.Numberformat.Format = "#,##0 \"VND\"";
+                //}
 
                 // Xác định dòng cuối cùng để hiển thị tổng doanh thu
-                int lastRow = startDataRow + data.Count;
+                int lastRow = startDataRow + statistics.Count;
 
                 // Thiết lập header
                 worksheet.Cells["A1:C2"].Merge = true;

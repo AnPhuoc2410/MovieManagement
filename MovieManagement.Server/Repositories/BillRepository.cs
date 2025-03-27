@@ -45,7 +45,7 @@ namespace MovieManagement.Server.Repositories
         public async Task<List<RevenueResponse.DailyStatistics>> GetDailyStatisticsAsync()
         {
             return await _context.Bills
-                .Where(b => b.Status == BillStatus.Paid)
+                .Where(b => b.Status == BillStatus.Completed)
                 .GroupBy(b => b.CreatedDate.Date)
                 .Select(g => new RevenueResponse.DailyStatistics
                 {
