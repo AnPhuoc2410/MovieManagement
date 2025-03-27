@@ -223,7 +223,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             _billService.UpdateBill(GetIndex(paymentResult.Description, 2), BillEnum.BillStatus.Completed);
             //TODO: HERE CALL TICKETSERVICE TO UPDATE TICKET BillID
             _ticketDetailService.PurchasedTicket
-                (GetTickets(paymentResult.Description, 3), GetIndex(paymentResult.Description, 2));
+                (GetTickets(paymentResult.Description, 3), GetIndex(paymentResult.Description, 2), GetIndex(paymentResult.Description, 1));
 
             _emailService.SendEmailReportBill(GetIndex(paymentResult.Description, 2));
         }
@@ -231,9 +231,9 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
         private Guid GetIndex(string description, int atPos)
         {
             var index = description.Split(" - ").ToList();
-            if (Guid.TryParse(index[atPos], out Guid billId))
+            if (Guid.TryParse(index[atPos], out Guid foundGuid))
             {
-                return billId;
+                return foundGuid;
             }
             return Guid.Empty;
         }

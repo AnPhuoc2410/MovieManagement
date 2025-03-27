@@ -4,6 +4,7 @@ using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Services.EmailService;
 using MovieManagement.Server.Services.UserService;
 using static MovieManagement.Server.Models.Enums.UserEnum;
@@ -217,7 +218,17 @@ namespace MovieManagement.Server.Controllers
             return NoContent();
         }
 
-
+        [HttpPost("Test")]
+        public async Task<IActionResult> Test(Guid userId, BillRequest billRequest)
+        {
+            await _userService.ExchangeTickets(userId, billRequest);
+            return Ok(new ApiResponse<object>
+            {
+                StatusCode = 200,
+                Message = "Exchange ticket successfully",
+                IsSuccess = true
+            });
+        }
 
     }
 }
