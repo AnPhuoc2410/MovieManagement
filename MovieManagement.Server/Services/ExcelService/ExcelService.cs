@@ -19,22 +19,43 @@ namespace MovieManagement.Server.Services.ExcelService
         {
             _unitOfWork = unitOfWork;
         }
-
+        public class ThongKe
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public decimal Revenue { get; set; }
+        }
         public byte[] ExportToExcel()
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-            // Lấy ra danh sách doanh thu theo ngày
+            // Lấy danh sách doanh thu theo ngày
             var dailyStatistics = _unitOfWork.BillRepository.GetDailyStatisticsAsync();
 
             using (var package = new ExcelPackage())
             {
+                var data = new List<ThongKe>
+        {
+            new ThongKe { Id = 1, Name = "Sản phẩm A", Revenue = 100000 },
+            new ThongKe { Id = 2, Name = "Sản phẩm B", Revenue = 200000 }
+        };
+
                 var worksheet = package.Workbook.Worksheets.Add("Doanh thu theo ngày");
 
-                int lastRow = worksheet.Dimension == null ? 3 : worksheet.Dimension.End.Row + 1;
+                // Dòng bắt đầu chứa dữ liệu
+                int startDataRow = 4;
+                for (int i = 0; i < data.Count; i++)
+                {
+                    worksheet.Cells[startDataRow + i, 1].Value = DateTime.Now.AddDays(i).ToString("dd/MM/yyyy");
+                    worksheet.Cells[startDataRow + i, 2].Value = i + 10; // Giả lập số vé
+                    worksheet.Cells[startDataRow + i, 3].Value = data[i].Revenue;
+                    worksheet.Cells[startDataRow + i, 3].Style.Numberformat.Format = "#,##0 \"VND\"";
+                }
 
+                // Xác định dòng cuối cùng để hiển thị tổng doanh thu
+                int lastRow = startDataRow + data.Count;
 
-                // Thiết kế header
+                // Thiết lập header
                 worksheet.Cells["A1:C2"].Merge = true;
                 worksheet.Cells["A1"].Value = "Tổng doanh thu từng ngày";
                 worksheet.Cells["A1:C2"].Style.Font.Bold = true;
@@ -44,7 +65,7 @@ namespace MovieManagement.Server.Services.ExcelService
                 worksheet.Cells["A1:C2"].Style.Fill.PatternType = ExcelFillStyle.Solid;
                 worksheet.Cells["A1:C2"].Style.Fill.BackgroundColor.SetColor(Color.Orange);
 
-                // Thiết kế table content
+                // Thiết lập tiêu đề bảng
                 worksheet.Cells["A3"].Value = "Ngày";
                 worksheet.Cells["B3"].Value = "Số vé";
                 worksheet.Cells["C3"].Value = "Doanh thu";
@@ -52,40 +73,37 @@ namespace MovieManagement.Server.Services.ExcelService
                 worksheet.Cells["A3:C3"].Style.Fill.PatternType = ExcelFillStyle.Solid;
                 worksheet.Cells["A3:C3"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(219, 238, 244));
 
-                worksheet.Cells["A:A"].Style.Border.BorderAround(ExcelBorderStyle.Thin);
-                worksheet.Cells["A:A"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                worksheet.Cells["A:A"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                worksheet.Cells["A:A"].Style.Numberformat.Format = "dd/MM/yyyy";
+                worksheet.Cells[$"A4:A{lastRow}"].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                worksheet.Cells[$"A4:A{lastRow}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                worksheet.Cells[$"A4:A{lastRow}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                worksheet.Cells[$"A4:A{lastRow}"].Style.Numberformat.Format = "dd/MM/yyyy";
 
-                worksheet.Cells["B:B"].Style.Border.BorderAround(ExcelBorderStyle.Thin);
-                worksheet.Cells["B:B"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                worksheet.Cells["B:B"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                worksheet.Cells[$"B4:B{lastRow}"].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                worksheet.Cells[$"B4:B{lastRow}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells[$"B4:B{lastRow}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                worksheet.Cells["C:C"].Style.Border.BorderAround(ExcelBorderStyle.Thin);
-                worksheet.Cells["C:C"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                worksheet.Cells["C:C"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                worksheet.Cells["C:C"].Style.Numberformat.Format = "#,##0.00 ₫";
+                worksheet.Cells[$"C4:C{lastRow}"].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                worksheet.Cells[$"C4:C{lastRow}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                worksheet.Cells[$"C4:C{lastRow}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                worksheet.Cells[$"C4:C{lastRow}"].Style.Numberformat.Format = "#,##0 \"VND\"";
 
-                // Thiết kế dữ liệu tổng
-                //worksheet.Cells[$"A{lastRow}"].Value = "Tổng doanh thu:";
-                //worksheet.Cells[$"A{lastRow}"].Style.Font.Bold = true;
-                //worksheet.Cells[$"A{lastRow}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                //worksheet.Cells[$"A{lastRow}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                // Thêm hàng tổng doanh thu
+                worksheet.Cells[$"A{lastRow}"].Value = "Tổng doanh thu:";
+                worksheet.Cells[$"A{lastRow}"].Style.Font.Bold = true;
+                worksheet.Cells[$"A{lastRow}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells[$"A{lastRow}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                // In ra doanh thu
-                //worksheet.Cells[$"C{lastRow}"].Formula = $"SUM(C4:C{lastRow - 1})";
-                //worksheet.Cells[$"C{lastRow}"].Style.Font.Bold = true;
-                //worksheet.Cells[$"C{lastRow}"].Style.Numberformat.Format = "#,##0.00 ₫"; // Định dạng tiền tệ
-                //worksheet.Cells[$"C{lastRow}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                //worksheet.Cells[$"C{lastRow}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                //worksheet.Cells["A1:C1"].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                //worksheet.Cells["A1:C1"].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml("#B4C7E7"));
+                worksheet.Cells[$"C{lastRow}"].Formula = $"SUM(C{startDataRow}:C{lastRow - 1})";
+                worksheet.Cells[$"C{lastRow}"].Style.Font.Bold = true;
+                worksheet.Cells[$"C{lastRow}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                worksheet.Cells[$"C{lastRow}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                worksheet.Cells[$"C{lastRow}"].Style.Numberformat.Format = "#,##0 \"VND\"";
 
+                // Định dạng màu nền hàng tổng doanh thu
+                worksheet.Cells[$"A{lastRow}:C{lastRow}"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[$"A{lastRow}:C{lastRow}"].Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
 
-                // Định dạng màu nền cho hàng tổng
-                //worksheet.Cells[$"B{lastRow}:C{lastRow}"].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                //worksheet.Cells[$"B{lastRow}:C{lastRow}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-
+                // Tự động căn chỉnh kích thước cột
                 worksheet.Cells.AutoFitColumns();
 
                 return package.GetAsByteArray();
