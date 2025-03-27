@@ -4,6 +4,7 @@ using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Services.EmailService;
 using MovieManagement.Server.Services.UserService;
 using static MovieManagement.Server.Models.Enums.UserEnum;
 
@@ -14,10 +15,12 @@ namespace MovieManagement.Server.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IEmailService emailService)
         {
             _userService = userService;
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -207,5 +210,7 @@ namespace MovieManagement.Server.Controllers
             await _userService.DeleteUserAsync(empId);
             return NoContent();
         }
+
+
     }
 }

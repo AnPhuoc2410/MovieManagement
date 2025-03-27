@@ -83,12 +83,10 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
 
             if (seats.Count == 0)
-            {
                 throw new NotFoundException("Seats does not found!");
-            }
+            
 
             foreach (var s in seats)
-            {
                 _unitOfWork.TicketDetailRepository.PrepareCreate(new TicketDetail
                 {
                     ShowTimeId = showTimeId,
@@ -96,9 +94,9 @@ namespace MovieManagement.Server.Services.ShowTimeService
                     Version = new byte[8],
                     TicketId = Guid.NewGuid()
                 });
-            }
+            
 
-            return await _unitOfWork.TicketDetailRepository.SaveAsync();
+            return await _unitOfWork.CompleteAsync();
         }
 
         public async Task<bool> DeleteShowtimeAsync(Guid showTimeId)

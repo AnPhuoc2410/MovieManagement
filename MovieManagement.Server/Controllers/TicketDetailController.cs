@@ -93,7 +93,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetTicketDetails(long billId)
+        public async Task<IActionResult> GetTicketDetails(Guid billId)
         {
             var ticketDetails = await _ticketDetailService.GetPurchasedTicketsByBillId(billId);
             var response = new ApiResponse<object>

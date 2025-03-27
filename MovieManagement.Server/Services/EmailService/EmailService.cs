@@ -28,7 +28,7 @@ namespace MovieManagement.Server.Services.EmailService
             _qRCodeGenerator = qRCodeGenerator;
             _mapper = mapper;
         }
-        public bool SendEmailReportBill(long billId)
+        public bool SendEmailReportBill(Guid billId)
         {
             //Get user bill
             var userBill = _unitOfWork.BillRepository.GetById(billId);
@@ -53,7 +53,7 @@ namespace MovieManagement.Server.Services.EmailService
             string body = _convertFile.GenerateHtmlFromBillReport(_mapper.Map<BillReportRequest>(userBill));
 
             // Create QR code Stream
-            byte[] qrCode = _qRCodeGenerator.GenerateQRCode(userBill.BillId.ToString());
+            byte[] qrCode = _qRCodeGenerator.GenerateQRCode(userBill.PaymentId.ToString());
             var qrBase64 = _qRCodeGenerator.QRCodeImageToBase64(qrCode);
             string qrCodeHtml = $"<img src='cid:qrcode' alt='QR Code' style='width: 100px; height: 100px;' />";
 

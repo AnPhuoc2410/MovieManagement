@@ -22,40 +22,26 @@ namespace MovieManagement.Server.Services.BillService
         }
         public async Task<IEnumerable<BillDto>> GetAllBillsAsync()
         {
-            try
+            var bills = _mapper.Map<List<BillDto>>(await _unitOfWork.BillRepository.GetAllAsync());
+            if (bills == null)
             {
-                var bills = _mapper.Map<List<BillDto>>(await _unitOfWork.BillRepository.GetAllAsync());
-                if (bills == null)
-                {
-                    throw new NotFoundException("Movie does not found!");
-                }
-                return bills;
+                throw new NotFoundException("Movie does not found!");
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
-            }
+            return bills;
         }
         public async Task<IEnumerable<BillDto>> GetBillPageAsync(int page, int sizePage)
         {
             var bills = await _unitOfWork.BillRepository.GetPageAsync(page, sizePage);
             return _mapper.Map<List<BillDto>>(bills);
         }
-        public async Task<BillDto> GetBillByIdAsync(long billId)
+        public async Task<BillDto> GetBillByIdAsync(Guid billId)
         {
-            try
+            var bill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.GetByIdAsync(billId));
+            if (bill == null)
             {
-                var bill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.GetByIdAsync(billId));
-                if (bill == null)
-                {
-                    throw new NotFoundException("Bill not found");
-                }
-                return bill;
+                throw new NotFoundException("Bill not found");
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
-            }
+            return bill;
         }
         public async Task<BillDto> CreateBillAsync(Guid userId, BillRequest billRequest, long paymentId)
         {
@@ -67,7 +53,7 @@ namespace MovieManagement.Server.Services.BillService
             //Calculator ticket total
             var bill = new Bill 
             {
-                BillId = paymentId,
+                PaymentId = paymentId,
                 CreatedDate = DateTime.Now,
                 UserId = userId,
                 Status = BillEnum.BillStatus.Pending,
@@ -76,13 +62,13 @@ namespace MovieManagement.Server.Services.BillService
                 Point = billRequest.Amount.Value/1000,
             };
 
-            var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateIdentityAsync(bill));
+            var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateAsync(bill));
             if (createdBill == null)
                 throw new Exception("Failed to create bill.");
             return createdBill;
         }
 
-        public async Task<BillDto> UpdateBillAsync(long billId, BillEnum.BillStatus billStatus)
+        public async Task<BillDto> UpdateBillAsync(Guid billId, BillEnum.BillStatus billStatus)
         {
             var existingBill = await _unitOfWork.BillRepository.GetByIdAsync(billId);
             if (existingBill == null)
@@ -96,22 +82,15 @@ namespace MovieManagement.Server.Services.BillService
             return _mapper.Map<BillDto>(updatedBill);
 
         }
-        public async Task<bool> DeleteBillAsync(long billId)
+        public async Task<bool> DeleteBillAsync(Guid billId)
         {
-            try
-            {
-                var bill = _unitOfWork.BillRepository.GetByIdAsync(billId);
-                if (bill == null)
-                    throw new NotFoundException("Bill cannot found!");
-                return await _unitOfWork.BillRepository.DeleteAsync(billId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
-            }
+            var bill = _unitOfWork.BillRepository.GetByIdAsync(billId);
+            if (bill == null)
+                throw new NotFoundException("Bill cannot found!");
+            return await _unitOfWork.BillRepository.DeleteAsync(billId);
         }
 
-        public BillDto UpdateBill(long billId, BillEnum.BillStatus billStatus)
+        public BillDto UpdateBill(Guid billId, BillEnum.BillStatus billStatus)
         {
             var existingBill = _unitOfWork.BillRepository.GetById(billId);
             if (existingBill == null)
