@@ -10,6 +10,8 @@
 
         public Guid? PromotionId { get; set; }
 
+        public long? UsedPoint { get; set; }
+
         //public Guid? PromotionId { get; set; }
     }
 }

@@ -12,6 +12,7 @@ using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Services.JwtService;
 using MovieManagement.Server.Models.ResponseModel;
 using static MovieManagement.Server.Models.Enums.UserEnum;
+using MovieManagement.Server.Services.BillService;
 
 namespace MovieManagement.Server.Services.UserService
 {
@@ -19,11 +20,13 @@ namespace MovieManagement.Server.Services.UserService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IBillService _billService;
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IBillService billService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _billService = billService;
         }
 
         public async Task ChangeUserPasswordByUserId(Guid userId, string currentPassword,
@@ -159,5 +162,16 @@ namespace MovieManagement.Server.Services.UserService
             _mapper.Map(userDto, existingUser);
             await _unitOfWork.UserRepository.UpdateAsync(existingUser);
         }
+
+
+        public async Task<> ExchangeTickets(Guid userId, BillRequest billRequest)
+        {
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) ?? throw new NotFoundException("User not found!");
+            var bill = await _billService.CreateBillAsync(userId, billRequest);
+            if (bill == null)
+                throw new Exception("Failed to create bill!");
+            return bill;
+        }
+
     }
 }
