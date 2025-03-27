@@ -43,19 +43,22 @@ export default function NavbarBreadcrumbs() {
     const breadcrumbs = [t("breadcrumbs.home")];
     const paths = ["/admin/thong-ke"];
 
-    paths.push(pathname);
-
-    if (parts.length > 0) {
-      const lastPart = parts[parts.length - 1];
-      if (slugToTranslationKey[lastPart]) {
-        // Use translation key for known routes
-        breadcrumbs.push(t(slugToTranslationKey[lastPart]));
-      } else {
-        // Fallback for unknown routes
-        breadcrumbs.push(lastPart.charAt(0).toUpperCase() + lastPart.slice(1));
+    parts.forEach((part, index) => {
+      // Check if the part is a known slug
+      if (slugToTranslationKey[part]) {
+        breadcrumbs.push(t(slugToTranslationKey[part]));
+        paths.push(`/${parts.slice(0, index + 1).join("/")}`);
       }
-    }
-    console.log(breadcrumbs, paths);
+      // Check if the part is a dynamic ID (e.g., UUID or number)
+      else if (!isNaN(Number(part)) || part.match(/^[0-9a-fA-F-]{36}$/)) {
+        // Do nothing (skip adding dynamic ID to breadcrumbs)
+      }
+      // Fallback for unknown routes
+      else {
+        breadcrumbs.push(part.charAt(0).toUpperCase() + part.slice(1));
+        paths.push(`/${parts.slice(0, index + 1).join("/")}`);
+      }
+    });
     return [breadcrumbs, paths];
   }
 
