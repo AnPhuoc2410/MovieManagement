@@ -90,7 +90,7 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public ActionResult<bool> GetBillByEmail(long billId)
+        public ActionResult<bool> GetBillByEmail(Guid billId)
         {
             var result = _emailService.SendEmailReportBill(billId);
             var response = new ApiResponse<bool>

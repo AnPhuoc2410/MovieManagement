@@ -11,7 +11,7 @@ namespace MovieManagement.Server.Models.Entities
     {
         public Guid BillId { get; set; } // PK
 
-        public long PaymentId { get; set; }
+        public long? PaymentId { get; set; }
 
         public DateTime CreatedDate { get; set; }
 

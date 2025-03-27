@@ -97,11 +97,11 @@ namespace MovieManagement.Server.Services.DashboardService
                 {
                     foreach (var td in st.TicketDetails)
                     {
-                        if (!processedBills.Contains(td.Bill.PaymentId))
+                        if (!processedBills.Contains(td.Bill.PaymentId.Value))
                         {
                             Console.WriteLine(td.Bill.PaymentId);
                             revenue += td.Bill.Amount;
-                            processedBills.Add(td.Bill.PaymentId);
+                            processedBills.Add(td.Bill.PaymentId.Value);
                         }
                     }
                 }
@@ -132,11 +132,11 @@ namespace MovieManagement.Server.Services.DashboardService
                 {
                     foreach (var td in st.TicketDetails)
                     {
-                        if (!processedBills.Contains(td.Bill.PaymentId))
+                        if (!processedBills.Contains(td.Bill.PaymentId.Value))
                         {
                             Console.WriteLine(td.Bill.PaymentId);
                             revenue += td.Bill.Amount;
-                            processedBills.Add(td.Bill.PaymentId);
+                            processedBills.Add(td.Bill.PaymentId.Value);
                         }
                     }
                 }
