@@ -9,5 +9,6 @@ namespace MovieManagement.Server.Repositories.IRepositories
         Bill GetById(long billId);
         Task<bool> DeleteAsync(long billId);
         Task<List<TicketBillResponse>> GetPurchasedTicketsForBill(long billId);
+        Task<List<RevenueResponse.DailyStatistics>> GetDailyStatisticsAsync();
     }
 }
