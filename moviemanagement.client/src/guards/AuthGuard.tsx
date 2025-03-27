@@ -1,32 +1,49 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import Loader from "../components/shared/Loading/LoadingScreen";
+import { Role } from "../types/roles.type";
 
-export const ProtectedRoute = ({ requireAdmin = false }) => {
+interface Props {
+  allowedRoles?: Role[]; // Array of allowed roles
+  redirectPath?: string; // Customizable redirect path
+}
+
+export const ProtectedRoute: React.FC<Props> = ({
+  allowedRoles = [Role.Member, Role.Employee, Role.Admin], // Default to all roles
+  redirectPath = "/",
+}) => {
   const { isAuthenticated, userDetails } = useAuth();
   const location = useLocation();
 
+  // If not authenticated, redirect to login
   if (!isAuthenticated) {
-    // Redirect to login if not authenticated
     return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
-  // Check if route requires admin and user is not admin
-  if (requireAdmin && userDetails?.role !== 2) {
-    // Redirect non-admin users to home
-    return <Navigate to="/" replace />;
+  // Check if user's role is in the allowed roles
+  const hasAccess =
+    userDetails?.role !== undefined
+      ? allowedRoles.includes(userDetails.role as Role)
+      : false;
+
+  // If user doesn't have access, redirect
+  if (!hasAccess) {
+    return <Navigate to={redirectPath} replace />;
   }
 
   return <Outlet />;
 };
 
 export const RejectedRoute = () => {
-  const { isAuthenticated } = useAuth();
-  const location = useLocation();
+  const { isAuthenticated } = useAuth(); // Check if user is logged in
+  const location = useLocation(); // Get current location information
 
   return !isAuthenticated ? (
+    // If NOT authenticated, render child routes (login/signup pages)
     <Outlet />
   ) : (
+    // If ALREADY authenticated, redirect to:
+    // 1. The page user was trying to access before login (if exists)
+    // 2. Home page (if no previous location)
     <Navigate to={location.state?.from ?? "/"} replace />
   );
 };

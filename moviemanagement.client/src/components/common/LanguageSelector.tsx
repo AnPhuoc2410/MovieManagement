@@ -1,7 +1,7 @@
 import { Box, ListItemIcon, MenuItem, Select, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { JapanFlag, UsaFlag, VietnamFlag } from "../../data/CustomIcons";
-import { useLanguage } from "../../contexts/LanguageContext";
+import { useLanguage } from "../../hooks/useLanguage";
 
 const languages: { [key: string]: { name: string; icon: JSX.Element } } = {
   vi: { name: "VN", icon: <VietnamFlag /> },
@@ -9,7 +9,11 @@ const languages: { [key: string]: { name: string; icon: JSX.Element } } = {
   jp: { name: "JP", icon: <JapanFlag /> },
 };
 
-const LanguageSelector = () => {
+interface Props {
+  isDarkMode?: boolean;
+}
+
+const LanguageSelector: React.FC<Props> = ({ isDarkMode = true }) => {
   const { i18n } = useTranslation();
   const { currentLanguage, changeLanguage } = useLanguage();
 
@@ -29,15 +33,15 @@ const LanguageSelector = () => {
           alignItems="center"
           sx={{
             gap: 1,
-            color: "white",
+            color: isDarkMode ? "white" : "black",
           }}
         >
           {languages[selected]?.icon} {languages[selected]?.name}
         </Box>
       )}
       sx={{
-        backgroundColor: "transparent",
-        minWidth: "50px",
+        backgroundColor: isDarkMode ? "transparent" : "#f1f1f1",
+        minWidth: isDarkMode ? "50px" : "30px",
         border: "none",
         boxShadow: "none",
         "& .MuiOutlinedInput-notchedOutline": { border: "none" },

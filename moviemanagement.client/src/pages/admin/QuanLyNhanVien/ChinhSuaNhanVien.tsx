@@ -48,6 +48,12 @@ const ChinhSuaNhanVien: React.FC = () => {
     }
   }, [employeeData]);
 
+  useEffect(() => {
+    if (imageUrl) {
+      console.log("Image URL updated:", imageUrl);
+    }
+  }, [imageUrl]);
+
   if (isLoading) return <Loader />;
   if (error) return <div>Failed to fetch data</div>;
   if (!employeeData) return <div>No employee data found</div>;
@@ -63,6 +69,10 @@ const ChinhSuaNhanVien: React.FC = () => {
       setImageFile(file);
     }
     e.target.value = "";
+  };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImageUrl(e.target.value); // Update the image URL as the user types
   };
 
   const handleRemoveImage = () => {
@@ -98,8 +108,8 @@ const ChinhSuaNhanVien: React.FC = () => {
               label="Hình ảnh"
               variant="standard"
               value={imageUrl || ""}
+              onChange={handleUrlChange}
               InputProps={{
-                readOnly: true,
                 endAdornment: (
                   <IconButton component="label">
                     <FileUploadOutlined />
