@@ -3,6 +3,8 @@ using MovieManagement.Server.Data;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Repositories.IRepositories;
+using static MovieManagement.Server.Models.Enums.BillEnum;
+using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Repositories
 {
@@ -39,6 +41,20 @@ namespace MovieManagement.Server.Repositories
                     Price = td.Seat.SeatType.Price,
                     Status = b.Status
                 }))
+                .ToListAsync();
+        }
+
+        public async Task<List<RevenueResponse.DailyStatistics>> GetDailyStatisticsAsync()
+        {
+            return await _context.Bills
+                .Where(b => b.Status == BillStatus.Paid)
+                .GroupBy(b => b.CreatedDate.Date)
+                .Select(g => new RevenueResponse.DailyStatistics
+                {
+                    DayTime = g.Key,
+                    TotalTickets = g.Sum(b => b.TotalTicket),
+                    TotalAmount = g.Sum(b => b.Amount)
+                })
                 .ToListAsync();
         }
     }

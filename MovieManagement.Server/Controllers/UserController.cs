@@ -82,6 +82,11 @@ namespace MovieManagement.Server.Controllers
         /// <response code="200">Find user by IdCard Or Phone successfully</response>
         [Authorize(Roles = "Admin")]
         [HttpGet("find")]
+        [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> FindUserByIdCardOrPhoneAsync([FromQuery] string? idCard,
             [FromQuery] string? phone)
         {
@@ -201,6 +206,7 @@ namespace MovieManagement.Server.Controllers
         [Authorize(Roles = "Admin")]
         [HttpDelete("{empId:guid}")]
         [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserDto.UserResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
