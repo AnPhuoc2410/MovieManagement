@@ -50,7 +50,10 @@ namespace MovieManagement.Server.Services.ShowTimeService
             }
 
             var showTimesByRoom = await _unitOfWork.ShowtimeRepository.GetShowTimeByRoomIdAsync(showtime.RoomId);
-
+            if(showTimesByRoom == null)
+            {
+                throw new NotFoundException("ShowTime does not found!");
+            }
 
             foreach (var st in showTimesByRoom)
             {
@@ -101,6 +104,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
         public async Task<bool> DeleteShowtimeAsync(Guid showTimeId)
         {
+            if(showTimeId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var showTime = await _unitOfWork.ShowtimeRepository.GetByIdAsync(showTimeId);
             if (showTime == null)
             {
@@ -119,15 +124,20 @@ namespace MovieManagement.Server.Services.ShowTimeService
             return showtimes;
         }
 
-
         public async Task<IEnumerable<ShowTimeDto>> GetShowtimePageAsync(int page, int pageSize)
         {
+            if(page < 0 || pageSize < 1)
+                throw new BadRequestException("Page and PageSize is invalid");
             var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
+            if(showtimes == null)
+                throw new NotFoundException("ShowTime not found!");
             return _mapper.Map<IEnumerable<ShowTimeDto>>(showtimes);
         }
         
         public async Task<ShowTimeDto> GetShowtimeByIdAsync(Guid showTimeId)
         {
+            if(showTimeId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var showTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.GetByIdAsync(showTimeId));
             if (showTime == null)
             {
@@ -138,6 +148,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
         public async Task<ShowTimeDto> UpdateShowtimeAsync(Guid showTimeId, ShowTimeDto showtime)
         {
+            if (showTimeId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             if (showtime == null)
             {
                 throw new ArgumentNullException("ShowTime", "ShowTime is null");
@@ -201,6 +213,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
         public async Task<Dictionary<DateTime, Dictionary<string, Dictionary<string, List<ShowTimeDto>>>>> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate, string location)
         {
+            if(movieId == Guid.Empty)
+                throw new BadRequestException("MovieId cannot be empty!");
             var movie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
             if (movie == null)
             {
@@ -240,9 +254,5 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
             return dictionary;
         }
-
-
-
-
     }
 }

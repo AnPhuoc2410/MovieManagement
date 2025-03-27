@@ -1,4 +1,5 @@
 ﻿using MovieManagement.Server.Data;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Services.DashboardService
@@ -19,6 +20,14 @@ namespace MovieManagement.Server.Services.DashboardService
         }
         public async Task<IEnumerable<TopMemberResponse.MemberDaily>> GetTopMemberDailyRevenues(DateTime from, DateTime to)
         {
+            if(from > to)
+            {
+                throw new BadRequestException("From date must be less than to date");
+            }
+            if(from == null || to == null)
+            {
+                throw new BadRequestException("From date and to date must not be null");
+            }
             var timeDaily = GetFromTo(from, to);
             List<TopMemberResponse.MemberDaily> topMemberDaily = new List<TopMemberResponse.MemberDaily>();
             foreach (var day in timeDaily)
@@ -36,6 +45,14 @@ namespace MovieManagement.Server.Services.DashboardService
         }
         public async Task<IEnumerable<TopMovieResponse.MovieDaily>> GetTopMovieDailyRevenues(DateTime from, DateTime to)
         {
+            if (from > to)
+            {
+                throw new BadRequestException("From date must be less than to date");
+            }
+            if (from == null || to == null)
+            {
+                throw new BadRequestException("From date and to date must not be null");
+            }
             var timeDaily = GetFromTo(from, to);
 
             List<TopMovieResponse.MovieDaily> topMovieDaily = new List<TopMovieResponse.MovieDaily>();
@@ -45,7 +62,6 @@ namespace MovieManagement.Server.Services.DashboardService
                 var movieDayRevenue = await _unitOfWork.MovieRepository.GetTopMovieDailyRevenue(day);
                 topMovieDaily.Add(movieDayRevenue);
             }
-
             return topMovieDaily;
         }
 
@@ -61,6 +77,14 @@ namespace MovieManagement.Server.Services.DashboardService
         }
         public async Task<IEnumerable<TopCategoryResponse.Daily>> GetTopCategoryDailyRevenues(DateTime from, DateTime to)
         {
+            if (from > to)
+            {
+                throw new BadRequestException("From date must be less than to date");
+            }
+            if (from == null || to == null)
+            {
+                throw new BadRequestException("From date and to date must not be null");
+            }
             // Lấy ra danh sách thời gian chỉnh định theo từng ngày
             var timeDaily = GetFromTo(from, to);
 
@@ -99,7 +123,6 @@ namespace MovieManagement.Server.Services.DashboardService
                     {
                         if (!processedBills.Contains(td.Bill.PaymentId))
                         {
-                            Console.WriteLine(td.Bill.PaymentId);
                             revenue += td.Bill.Amount;
                             processedBills.Add(td.Bill.PaymentId);
                         }
@@ -114,6 +137,14 @@ namespace MovieManagement.Server.Services.DashboardService
         }
         public async Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeDailyRevenues(DateTime from, DateTime to)
         {
+            if (from > to)
+            {
+                throw new BadRequestException("From date must be less than to date");
+            }
+            if (from == null || to == null)
+            {
+                throw new BadRequestException("From date and to date must not be null");
+            }
             var topShowtimeRevenues = new TopShowtimeResponse.ShowtimeRevenue();
 
             // Lấy danh sách ngày từ from đến to
@@ -166,7 +197,6 @@ namespace MovieManagement.Server.Services.DashboardService
 
             return dates;
         }
-
         private List<DateTime> GetHoursInDay()
         {
             var hours = new List<DateTime>();

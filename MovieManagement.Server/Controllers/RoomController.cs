@@ -23,7 +23,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet("all")]
-        [ProducesResponseType(typeof(ApiResponse<RoomDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<RoomDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -31,7 +31,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetAllRoomAsync()
         {
             var rooms = await _roomService.GetAllRoomsAsync();
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<RoomDto>>
             {
                 StatusCode = 200,
                 Message = "Get all rooms is success",
@@ -42,7 +42,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
-        [ProducesResponseType(typeof(ApiResponse<RoomDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<RoomDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -50,7 +50,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetRoomPageAsync(int page, int pageSize)
         {
             var rooms = await _roomService.GetRoomPageAsync(page, pageSize);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<RoomDto>>
             {
                 StatusCode = 200,
                 Message = "Get rooms is success",
@@ -70,7 +70,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<RoomDto>> GetRoomByIdAsync(Guid roomId)
         {
             var room = await _roomService.GetRoomByIdAsync(roomId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<RoomDto>
             {
                 StatusCode = 200,
                 Message = "Get room is success",
@@ -89,7 +89,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<RoomDto>> CreateRoomAsync([FromBody] RoomDto roomDto, Guid MovieTheaterId)
         {
             var newRoom = await _roomService.CreateRoomAsync(roomDto, MovieTheaterId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<RoomDto>
             {
                 StatusCode = 200,
                 Message = "Create room is success",
@@ -108,7 +108,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<RoomDto>> UpdateRoomAsync(Guid roomId, [FromBody] RoomDto roomDto)
         {
             var updatedRoom = await _roomService.UpdateRoomAsync(roomId, roomDto);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<RoomDto>
             {
                 StatusCode = 200,
                 Message = "Update room is success",
@@ -119,7 +119,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpDelete]
         [Route("{roomId:guid}")]
-        [ProducesResponseType(typeof(ApiResponse<RoomDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -127,7 +127,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> DeleteRoomAsync(Guid roomId)
         {
             var isDeleted = await _roomService.DeleteRoomAsync(roomId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<bool>
             {
                 StatusCode = 200,
                 Message = "Delete room is success",
@@ -139,6 +139,9 @@ namespace MovieManagement.Server.Controllers
         [HttpGet]
         [Route("GetRoomInfo/{roomId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<RoomResponseModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         /// <summary>
         /// Retrieves room information by room ID.
@@ -148,7 +151,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetRoomInfo(Guid roomId)
         {
             var data = await _roomService.GetRoomInfo(roomId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<RoomResponseModel>
             {
                 StatusCode = 200,
                 Message = "Get room info is success",
