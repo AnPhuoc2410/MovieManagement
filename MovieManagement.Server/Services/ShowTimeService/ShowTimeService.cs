@@ -90,13 +90,14 @@ namespace MovieManagement.Server.Services.ShowTimeService
             
 
             foreach (var s in seats)
-                _unitOfWork.TicketDetailRepository.PrepareCreate(new TicketDetail
-                {
-                    ShowTimeId = showTimeId,
-                    SeatId = s.SeatId,
-                    Version = new byte[8],
-                    TicketId = Guid.NewGuid()
-                });
+                if (s.IsActive)
+                    _unitOfWork.TicketDetailRepository.PrepareCreate(new TicketDetail
+                    {
+                        ShowTimeId = showTimeId,
+                        SeatId = s.SeatId,
+                        Version = new byte[8],
+                        TicketId = Guid.NewGuid()
+                    });
             
 
             return await _unitOfWork.CompleteAsync();
