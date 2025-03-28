@@ -7,6 +7,7 @@ using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Repositories.IRepositories;
 using System.Buffers;
 using System.Drawing.Printing;
+using static MovieManagement.Server.Models.Enums.BillEnum;
 using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Repositories
@@ -100,13 +101,16 @@ namespace MovieManagement.Server.Repositories
                 {
                     m.MovieName,
                     Revenue = m.Showtimes
-                    .SelectMany(st => st.TicketDetails)
-                    .Where(td => td.Status == TicketStatus.Paid)
-                    .Select(td => td.Bill.Amount)
-                    .Sum()
+                        .SelectMany(st => st.TicketDetails
+                            .Where(td => td.Status == TicketStatus.Paid 
+                                        && td.Bill != null 
+                                        && td.Bill.Status == BillStatus.Completed)
+                            .Select(td => td.Bill.Amount))
+                        .Sum()
                 })
                 .OrderByDescending(m => m.Revenue)
                 .ToListAsync();
+
             return movieRevenue.Select(mr => new TopMovieResponse.MovieRevenue
             {
                 MovieName = mr.MovieName,
@@ -123,7 +127,10 @@ namespace MovieManagement.Server.Repositories
                     m.MovieName,
                     Revenue = m.Showtimes
                         .SelectMany(st => st.TicketDetails)
-                        .Where(td => td.Bill.CreatedDate.Day == time.Day && td.Status == TicketStatus.Paid)
+                        .Where(td => td.Bill.CreatedDate.Day == time.Day 
+                                    && td.Status == TicketStatus.Paid 
+                                    && td.Bill != null 
+                                    && td.Bill.Status == BillStatus.Completed)
                         .Select(td => td.Bill.Amount)
                         .Sum()
                 })

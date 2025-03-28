@@ -20,12 +20,7 @@ namespace MovieManagement.Server.Services.ExcelService
         {
             _unitOfWork = unitOfWork;
         }
-        //public class ThongKe
-        //{
-        //    public int Id { get; set; }
-        //    public string Name { get; set; }
-        //    public decimal Revenue { get; set; }
-        //}
+
         public async Task<byte[]> ExportToExcel()
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -35,12 +30,6 @@ namespace MovieManagement.Server.Services.ExcelService
 
             using (var package = new ExcelPackage())
             {
-        //        var data = new List<ThongKe>
-        //{
-        //    new ThongKe { Id = 1, Name = "Sản phẩm A", Revenue = 100000 },
-        //    new ThongKe { Id = 2, Name = "Sản phẩm B", Revenue = 200000 }
-        //};
-
                 var worksheet = package.Workbook.Worksheets.Add("Doanh thu theo ngày");
 
                 // Dòng bắt đầu chứa dữ liệu
@@ -53,13 +42,6 @@ namespace MovieManagement.Server.Services.ExcelService
                     worksheet.Cells[startDataRow + i, 3].Value = statistics[i].TotalAmount;
                     worksheet.Cells[startDataRow + i, 3].Style.Numberformat.Format = "#,##0 \"VND\"";
                 }
-                //for (int i = 0; i < data.Count; i++)
-                //{
-                //    worksheet.Cells[startDataRow + i, 1].Value = DateTime.Now.AddDays(i).ToString("dd/MM/yyyy");
-                //    worksheet.Cells[startDataRow + i, 2].Value = i + 10; // Giả lập số vé
-                //    worksheet.Cells[startDataRow + i, 3].Value = data[i].Revenue;
-                //    worksheet.Cells[startDataRow + i, 3].Style.Numberformat.Format = "#,##0 \"VND\"";
-                //}
 
                 // Xác định dòng cuối cùng để hiển thị tổng doanh thu
                 int lastRow = startDataRow + statistics.Count;
