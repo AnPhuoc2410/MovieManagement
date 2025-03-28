@@ -12,6 +12,7 @@ namespace MovieManagement.Server.Services.BillService
         public Task<IEnumerable<BillDto>> GetBillPageAsync(int page, int pageSize);
         public Task<BillDto> GetBillByIdAsync(Guid billId);
         public Task<BillDto> CreateBillAsync(Guid userId, BillRequest billRequest, long paymentId);
+        public Task<BillDto> CreateBillAsync(Guid userId, BillRequest billRequest);
         public Task<BillDto> UpdateBillAsync(Guid billId, BillEnum.BillStatus billStatus);
         public BillDto UpdateBill(Guid billId, BillEnum.BillStatus billStatus);
         public Task<bool> DeleteBillAsync(Guid billId);

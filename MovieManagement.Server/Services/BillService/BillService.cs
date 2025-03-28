@@ -120,5 +120,23 @@ namespace MovieManagement.Server.Services.BillService
             }
             return _mapper.Map<BillDto>(updatedBill);
         }
+
+        public async Task<BillDto> CreateBillAsync(Guid userId, BillRequest billRequest)
+        {
+            var bill = new Bill
+            {
+                CreatedDate = DateTime.Now,
+                UserId = userId,
+                Status = BillEnum.BillStatus.Pending,
+                TotalTicket = billRequest.TotalTicket.Value,
+                Amount = billRequest.Amount.Value,
+                Point = billRequest.Amount.Value / 1000,
+            };
+
+            var createdBill = _mapper.Map<BillDto>(await _unitOfWork.BillRepository.CreateAsync(bill));
+            if (createdBill == null)
+                throw new Exception("Failed to create bill.");
+            return createdBill;
+        }
     }
 }

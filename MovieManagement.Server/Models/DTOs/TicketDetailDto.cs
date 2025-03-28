@@ -8,7 +8,7 @@ namespace MovieManagement.Server.Models.DTOs
 
         public Guid TicketId { get; set; }
 
-        public long? BillId { get; set; }
+        public Guid? BillId { get; set; }
 
         public Guid SeatId { get; set; }
 

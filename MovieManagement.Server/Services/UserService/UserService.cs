@@ -12,6 +12,9 @@ using MovieManagement.Server.Models.RequestModel;
 using MovieManagement.Server.Services.JwtService;
 using MovieManagement.Server.Models.ResponseModel;
 using static MovieManagement.Server.Models.Enums.UserEnum;
+using MovieManagement.Server.Services.BillService;
+using static MovieManagement.Server.Models.Enums.BillEnum;
+using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Services.UserService
 {
@@ -20,7 +23,7 @@ namespace MovieManagement.Server.Services.UserService
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IBillService billService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -179,5 +182,82 @@ namespace MovieManagement.Server.Services.UserService
             _mapper.Map(userDto, existingUser);
             await _unitOfWork.UserRepository.UpdateAsync(existingUser);
         }
+
+
+        public async Task<bool> ExchangeTickets(Guid userId, BillRequest billRequest)
+        {
+
+            if (!billRequest.Amount.HasValue)
+                throw new BadRequestException("Amount cannot be empty!");
+
+            if (!billRequest.UsedPoint.HasValue)
+                throw new BadRequestException("Used point cannot be empty!");
+
+            if (!billRequest.TotalTicket.HasValue)
+                throw new BadRequestException("Total ticket cannot be empty!");
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) 
+                ?? throw new NotFoundException("User not found!");
+
+            if (user.Point < billRequest.UsedPoint)
+                throw new BadRequestException("Not enough point to exchange ticket!");
+
+            var pointBill = new Bill
+            {
+                BillId = Guid.NewGuid(),
+                UserId = userId,
+                Amount = billRequest.Amount.Value,
+                PaymentId = null,
+                Status = BillStatus.Paid,
+                CreatedDate = DateTime.Now,
+                Point = -billRequest.UsedPoint.Value,
+            };
+
+            var moneyBill = new Bill
+            {
+                BillId = Guid.NewGuid(),
+                UserId = userId,
+                PaymentId = null,
+                Status = BillStatus.Paid,
+                CreatedDate = DateTime.Now,
+            };
+
+
+            foreach (var ticket in billRequest.Tickets)
+            {
+                var purchasedTicket = await _unitOfWork.TicketDetailRepository.GetTicketInfo(ticket) 
+                    ?? throw new NotFoundException("Ticket not found!");
+                var exchangePoint = purchasedTicket.Seat.SeatType.Price/100;
+                if (exchangePoint < user.Point)
+                {
+                    user.Point -= exchangePoint;
+                    purchasedTicket.Status = TicketStatus.Paid;
+                    purchasedTicket.BillId = pointBill.BillId;
+                }
+                else
+                {
+                    moneyBill.Amount += purchasedTicket.Seat.SeatType.Price;
+                    purchasedTicket.Status = TicketStatus.Paid;
+                    purchasedTicket.BillId = moneyBill.BillId;
+                    moneyBill.TotalTicket++;
+                    moneyBill.Point += exchangePoint / 10;
+                    user.Point += exchangePoint / 10;
+                }
+
+                _unitOfWork.TicketDetailRepository.PrepareUpdate(purchasedTicket);
+
+            }
+
+            _unitOfWork.BillRepository.PrepareCreate(pointBill);
+            if (moneyBill.TotalTicket > 0)
+                _unitOfWork.BillRepository.PrepareCreate(moneyBill);
+            _unitOfWork.UserRepository.PrepareUpdate(user);
+
+            var checker = await _unitOfWork.CompleteAsync();
+
+            return checker > 0;
+
+        }
+
     }
 }

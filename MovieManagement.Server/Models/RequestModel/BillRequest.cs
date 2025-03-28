@@ -10,6 +10,8 @@
 
         public Guid? PromotionId { get; set; }
 
+        public decimal? UsedPoint { get; set; }
+
         //public Guid? PromotionId { get; set; }
     }
 }
