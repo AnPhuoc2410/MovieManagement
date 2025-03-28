@@ -27,6 +27,11 @@ import Header from '../../../components/mui/Header';
 import SideMenu from '../../../components/mui/SideMenu';
 import AppTheme from '../../../shared-theme/AppTheme';
 import { useState, useEffect } from 'react';
+import AdminNowShowingMovies from '../../../components/admin/AdminNowShowingMovies';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 
 const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomTheme?: boolean }) => {
   const { id } = useParams<{ id: string }>();
@@ -36,6 +41,8 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   const [isModified, setIsModified] = useState<boolean>(false);
   const [startTime, setStartTime] = useState<string>('');
   const [endTime, setEndTime] = useState<string>('');
+  const [openMovieDialog, setOpenMovieDialog] = useState<boolean>(false);
+  const [selectedMovieName, setSelectedMovieName] = useState<string>('');
 
   // Format datetime string for datetime-local input
   const formatDateTimeForInput = (dateTimeString: string | undefined): string => {
@@ -82,7 +89,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
       if (data.endTime) {
         setEndTime(formatDateTimeForInput(data.endTime));
       }
-    }
+    } 
   }, [showtime]);
 
   // Fetch movies list
@@ -108,10 +115,32 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     }
   );
 
-  const handleMovieChange = (event: any) => {
-    setSelectedMovieId(event.target.value);
+  // Handle movie selection from the dialog
+  const handleMovieSelect = (movieId: string) => {
+    setSelectedMovieId(movieId);
     setIsModified(true);
+    
+    // Find the movie name to display
+    if (movies) {
+      const movie = movies.find((m: any) => m.movieId === movieId);
+      if (movie) {
+        setSelectedMovieName(movie.movieName);
+      }
+    }
+    
+    // Close the dialog
+    setOpenMovieDialog(false);
   };
+  
+  // Update the movie name when data is loaded
+  useEffect(() => {
+    if (movies && selectedMovieId) {
+      const movie = movies.find((m: any) => m.movieId === selectedMovieId);
+      if (movie) {
+        setSelectedMovieName(movie.movieName);
+      }
+    }
+  }, [movies, selectedMovieId]);
 
   const handleRoomChange = (event: any) => {
     setSelectedRoomId(event.target.value);
@@ -267,22 +296,26 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
 
                   <Box sx={{ mt: 2 }}>
                     <Typography variant="subtitle1">Phim</Typography>
-                    <FormControl fullWidth size="small">
-                      <Select
-                        value={selectedMovieId}
-                        onChange={handleMovieChange}
-                        displayEmpty
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        value={selectedMovieName}
+                        InputProps={{
+                          readOnly: true,
+                          startAdornment: selectedMovieId ? <MovieIcon sx={{ mr: 1, color: 'primary.main' }} /> : null,
+                        }}
+                        placeholder="Chưa chọn phim"
+                      />
+                      <Button 
+                        variant="contained" 
+                        onClick={() => setOpenMovieDialog(true)}
+                        sx={{ whiteSpace: 'nowrap' }}
                       >
-                        <MenuItem value="">
-                          <em>Không có phim</em>
-                        </MenuItem>
-                        {Array.isArray(movies) && movies.map((movie: any) => (
-                          <MenuItem key={movie.movieId} value={movie.movieId}>
-                            {movie.movieName}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                        Chọn phim
+                      </Button>
+                    </Box>
                   </Box>
 
                   <Box sx={{ mt: 2 }}>
@@ -372,6 +405,25 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
           </Box>
         </Box>
       </Box>
+
+      {/* Movie Selection Dialog */}
+      <Dialog 
+        open={openMovieDialog} 
+        onClose={() => setOpenMovieDialog(false)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogTitle>Chọn phim chiếu</DialogTitle>
+        <DialogContent dividers>
+          <AdminNowShowingMovies 
+            onMovieSelect={handleMovieSelect} 
+            selectedMovieId={selectedMovieId} 
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenMovieDialog(false)}>Đóng</Button>
+        </DialogActions>
+      </Dialog>
     </AppTheme>
   );
 };
