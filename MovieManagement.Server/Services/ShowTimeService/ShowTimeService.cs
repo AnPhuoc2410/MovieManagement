@@ -64,7 +64,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 }
             }
 
-            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(newShowTime.StartTime);
+            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(newShowTime.StartTime, room.MovieTheaterId);
             if (!checkStartTime)
             {
                 throw new ApplicationException("Unable to create due to other StartTime.");
@@ -202,7 +202,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 }
             }
 
-            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(existingShowTime.StartTime);
+            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(existingShowTime.StartTime, room.MovieTheaterId);
             if (!checkStartTime)
             {
                 throw new ApplicationException("Unable to create due to other StartTime.");
