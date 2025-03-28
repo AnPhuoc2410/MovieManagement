@@ -17,11 +17,13 @@ import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
 import AppTheme from "../../../shared-theme/AppTheme";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const MovieSeat: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { connection, isConnected } = useSignalR();
+  const { userDetails } = useAuth();
   const { movieId, selectedTime, selectedDate, tickets, movieData } = location.state || {
     movieId: "",
     selectedTime: "Not selected",
@@ -44,17 +46,6 @@ const MovieSeat: React.FC = () => {
   // New state to force reset of countdown timer when seats change
   const [resetCounter, setResetCounter] = useState<number>(0);
 
-  // Ensure we have a consistent user ID for seat selection
-  useEffect(() => {
-    if (!localStorage.getItem("userId")) {
-      localStorage.setItem(
-        "userId",
-        Math.random().toString(36).substring(2, 15)
-      );
-    }
-  }, []);
-
-  // Handle what happens when seat timer expires
   const handleSeatsTimeout = useCallback(() => {
     toast.error(`Thời gian giữ chỗ đã hết cho tất cả ghế đã chọn.`);
     setSelectedSeats([]);
@@ -102,7 +93,7 @@ const MovieSeat: React.FC = () => {
     }
 
     try {
-      const userId = localStorage.getItem("userId");
+      const userId = userDetails?.userId;
       // Check seat availability from the current state in SeatCinema
       const unavailableSeats = selectedSeats.filter(seat => {
         // Find this seat in the SeatCinema component's state
