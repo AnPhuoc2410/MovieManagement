@@ -33,6 +33,7 @@ import AppTheme from "../../../shared-theme/AppTheme";
 import { UserInfo } from "../../../types/users.type";
 import { phoneRegex } from "../../../constants/regex";
 import { useAuth } from "../../../contexts/AuthContext";
+import UserSearchComponent from "../../../components/shared/UserSearchComponent";
 
 /**
  * This is a placeholder interface for seats/tickets in your location.state.
@@ -60,6 +61,14 @@ const Payment: React.FC = () => {
   const [pointsToAdd, setPointsToAdd] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState("money");
   const [isPaying, setIsPaying] = useState(false); // for final payment flow
+  const handleUserSelect = (user: UserInfo) => {
+    setSelectedUser(user);
+    setPointsToAdd(Math.floor(totalPrice / 10000));
+  };
+
+  const handleUsersFound = (foundUsers: UserInfo[]) => {
+    setUsers(foundUsers);
+  };
 
   // Location state destructuring
   const {
@@ -384,102 +393,11 @@ const Payment: React.FC = () => {
                         <Typography variant="h6" gutterBottom>
                           Thông Tin Khách Hàng
                         </Typography>
-                        <Box sx={{ mb: 3 }}>
-                          <TextField
-                            label="Tìm kiếm thành viên (CMND hoặc số điện thoại)"
-                            variant="outlined"
-                            fullWidth
-                            value={userSearchInput}
-                            onChange={(e) => setUserSearchInput(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                handleSearchUser();
-                              }
-                            }}
-                            InputProps={{
-                              endAdornment: (
-                                <InputAdornment position="end">
-                                  <Button
-                                    onClick={handleSearchUser}
-                                    disabled={isSearchingUser}
-                                    startIcon={
-                                      isSearchingUser ? (
-                                        <CircularProgress size={20} />
-                                      ) : (
-                                        <SearchIcon />
-                                      )
-                                    }
-                                  >
-                                    Tìm
-                                  </Button>
-                                </InputAdornment>
-                              ),
-                            }}
-                            sx={{ mb: 2 }}
-                          />
-
-                          {/* Multiple search results */}
-                          {users.length > 0 && (
-                            <Paper
-                              variant="outlined"
-                              sx={{ p: 2, maxHeight: 200, overflowY: "auto" }}
-                            >
-                              <Typography variant="subtitle2" gutterBottom>
-                                Kết quả tìm kiếm:
-                              </Typography>
-                              <Stack spacing={1}>
-                                {users.map((user) => (
-                                  <Box
-                                    key={user.id}
-                                    sx={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "space-between",
-                                      p: 1,
-                                      borderRadius: 1,
-                                      "&:hover": {
-                                        bgcolor: "action.hover",
-                                      },
-                                    }}
-                                  >
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: 1,
-                                      }}
-                                    >
-                                      <Avatar
-                                        src={user.avatarUrl}
-                                        alt={user.userName}
-                                      >
-                                        {user.userName?.charAt(0)}
-                                      </Avatar>
-                                      <Box>
-                                        <Typography variant="body1">
-                                          {user.userName}
-                                        </Typography>
-                                        <Typography
-                                          variant="caption"
-                                          color="text.secondary"
-                                        >
-                                          {user.email} • Điểm: {user.point}
-                                        </Typography>
-                                      </Box>
-                                    </Box>
-                                    <Button
-                                      size="small"
-                                      variant="contained"
-                                      onClick={() => handleSelectUser(user)}
-                                    >
-                                      Chọn
-                                    </Button>
-                                  </Box>
-                                ))}
-                              </Stack>
-                            </Paper>
-                          )}
-                        </Box>
+                        <UserSearchComponent
+                          totalPrice={totalPrice}
+                          onUserSelect={handleUserSelect}
+                          onUsersFound={handleUsersFound}
+                        />
 
                         {/* Display selected user info if found */}
                         {selectedUser ? (
