@@ -19,10 +19,12 @@ import HomeIcon from "@mui/icons-material/Home";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { CancelOutlined } from "@mui/icons-material";
 import toast from "react-hot-toast";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Confirmation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { userDetails } = useAuth();
   const [paymentStatus, setPaymentStatus] = useState<"success" | "failure">();
   const { connection, joinGroup, leaveGroup, isConnected } = useSignalR();
   const [seatsUpdated, setSeatsUpdated] = useState(false);
@@ -92,7 +94,7 @@ const Confirmation: React.FC = () => {
       console.log("Waiting for SignalR connection or missing showTimeId...");
       return;
     }
-    const userId = localStorage.getItem("userId");
+    const userId = userDetails?.userId;
 
     // First join the SignalR group
     joinGroup(showTimeId)

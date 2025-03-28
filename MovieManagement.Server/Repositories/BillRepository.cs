@@ -15,13 +15,11 @@ namespace MovieManagement.Server.Repositories
         {
             _context = context;
         }
-
         
-
         public async Task<List<TicketBillResponse>> GetPurchasedTicketsForBill(Guid billId)
         {
             return await _context.Bills
-                .Where(b => b.BillId == billId)
+                .Where(b => b.BillId.Equals(billId))
                 .Include(b => b.TicketDetails)
                     .ThenInclude(td => td.ShowTime)
                         .ThenInclude(st => st.Room)

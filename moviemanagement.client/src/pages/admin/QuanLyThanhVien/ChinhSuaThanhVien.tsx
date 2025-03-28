@@ -50,6 +50,12 @@ const ChinhSuaThanhVien: React.FC = () => {
     }
   }, [memberData]);
 
+  useEffect(() => {
+    if (imageUrl) {
+      console.log("Image URL updated:", imageUrl);
+    }
+  }, [imageUrl]);
+
   if (!memberData) return null;
 
   if (isLoading) return <Loader />;
@@ -67,6 +73,10 @@ const ChinhSuaThanhVien: React.FC = () => {
       setImageFile(file);
     }
     e.target.value = "";
+  };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImageUrl(e.target.value); // Update the image URL as the user types
   };
 
   const handleRemoveImage = () => {
@@ -117,8 +127,8 @@ const ChinhSuaThanhVien: React.FC = () => {
               label="Hình ảnh"
               variant="standard"
               value={imageUrl || ""}
+              onChange={handleUrlChange}
               InputProps={{
-                readOnly: true,
                 endAdornment: (
                   <IconButton component="label">
                     <FileUploadOutlined />

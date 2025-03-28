@@ -222,7 +222,9 @@
       "location": {
         "HaNoi": "ハノイ",
         "HCM": "ホーチミン",
-        "DaNang": "ダナン"
+        "DaNang": "ダナン",
+        "BinhDuong": "ビンズオン",
+        "BinhPhuoc": "ビンフオック"
       },
       "notification": {
         "loading_showtime": "上映時間を読み込んでいます...",

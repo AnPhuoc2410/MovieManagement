@@ -14,9 +14,9 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet("export")]
-        public IActionResult ExportToExcel()
+        public async Task<IActionResult> ExportToExcel()
         {
-            var file = _excelService.ExportToExcel();
+            var file = await _excelService.ExportToExcel();
             string date = DateTime.Now.ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("vie-vi"));
             string fileName = $"Thong ke - {date}.xlsx";
             return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);

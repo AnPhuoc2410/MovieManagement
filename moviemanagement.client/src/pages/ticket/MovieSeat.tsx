@@ -8,11 +8,13 @@ import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import toast from "react-hot-toast";
 import { useSignalR } from "../../contexts/SignalRContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 const MovieSeat: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { connection, isConnected } = useSignalR();
+  const { userDetails } = useAuth();
   const { movieId, selectedTime, selectedDate, tickets, movieData } = location.state ||
   {
     movieId: "",
@@ -34,18 +36,6 @@ const MovieSeat: React.FC = () => {
   const [lastSelectionTime, setLastSelectionTime] = useState<number | null>(null);
   // New state to force reset of countdown timer when seats change
   const [resetCounter, setResetCounter] = useState<number>(0);
-
-  // Ensure we have a consistent user ID for seat selection
-  useEffect(() => {
-    if (!localStorage.getItem("userId")) {
-      localStorage.setItem(
-        "userId",
-        Math.random().toString(36).substring(2, 15)
-      );
-    }
-  }, []);
-
-  // Removed joinGroup/leaveGroup effect so TicketWrapper can handle the group membership
 
   // Handle what happens when seat timer expires
   const handleSeatsTimeout = useCallback(() => {
@@ -95,13 +85,13 @@ const MovieSeat: React.FC = () => {
     }
 
     try {
-      const userId = localStorage.getItem("userId");
+      const userId = userDetails?.userId;
       // Check seat availability from the current state in SeatCinema
       const unavailableSeats = selectedSeats.filter(seat => {
         // Find this seat in the SeatCinema component's state
         const seatElement = document.querySelector(`[data-seat-id="${seat.id}"]`);
         return seatElement?.getAttribute('data-status') === '1' ||
-               seatElement?.getAttribute('data-status') === '2';
+          seatElement?.getAttribute('data-status') === '2';
       });
 
       if (unavailableSeats.length > 0) {

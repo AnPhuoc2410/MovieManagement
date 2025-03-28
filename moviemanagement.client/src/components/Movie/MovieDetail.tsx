@@ -31,12 +31,12 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
     try {
       setLoading(true);
       const response = await api.get(`Movie/${movieId}`);
-      setMovie(response.data);
+      setMovie(response.data.data);
       // Pass the movie data to the parent component when it's loaded
       if (onMovieLoad) {
-        onMovieLoad(response.data);
+        onMovieLoad(response.data.data);
       }
-      console.log("Movie detail:", response.data);
+      console.log("Movie detail:", response.data.data);
     } catch (error: any) {
       console.error("Failed to fetch movie:", error);
     } finally {

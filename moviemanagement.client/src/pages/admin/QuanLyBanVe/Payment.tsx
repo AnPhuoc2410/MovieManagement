@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -17,11 +18,10 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  FormLabel
+  FormLabel,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { alpha } from "@mui/material/styles";
-import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../../apis/axios.config";
@@ -31,25 +31,37 @@ import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
 import AppTheme from "../../../shared-theme/AppTheme";
 import { UserInfo } from "../../../types/users.type";
+import { phoneRegex } from "../../../constants/regex";
+import { useAuth } from "../../../contexts/AuthContext";
 
+/**
+ * This is a placeholder interface for seats/tickets in your location.state.
+ * You can replace it with the actual type from your codebase if available.
+ */
+interface SeatInfo {
+  ticketId: string;
+  version: number;
+}
 
 const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { connection, isConnected } = useSignalR();
+  const { userDetails } = useAuth();
+
+  // Theme & loading states
   const [disableCustomTheme] = useState<boolean>(false);
   const [isSearchingUser, setIsSearchingUser] = useState(false);
+
+  // Payment & user states
   const [userSearchInput, setUserSearchInput] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
-  const [pointsToAdd, setPointsToAdd] = useState<number>(0);
   const [users, setUsers] = useState<UserInfo[]>([]);
+  const [pointsToAdd, setPointsToAdd] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState("money");
+  const [isPaying, setIsPaying] = useState(false); // for final payment flow
 
-  // Handler for payment method change
-  const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPaymentMethod(e.target.value);
-  };
-
+  // Location state destructuring
   const {
     movieId,
     selectedTime = "Not selected",
@@ -57,37 +69,60 @@ const Payment: React.FC = () => {
     tickets = [],
     seats = [] as string[],
     showTimeId = "",
-    selectedSeatsInfo = [],
+    selectedSeatsInfo = [] as SeatInfo[],
     movieData = null,
     roomName = "",
   } = location.state || {};
 
+  // Derive info from location state
   const movieTitle = movieData?.movieName || "Phim Mặc Định";
   const showDate = selectedDate;
   const showTime = selectedTime;
 
-  // Determine effective showTimeId from state or session storage
+  // Effective showTimeId from state or fallback to session storage
   const effectiveShowTimeId =
     showTimeId || sessionStorage.getItem("currentShowTimeId") || "";
 
-  // Before unload handler to warn user if they refresh or leave
+  // Calculate total price from tickets array
+  const totalPrice = (tickets || []).reduce(
+    (sum: number, t: any) => sum + t.price * (t.quantity || 0),
+    0
+  );
+
+  /**
+   * Handler for payment method changes (tiền mặt vs. điểm)
+   */
+  const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPaymentMethod(e.target.value);
+  };
+
+  /**
+   * Release seats if user refreshes or closes tab
+   * using sendBeacon to ensure the request is sent.
+   */
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (connection && isConnected && effectiveShowTimeId && selectedSeatsInfo?.length) {
+      if (
+        connection &&
+        isConnected &&
+        effectiveShowTimeId &&
+        selectedSeatsInfo.length > 0
+      ) {
         e.preventDefault();
         e.returnValue = "";
 
-        const userId = localStorage.getItem("userId") || "anonymous";
+        const userId = userDetails?.userId;
         const payload = JSON.stringify({
           ticketRequests: selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
             TicketId: seat.ticketId,
-            Version: seat.version
+            Version: seat.version,
           })),
           showtimeId: effectiveShowTimeId,
-          userId
+          userId,
         });
 
-        navigator.sendBeacon('/api/seats/release-pending', payload);
+        // Attempt to release seats via beacon
+        navigator.sendBeacon("/api/seats/release-pending", payload);
         return "";
       }
     };
@@ -98,32 +133,46 @@ const Payment: React.FC = () => {
     };
   }, [connection, isConnected, effectiveShowTimeId, selectedSeatsInfo]);
 
-  // Cleanup on component unmount
+  /**
+   * Cleanup seats on component unmount
+   * using SignalR's ReleasePendingSeats method.
+   */
   useEffect(() => {
     return () => {
-      if (connection && isConnected && selectedSeatsInfo?.length > 0) {
-        const userId = localStorage.getItem("userId") || "anonymous";
+      if (connection && isConnected && selectedSeatsInfo.length > 0) {
+        const userId = userDetails?.userId;
         const ticketRequests = selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
           TicketId: seat.ticketId,
           Version: seat.version,
         }));
 
-        connection.invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId)
-          .catch(err => console.error("Failed to release seats on unmount:", err));
+        connection
+          .invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId)
+          .catch((err) =>
+            console.error("Failed to release seats on unmount:", err)
+          );
       }
     };
   }, [connection, isConnected, selectedSeatsInfo, effectiveShowTimeId]);
 
+  /**
+   * Navigate back and release seats if needed.
+   */
   const handleBack = async () => {
-    if (connection && selectedSeatsInfo?.length > 0) {
+    if (connection && selectedSeatsInfo.length > 0) {
       try {
-        const userId = localStorage.getItem("userId") || "anonymous";
+        const userId = userDetails?.userId;
         const ticketRequests = selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
           TicketId: seat.ticketId,
-          Version: seat.version
+          Version: seat.version,
         }));
 
-        await connection.invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId);
+        await connection.invoke(
+          "ReleasePendingSeats",
+          ticketRequests,
+          effectiveShowTimeId,
+          userId
+        );
         toast.success("Đã hủy đặt chỗ");
         navigate(-1);
       } catch (error) {
@@ -136,28 +185,55 @@ const Payment: React.FC = () => {
     }
   };
 
-  // Calculate total price
-  const totalPrice = (tickets || []).reduce(
-    (sum: number, t: any) => sum + t.price * (t.quantity || 0),
-    0
-  );
+  useEffect(() => {
+    if (userSearchInput.trim() === "") {
+      setSelectedUser(null);
+      setPointsToAdd(0);
+      setUsers([]);
+    }
+  }, [userSearchInput]);
 
-  // Search for users using CMND or IDCard
   const handleSearchUser = async () => {
     if (!userSearchInput.trim()) {
-      toast.error("Vui lòng nhập CMND hoặc IDCard");
+      toast.error("Vui lòng nhập CMND hoặc số điện thoại");
       return;
     }
 
     setIsSearchingUser(true);
+    setUsers([]); // clear previous results
     try {
-      const response = await api.get(`/users/search-by-id?query=${encodeURIComponent(userSearchInput)}`);
-      if (response.data) {
-        setSelectedUser(response.data);
-        // Calculate points to add (1 point for each 10,000 VND)
-        setPointsToAdd(Math.floor(totalPrice / 10000));
-      } else {
+      // Check if user input is phone or ID card
+      const isPhoneNumber = phoneRegex.test(userSearchInput.replace(/\s/g, ""));
+      const searchParam = isPhoneNumber ? "phone" : "idCard";
+
+      const response = await api.get(
+        `/users/find?${searchParam}=${encodeURIComponent(userSearchInput)}`
+      );
+
+      const data = response.data.data;
+      if (!data) {
+        // No user found
         setSelectedUser(null);
+        toast.error("Không tìm thấy thành viên nào");
+        return;
+      }
+
+      // If API returns an array of users
+      if (Array.isArray(data)) {
+        setUsers(data);
+        // If exactly one user in array, select them
+        if (data.length === 1) {
+          setSelectedUser(data[0]);
+          setPointsToAdd(Math.floor(totalPrice / 10000));
+        } else {
+          // Multiple results, user can pick from the list
+          setSelectedUser(null);
+          toast.success(`${data.length} kết quả được tìm thấy`);
+        }
+      } else {
+        // Single user object
+        setSelectedUser(data);
+        setPointsToAdd(Math.floor(totalPrice / 10000));
       }
     } catch (error) {
       console.error("Error searching for user:", error);
@@ -168,10 +244,49 @@ const Payment: React.FC = () => {
     }
   };
 
-  // Select a user from search results (if you want to allow selection from multiple search results)
+  /**
+   * Handler to select a user from multiple search results
+   */
   const handleSelectUser = (user: UserInfo) => {
     setSelectedUser(user);
     setPointsToAdd(Math.floor(totalPrice / 10000));
+    setUsers([]); // hide the search results after selection
+  };
+
+  const handleConfirmPayment = async () => {
+    setIsPaying(true);
+    try {
+      toast.success("Thanh toán thành công!");
+      navigate("/admin/ql-ban-ve/confirmation", {
+        state: {
+          // Pass movie and booking information
+          movieId,
+          movieData,
+          selectedTime,
+          selectedDate,
+          seats,
+          roomName,
+          showTimeId: effectiveShowTimeId,
+
+          // Pass ticket and payment information
+          tickets,
+          selectedSeatsInfo,
+          totalPrice,
+
+          // Pass user and payment method
+          selectedUser,
+          paymentMethod,
+
+          // Add any additional data you might need
+          pointsToAdd
+        }
+      });
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error("Lỗi khi thanh toán");
+    } finally {
+      setIsPaying(false);
+    }
   };
 
   return (
@@ -196,27 +311,36 @@ const Payment: React.FC = () => {
               <Paper
                 elevation={2}
                 sx={{
-                  width: '100%',
+                  width: "100%",
                   borderRadius: 2,
-                  overflow: 'hidden'
+                  overflow: "hidden",
                 }}
               >
-                <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
+                {/* Title */}
+                <Box
+                  sx={{
+                    p: 3,
+                    borderBottom: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
                   <Typography variant="h5" fontWeight="bold">
                     Thanh Toán Vé
                   </Typography>
                 </Box>
+
+                {/* Main Content */}
                 <Box sx={{ p: 3 }}>
                   <Grid container spacing={3}>
-                    {/* Left Column: Movie Poster */}
+                    {/* Left Column: Movie Poster & Basic Info */}
                     <Grid item xs={12} md={4}>
                       <Paper
                         elevation={1}
                         sx={{
                           p: 2,
-                          height: '100%',
-                          display: 'flex',
-                          flexDirection: 'column'
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column",
                         }}
                       >
                         <Box
@@ -246,38 +370,45 @@ const Payment: React.FC = () => {
                             <strong>Giờ chiếu:</strong> {showTime}
                           </Typography>
                           <Typography variant="body1" gutterBottom>
-                            <strong>Ghế:</strong> {seats.join(", ") || "Chưa chọn ghế"}
+                            <strong>Ghế:</strong>{" "}
+                            {seats.join(", ") || "Chưa chọn ghế"}
                           </Typography>
                         </Box>
                       </Paper>
                     </Grid>
+
                     {/* Right Column: Payment Info & Customer Form */}
                     <Grid item xs={12} md={8}>
-                      {/* Member Points Section */}
-                      <Paper
-                        elevation={1}
-                        sx={{
-                          p: 3,
-                          mb: 3
-                        }}
-                      >
+                      {/* Customer Information Section */}
+                      <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
                         <Typography variant="h6" gutterBottom>
-                          Thành Viên
+                          Thông Tin Khách Hàng
                         </Typography>
                         <Box sx={{ mb: 3 }}>
                           <TextField
-                            label="Tìm kiếm thành viên (CMND hoặc IDCard)"
+                            label="Tìm kiếm thành viên (CMND hoặc số điện thoại)"
                             variant="outlined"
                             fullWidth
                             value={userSearchInput}
                             onChange={(e) => setUserSearchInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                handleSearchUser();
+                              }
+                            }}
                             InputProps={{
                               endAdornment: (
                                 <InputAdornment position="end">
                                   <Button
                                     onClick={handleSearchUser}
                                     disabled={isSearchingUser}
-                                    startIcon={isSearchingUser ? <CircularProgress size={20} /> : <SearchIcon />}
+                                    startIcon={
+                                      isSearchingUser ? (
+                                        <CircularProgress size={20} />
+                                      ) : (
+                                        <SearchIcon />
+                                      )
+                                    }
                                   >
                                     Tìm
                                   </Button>
@@ -286,35 +417,53 @@ const Payment: React.FC = () => {
                             }}
                             sx={{ mb: 2 }}
                           />
-                          {/* Display search results if any */}
+
+                          {/* Multiple search results */}
                           {users.length > 0 && (
-                            <Paper variant="outlined" sx={{ p: 2, maxHeight: 200, overflowY: 'auto' }}>
+                            <Paper
+                              variant="outlined"
+                              sx={{ p: 2, maxHeight: 200, overflowY: "auto" }}
+                            >
                               <Typography variant="subtitle2" gutterBottom>
                                 Kết quả tìm kiếm:
                               </Typography>
                               <Stack spacing={1}>
-                                {users.map(user => (
+                                {users.map((user) => (
                                   <Box
                                     key={user.id}
                                     sx={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'space-between',
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
                                       p: 1,
                                       borderRadius: 1,
-                                      '&:hover': {
-                                        bgcolor: 'action.hover'
-                                      }
+                                      "&:hover": {
+                                        bgcolor: "action.hover",
+                                      },
                                     }}
                                   >
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                      <Avatar src={user.avatarUrl} alt={user.userName}>
-                                        {user.userName.charAt(0)}
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1,
+                                      }}
+                                    >
+                                      <Avatar
+                                        src={user.avatarUrl}
+                                        alt={user.userName}
+                                      >
+                                        {user.userName?.charAt(0)}
                                       </Avatar>
                                       <Box>
-                                        <Typography variant="body1">{user.userName}</Typography>
-                                        <Typography variant="caption" color="text.secondary">
-                                          {user.email} • Điểm: {user.membershipPoints}
+                                        <Typography variant="body1">
+                                          {user.userName}
+                                        </Typography>
+                                        <Typography
+                                          variant="caption"
+                                          color="text.secondary"
+                                        >
+                                          {user.email} • Điểm: {user.point}
                                         </Typography>
                                       </Box>
                                     </Box>
@@ -331,114 +480,165 @@ const Payment: React.FC = () => {
                             </Paper>
                           )}
                         </Box>
-                        {selectedUser && (
-                          <Box sx={{ mt: 2, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+
+                        {/* Display selected user info if found */}
+                        {selectedUser ? (
+                          <Box
+                            sx={{
+                              p: 3,
+                              bgcolor: "background.paper",
+                              borderRadius: 2,
+                              boxShadow: 1,
+                            }}
+                          >
+                            <Box
+                              sx={{ display: "flex", alignItems: "center", mb: 2 }}
+                            >
                               <Avatar
                                 src={selectedUser.avatarUrl}
                                 alt={selectedUser.userName}
-                                sx={{ width: 56, height: 56, mr: 2 }}
+                                sx={{ width: 64, height: 64, mr: 2 }}
                               >
-                                {selectedUser.userName.charAt(0)}
+                                {selectedUser.userName?.charAt(0)}
                               </Avatar>
-                              <Box>
-                                <Typography variant="h6">{selectedUser.userName}</Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                  {selectedUser.email} • {selectedUser.phoneNumber}
+                              <Box sx={{ flexGrow: 1 }}>
+                                <Typography variant="h6" gutterBottom>
+                                  {selectedUser.userName}
                                 </Typography>
+                                <Grid container spacing={1}>
+                                  <Grid item xs={12} sm={6}>
+                                    <Typography variant="body2">
+                                      <strong>Email:</strong>{" "}
+                                      {selectedUser.email}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                      <strong>SĐT:</strong>{" "}
+                                      {selectedUser.phoneNumber}
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item xs={12} sm={6}>
+                                    <Typography variant="body2">
+                                      <strong>CMND/CCCD:</strong>{" "}
+                                      {selectedUser.idCard}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                      <strong>Họ tên:</strong>{" "}
+                                      {selectedUser.userName}
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
                               </Box>
                               <Chip
-                                label={`${selectedUser.membershipPoints} điểm`}
+                                label={`${selectedUser.point} điểm`}
                                 color="primary"
-                                sx={{ ml: 'auto' }}
+                                sx={{ ml: "auto" }}
                               />
                             </Box>
+
                             <Alert severity="info" sx={{ mb: 2 }}>
-                              Với hóa đơn {totalPrice.toLocaleString('vi-VN')}đ, thành viên sẽ nhận được {pointsToAdd} điểm thưởng khi thanh toán.
+                              Với hóa đơn{" "}
+                              {totalPrice.toLocaleString("vi-VN")}đ, thành viên sẽ
+                              nhận được {pointsToAdd} điểm thưởng khi thanh toán.
                             </Alert>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                mt: 2,
+                              }}
+                            >
                               <Typography>
-                                <strong>Điểm hiện tại:</strong> {selectedUser.membershipPoints}
+                                <strong>Điểm hiện tại:</strong>{" "}
+                                {selectedUser.point}
                               </Typography>
                               <Typography>
-                                <strong>Sau giao dịch:</strong> {selectedUser.membershipPoints + pointsToAdd}
+                                <strong>Sau giao dịch:</strong>{" "}
+                                {selectedUser.point + pointsToAdd}
                               </Typography>
                             </Box>
+
+                            <Box sx={{ mt: 3 }}>
+                              <FormControl component="fieldset">
+                                <FormLabel component="legend">
+                                  Hình thức thanh toán
+                                </FormLabel>
+                                <RadioGroup
+                                  row
+                                  value={paymentMethod}
+                                  onChange={handlePaymentMethodChange}
+                                >
+                                  <FormControlLabel
+                                    value="money"
+                                    control={<Radio />}
+                                    label="Tiền mặt"
+                                  />
+                                  <FormControlLabel
+                                    value="points"
+                                    control={<Radio />}
+                                    label="Dùng điểm"
+                                    disabled={selectedUser.point < totalPrice / 1000}
+                                  />
+                                </RadioGroup>
+                              </FormControl>
+                            </Box>
                           </Box>
-                        )}
-                        {!selectedUser && (
-                          <Alert severity="info">
-                            Khách hàng không phải thành viên sẽ không tích lũy điểm từ giao dịch này
+                        ) : (
+                          <Alert severity="info" sx={{ mb: 2 }}>
+                            Khách hàng không phải thành viên sẽ không tích lũy
+                            điểm từ giao dịch này
                           </Alert>
                         )}
                       </Paper>
-                      {/* Customer Information Form */}
-                      <Paper
-                        elevation={1}
-                        sx={{
-                          p: 3,
-                          mb: 3,
-                        }}
-                      >
-                        <Typography variant="h6" gutterBottom>
-                          Thông Tin Khách Hàng
-                        </Typography>
-                        {selectedUser ? (
-                          <Box sx={{ mt: 2, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
-                            <Typography variant="h6">{selectedUser.userName}</Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              CMND: {selectedUser.id} • {selectedUser.phoneNumber}
-                            </Typography>
-                            <Chip label={`${selectedUser.membershipPoints} điểm`} color="primary" />
-                          </Box>
-                        ) : (
-                          <Alert severity="warning">Không tìm thấy người dùng</Alert>
-                        )}
-                        <Box sx={{ mt: 3 }}>
-                          <FormControl component="fieldset">
-                            <FormLabel component="legend">Hình thức thanh toán</FormLabel>
-                            <RadioGroup
-                              row
-                              value={paymentMethod}
-                              onChange={handlePaymentMethodChange}
-                            >
-                              <FormControlLabel value="money" control={<Radio />} label="Tiền mặt" />
-                              {selectedUser && (
-                                <FormControlLabel value="points" control={<Radio />} label="Dùng điểm" />
-                              )}
-                            </RadioGroup>
-                          </FormControl>
-                        </Box>
-                      </Paper>
-                      {/* Price Information */}
-                      <Paper
-                        elevation={1}
-                        sx={{
-                          p: 3,
-                        }}
-                      >
+
+                      {/* Price & Payment Section */}
+                      <Paper elevation={1} sx={{ p: 3 }}>
                         <Typography variant="h6" gutterBottom>
                           Thông Tin Thanh Toán
                         </Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            mb: 1,
+                          }}
+                        >
                           <Typography variant="body1">Tổng tiền vé:</Typography>
                           <Typography variant="body1" fontWeight="bold">
                             {totalPrice.toLocaleString("vi-VN")}đ
                           </Typography>
                         </Box>
                         <Divider sx={{ my: 2 }} />
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                           <Typography variant="h6">Tổng thanh toán:</Typography>
                           <Typography variant="h6" color="primary" fontWeight="bold">
                             {totalPrice.toLocaleString("vi-VN")}đ
                           </Typography>
                         </Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3, gap: 2 }}>
+
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            mt: 3,
+                            gap: 2,
+                          }}
+                        >
                           <Button variant="outlined" onClick={handleBack}>
                             Quay lại
                           </Button>
-                          <Button variant="contained" color="primary">
-                            Xác nhận đặt vé
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleConfirmPayment}
+                            disabled={isPaying}
+                          >
+                            {isPaying ? (
+                              <CircularProgress size={20} color="inherit" />
+                            ) : (
+                              "Xác nhận đặt vé"
+                            )}
                           </Button>
                         </Box>
                       </Paper>

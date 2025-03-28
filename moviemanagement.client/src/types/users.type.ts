@@ -1,4 +1,3 @@
-import { Role } from "./roles.type";
 import { UserTicketHistory, UserTicketType } from "./ticketdetail.types";
 
 export type UserBase = {
@@ -72,6 +71,7 @@ export type UserInfo = {
   userName: string;
   email: string;
   phoneNumber: string;
-  membershipPoints: number;
+  point: number;
   avatarUrl?: string;
-}
+  idCard: string;
+};

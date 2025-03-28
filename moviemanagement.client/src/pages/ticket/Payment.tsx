@@ -20,11 +20,14 @@ import Header from "../../components/home/Header";
 import toast from "react-hot-toast";
 import api from "../../apis/axios.config";
 import { useSignalR } from "../../contexts/SignalRContext";
+import { SeatType } from "../../types/seattype.types";
 import SeatCountdown from "../../components/Ticket/SeatCountdown";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { userDetails } = useAuth();
   const { connection, isConnected } = useSignalR();
   const [promotions, setPromotions] = useState<any[]>([]);
   const [selectedPromotion, setSelectedPromotion] = useState<any>(null);
@@ -53,8 +56,6 @@ const Payment: React.FC = () => {
   const effectiveShowTimeId =
     showTimeId || sessionStorage.getItem("currentShowTimeId") || "";
 
-  // Before unload handler to warn user if they refresh or leave
-  // Update your existing beforeunload handler
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (connection && isConnected && effectiveShowTimeId && selectedSeatsInfo?.length) {
@@ -62,8 +63,7 @@ const Payment: React.FC = () => {
         e.preventDefault();
         e.returnValue = "";
 
-        // Try to release seats using navigator.sendBeacon (works during page unload)
-        const userId = localStorage.getItem("userId") || "anonymous";
+        const userId = userDetails?.userId;
         const payload = JSON.stringify({
           ticketRequests: selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
             TicketId: seat.ticketId,
@@ -90,7 +90,7 @@ const Payment: React.FC = () => {
     // Cleanup function runs when component unmounts
     return () => {
       if (connection && isConnected && selectedSeatsInfo?.length > 0) {
-        const userId = localStorage.getItem("userId") || "anonymous";
+        const userId = userDetails?.userId;
         const ticketRequests = selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
           TicketId: seat.ticketId,
           Version: seat.version,
@@ -105,7 +105,7 @@ const Payment: React.FC = () => {
   const handleBack = async () => {
     if (connection && selectedSeatsInfo?.length > 0) {
       try {
-        const userId = localStorage.getItem("userId") || "anonymous";
+        const userId = userDetails?.userId;
         const ticketRequests = selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
           TicketId: seat.ticketId,
           Version: seat.version
@@ -210,13 +210,13 @@ const Payment: React.FC = () => {
         totalTicket: tickets.length,
         amount: total,
         promotionId: selectedPromotion?.promotionId || null,
-        originalAmount: totalPrice,
+        tickets: selectedSeatsInfo.map((seat: { ticketId: any; }) => seat.ticketId)
       };
 
       const response = await api.post(
         `vnpay/createpaymenturl?money=${total}&description=${encodeURIComponent(
           `Payment for movie tickets: ${movieData?.movieName}`
-        )}&userId=${"e5c69f1e-c731-420f-badb-723f897e8819"}`,
+        )}&userId=6A050BE0-BA0B-4C07-821F-EB8C57FB2BDC`,
         data
       );
 

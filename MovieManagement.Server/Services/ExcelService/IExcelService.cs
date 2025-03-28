@@ -4,6 +4,6 @@ namespace MovieManagement.Server.Services.ExcelService
 {
     public interface IExcelService
     {
-        byte[] ExportToExcel();
+        Task<byte[]> ExportToExcel();
     }
 }
