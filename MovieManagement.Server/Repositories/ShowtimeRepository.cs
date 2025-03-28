@@ -19,9 +19,12 @@ namespace MovieManagement.Server.Repositories
             _context = context;
         }
 
-        public Task<bool> CheckStartTimeAsync(DateTime startTime)
+        public Task<bool> CheckStartTimeAsync(DateTime startTime, Guid movieTheaterId)
         {
-            if (_context.Showtimes.Any(st => st.StartTime == startTime))
+            var showtime = _context.Showtimes
+                .Include(st => st.Room)
+                    .ThenInclude(r => r.MovieTheater);
+            if (showtime.Any(st => st.StartTime == startTime && st.Room.MovieTheater.MovieTheaterId == movieTheaterId))
             {
                 return Task.FromResult(false);
             }

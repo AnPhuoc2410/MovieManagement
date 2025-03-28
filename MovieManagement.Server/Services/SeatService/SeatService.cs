@@ -124,6 +124,7 @@ namespace MovieManagement.Server.Services.SeatService
                     _unitOfWork.SeatRepository.PrepareCreate(newSeat);
                 }
             }
+
             return await _unitOfWork.SeatRepository.SaveAsync() > 0;
         }
 
@@ -277,6 +278,7 @@ namespace MovieManagement.Server.Services.SeatService
             {
                 throw new ArgumentException("Seats not found", nameof(roomId));
             }
+            seats.OrderBy(s => s.AtRow).ThenBy(s => s.AtColumn);
             return _mapper.Map<List<SeatDto>>(seats);
         }
 
