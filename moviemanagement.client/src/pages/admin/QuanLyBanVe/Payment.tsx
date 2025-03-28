@@ -32,6 +32,7 @@ import SideMenu from "../../../components/mui/SideMenu";
 import AppTheme from "../../../shared-theme/AppTheme";
 import { UserInfo } from "../../../types/users.type";
 import { phoneRegex } from "../../../constants/regex";
+import { useAuth } from "../../../contexts/AuthContext";
 
 /**
  * This is a placeholder interface for seats/tickets in your location.state.
@@ -46,6 +47,7 @@ const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { connection, isConnected } = useSignalR();
+  const { userDetails } = useAuth();
 
   // Theme & loading states
   const [disableCustomTheme] = useState<boolean>(false);
@@ -109,7 +111,7 @@ const Payment: React.FC = () => {
         e.preventDefault();
         e.returnValue = "";
 
-        const userId = localStorage.getItem("userId") || "anonymous";
+        const userId = userDetails?.userId;
         const payload = JSON.stringify({
           ticketRequests: selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
             TicketId: seat.ticketId,
@@ -138,7 +140,7 @@ const Payment: React.FC = () => {
   useEffect(() => {
     return () => {
       if (connection && isConnected && selectedSeatsInfo.length > 0) {
-        const userId = localStorage.getItem("userId") || "anonymous";
+        const userId = userDetails?.userId;
         const ticketRequests = selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
           TicketId: seat.ticketId,
           Version: seat.version,
@@ -159,7 +161,7 @@ const Payment: React.FC = () => {
   const handleBack = async () => {
     if (connection && selectedSeatsInfo.length > 0) {
       try {
-        const userId = localStorage.getItem("userId") || "anonymous";
+        const userId = userDetails?.userId;
         const ticketRequests = selectedSeatsInfo.map((seat: { ticketId: any; version: any; }) => ({
           TicketId: seat.ticketId,
           Version: seat.version,
@@ -183,9 +185,6 @@ const Payment: React.FC = () => {
     }
   };
 
-  /**
-   * Reset selected user when search input is cleared
-   */
   useEffect(() => {
     if (userSearchInput.trim() === "") {
       setSelectedUser(null);
@@ -194,11 +193,6 @@ const Payment: React.FC = () => {
     }
   }, [userSearchInput]);
 
-  /**
-   * Search user by phone or ID card
-   * If multiple users are returned, we display them all;
-   * if only one user is found, we select that user immediately.
-   */
   const handleSearchUser = async () => {
     if (!userSearchInput.trim()) {
       toast.error("Vui lòng nhập CMND hoặc số điện thoại");
