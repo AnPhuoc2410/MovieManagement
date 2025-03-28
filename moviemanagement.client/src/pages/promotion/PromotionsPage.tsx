@@ -42,8 +42,8 @@ const PromotionsPage: React.FC = () => {
         // Fetch all promotions at once (or a large batch)
         const response = await api.get(`promotions/page/${apiPage}/pagesize/${apiPageSize}`);
 
-        if (response.data) {
-          setAllPromotions(response.data);
+        if (response.data.data) {
+          setAllPromotions(response.data.data);
         } else {
           setAllPromotions([]);
         }
