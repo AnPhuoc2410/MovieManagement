@@ -187,30 +187,16 @@ namespace MovieManagement.Server.Services.UserService
         public async Task<bool> ExchangeTickets(Guid userId, BillRequest billRequest)
         {
 
-            if (!billRequest.Amount.HasValue)
-                throw new BadRequestException("Amount cannot be empty!");
-
-            if (!billRequest.UsedPoint.HasValue)
-                throw new BadRequestException("Used point cannot be empty!");
-
-            if (!billRequest.TotalTicket.HasValue)
-                throw new BadRequestException("Total ticket cannot be empty!");
-
             var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) 
                 ?? throw new NotFoundException("User not found!");
-
-            if (user.Point < billRequest.UsedPoint)
-                throw new BadRequestException("Not enough point to exchange ticket!");
 
             var pointBill = new Bill
             {
                 BillId = Guid.NewGuid(),
                 UserId = userId,
-                Amount = billRequest.Amount.Value,
                 PaymentId = null,
-                Status = BillStatus.Paid,
-                CreatedDate = DateTime.Now,
-                Point = -billRequest.UsedPoint.Value,
+                Status = BillStatus.Completed,
+                CreatedDate = DateTime.Now
             };
 
             var moneyBill = new Bill
@@ -218,7 +204,7 @@ namespace MovieManagement.Server.Services.UserService
                 BillId = Guid.NewGuid(),
                 UserId = userId,
                 PaymentId = null,
-                Status = BillStatus.Paid,
+                Status = BillStatus.Completed,
                 CreatedDate = DateTime.Now,
             };
 
@@ -228,11 +214,15 @@ namespace MovieManagement.Server.Services.UserService
                 var purchasedTicket = await _unitOfWork.TicketDetailRepository.GetTicketInfo(ticket) 
                     ?? throw new NotFoundException("Ticket not found!");
                 var exchangePoint = purchasedTicket.Seat.SeatType.Price/100;
-                if (exchangePoint < user.Point)
+                if (exchangePoint < user.Point || billRequest.UsedPoint >= exchangePoint)
                 {
                     user.Point -= exchangePoint;
                     purchasedTicket.Status = TicketStatus.Paid;
                     purchasedTicket.BillId = pointBill.BillId;
+                    pointBill.Point -= exchangePoint;
+                    pointBill.Amount += purchasedTicket.Seat.SeatType.Price;
+                    pointBill.TotalTicket++;
+                    billRequest.UsedPoint -= exchangePoint;
                 }
                 else
                 {
@@ -248,7 +238,8 @@ namespace MovieManagement.Server.Services.UserService
 
             }
 
-            _unitOfWork.BillRepository.PrepareCreate(pointBill);
+            if (pointBill.TotalTicket > 0)
+                _unitOfWork.BillRepository.PrepareCreate(pointBill);
             if (moneyBill.TotalTicket > 0)
                 _unitOfWork.BillRepository.PrepareCreate(moneyBill);
             _unitOfWork.UserRepository.PrepareUpdate(user);
