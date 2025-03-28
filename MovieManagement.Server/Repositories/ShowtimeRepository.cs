@@ -4,6 +4,7 @@ using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.Enums;
 using MovieManagement.Server.Models.ResponseModel;
 using MovieManagement.Server.Repositories.IRepositories;
+using static MovieManagement.Server.Models.Enums.BillEnum;
 using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Repositories
@@ -59,7 +60,10 @@ namespace MovieManagement.Server.Repositories
         {
             var showtimeRevenue = await _context.Showtimes
                 .Where(st => st.StartTime.Hour >= time.Hour && st.StartTime.Hour < time.AddHours(1).Hour)
-                .Include(st => st.TicketDetails.Where(td => td.Status == TicketStatus.Paid))
+                .Include(st => st.TicketDetails
+                    .Where(td => td.Status == TicketStatus.Paid
+                    && td.Bill != null
+                    && td.Bill.Status == BillStatus.Completed))
                 .ThenInclude(td => td.Bill)
                 .ToListAsync();
             return showtimeRevenue;
@@ -69,7 +73,10 @@ namespace MovieManagement.Server.Repositories
         {
             var showtimeRevenue = await _context.Showtimes
                 .Where(st => st.StartTime.Hour >= time.Hour && st.StartTime.Hour < time.AddHours(1).Hour && st.StartTime.Day >= from.Day && st.StartTime.Day < to.Day)
-                .Include(st => st.TicketDetails.Where(td => td.Status == TicketStatus.Paid))
+                .Include(st => st.TicketDetails
+                    .Where(td => td.Status == TicketStatus.Paid 
+                    && td.Bill != null
+                    && td.Bill.Status == BillStatus.Completed))
                 .ThenInclude(td => td.Bill)
                 .ToListAsync();
             return showtimeRevenue;

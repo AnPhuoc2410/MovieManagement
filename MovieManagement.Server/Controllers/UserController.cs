@@ -4,6 +4,8 @@ using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Services.EmailService;
 using MovieManagement.Server.Services.UserService;
 using static MovieManagement.Server.Models.Enums.UserEnum;
 
@@ -14,10 +16,12 @@ namespace MovieManagement.Server.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IEmailService emailService)
         {
             _userService = userService;
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -79,6 +83,11 @@ namespace MovieManagement.Server.Controllers
         /// <response code="200">Find user by IdCard Or Phone successfully</response>
         [Authorize(Roles = "Admin")]
         [HttpGet("find")]
+        [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> FindUserByIdCardOrPhoneAsync([FromQuery] string? idCard,
             [FromQuery] string? phone)
         {
@@ -198,6 +207,7 @@ namespace MovieManagement.Server.Controllers
         [Authorize(Roles = "Admin")]
         [HttpDelete("{empId:guid}")]
         [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserDto.UserResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -207,5 +217,18 @@ namespace MovieManagement.Server.Controllers
             await _userService.DeleteUserAsync(empId);
             return NoContent();
         }
+
+        [HttpPost("Test")]
+        public async Task<IActionResult> Test(Guid userId, BillRequest billRequest)
+        {
+            await _userService.ExchangeTickets(userId, billRequest);
+            return Ok(new ApiResponse<object>
+            {
+                StatusCode = 200,
+                Message = "Exchange ticket successfully",
+                IsSuccess = true
+            });
+        }
+
     }
 }

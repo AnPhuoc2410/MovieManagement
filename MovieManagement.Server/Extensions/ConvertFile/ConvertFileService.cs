@@ -72,6 +72,10 @@ namespace MovieManagement.Server.Extensions.ConvertFile
                 discount = promotion.Discount;
             }
 
+            // Tính giá tiền sau cùng
+            decimal amount = 0;
+            amount = amount + discount * amount;
+
             // Replace placeholders
             body = body
                 .Replace("{{CreatedDate}}", billReport.CreatedDate.ToString("MMMM dd, yyyy", new System.Globalization.CultureInfo("en-US")))
@@ -79,7 +83,7 @@ namespace MovieManagement.Server.Extensions.ConvertFile
                 .Replace("{{TicketList}}", ticketListHTML.ToString())
                 .Replace("{{Total}}", total.ToString("N0"))
                 .Replace("{{Discount}}", discount.ToString("N0"))
-                .Replace("{{PurchasedTicket}}", billReport.Amount.ToString("N0"));
+                .Replace("{{Amount}}", billReport.Amount.ToString("N0"));
 
             return body;
         }

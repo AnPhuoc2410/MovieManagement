@@ -5,11 +5,11 @@ namespace MovieManagement.Server.Repositories.IRepositories
 {
     public interface ITicketDetailRepository : IGenericRepository<TicketDetail>
     {
-        Task<List<TicketDetail>> GetTicketByBillIdAsync(long billId);
+        Task<List<TicketDetail>> GetTicketByBillIdAsync(Guid billId);
         Task<List<TicketDetail>> GetTicketByShowTimeId(Guid showTimeId);
         Task<TicketDetail> GetTicketByIdAndVersion(Guid id, byte[] version);
         Task<List<TicketDetail>> GetRemainingsTickets();
-        Task<List<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(long billId);
+        Task<List<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(Guid billId);
 
         Task<TicketDetail> GetTicketInfo(Guid Id);
     }

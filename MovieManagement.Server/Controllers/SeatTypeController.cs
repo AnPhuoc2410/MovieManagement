@@ -23,7 +23,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpGet]
         [Route("all")]
-        [ProducesResponseType(typeof(ApiResponse<SeatTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<SeatTypeDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -31,7 +31,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetAllSeatTypesAsync()
         {
             var seatTypes = await _seatTypeService.GetAllSeatTypesAsync();
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<SeatTypeDto>>
             {
                 StatusCode = 200,
                 Message = "Get all seat types is success",
@@ -51,7 +51,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<SeatTypeDto>> GetSeatTypeByIdAsync(Guid seatTypeId)
         {
             var seatType = await _seatTypeService.GetSeatTypeByIdAsync(seatTypeId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<SeatTypeDto>
             {
                 StatusCode = 200,
                 Message = "Get seat type is success",
@@ -63,7 +63,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpGet]
         [Route("page/{page:int}/pageSize/{pageSize:int}")]
-        [ProducesResponseType(typeof(ApiResponse<SeatTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<SeatTypeDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -72,7 +72,7 @@ namespace MovieManagement.Server.Controllers
         {
             var seatTypes = await _seatTypeService.GetSeatTypePageAsync(page, pageSize);
 
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<SeatTypeDto>>
             {
                 StatusCode = 200,
                 Message = "Get seat type is success",
@@ -91,7 +91,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<SeatTypeDto>> CreateSeatTypeAsync([FromBody] SeatTypeDto seatTypeDto)
         {
             var seat = await _seatTypeService.CreateSeatTypeAsync(seatTypeDto);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<SeatTypeDto>
             {
                 StatusCode = 200,
                 Message = "Create seat type is success",
@@ -110,8 +110,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<SeatTypeDto>> UpdateSeatTypeAsync(Guid seatTypeId, [FromBody] SeatTypeDto seatTypeDto)
         {
             var seat = await _seatTypeService.UpdateSeatTypeAsync(seatTypeId, seatTypeDto);
-
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<SeatTypeDto>
             {
                 StatusCode = 200,
                 Message = "Update seat type is success",
@@ -122,7 +121,7 @@ namespace MovieManagement.Server.Controllers
 
         [HttpDelete]
         [Route("{seatTypeId:guid}")]
-        [ProducesResponseType(typeof(ApiResponse<SeatTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -130,7 +129,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> DeleteSeatTypeAsync(Guid seatTypeId)
         {
             bool isDeleted = await _seatTypeService.DeleteSeatTypeAsync(seatTypeId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<bool>
             {
                 StatusCode = 200,
                 Message = "Delete seat is success",

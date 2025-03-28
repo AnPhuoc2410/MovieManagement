@@ -19,6 +19,8 @@ namespace MovieManagement.Server.Services.UserService
         Task ChangeUserPasswordByUserId(Guid userId, string currentPassword, string newPassword);
         Task<bool> DeleteUserAsync(Guid id);
 
+        Task<bool> ExchangeTickets(Guid userId, BillRequest billRequest);
+
 
     }
 }

@@ -22,21 +22,25 @@ namespace MovieManagement.Server.Services.SeatService
         public async Task<IEnumerable<SeatDto>> GetAllSeatAsync()
         {
             var seats = await _unitOfWork.SeatRepository.GetAllAsync();
-            if (seats == null)
+            if(seats == null)
                 throw new NotFoundException("Seats not found!");
             return _mapper.Map<List<SeatDto>>(seats);
         }
 
         public async Task<IEnumerable<SeatDto>> GetSeatPageAsync(int page, int pageSize)
         {
+            if (page < 0 || pageSize < 1)
+                throw new BadRequestException("Page and PageSize is invalid");
             var seats = await _unitOfWork.SeatRepository.GetPageAsync(page, pageSize);
-            if (seats == null)
+            if(seats == null)
                 throw new NotFoundException("Seats not found!");
             return _mapper.Map<List<SeatDto>>(seats);
         }
 
         public async Task<SeatDto> GetSeatByIdAsync(Guid seatId)
         {
+            if(seatId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
             if (seat == null)
                 throw new NotFoundException("Seat not found!");
@@ -55,6 +59,8 @@ namespace MovieManagement.Server.Services.SeatService
 
         public async Task<SeatDto> UpdateSeatAsync(Guid seatId, SeatDto seatDto)
         {
+            if(seatId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var existingSeat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
             if (existingSeat == null)
                 throw new NotFoundException("Seat not found!");
@@ -69,6 +75,8 @@ namespace MovieManagement.Server.Services.SeatService
 
         public async Task<bool> DeleteSeatAsync(Guid seatId)
         {
+            if(seatId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var seat = await _unitOfWork.SeatRepository.GetByIdAsync(seatId);
             if (seat == null)
                 throw new NotFoundException("Seat not found!");
@@ -78,6 +86,8 @@ namespace MovieManagement.Server.Services.SeatService
 
         public async Task<bool> CreateByRoomIdAsync(Guid roomId, Guid SeatTypeId)
         {
+            if(roomId == Guid.Empty || SeatTypeId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             bool isCompleted = false;
             var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
 
@@ -244,6 +254,8 @@ namespace MovieManagement.Server.Services.SeatService
 
         public async Task<bool> DeleteByRoomId(Guid roomId)
         {
+            if(roomId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
             if (!seats.Any())
             {
@@ -258,6 +270,8 @@ namespace MovieManagement.Server.Services.SeatService
 
         public async Task<IEnumerable<SeatDto>> GetByRoomId(Guid roomId)
         {
+            if(roomId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
             if (!seats.Any())
             {

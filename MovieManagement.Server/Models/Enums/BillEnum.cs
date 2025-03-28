@@ -7,9 +7,7 @@
         {
             Cancelled = 0,
             Pending = 1,
-            Completed = 2,
-            Failed = 3,
-            Paid = 4,
+            Completed = 2
         }
 
 
