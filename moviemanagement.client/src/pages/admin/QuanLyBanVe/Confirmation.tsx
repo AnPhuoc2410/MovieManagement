@@ -23,10 +23,12 @@ import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
 import AppTheme from "../../../shared-theme/AppTheme";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const Confirmation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { userDetails } = useAuth();
   const [paymentStatus, setPaymentStatus] = useState<"success" | "failure">("success"); // Default to success for admin
   const { connection, joinGroup, leaveGroup, isConnected } = useSignalR();
   const [seatsUpdated, setSeatsUpdated] = useState(false);
@@ -74,7 +76,7 @@ const Confirmation: React.FC = () => {
       return;
     }
 
-    const userId = localStorage.getItem("userId") || "admin";
+    const userId = userDetails?.userId;
 
     // Join the SignalR group
     joinGroup(effectiveShowTimeId)

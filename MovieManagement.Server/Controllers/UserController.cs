@@ -91,7 +91,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> FindUserByIdCardOrPhoneAsync([FromQuery] string? idCard,
             [FromQuery] string? phone)
         {
-            var user = new UserDto.UserResponse();
+            var user = new List<UserDto.UserResponse>();
             if (idCard == null)
             {
                 user = await _userService.FindUserByPhone(phone);
@@ -101,7 +101,7 @@ namespace MovieManagement.Server.Controllers
                 user = await _userService.FindUserByIdCard(idCard);
             }
 
-            return Ok(new ApiResponse<UserDto.UserResponse>
+            return Ok(new ApiResponse<List<UserDto.UserResponse>>
             {
                 StatusCode = 200,
                 Message = "Find user by IdCard Or Phone successfully",

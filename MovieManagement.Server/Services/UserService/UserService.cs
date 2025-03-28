@@ -125,24 +125,16 @@ namespace MovieManagement.Server.Services.UserService
             return _mapper.Map<List<UserDto.UserResponse>>(usersList);
         }
 
-        public async Task<UserDto.UserResponse> FindUserByPhone(string phone)
+        public async Task<List<UserDto.UserResponse>> FindUserByPhone(string phone)
         {
-            if(string.IsNullOrEmpty(phone))
-                throw new BadRequestException("Phone number cannot be empty!");
-            var user = await _unitOfWork.UserRepository.GetUserByPhoneAsync(phone);
-            if(user == null)
-                throw new NotFoundException("User not found!");
-            return _mapper.Map<UserDto.UserResponse>(user);
+            var user = await _unitOfWork.UserRepository.GetUsersByPhoneAsync(phone);
+            return _mapper.Map<List<UserDto.UserResponse>>(user);
         }
 
-        public async Task<UserDto.UserResponse> FindUserByIdCard(string idCard)
+        public async Task<List<UserDto.UserResponse>> FindUserByIdCard(string idCard)
         {
-            if(string.IsNullOrEmpty(idCard))
-                throw new BadRequestException("ID card cannot be empty!");
-            var user = await _unitOfWork.UserRepository.GetUserByIdCardAsync(idCard);
-            if(user == null)
-                throw new NotFoundException("User not found!");
-            return _mapper.Map<UserDto.UserResponse>(user);
+            var user = await _unitOfWork.UserRepository.GetUsersByIdCardAsync(idCard);
+            return _mapper.Map<List<UserDto.UserResponse>>(user);
         }
 
         public async Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page, int pageSize)

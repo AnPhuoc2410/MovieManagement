@@ -13,8 +13,8 @@ namespace MovieManagement.Server.Services.UserService
         Task<UserDto.UserResponse> GetUserByIdAsync(Guid id);
         Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page, int pageSize);
         Task<List<UserDto.UserResponse>> GetUserByRoleAsync(Role role);
-        Task<UserDto.UserResponse> FindUserByPhone(string phone);
-        Task<UserDto.UserResponse> FindUserByIdCard(string idCard);
+        Task<List<UserDto.UserResponse>> FindUserByPhone(string phone);
+        Task<List<UserDto.UserResponse>> FindUserByIdCard(string idCard);
         Task UpdateUserAsync(Guid id, UserDto.UpdateRequest updateRequest);
         Task ChangeUserPasswordByUserId(Guid userId, string currentPassword, string newPassword);
         Task<bool> DeleteUserAsync(Guid id);

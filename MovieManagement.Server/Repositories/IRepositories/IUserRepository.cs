@@ -12,8 +12,8 @@ namespace MovieManagement.Server.Repositories.IRepositories
         public Task<bool> ChangeUserPasswordByEmailAsync(string email, string newPassword);
         public Task<bool> ResetUserPasswordByUserIdAsync(Guid userId, string currentPassword, string newPassword);
         Task<User> GetUserByEmailAsync(string email);
-        Task<User> GetUserByPhoneAsync(string phone);
-        Task<User> GetUserByIdCardAsync(string idCard);
+        Task<List<User>> GetUsersByPhoneAsync(string phone);
+        Task<List<User>> GetUsersByIdCardAsync(string idCard);
         User GetUserByUniqueFields(string email, string idCard, string phoneNumber, string userName);
         bool IsFieldExisting(string fieldName, string fieldValue, Guid? excludeUserId = null);
         

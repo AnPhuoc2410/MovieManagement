@@ -106,22 +106,22 @@ namespace MovieManagement.Server.Repositories
             return user;
         }
 
-        public async Task<User> GetUserByIdCardAsync(string idCard)
+        public async Task<List<User>> GetUsersByIdCardAsync(string idCard)
         {
-            var user = await _context.Users
-                .Where(user => user.IDCard == idCard)
+            var users = await _context.Users
+                .Where(user => user.IDCard.Contains(idCard)) // Use Contains for relative matching
                 .OrderBy(user => user.JoinDate)
-                .LastOrDefaultAsync();
-            return user;
+                .ToListAsync();
+            return users;
         }
 
-        public async Task<User> GetUserByPhoneAsync(string phone)
+        public async Task<List<User>> GetUsersByPhoneAsync(string phone)
         {
-            var user = await _context.Users
-                .Where(user => user.PhoneNumber == phone)
+            var users = await _context.Users
+                .Where(user => user.PhoneNumber.Contains(phone)) // Use Contains for relative matching
                 .OrderBy(user => user.JoinDate)
-                .LastOrDefaultAsync();
-            return user;
+                .ToListAsync();
+            return users;
         }
 
         public async Task<List<TopMemberResponse.MemberRevenue>> GetTopMemberRevenue()
