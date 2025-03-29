@@ -264,12 +264,24 @@
           "fullname": "氏名",
           "email": "メール",
           "phone": "電話番号",
+          "id_card": "身分証明書",
           "status": "ステータス",
           "join_date": "参加日",
           "address": "住所",
-          "points": "ボーナスポイント"
+          "points": "ボーナスポイント",
+          "gender": "性別"
         },
         "actions": "アクション"
+      },
+      "stats": {
+        "total_members": "総メンバー数",
+        "total_employees": "総従業員数",
+        "active_members": "アクティブメンバー",
+        "inactive_members": "非アクティブメンバー",
+        "total_points": "合計ポイント",
+        "new_members_in30days": "過去30日間の新規メンバー",
+        "male_members": "男性メンバー",
+        "female_members": "女性メンバー"
       }
     },
     "toast": {
