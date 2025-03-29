@@ -249,9 +249,9 @@ namespace MovieManagement.Server.Services.ShowTimeService
                             locGroup => locGroup.Key,
                             locGroup => locGroup
                                 .GroupBy(st => st.Room.MovieTheater)
-                                .Select(theaterGroup => (object)new
+                                .Select(theaterGroup => (object)new //Lấy trong nhóm theaterGroup ra các thông tin cần thiết
                                 {
-                                    NameTheater = theaterGroup.Key.Name,
+                                    NameTheater = theaterGroup.Key.Name,// Lấy key của nhóm theaterGroup với Key là 1 đối tượng MovieTheater
                                     AddressTheater = theaterGroup.Key.Address,
                                     ListShowTime = theaterGroup.Select(st => new
                                     {

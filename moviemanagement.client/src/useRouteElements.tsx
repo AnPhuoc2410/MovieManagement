@@ -130,7 +130,7 @@ export default function useRouteElements() {
         },
         {
           path: "/ticket",
-          element: (
+          element: (  
             <SignalRProvider>
               <TicketWrapper />
             </SignalRProvider>

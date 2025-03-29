@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
@@ -13,10 +14,12 @@ namespace MovieManagement.Server.Controllers
     public class MovieController : Controller
     {
         private readonly IMovieService _movieService;
+        private readonly IStringLocalizer<MovieController> _localizer;
 
-        public MovieController(IMovieService movieService)
+        public MovieController(IMovieService movieService, IStringLocalizer<MovieController> localizer)
         {
             _movieService = movieService;
+            _localizer = localizer;
         }
 
         [HttpGet]
