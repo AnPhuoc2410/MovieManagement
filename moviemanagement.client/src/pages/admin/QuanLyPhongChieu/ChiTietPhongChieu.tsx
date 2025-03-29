@@ -5,6 +5,7 @@ import ChairIcon from "@mui/icons-material/Chair";
 import GridViewIcon from "@mui/icons-material/GridView";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -37,7 +38,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Loader from "../../../components/shared/Loading";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
-import { useState } from "react";
 import toast from "react-hot-toast";
 
 // Define the SeatType interface if not already defined elsewhere
@@ -47,6 +47,25 @@ interface SeatType {
   price: number;
   quantity?: number;
   isActive?: boolean;
+}
+
+// Define seat status enum
+enum SeatStatus {
+  Available = 0,
+  Unavailable = 1,
+  Sold = 2,
+  Reserved = 3
+}
+
+// Interface for individual seat
+interface Seat {
+  seatId: string;
+  atRow: string;
+  atColumn: number;
+  roomId: string;
+  seatTypeId: string;
+  isActive: boolean;
+  seatStatus: SeatStatus;
 }
 
 const ChiTietPhongChieu = () => {
@@ -62,11 +81,25 @@ const ChiTietPhongChieu = () => {
   const [updateLoading, setUpdateLoading] = useState<boolean>(false);
   const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [isActiveStatus, setIsActiveStatus] = useState<boolean>(true);
   
   // Fetch room data
   const fetchRoom = async (id: string) => {
-    const response = await axios.get(`https://localhost:7119/api/room/${id}`);
-    return response.data.data;
+    const response = await axios.get(`https://localhost:7119/api/room/getroomInfo/${id}`);
+    console.log("API Response:", response.data);
+    
+    // Make sure we're correctly accessing the seats data
+    const roomData = response.data.data;
+    
+    // Log the structure to help diagnose issues
+    console.log("Room data structure:", {
+      hasSeats: !!roomData.seats,
+      seatsCount: roomData.seats?.length,
+      roomDataKeys: Object.keys(roomData)
+    });
+    
+    return roomData;
   };
   
   // Fetch seat types
@@ -112,11 +145,31 @@ const ChiTietPhongChieu = () => {
     setUpdateError(null);
     
     try {
-      const endpoint = mode === "row" 
-        ? `https://localhost:7119/api/seat/addrowseats?roomId=${roomId}&seatTypeId=${seatTypeId}&rowIndex=${index}`
-        : `https://localhost:7119/api/seat/addcolumnseats?roomId=${roomId}&seatTypeId=${seatTypeId}&columnIndex=${index}`;
-        
-      const response = await axios.post(endpoint);
+      // Get the seats in the selected row/column
+      const roomResponse = await axios.get(`https://localhost:7119/api/room/getroomInfo/${roomId}`);
+      const roomData = roomResponse.data.data;
+      
+      // Filter seats by row or column based on selection mode
+      const selectedSeats = roomData.seats.filter((seat: any) => 
+        mode === "row" 
+          ? seat.atRow === String.fromCharCode(65 + index) 
+          : seat.atColumn === index + 1
+      );
+      
+      // Get the seat IDs
+      const seatIds = selectedSeats.map((seat: any) => seat.seatId);
+      
+      // Update the seats with the new seat type
+      const response = await axios.put(
+        `https://localhost:7119/api/seat/updatebyroomid?seatTypeId=${seatTypeId}`, 
+        JSON.stringify(seatIds), 
+        {
+          headers: {
+            "Content-Type": "application/json-patch+json",
+            "accept": "text/plain"
+          }
+        }
+      );
       
       if (response.data.isSuccess) {
         setUpdateSuccess(true);
@@ -130,6 +183,82 @@ const ChiTietPhongChieu = () => {
       return response.data;
     } catch (error: any) {
       const errorMsg = error.response?.data?.message || "Đã xảy ra lỗi khi cập nhật ghế";
+      setUpdateError(errorMsg);
+      toast.error(`Lỗi: ${errorMsg}`);
+      throw error;
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+  
+  // Add a new row to the room
+  const addRow = async (roomId: string, seatTypeId: string) => {
+    setUpdateLoading(true);
+    setUpdateSuccess(false);
+    setUpdateError(null);
+    
+    try {
+      // Use the API endpoint for adding a row as shown in the screenshot
+      const response = await axios.post(
+        `https://localhost:7119/api/seat/addrowbyroomid?roomId=${roomId}&seatTypeId=${seatTypeId}`,
+        '',
+        {
+          headers: {
+            "accept": "text/plain"
+          }
+        }
+      );
+      
+      if (response.data.isSuccess) {
+        setUpdateSuccess(true);
+        toast.success("Đã thêm hàng ghế mới thành công!");
+        queryClient.invalidateQueries(["roomDetail", roomId]);
+      } else {
+        setUpdateError(response.data.message || "Thêm hàng không thành công");
+        toast.error(`Lỗi: ${response.data.message}`);
+      }
+      
+      return response.data;
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "Đã xảy ra lỗi khi thêm hàng ghế";
+      setUpdateError(errorMsg);
+      toast.error(`Lỗi: ${errorMsg}`);
+      throw error;
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+  
+  // Add a new column to the room
+  const addColumn = async (roomId: string, seatTypeId: string) => {
+    setUpdateLoading(true);
+    setUpdateSuccess(false);
+    setUpdateError(null);
+    
+    try {
+      // Use the API endpoint for adding a column as shown in the screenshot
+      const response = await axios.post(
+        `https://localhost:7119/api/seat/addcolumnbyroomid?roomId=${roomId}&seatTypeId=${seatTypeId}`,
+        '',
+        {
+          headers: {
+            "accept": "text/plain"
+          }
+        }
+      );
+      
+      if (response.data.isSuccess) {
+        setUpdateSuccess(true);
+        toast.success("Đã thêm cột ghế mới thành công!");
+        queryClient.invalidateQueries(["roomDetail", roomId]);
+      } else {
+        setUpdateError(response.data.message || "Thêm cột không thành công");
+        toast.error(`Lỗi: ${response.data.message}`);
+      }
+      
+      return response.data;
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "Đã xảy ra lỗi khi thêm cột ghế";
       setUpdateError(errorMsg);
       toast.error(`Lỗi: ${errorMsg}`);
       throw error;
@@ -182,6 +311,173 @@ const ChiTietPhongChieu = () => {
     const seatType = seatTypes.find(type => type.seatTypeId === selectedSeatTypeId);
     return seatType ? seatType.price : 0;
   };
+
+  const handleAddRow = async () => {
+    if (!roomId || !selectedSeatTypeId) {
+      toast.error("Vui lòng chọn loại ghế để thêm hàng");
+      return;
+    }
+    
+    try {
+      await addRow(roomId, selectedSeatTypeId);
+    } catch (error) {
+      console.error("Error adding row:", error);
+    }
+  };
+  
+  const handleAddColumn = async () => {
+    if (!roomId || !selectedSeatTypeId) {
+      toast.error("Vui lòng chọn loại ghế để thêm cột");
+      return;
+    }
+    
+    try {
+      await addColumn(roomId, selectedSeatTypeId);
+    } catch (error) {
+      console.error("Error adding column:", error);
+    }
+  };
+
+  // Get string value for seat status
+  const getSeatStatusString = (status: SeatStatus): string => {
+    switch (status) {
+      case SeatStatus.Available:
+        return "Available";
+      case SeatStatus.Unavailable:
+        return "Unavailable";
+      case SeatStatus.Sold:
+        return "Sold";
+      case SeatStatus.Reserved:
+        return "Reserved";
+      default:
+        return "Available";
+    }
+  };
+
+  // Update single seat status
+  const updateSeatStatus = async (seatId: string, seat: any) => {
+    setUpdateLoading(true);
+    setUpdateSuccess(false);
+    setUpdateError(null);
+    
+    try {
+      // Toggle isActive status when clicking on a seat
+      await updateSeatActiveStatus([seatId], !seat.isActive);
+      return true;
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "Đã xảy ra lỗi khi cập nhật ghế";
+      setUpdateError(errorMsg);
+      toast.error(`Lỗi: ${errorMsg}`);
+      throw error;
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
+  // Handle seat click
+  const handleSeatClick = async (seat: any) => {
+    if (updateLoading) return;
+    
+    try {
+      await updateSeatStatus(seat.seatId, seat);
+    } catch (error) {
+      console.error("Error updating seat status:", error);
+    }
+  };
+
+  // Get color for seat status
+  const getSeatStatusColor = (status: number) => {
+    switch (status) {
+      case SeatStatus.Available:
+        return { bg: "#ffffff", border: "#e0e0e0", text: "#5f6368" };
+      case SeatStatus.Unavailable:
+        return { bg: "#f44336", border: "#d32f2f", text: "#ffffff" };
+      case SeatStatus.Sold:
+        return { bg: "#757575", border: "#616161", text: "#ffffff" };
+      case SeatStatus.Reserved:
+        return { bg: "#ffc107", border: "#ffa000", text: "#212121" };
+      default:
+        return { bg: "#ffffff", border: "#e0e0e0", text: "#5f6368" };
+    }
+  };
+
+  // Update isActive status for selected seats
+  const updateSeatActiveStatus = async (seatIds: string[], isActive: boolean) => {
+    setUpdateLoading(true);
+    setUpdateSuccess(false);
+    setUpdateError(null);
+    
+    try {
+      // Update seats active status using the API
+      const response = await axios.put(
+        `https://localhost:7119/api/seat/updatebylist?isActived=${isActive}`, 
+        JSON.stringify(seatIds), 
+        {
+          headers: {
+            "Content-Type": "application/json-patch+json",
+            "accept": "text/plain"
+          }
+        }
+      );
+      
+      if (response.data.isSuccess) {
+        setUpdateSuccess(true);
+        toast.success(`Đã cập nhật trạng thái kích hoạt của ${seatIds.length} ghế!`);
+        queryClient.invalidateQueries(["roomDetail", roomId]);
+        setSelectedSeats([]);
+      } else {
+        setUpdateError(response.data.message || "Cập nhật không thành công");
+        toast.error(`Lỗi: ${response.data.message}`);
+      }
+      
+      return response.data;
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "Đã xảy ra lỗi khi cập nhật trạng thái ghế";
+      setUpdateError(errorMsg);
+      toast.error(`Lỗi: ${errorMsg}`);
+      throw error;
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
+  // Toggle seat selection for bulk update
+  const toggleSeatSelection = (seatId: string) => {
+    setSelectedSeats(prev => {
+      if (prev.includes(seatId)) {
+        return prev.filter(id => id !== seatId);
+      } else {
+        return [...prev, seatId];
+      }
+    });
+  };
+
+  // Handle the isActive status change
+  const handleIsActiveChange = (event: SelectChangeEvent<string>) => {
+    setIsActiveStatus(event.target.value === 'true');
+  };
+
+  // Handle bulk update of selected seats
+  const handleUpdateSeatsActiveStatus = async () => {
+    if (selectedSeats.length === 0) {
+      toast.error("Vui lòng chọn ít nhất một ghế để cập nhật");
+      return;
+    }
+    
+    try {
+      await updateSeatActiveStatus(selectedSeats, isActiveStatus);
+    } catch (error) {
+      console.error("Error updating seats active status:", error);
+    }
+  };
+
+  // For debugging
+  useEffect(() => {
+    if (room) {
+      console.log("Room data in component:", room);
+      console.log("Room seats:", room.seats);
+    }
+  }, [room]);
 
   if (!roomId) {
     return (
@@ -482,6 +778,51 @@ const ChiTietPhongChieu = () => {
                   ))}
                 </Box>
                 
+                <Grid container spacing={2} sx={{ mb: 3 }}>
+                  <Grid item xs={12} sm={6}>
+                    <Tooltip title={`Thêm hàng mới với ghế loại: ${getSelectedSeatTypeName()} (${getSelectedSeatTypePrice().toLocaleString('vi-VN')}đ)`}>
+                      <span>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          fullWidth
+                          onClick={handleAddRow}
+                          disabled={!selectedSeatTypeId || updateLoading}
+                          sx={{ 
+                            py: 1.2,
+                            borderRadius: 2,
+                            fontWeight: 'medium',
+                          }}
+                          startIcon={<EventSeatIcon />}
+                        >
+                          Thêm hàng mới
+                        </Button>
+                      </span>
+                    </Tooltip>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Tooltip title={`Thêm cột mới với ghế loại: ${getSelectedSeatTypeName()} (${getSelectedSeatTypePrice().toLocaleString('vi-VN')}đ)`}>
+                      <span>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          fullWidth
+                          onClick={handleAddColumn}
+                          disabled={!selectedSeatTypeId || updateLoading}
+                          sx={{ 
+                            py: 1.2,
+                            borderRadius: 2,
+                            fontWeight: 'medium',
+                          }}
+                          startIcon={<EventSeatIcon />}
+                        >
+                          Thêm cột mới
+                        </Button>
+                      </span>
+                    </Tooltip>
+                  </Grid>
+                </Grid>
+                
                 <Button
                   variant="contained"
                   color="primary"
@@ -502,20 +843,6 @@ const ChiTietPhongChieu = () => {
                     `Cập nhật ${selectionMode === "row" ? "hàng" : "cột"} đã chọn`
                   )}
                 </Button>
-                
-                {updateSuccess && (
-                  <Alert severity="success" sx={{ mt: 2, borderRadius: 2 }}>
-                    <AlertTitle>Thành công</AlertTitle>
-                    Đã cập nhật ghế thành công!
-                  </Alert>
-                )}
-                
-                {updateError && (
-                  <Alert severity="error" sx={{ mt: 2, borderRadius: 2 }}>
-                    <AlertTitle>Lỗi</AlertTitle>
-                    {updateError}
-                  </Alert>
-                )}
               </Box>
             </Card>
           </Stack>
@@ -701,54 +1028,115 @@ const ChiTietPhongChieu = () => {
                       justifyContent: "center"
                     }}
                   >
-                    {Array.from({ length: room.row * room.column }).map(
-                      (_, index) => {
-                        const row = Math.floor(index / room.column);
-                        const col = index % room.column;
-                        const seatLabel = `${String.fromCharCode(65 + row)}${col + 1}`;
-                        
-                        // Highlight seats in selected row/column
-                        const isHighlighted = 
-                          (selectionMode === "row" && selectedIndex === row) ||
-                          (selectionMode === "column" && selectedIndex === col);
+                    {Array.from({ length: room.row * room.column }).map((_, index) => {
+                      const row = Math.floor(index / room.column);
+                      const col = index % room.column;
+                      const rowLetter = String.fromCharCode(65 + row);
+                      const colNumber = col + 1;
+                      const seatLabel = `${rowLetter}${colNumber}`;
+                      
+                      // Find the seat in room.seats that matches this position
+                      const seat = room.seats?.find((s: any) => 
+                        s.atRow === rowLetter && s.atColumn === colNumber
+                      );
+                      
+                      // For debugging
+                      if (index === 0) {
+                        console.log("First seat search:", {
+                          rowLetter,
+                          colNumber,
+                          foundSeat: !!seat,
+                          allSeats: room.seats?.slice(0, 3)  // Log first 3 seats
+                        });
+                      }
+                      
+                      // Highlight seats in selected row/column
+                      const isHighlighted = 
+                        (selectionMode === "row" && selectedIndex === row) ||
+                        (selectionMode === "column" && selectedIndex === col);
 
-                        const isFocused =  
-                          selectionMode === "row" && selectedIndex === row && selectedIndex === col;
+                      // Check if seat is selected for bulk update
+                      const isSelected = seat && selectedSeats.includes(seat.seatId);
 
-                        return (
+                      // Get colors based on seat status
+                      const statusColors = seat 
+                        ? getSeatStatusColor(seat.status)
+                        : getSeatStatusColor(SeatStatus.Available);
+
+                      // Show inactive seats with reduced opacity
+                      const isInactive = seat && !seat.isActive;
+
+                      return (
+                        <Tooltip 
+                          key={`seat-${index}`} 
+                          title={seat 
+                            ? `${seatLabel} - ${
+                              seat.status === SeatStatus.Available ? "Có sẵn" : 
+                              seat.status === SeatStatus.Unavailable ? "Không khả dụng" : 
+                              seat.status === SeatStatus.Sold ? "Đã bán" : 
+                              seat.status === SeatStatus.Reserved ? "Đã đặt" : "Không xác định"
+                            }${isInactive ? " - Đã vô hiệu hóa" : " - Đã kích hoạt"}${isSelected ? " - Đã chọn" : ""}`
+                            : `${seatLabel} - Vị trí trống`
+                          }
+                        >
                           <Box
-                            key={index}
+                            onClick={(event) => seat && (
+                              event.ctrlKey || event.metaKey 
+                                ? toggleSeatSelection(seat.seatId) 
+                                : handleSeatClick(seat)
+                            )}
                             sx={{
                               width: "40px",
                               height: "40px",
-                              backgroundColor: isHighlighted ? 
-                                theme.palette.primary.main : 
-                                "#ffffff",
+                              backgroundColor: isSelected 
+                                ? "#9c27b0" // Purple when selected
+                                : isHighlighted 
+                                  ? theme.palette.primary.main
+                                  : statusColors.bg,
                               border: "1px solid",
-                              borderColor: isHighlighted ? 
-                                theme.palette.primary.dark : 
-                                "#e0e0e0",
+                              borderColor: isSelected 
+                                ? "#7b1fa2"
+                                : isHighlighted
+                                  ? theme.palette.primary.dark
+                                  : statusColors.border,
                               borderRadius: "4px",
                               display: "flex",
                               justifyContent: "center",
                               alignItems: "center",
                               fontSize: "0.9rem",
-                              color: isHighlighted ? "white" : "#5f6368",
+                              color: isSelected || isHighlighted 
+                                ? "white" 
+                                : statusColors.text,
                               transition: "all 0.15s ease",
-                              boxShadow: isHighlighted ? 
-                                'none' : 
-                                'inset 0 -2px 0 0 rgba(0,0,0,0.1)',
-                              "&:hover": {
+                              boxShadow: isHighlighted
+                                ? 'none'
+                                : isSelected
+                                  ? '0 0 0 2px #9c27b0'
+                                  : 'inset 0 -2px 0 0 rgba(0,0,0,0.1)',
+                              cursor: seat ? "pointer" : "default",
+                              opacity: isInactive ? 0.3 : (seat ? 1 : 0.5),
+                              "&:hover": seat ? {
                                 transform: "translateY(-2px)",
                                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                              },
+                                filter: "brightness(0.95)",
+                              } : {},
+                              position: "relative",
+                              "&:before": isInactive ? {
+                                content: '""',
+                                position: "absolute",
+                                width: "100%",
+                                height: "2px",
+                                backgroundColor: "#f44336",
+                                top: "50%",
+                                transform: "translateY(-50%) rotate(45deg)"
+                              } : {}
                             }}
                           >
                             {seatLabel}
                           </Box>
-                        );
-                      },
-                    )}
+                        </Tooltip>
+                      );
+                    })}
                   </Box>
                 </Box>
               </Paper>
@@ -761,8 +1149,18 @@ const ChiTietPhongChieu = () => {
                 p: 1.5,
                 borderRadius: 2
               }}>
-                <Typography variant="body2" sx={{ color: "text.secondary", fontStyle: 'italic' }}>
-                  * Chú thích: Các ghế được đánh số theo định dạng [Hàng][Cột]
+              </Box>
+              <Box sx={{ 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                mt: 2,
+                bgcolor: alpha('#e3f2fd', 0.6),
+                p: 1.5,
+                borderRadius: 2
+              }}>
+                <Typography variant="body2" color="primary.dark" fontWeight="medium">
+                  Click vào ghế để bật/tắt kích hoạt ghế
                 </Typography>
               </Box>
             </Box>
