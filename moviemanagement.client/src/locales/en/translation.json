@@ -266,12 +266,24 @@
           "fullname": "Full Name",
           "email": "Email",
           "phone": "Phone Number",
+          "id_card": "ID Card",
           "status": "Status",
           "address": "Address",
           "join_date": "Join Date",
-          "points": "Points"
+          "points": "Points",
+          "gender": "Gender"
         },
         "actions": "Actions"
+      },
+      "stats": {
+        "total_members": "Total Members",
+        "total_employees": "Total Employees",
+        "active_members": "Active Members",
+        "inactive_members": "Inactive Members",
+        "total_points": "Total Points",
+        "new_members_in30days": "New Members In 30 Days",
+        "male_members": "Male Members",
+        "female_members": "Female Members"
       }
     },
     "toast": {
