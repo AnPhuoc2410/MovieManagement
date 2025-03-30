@@ -27,6 +27,7 @@ import Header from '../../../components/mui/Header';
 import SideMenu from '../../../components/mui/SideMenu';
 import AppTheme from '../../../shared-theme/AppTheme';
 import { useState, useEffect } from 'react';
+import api from '../../../apis/axios.config';
 
 const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomTheme?: boolean }) => {
   const { id } = useParams<{ id: string }>();
@@ -40,8 +41,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     ['showtime', id],
     async () => {
       try {
-        const response = await axios.get<ShowTime>(`https://localhost:7119/api/showtime/${id}`);
-        console.log('API Response:', response.data);
+        const response = await api.get<ShowTime>(`showtime/${id}`);
         return response.data;
       } catch (error) {
         console.error('Error fetching showtime:', error);
@@ -62,7 +62,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   const { data: movies, isLoading: isLoadingMovies } = useQuery(
     'movies',
     async () => {
-      const response = await axios.get('https://localhost:7119/api/movie');
+      const response = await api.get('movie');
       console.log('Movies API Response:', response.data);
       return response.data?.data || [];
     }
@@ -72,7 +72,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   const { data: rooms, isLoading: isLoadingRooms } = useQuery(
     'rooms',
     async () => {
-      const response = await axios.get('https://localhost:7119/api/room/all');
+      const response = await api.get('room/all');
       console.log('Rooms API Response:', response.data);
 
       // Handle both cases - direct array or nested data property
@@ -100,7 +100,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
         roomId: selectedRoomId
       };
 
-      await axios.put(`https://localhost:7119/api/showtime/${id}`, updatedShowtime);
+      await api.put(`showtime/${id}`, updatedShowtime);
       alert('Lịch chiếu đã được cập nhật thành công!');
       setIsModified(false);
     } catch (error) {

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
+import { ENV } from "../env/env.config";
 
 interface SignalRContextType {
   connection: HubConnection | null;
@@ -21,7 +22,7 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl("https://localhost:7119/seatHub")
+      .withUrl(ENV.API_URL + "/seatHub")
       .withAutomaticReconnect()
       .build();
 
