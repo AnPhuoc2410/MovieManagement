@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
+import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { ENV } from "../env/env.config";
 
 interface SignalRContextType {
@@ -11,8 +11,8 @@ interface SignalRContextType {
 
 const SignalRContext = createContext<SignalRContextType>({
   connection: null,
-  joinGroup: async () => {},
-  leaveGroup: async () => {},
+  joinGroup: async () => { },
+  leaveGroup: async () => { },
   isConnected: false,
 });
 
@@ -22,8 +22,9 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl(ENV.API_URL + "/seatHub")
+      .withUrl(ENV.API_URL.replace('/api', '') + "/seatHub", { withCredentials: true })
       .withAutomaticReconnect()
+      .configureLogging(LogLevel.Information)
       .build();
 
     const startConnection = async () => {
