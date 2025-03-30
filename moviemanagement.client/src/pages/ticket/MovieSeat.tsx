@@ -9,10 +9,13 @@ import Header from "../../components/home/Header";
 import toast from "react-hot-toast";
 import { useSignalR } from "../../contexts/SignalRContext";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
+
 
 const MovieSeat: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { connection, isConnected } = useSignalR();
   const { userDetails } = useAuth();
   const { movieId, selectedTime, selectedDate, tickets, movieData } = location.state ||
@@ -199,7 +202,7 @@ const MovieSeat: React.FC = () => {
                 }}
               >
                 <Typography variant="subtitle1" sx={{ mb: 2 }}>
-                  Thời gian giữ ghế:
+                  {t("movie_seat.timer")}
                 </Typography>
                 <Box
                   sx={{
@@ -246,7 +249,7 @@ const MovieSeat: React.FC = () => {
                 fontFamily={"JetBrains Mono"}
                 sx={{ textTransform: "uppercase", mb: 4 }}
               >
-                Chọn Ghế
+                {t("movie_seat.selection")}
               </Typography>
 
               {/* Mobile timer display */}
@@ -262,7 +265,7 @@ const MovieSeat: React.FC = () => {
                     }}
                   >
                     <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                      Thời gian giữ ghế:
+                      {t("movie_seat.timer")}
                     </Typography>
                     <Box
                       sx={{
@@ -323,7 +326,7 @@ const MovieSeat: React.FC = () => {
                     borderRadius: 2,
                   }}
                 >
-                  Tiếp tục
+                  {t("movie_seat.continue")}
                 </Button>
               </Box>
             </Box>

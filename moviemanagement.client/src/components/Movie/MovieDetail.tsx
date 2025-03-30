@@ -142,12 +142,12 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
               mb={2}
               fontFamily={"JetBrains Mono"}
             >
-              MÔ TẢ
+              {t("movie_detail.description")}
             </Typography>
 
             <Box sx={{ mb: 3, textAlign: "justify", flexGrow: 1 }}>
               <Typography mb={1} variant="body1" fontFamily={"JetBrains Mono"}>
-                <strong>Đạo diễn:</strong> {movie?.director}
+                <strong>{t("movie_detail.director")}</strong> {movie?.director}
               </Typography>
               <Typography
                 mb={1}
@@ -155,10 +155,10 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
                 sx={{ textAlign: "left" }}
                 fontFamily={"JetBrains Mono"}
               >
-                <strong>Diễn viên:</strong> {movie?.actors}
+                <strong>{t("movie_detail.actors")}</strong> {movie?.actors}
               </Typography>
               <Typography mb={1} variant="body1" fontFamily={"JetBrains Mono"}>
-                <strong>Khởi chiếu:</strong> {formatDate(movie?.fromDate)}
+                <strong>{t("movie_detail.release_date")}</strong> {formatDate(movie?.fromDate)}
               </Typography>
               <Typography
                 variant="h6"
@@ -167,7 +167,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
                 mt={4}
                 fontFamily={"JetBrains Mono"}
               >
-                NỘI DUNG PHIM
+                {t("movie_detail.content")}
               </Typography>
               <Typography
                 paragraph
@@ -214,7 +214,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
                   },
                 }}
               >
-                <span>XEM TRAILER</span>
+                <span>{t("movie_detail.trailer")}</span>
               </Button>
               <Button
                 variant="contained"
@@ -246,7 +246,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
                   },
                 }}
               >
-                <span>ĐẶT VÉ NGAY</span>
+                <span>{t("movie_detail.book_now")}</span>
               </Button>
             </Box>
           </Grid>

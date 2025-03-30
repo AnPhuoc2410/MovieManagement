@@ -8,6 +8,8 @@ import { SelectedSeat } from "../../types/selectedseat.types";
 import { useSignalR } from "../../contexts/SignalRContext";
 import Loader from "../shared/Loading";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
+
 
 interface SeatProps {
   showTimeId: string;
@@ -17,6 +19,7 @@ interface SeatProps {
 }
 
 const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelectedSeats, groupConnected }) => {
+  const { t } = useTranslation();
   const { connection } = useSignalR();
   const { userDetails } = useAuth();
   const [seats, setSeats] = useState<TicketDetail[]>([]);
@@ -104,7 +107,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           setSelectedSeats([]); // Clear locally stored selections
           toast('Các ghế đã được hủy do bạn quay lại.', {
             position: "top-center",
-            });
+          });
         } catch (error) {
           console.error("Error releasing seats on return:", error);
         }
@@ -232,7 +235,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           }}
         />
         <Typography variant="h6" sx={{ mt: -2, color: "white" }}>
-          Màn hình
+          {t("seat_cinema.screen")}
         </Typography>
       </Box>
 
