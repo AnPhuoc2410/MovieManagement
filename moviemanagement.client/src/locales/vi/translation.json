@@ -299,6 +299,9 @@
       "trailer": "XEM TRAILER",
       "book_now": "ĐẶT VÉ NGAY"
     },
+    "seat_cinema": {
+      "screening": "Màn hình"
+    },
     "common": {
       "button": {
         "action": {
@@ -312,24 +315,12 @@
           "fullname": "Họ và tên",
           "email": "Email",
           "phone": "Số điện thoại",
-          "id_card": "Số CMND",
           "status": "Trạng thái",
           "join_date": "Ngày tham gia",
           "address": "Địa chỉ",
-          "points": "Điểm thưởng",
-          "gender": "Giới tính"
+          "points": "Điểm thưởng"
         },
         "actions": "Hành động"
-      },
-      "stats": {
-        "total_members": "Tổng số thành viên",
-        "total_employees": "Tổng số nhân viên",
-        "active_members": "Thành viên hoạt động",
-        "inactive_members": "Thành viên không hoạt động",
-        "total_points": "Tổng số điểm",
-        "new_members_in30days": "Thành viên mới trong 30 ngày",
-        "male_members": "Thành viên Nam",
-        "female_members": "Thành viên Nữ"
       }
     },
     "toast": {

@@ -235,7 +235,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           }}
         />
         <Typography variant="h6" sx={{ mt: -2, color: "white" }}>
-          {t("seat_cinema.screen")}
+          {t("movie_seat.selection")}
         </Typography>
       </Box>
 
