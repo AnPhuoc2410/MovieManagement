@@ -117,19 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="One Piece Film: Red" xml:space="preserve">
-    <value>One Piece Film: Red</value>
+  <data name="Description" xml:space="preserve">
+    <value>Elegant 18K gold necklace</value>
   </data>
-  <data name="Puss in Boots: The Last Wish" xml:space="preserve">
-    <value>Puss in Boots: The Last Wish</value>
-  </data>
-  <data name="Spirited Away" xml:space="preserve">
-    <value>Spirited Away</value>
-  </data>
-  <data name="The Boy and the Heron" xml:space="preserve">
-    <value>The Boy and the Heron</value>
-  </data>
-  <data name="The Cat Returns" xml:space="preserve">
-    <value>The Cat Returns</value>
+  <data name="ProductName" xml:space="preserve">
+    <value>Gold Necklace</value>
   </data>
 </root>
