@@ -97,7 +97,7 @@ const Ticket: React.FC = () => {
             borderRadius: 2,
           }}
         >
-          Phim không tồn tại.
+          {t("translation.footer.movies.not_existing")}
         </Typography>
       </Box>
     );
