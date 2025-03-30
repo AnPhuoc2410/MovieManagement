@@ -160,7 +160,7 @@ namespace MovieManagement.Server
             // builder.Services.AddAuthorization();
 
             // ADD SignalR
-            builder.Services.AddSignalR();
+            builder.Services.AddSignalR().AddAzureSignalR();
 
             // Register Hangfire
             builder.Services.AddHangfire(config => config.UseMemoryStorage());
