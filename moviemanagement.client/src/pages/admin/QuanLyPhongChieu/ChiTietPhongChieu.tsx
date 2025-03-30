@@ -39,6 +39,7 @@ import axios from "axios";
 import Loader from "../../../components/shared/Loading";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import toast from "react-hot-toast";
+import AddIcon from "@mui/icons-material/Add";
 
 // Define the SeatType interface if not already defined elsewhere
 interface SeatType {
@@ -471,6 +472,64 @@ const ChiTietPhongChieu = () => {
     }
   };
 
+  // Create a single seat at specific position
+  const createSeatAtPosition = async (roomId: string, seatTypeId: string, row: string, column: number) => {
+    setUpdateLoading(true);
+    setUpdateSuccess(false);
+    setUpdateError(null);
+    
+    try {
+      // Create the seat using the API
+      const response = await axios.post(
+        `https://localhost:7119/api/seat/create`,
+        {
+          roomId: roomId,
+          seatTypeId: seatTypeId,
+          atRow: row,
+          atColumn: column
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "accept": "text/plain"
+          }
+        }
+      );
+      
+      if (response.data.isSuccess) {
+        setUpdateSuccess(true);
+        toast.success(`Đã tạo ghế ${row}${column} thành công!`);
+        queryClient.invalidateQueries(["roomDetail", roomId]);
+        return true;
+      } else {
+        setUpdateError(response.data.message || "Tạo ghế không thành công");
+        toast.error(`Lỗi: ${response.data.message}`);
+        return false;
+      }
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "Đã xảy ra lỗi khi tạo ghế";
+      setUpdateError(errorMsg);
+      toast.error(`Lỗi: ${errorMsg}`);
+      throw error;
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
+  // Handle create seat at empty position
+  const handleCreateSeat = async (rowLetter: string, colNumber: number) => {
+    if (!roomId || !selectedSeatTypeId || updateLoading) {
+      toast.error("Vui lòng chọn loại ghế để tạo ghế mới");
+      return;
+    }
+    
+    try {
+      await createSeatAtPosition(roomId, selectedSeatTypeId, rowLetter, colNumber);
+    } catch (error) {
+      console.error("Error creating seat:", error);
+    }
+  };
+
   // For debugging
   useEffect(() => {
     if (room) {
@@ -504,6 +563,9 @@ const ChiTietPhongChieu = () => {
       </ManagementPageLayout>
     );
   }
+
+  // Check if room has seats or not
+  const hasSeats = room.seats && room.seats.length > 0;
 
   return (
     <ManagementPageLayout>
@@ -638,211 +700,237 @@ const ChiTietPhongChieu = () => {
               />
               <Divider />
               <Box sx={{ p: 3 }}>
-                <Tabs
-                  value={selectionMode}
-                  onChange={handleTabChange}
-                  variant="fullWidth"
-                  indicatorColor="primary"
-                  textColor="primary"
-                  sx={{ 
-                    mb: 3,
-                    '& .MuiTab-root': {
-                      borderRadius: 1,
-                      mr: 1,
-                      fontWeight: 'medium',
-                      '&.Mui-selected': {
-                        backgroundColor: alpha('#bbdefb', 0.5),
-                      },
-                    }
-                  }}
-                >
-                  <Tab 
-                    value="row" 
-                    label="Chọn hàng" 
-                    icon={<Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <ChairIcon sx={{ mr: 0.5, fontSize: 18 }} />
-                      <ChairIcon sx={{ mr: 0.5, fontSize: 18 }} />
-                      <ChairIcon sx={{ fontSize: 18 }} />
-                    </Box>} 
-                    iconPosition="start"
-                  />
-                  <Tab 
-                    value="column" 
-                    label="Chọn cột" 
-                    icon={<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <ChairIcon sx={{ fontSize: 16 }} />
-                      <ChairIcon sx={{ fontSize: 16 }} />
-                    </Box>} 
-                    iconPosition="start"
-                  />
-                </Tabs>
-                
-                <Box sx={(theme) => ({ 
-                  mb: 3,
-                  p: 2,
-                  borderRadius: 2,
-                  bgcolor: getSelectedSeatTypeName() 
-                    ? alpha(theme.palette.primary.light, 0.2) 
-                    : alpha('#f5f5f5', 0.2),
-                  border: '1px solid',
-                  borderColor: getSelectedSeatTypeName() 
-                    ? alpha(theme.palette.primary.main, 0.5) 
-                    : alpha('#e0e0e0', 0.5),
-                })}>
-                  <FormControl fullWidth>
-                    <InputLabel>Loại ghế</InputLabel>
-                    <Select
-                      value={selectedSeatTypeId}
-                      onChange={handleSeatTypeChange}
-                      label="Loại ghế"
+                {!hasSeats ? (
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    py: 4
+                  }}>
+                    <EventSeatIcon sx={{ color: 'grey.400', fontSize: 60, mb: 2 }} />
+                    <Typography variant="h6" color="text.secondary" sx={{ mb: 2, textAlign: 'center' }}>
+                      Phòng hiện không có ghế nào
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', maxWidth: 300 }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => navigate("/admin/ql-phong-chieu")}
+                        startIcon={<AddIcon />}
+                      >
+                        Trở về trang danh sách phòng để tạo ghế
+                      </Button>
+                    </Box>
+                  </Box>
+                ) : (
+                  <>
+                    <Tabs
+                      value={selectionMode}
+                      onChange={handleTabChange}
+                      variant="fullWidth"
+                      indicatorColor="primary"
+                      textColor="primary"
                       sx={{ 
-                        '& .MuiSelect-select': { 
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 1
+                        mb: 3,
+                        '& .MuiTab-root': {
+                          borderRadius: 1,
+                          mr: 1,
+                          fontWeight: 'medium',
+                          '&.Mui-selected': {
+                            backgroundColor: alpha('#bbdefb', 0.5),
+                          },
                         }
                       }}
                     >
-                      {seatTypes?.map((type) => (
-                        <MenuItem 
-                          key={type.seatTypeId} 
-                          value={type.seatTypeId}
-                          sx={{ 
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 1
-                          }}
-                        >
-                          <EventSeatIcon 
-                            color={selectedSeatTypeId === type.seatTypeId ? "primary" : "action"}
-                            fontSize="small"
-                          />
-                          <span>{type.typeName}</span>
-                          <Chip 
-                            size="small" 
-                            label={`${type.price.toLocaleString('vi-VN')}đ`}
-                            color="primary"
-                            variant="outlined"
-                            sx={{ ml: 'auto' }}
-                          />
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  
-                  {getSelectedSeatTypeName() && (
-                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="body2">
-                        Đã chọn: <strong>{getSelectedSeatTypeName()}</strong>
-                      </Typography>
-                      <Chip 
-                        label={`${getSelectedSeatTypePrice().toLocaleString('vi-VN')}đ`}
-                        color="secondary"
-                        size="small"
+                      <Tab 
+                        value="row" 
+                        label="Chọn hàng" 
+                        icon={<Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <ChairIcon sx={{ mr: 0.5, fontSize: 18 }} />
+                          <ChairIcon sx={{ mr: 0.5, fontSize: 18 }} />
+                          <ChairIcon sx={{ fontSize: 18 }} />
+                        </Box>} 
+                        iconPosition="start"
                       />
+                      <Tab 
+                        value="column" 
+                        label="Chọn cột" 
+                        icon={<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <ChairIcon sx={{ fontSize: 16 }} />
+                          <ChairIcon sx={{ fontSize: 16 }} />
+                        </Box>} 
+                        iconPosition="start"
+                      />
+                    </Tabs>
+                    
+                    <Box sx={(theme) => ({ 
+                      mb: 3,
+                      p: 2,
+                      borderRadius: 2,
+                      bgcolor: getSelectedSeatTypeName() 
+                        ? alpha(theme.palette.primary.light, 0.2) 
+                        : alpha('#f5f5f5', 0.2),
+                      border: '1px solid',
+                      borderColor: getSelectedSeatTypeName() 
+                        ? alpha(theme.palette.primary.main, 0.5) 
+                        : alpha('#e0e0e0', 0.5),
+                    })}>
+                      <FormControl fullWidth>
+                        <InputLabel>Loại ghế</InputLabel>
+                        <Select
+                          value={selectedSeatTypeId}
+                          onChange={handleSeatTypeChange}
+                          label="Loại ghế"
+                          sx={{ 
+                            '& .MuiSelect-select': { 
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1
+                            }
+                          }}
+                        >
+                          {seatTypes?.map((type) => (
+                            <MenuItem 
+                              key={type.seatTypeId} 
+                              value={type.seatTypeId}
+                              sx={{ 
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1
+                              }}
+                            >
+                              <EventSeatIcon 
+                                color={selectedSeatTypeId === type.seatTypeId ? "primary" : "action"}
+                                fontSize="small"
+                              />
+                              <span>{type.typeName}</span>
+                              <Chip 
+                                size="small" 
+                                label={`${type.price.toLocaleString('vi-VN')}đ`}
+                                color="primary"
+                                variant="outlined"
+                                sx={{ ml: 'auto' }}
+                              />
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      
+                      {getSelectedSeatTypeName() && (
+                        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography variant="body2">
+                            Đã chọn: <strong>{getSelectedSeatTypeName()}</strong>
+                          </Typography>
+                          <Chip 
+                            label={`${getSelectedSeatTypePrice().toLocaleString('vi-VN')}đ`}
+                            color="secondary"
+                            size="small"
+                          />
+                        </Box>
+                      )}
                     </Box>
-                  )}
-                </Box>
-                
-                <Typography variant="body1" fontWeight="medium" sx={{ mb: 1.5 }}>
-                  {selectionMode === "row" ? "Chọn hàng để cập nhật:" : "Chọn cột để cập nhật:"}
-                </Typography>
-                
-                <Box sx={{ 
-                  display: "flex", 
-                  flexWrap: "wrap", 
-                  gap: 1, 
-                  mb: 3,
-                  p: 2,
-                  borderRadius: 1,
-                  bgcolor: '#f5f5f5'
-                }}>
-                  {Array.from({ length: selectionMode === "row" ? room.row : room.column }).map((_, idx) => (
-                    <Chip
-                      key={idx}
-                      label={selectionMode === "row" ? String.fromCharCode(65 + idx) : (idx + 1)}
-                      onClick={() => handleIndexSelection(idx)}
-                      color={selectedIndex === idx ? "primary" : "default"}
-                      variant={selectedIndex === idx ? "filled" : "outlined"}
+                    
+                    <Typography variant="body1" fontWeight="medium" sx={{ mb: 1.5 }}>
+                      {selectionMode === "row" ? "Chọn hàng để cập nhật:" : "Chọn cột để cập nhật:"}
+                    </Typography>
+                    
+                    <Box sx={{ 
+                      display: "flex", 
+                      flexWrap: "wrap", 
+                      gap: 1, 
+                      mb: 3,
+                      p: 2,
+                      borderRadius: 1,
+                      bgcolor: '#f5f5f5'
+                    }}>
+                      {Array.from({ length: selectionMode === "row" ? room.row : room.column }).map((_, idx) => (
+                        <Chip
+                          key={idx}
+                          label={selectionMode === "row" ? String.fromCharCode(65 + idx) : (idx + 1)}
+                          onClick={() => handleIndexSelection(idx)}
+                          color={selectedIndex === idx ? "primary" : "default"}
+                          variant={selectedIndex === idx ? "filled" : "outlined"}
+                          sx={{ 
+                            cursor: "pointer", 
+                            fontWeight: 'medium',
+                            minWidth: 38,
+                            transition: 'all 0.2s ease',
+                            '&:hover': {
+                              transform: 'translateY(-2px)',
+                              boxShadow: '0 3px 5px rgba(0,0,0,0.1)'
+                            }
+                          }}
+                        />
+                      ))}
+                    </Box>
+                    
+                    <Grid container spacing={2} sx={{ mb: 3 }}>
+                      <Grid item xs={12} sm={6}>
+                        <Tooltip title={`Thêm hàng mới với ghế loại: ${getSelectedSeatTypeName()} (${getSelectedSeatTypePrice().toLocaleString('vi-VN')}đ)`}>
+                          <span>
+                            <Button
+                              variant="outlined"
+                              color="primary"
+                              fullWidth
+                              onClick={handleAddRow}
+                              disabled={!selectedSeatTypeId || updateLoading}
+                              sx={{ 
+                                py: 1.2,
+                                borderRadius: 2,
+                                fontWeight: 'medium',
+                              }}
+                              startIcon={<EventSeatIcon />}
+                            >
+                              Thêm hàng mới
+                            </Button>
+                          </span>
+                        </Tooltip>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Tooltip title={`Thêm cột mới với ghế loại: ${getSelectedSeatTypeName()} (${getSelectedSeatTypePrice().toLocaleString('vi-VN')}đ)`}>
+                          <span>
+                            <Button
+                              variant="outlined"
+                              color="primary"
+                              fullWidth
+                              onClick={handleAddColumn}
+                              disabled={!selectedSeatTypeId || updateLoading}
+                              sx={{ 
+                                py: 1.2,
+                                borderRadius: 2,
+                                fontWeight: 'medium',
+                              }}
+                              startIcon={<EventSeatIcon />}
+                            >
+                              Thêm cột mới
+                            </Button>
+                          </span>
+                        </Tooltip>
+                      </Grid>
+                    </Grid>
+                    
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      onClick={handleUpdateSeats}
+                      disabled={selectedIndex === null || !selectedSeatTypeId || updateLoading}
                       sx={{ 
-                        cursor: "pointer", 
-                        fontWeight: 'medium',
-                        minWidth: 38,
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 3px 5px rgba(0,0,0,0.1)'
-                        }
+                        py: 1.2,
+                        borderRadius: 2,
+                        fontWeight: 'bold',
+                        boxShadow: 2
                       }}
-                    />
-                  ))}
-                </Box>
-                
-                <Grid container spacing={2} sx={{ mb: 3 }}>
-                  <Grid item xs={12} sm={6}>
-                    <Tooltip title={`Thêm hàng mới với ghế loại: ${getSelectedSeatTypeName()} (${getSelectedSeatTypePrice().toLocaleString('vi-VN')}đ)`}>
-                      <span>
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          fullWidth
-                          onClick={handleAddRow}
-                          disabled={!selectedSeatTypeId || updateLoading}
-                          sx={{ 
-                            py: 1.2,
-                            borderRadius: 2,
-                            fontWeight: 'medium',
-                          }}
-                          startIcon={<EventSeatIcon />}
-                        >
-                          Thêm hàng mới
-                        </Button>
-                      </span>
-                    </Tooltip>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Tooltip title={`Thêm cột mới với ghế loại: ${getSelectedSeatTypeName()} (${getSelectedSeatTypePrice().toLocaleString('vi-VN')}đ)`}>
-                      <span>
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          fullWidth
-                          onClick={handleAddColumn}
-                          disabled={!selectedSeatTypeId || updateLoading}
-                          sx={{ 
-                            py: 1.2,
-                            borderRadius: 2,
-                            fontWeight: 'medium',
-                          }}
-                          startIcon={<EventSeatIcon />}
-                        >
-                          Thêm cột mới
-                        </Button>
-                      </span>
-                    </Tooltip>
-                  </Grid>
-                </Grid>
-                
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  onClick={handleUpdateSeats}
-                  disabled={selectedIndex === null || !selectedSeatTypeId || updateLoading}
-                  sx={{ 
-                    py: 1.2,
-                    borderRadius: 2,
-                    fontWeight: 'bold',
-                    boxShadow: 2
-                  }}
-                  startIcon={updateLoading ? undefined : <CheckCircleOutlineIcon />}
-                >
-                  {updateLoading ? (
-                    <CircularProgress size={24} color="inherit" />
-                  ) : (
-                    `Cập nhật ${selectionMode === "row" ? "hàng" : "cột"} đã chọn`
-                  )}
-                </Button>
+                      startIcon={updateLoading ? undefined : <CheckCircleOutlineIcon />}
+                    >
+                      {updateLoading ? (
+                        <CircularProgress size={24} color="inherit" />
+                      ) : (
+                        `Cập nhật ${selectionMode === "row" ? "hàng" : "cột"} đã chọn`
+                      )}
+                    </Button>
+                  </>
+                )}
               </Box>
             </Card>
           </Stack>
@@ -909,260 +997,306 @@ const ChiTietPhongChieu = () => {
                 </Typography>
               </Box>
 
-              {/* Seats Container */}
-              <Paper 
-                elevation={0} 
-                sx={{ 
-                  p: 4, 
-                  borderRadius: 2,
-                  bgcolor: '#f8f9fa',
-                  mb: 2,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center'
-                }}
-              >
-                {/* Column Headers */}
+              {!hasSeats ? (
                 <Box sx={{ 
-                  display: "flex", 
-                  mb: 2,
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
                   justifyContent: 'center',
-                  width: 'fit-content'
+                  height: 400
                 }}>
-                  {Array.from({ length: room.column }).map((_, idx) => (
-                    <Tooltip key={idx} title={`Chọn cột ${idx + 1}`}>
-                      <Box 
-                        sx={{ 
-                          width: 40, 
-                          height: 30, 
-                          display: "flex", 
-                          justifyContent: "center",
-                          alignItems: "center",
-                          mx: "4px",
-                          cursor: "pointer",
-                          bgcolor: selectionMode === "column" && selectedIndex === idx ? 
-                            theme.palette.primary.main : 
-                            "#eeeeee",
-                          color: selectionMode === "column" && selectedIndex === idx ? 
-                            "white" : 
-                            "text.primary",
-                          borderRadius: 2,
-                          fontSize: "0.9rem",
-                          transition: "all 0.2s",
-                          fontWeight: "bold",
-                          "&:hover": {
-                            bgcolor: selectionMode === "column" ? 
-                              alpha(theme.palette.primary.main, 0.7) : 
-                              "#e0e0e0",
-                          }
-                        }}
-                        onClick={() => {
-                          if (selectionMode === "column") handleIndexSelection(idx);
-                        }}
-                      >
-                        {idx + 1}
-                      </Box>
-                    </Tooltip>
-                  ))}
+                  <EventSeatIcon sx={{ color: 'grey.300', fontSize: 100, mb: 3 }} />
+                  <Typography variant="h5" color="text.secondary" sx={{ mb: 2, textAlign: 'center' }}>
+                    Phòng chưa có ghế nào
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center', maxWidth: 500 }}>
+                    Vui lòng trở về trang danh sách phòng và nhấn vào nút "Tạo ghế" để tạo ghế cho phòng chiếu này.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => navigate("/admin/ql-phong-chieu")}
+                    startIcon={<ArrowBackIcon />}
+                  >
+                    Quay lại danh sách phòng
+                  </Button>
                 </Box>
-
-                {/* Seats Layout with Row Headers */}
-                <Box sx={{ 
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "100%"
-                }}>
-                  {/* Row Headers */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "8px",
-                      mr: 2,
+              ) : (
+                <>
+                  <Paper 
+                    elevation={0} 
+                    sx={{ 
+                      p: 4, 
+                      borderRadius: 2,
+                      bgcolor: '#f8f9fa',
+                      mb: 2,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center'
                     }}
                   >
-                    {Array.from({ length: room.row }).map((_, rowIdx) => (
-                      <Tooltip key={rowIdx} title={`Chọn hàng ${String.fromCharCode(65 + rowIdx)}`}>
-                        <Box
-                          sx={{
-                            width: 30,
-                            height: 40,
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            cursor: "pointer",
-                            bgcolor: selectionMode === "row" && selectedIndex === rowIdx ? 
-                              theme.palette.primary.main : 
-                              "#eeeeee",
-                            color: selectionMode === "row" && selectedIndex === rowIdx ? 
-                              "white" : 
-                              "text.primary",
-                            borderRadius: 2,
-                            fontSize: "0.9rem",
-                            fontWeight: "bold",
-                            transition: "all 0.2s",
-                            "&:hover": {
-                              bgcolor: selectionMode === "row" ? 
-                                alpha(theme.palette.primary.main, 0.7) : 
-                                "#e0e0e0",
-                            }
-                          }}
-                          onClick={() => {
-                            if (selectionMode === "row") handleIndexSelection(rowIdx);
-                          }}
-                        >
-                          {String.fromCharCode(65 + rowIdx)}
-                        </Box>
-                      </Tooltip>
-                    ))}
-                  </Box>
-
-                  {/* Seats */}
-                  <Box
-                    sx={{
-                      display: "grid",
-                      gridTemplateColumns: `repeat(${room.column}, 40px)`,
-                      gridTemplateRows: `repeat(${room.row}, 40px)`,
-                      gap: "8px",
-                      justifyContent: "center"
-                    }}
-                  >
-                    {Array.from({ length: room.row * room.column }).map((_, index) => {
-                      const row = Math.floor(index / room.column);
-                      const col = index % room.column;
-                      const rowLetter = String.fromCharCode(65 + row);
-                      const colNumber = col + 1;
-                      const seatLabel = `${rowLetter}${colNumber}`;
-                      
-                      // Find the seat in room.seats that matches this position
-                      const seat = room.seats?.find((s: any) => 
-                        s.atRow === rowLetter && s.atColumn === colNumber
-                      );
-                      
-                      // For debugging
-                      if (index === 0) {
-                        console.log("First seat search:", {
-                          rowLetter,
-                          colNumber,
-                          foundSeat: !!seat,
-                          allSeats: room.seats?.slice(0, 3)  // Log first 3 seats
-                        });
-                      }
-                      
-                      // Highlight seats in selected row/column
-                      const isHighlighted = 
-                        (selectionMode === "row" && selectedIndex === row) ||
-                        (selectionMode === "column" && selectedIndex === col);
-
-                      // Check if seat is selected for bulk update
-                      const isSelected = seat && selectedSeats.includes(seat.seatId);
-
-                      // Get colors based on seat status
-                      const statusColors = seat 
-                        ? getSeatStatusColor(seat.status)
-                        : getSeatStatusColor(SeatStatus.Available);
-
-                      // Show inactive seats with reduced opacity
-                      const isInactive = seat && !seat.isActive;
-
-                      return (
-                        <Tooltip 
-                          key={`seat-${index}`} 
-                          title={seat 
-                            ? `${seatLabel} - ${
-                              seat.status === SeatStatus.Available ? "Có sẵn" : 
-                              seat.status === SeatStatus.Unavailable ? "Không khả dụng" : 
-                              seat.status === SeatStatus.Sold ? "Đã bán" : 
-                              seat.status === SeatStatus.Reserved ? "Đã đặt" : "Không xác định"
-                            }${isInactive ? " - Đã vô hiệu hóa" : " - Đã kích hoạt"}${isSelected ? " - Đã chọn" : ""}`
-                            : `${seatLabel} - Vị trí trống`
-                          }
-                        >
-                          <Box
-                            onClick={(event) => seat && (
-                              event.ctrlKey || event.metaKey 
-                                ? toggleSeatSelection(seat.seatId) 
-                                : handleSeatClick(seat)
-                            )}
-                            sx={{
-                              width: "40px",
-                              height: "40px",
-                              backgroundColor: isSelected 
-                                ? "#9c27b0" // Purple when selected
-                                : isHighlighted 
-                                  ? theme.palette.primary.main
-                                  : statusColors.bg,
-                              border: "1px solid",
-                              borderColor: isSelected 
-                                ? "#7b1fa2"
-                                : isHighlighted
-                                  ? theme.palette.primary.dark
-                                  : statusColors.border,
-                              borderRadius: "4px",
-                              display: "flex",
+                    {/* Column Headers */}
+                    <Box sx={{ 
+                      display: "flex", 
+                      mb: 2,
+                      justifyContent: 'center',
+                      width: 'fit-content'
+                    }}>
+                      {Array.from({ length: room.column }).map((_, idx) => (
+                        <Tooltip key={idx} title={`Chọn cột ${idx + 1}`}>
+                          <Box 
+                            sx={{ 
+                              width: 40, 
+                              height: 30, 
+                              display: "flex", 
                               justifyContent: "center",
                               alignItems: "center",
+                              mx: "4px",
+                              cursor: "pointer",
+                              bgcolor: selectionMode === "column" && selectedIndex === idx ? 
+                                theme.palette.primary.main : 
+                                "#eeeeee",
+                              color: selectionMode === "column" && selectedIndex === idx ? 
+                                "white" : 
+                                "text.primary",
+                              borderRadius: 2,
                               fontSize: "0.9rem",
-                              color: isSelected || isHighlighted 
-                                ? "white" 
-                                : statusColors.text,
-                              transition: "all 0.15s ease",
-                              boxShadow: isHighlighted
-                                ? 'none'
-                                : isSelected
-                                  ? '0 0 0 2px #9c27b0'
-                                  : 'inset 0 -2px 0 0 rgba(0,0,0,0.1)',
-                              cursor: seat ? "pointer" : "default",
-                              opacity: isInactive ? 0.3 : (seat ? 1 : 0.5),
-                              "&:hover": seat ? {
-                                transform: "translateY(-2px)",
-                                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                                filter: "brightness(0.95)",
-                              } : {},
-                              position: "relative",
-                              "&:before": isInactive ? {
-                                content: '""',
-                                position: "absolute",
-                                width: "100%",
-                                height: "2px",
-                                backgroundColor: "#f44336",
-                                top: "50%",
-                                transform: "translateY(-50%) rotate(45deg)"
-                              } : {}
+                              transition: "all 0.2s",
+                              fontWeight: "bold",
+                              "&:hover": {
+                                bgcolor: selectionMode === "column" ? 
+                                  alpha(theme.palette.primary.main, 0.7) : 
+                                  "#e0e0e0",
+                              }
+                            }}
+                            onClick={() => {
+                              if (selectionMode === "column") handleIndexSelection(idx);
                             }}
                           >
-                            {seatLabel}
+                            {idx + 1}
                           </Box>
                         </Tooltip>
-                      );
-                    })}
-                  </Box>
-                </Box>
-              </Paper>
+                      ))}
+                    </Box>
 
-              <Box sx={{ 
-                display: "flex", 
-                alignItems: "center", 
-                justifyContent: "center", 
-                bgcolor: alpha('#f5f5f5', 0.5),
-                p: 1.5,
-                borderRadius: 2
-              }}>
-              </Box>
-              <Box sx={{ 
-                display: "flex", 
-                alignItems: "center", 
-                justifyContent: "center", 
-                mt: 2,
-                bgcolor: alpha('#e3f2fd', 0.6),
-                p: 1.5,
-                borderRadius: 2
-              }}>
-                <Typography variant="body2" color="primary.dark" fontWeight="medium">
-                  Click vào ghế để bật/tắt kích hoạt ghế
-                </Typography>
-              </Box>
+                    {/* Seats Layout with Row Headers */}
+                    <Box sx={{ 
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100%"
+                    }}>
+                      {/* Row Headers */}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "8px",
+                          mr: 2,
+                        }}
+                      >
+                        {Array.from({ length: room.row }).map((_, rowIdx) => (
+                          <Tooltip key={rowIdx} title={`Chọn hàng ${String.fromCharCode(65 + rowIdx)}`}>
+                            <Box
+                              sx={{
+                                width: 30,
+                                height: 40,
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                cursor: "pointer",
+                                bgcolor: selectionMode === "row" && selectedIndex === rowIdx ? 
+                                  theme.palette.primary.main : 
+                                  "#eeeeee",
+                                color: selectionMode === "row" && selectedIndex === rowIdx ? 
+                                  "white" : 
+                                  "text.primary",
+                                borderRadius: 2,
+                                fontSize: "0.9rem",
+                                fontWeight: "bold",
+                                transition: "all 0.2s",
+                                "&:hover": {
+                                  bgcolor: selectionMode === "row" ? 
+                                    alpha(theme.palette.primary.main, 0.7) : 
+                                    "#e0e0e0",
+                                }
+                              }}
+                              onClick={() => {
+                                if (selectionMode === "row") handleIndexSelection(rowIdx);
+                              }}
+                            >
+                              {String.fromCharCode(65 + rowIdx)}
+                            </Box>
+                          </Tooltip>
+                        ))}
+                      </Box>
+
+                      {/* Seats */}
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: `repeat(${room.column}, 40px)`,
+                          gridTemplateRows: `repeat(${room.row}, 40px)`,
+                          gap: "8px",
+                          justifyContent: "center"
+                        }}
+                      >
+                        {Array.from({ length: room.row * room.column }).map((_, index) => {
+                          const row = Math.floor(index / room.column);
+                          const col = index % room.column;
+                          const rowLetter = String.fromCharCode(65 + row);
+                          const colNumber = col + 1;
+                          const seatLabel = `${rowLetter}${colNumber}`;
+                          
+                          // Find the seat in room.seats that matches this position
+                          const seat = room.seats?.find((s: any) => 
+                            s.atRow === rowLetter && s.atColumn === colNumber
+                          );
+                          
+                          // For debugging
+                          if (index === 0) {
+                            console.log("First seat search:", {
+                              rowLetter,
+                              colNumber,
+                              foundSeat: !!seat,
+                              allSeats: room.seats?.slice(0, 3)  // Log first 3 seats
+                            });
+                          }
+                          
+                          // Highlight seats in selected row/column
+                          const isHighlighted = 
+                            (selectionMode === "row" && selectedIndex === row) ||
+                            (selectionMode === "column" && selectedIndex === col);
+
+                          // Check if seat is selected for bulk update
+                          const isSelected = seat && selectedSeats.includes(seat.seatId);
+
+                          // Get colors based on seat status
+                          const statusColors = seat 
+                            ? getSeatStatusColor(seat.status)
+                            : getSeatStatusColor(SeatStatus.Available);
+
+                          // Show inactive seats with reduced opacity
+                          const isInactive = seat && !seat.isActive;
+
+                          return (
+                            <Tooltip 
+                              key={`seat-${index}`} 
+                              title={seat 
+                                ? `${seatLabel} - ${
+                                  seat.status === SeatStatus.Available ? "Có sẵn" : 
+                                  seat.status === SeatStatus.Unavailable ? "Không khả dụng" : 
+                                  seat.status === SeatStatus.Sold ? "Đã bán" : 
+                                  seat.status === SeatStatus.Reserved ? "Đã đặt" : "Không xác định"
+                                }${isInactive ? " - Đã vô hiệu hóa" : " - Đã kích hoạt"}${isSelected ? " - Đã chọn" : ""}`
+                                : `${seatLabel} - Vị trí trống`
+                              }
+                            >
+                              {seat ? (
+                                <Box
+                                  onClick={(event) => 
+                                    event.ctrlKey || event.metaKey 
+                                      ? toggleSeatSelection(seat.seatId) 
+                                      : handleSeatClick(seat)
+                                  }
+                                  sx={{
+                                    width: "40px",
+                                    height: "40px",
+                                    backgroundColor: isSelected 
+                                      ? "#9c27b0" // Purple when selected
+                                      : isHighlighted 
+                                        ? theme.palette.primary.main
+                                        : statusColors.bg,
+                                    border: "1px solid",
+                                    borderColor: isSelected 
+                                      ? "#7b1fa2"
+                                      : isHighlighted
+                                        ? theme.palette.primary.dark
+                                        : statusColors.border,
+                                    borderRadius: "4px",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    fontSize: "0.9rem",
+                                    color: isSelected || isHighlighted 
+                                      ? "white" 
+                                      : statusColors.text,
+                                    transition: "all 0.15s ease",
+                                    boxShadow: isHighlighted
+                                      ? 'none'
+                                      : isSelected
+                                        ? '0 0 0 2px #9c27b0'
+                                        : 'inset 0 -2px 0 0 rgba(0,0,0,0.1)',
+                                    cursor: "pointer",
+                                    opacity: isInactive ? 0.3 : 1,
+                                    "&:hover": {
+                                      transform: "translateY(-2px)",
+                                      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                      filter: "brightness(0.95)",
+                                    },
+                                    position: "relative",
+                                    "&:before": isInactive ? {
+                                      content: '""',
+                                      position: "absolute",
+                                      width: "100%",
+                                      height: "2px",
+                                      backgroundColor: "#f44336",
+                                      top: "50%",
+                                      transform: "translateY(-50%) rotate(45deg)"
+                                    } : {}
+                                  }}
+                                >
+                                  {seatLabel}
+                                </Box>
+                              ) : (
+                                <Box 
+                                  onClick={() => handleCreateSeat(rowLetter, colNumber)}
+                                  sx={{ 
+                                    width: "40px", 
+                                    height: "40px", 
+                                    borderRadius: "4px",
+                                    border: "1px dashed #ccc",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    color: "#aaa",
+                                    fontSize: "0.8rem",
+                                    cursor: "pointer",
+                                    "&:hover": {
+                                      border: "1px dashed #2196f3",
+                                      backgroundColor: alpha("#bbdefb", 0.3),
+                                      transform: "translateY(-2px)",
+                                      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                      color: "primary.main"
+                                    }
+                                  }}
+                                >
+                                  {seatLabel}
+                                </Box>
+                              )}
+                            </Tooltip>
+                          );
+                        })}
+                      </Box>
+                    </Box>
+                  </Paper>
+                  
+                  <Box sx={{ 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    mt: 2,
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: alpha('#e3f2fd', 0.6),
+                  }}>
+                    <EventSeatIcon sx={{ color: 'primary.main', mr: 1, fontSize: 20 }} />
+                    <Typography variant="body2" color="primary.dark" fontWeight="medium">
+                      Nhấp vào vị trí trống để tạo ghế mới với loại ghế đã chọn
+                    </Typography>
+                  </Box>
+                </>
+              )}
             </Box>
           </Card>
         </Grid>
