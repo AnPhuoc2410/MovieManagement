@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Localization;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
 using MovieManagement.Server.Extensions.ConvertFile;
@@ -78,7 +80,7 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("PhuocConnection"))
             );
 
             // Đăng ký UnitOfWork
@@ -175,6 +177,12 @@ namespace MovieManagement.Server
             // Đăng ký QR Code
             builder.Services.AddScoped<IQRCodeService, QRCodeService>();
 
+            // ADD Localization
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+            builder.Services.AddControllers()
+                .AddDataAnnotationsLocalization()
+                .AddViewLocalization();
+
             builder.Services.Configure<RouteOptions>(options =>
             {
                 options.LowercaseUrls = true; // Forces lowercase routes
@@ -215,8 +223,16 @@ namespace MovieManagement.Server
             // Enable Websocket support
             app.MapHub<SeatHub>("/seatHub");
 
+            //Configure language
+            var supportedCultures = new[] { "en", "vi", "jp" };
+            var localizationOptions = new RequestLocalizationOptions()
+                .SetDefaultCulture("vi")
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
+
             app.MapFallbackToFile("/index.html");
             app.UseHttpsRedirection();
+            app.UseRequestLocalization(localizationOptions);
 
             // Add the ExceptionHandlerMiddleware to the pipeline
             // comment lai doan code phia duoi neu chuong khong doc duoc loi tu swagger

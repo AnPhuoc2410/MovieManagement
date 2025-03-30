@@ -130,15 +130,20 @@ export default function useRouteElements() {
         },
         {
           path: "/ticket",
-          element: (
+          element: (  
             <SignalRProvider>
               <TicketWrapper />
             </SignalRProvider>
           ),
           children: [
             { path: ":movieId", element: <ClientPages.Ticket.Booking /> },
-            { path: "movie-seat", element: <ClientPages.Ticket.Seat /> },
-            { path: "payment", element: <ClientPages.Ticket.Payment /> },
+            {
+              path: "movie-seat",
+              element: <ProtectedRoute redirectPath="/ticket/movie-seat"/>,
+              children: [
+                { path: "", element: <ClientPages.Ticket.Seat /> }
+              ]
+            }, { path: "payment", element: <ClientPages.Ticket.Payment /> },
             {
               path: "confirmation",
               element: <ClientPages.Ticket.Confirmation />,

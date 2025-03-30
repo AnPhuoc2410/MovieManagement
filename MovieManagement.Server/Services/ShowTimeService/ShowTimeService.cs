@@ -64,7 +64,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 }
             }
 
-            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(newShowTime.StartTime);
+            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(newShowTime.StartTime, room.MovieTheaterId);
             if (!checkStartTime)
             {
                 throw new ApplicationException("Unable to create due to other StartTime.");
@@ -90,13 +90,14 @@ namespace MovieManagement.Server.Services.ShowTimeService
             
 
             foreach (var s in seats)
-                _unitOfWork.TicketDetailRepository.PrepareCreate(new TicketDetail
-                {
-                    ShowTimeId = showTimeId,
-                    SeatId = s.SeatId,
-                    Version = new byte[8],
-                    TicketId = Guid.NewGuid()
-                });
+                if (s.IsActive)
+                    _unitOfWork.TicketDetailRepository.PrepareCreate(new TicketDetail
+                    {
+                        ShowTimeId = showTimeId,
+                        SeatId = s.SeatId,
+                        Version = new byte[8],
+                        TicketId = Guid.NewGuid()
+                    });
             
 
             return await _unitOfWork.CompleteAsync();
@@ -201,7 +202,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 }
             }
 
-            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(existingShowTime.StartTime);
+            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(existingShowTime.StartTime, room.MovieTheaterId);
             if (!checkStartTime)
             {
                 throw new ApplicationException("Unable to create due to other StartTime.");
@@ -248,9 +249,9 @@ namespace MovieManagement.Server.Services.ShowTimeService
                             locGroup => locGroup.Key,
                             locGroup => locGroup
                                 .GroupBy(st => st.Room.MovieTheater)
-                                .Select(theaterGroup => (object)new
+                                .Select(theaterGroup => (object)new //Lấy trong nhóm theaterGroup ra các thông tin cần thiết
                                 {
-                                    NameTheater = theaterGroup.Key.Name,
+                                    NameTheater = theaterGroup.Key.Name,// Lấy key của nhóm theaterGroup với Key là 1 đối tượng MovieTheater
                                     AddressTheater = theaterGroup.Key.Address,
                                     ListShowTime = theaterGroup.Select(st => new
                                     {

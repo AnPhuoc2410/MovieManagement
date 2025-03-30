@@ -82,9 +82,11 @@ const Confirmation: React.FC = () => {
     if (isSuccess) {
       console.log("Payment successful!");
       setPaymentStatus("success");
+      toast.success("Ghế đã được đặt thành công!");
     } else {
       console.log("Payment failed or not completed.");
       setPaymentStatus("failure");
+      toast.error("Đặt ghế không thành công!");
     }
   }, [isSuccess]);
 
@@ -122,7 +124,6 @@ const Confirmation: React.FC = () => {
               .then(() => {
                 console.log("Seats marked as purchased:", ticketRequests);
                 setSeatsUpdated(true);
-                toast.success("Ghế đã được đặt thành công!");
               })
               .catch((error) => {
                 console.error("Error finalizing seat purchase:", error);

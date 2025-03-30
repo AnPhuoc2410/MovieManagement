@@ -218,7 +218,7 @@ const Payment: React.FC = () => {
       const response = await api.post(
         `vnpay/createpaymenturl?money=${total}&description=${encodeURIComponent(
           `Payment for movie tickets: ${movieData?.movieName}`
-        )}&userId=6A050BE0-BA0B-4C07-821F-EB8C57FB2BDC`,
+        )}&userId=${userDetails?.userId}`,
         data
       );
 
