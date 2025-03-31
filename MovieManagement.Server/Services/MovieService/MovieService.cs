@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
-using MovieManagement.Server.Repositories;
-using MovieManagement.Server.Services.CategoryService;
-using System.Drawing.Printing;
+using MovieManagement.Server.Resources;
+using System.Globalization;
 using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Services.MovieService
@@ -15,17 +14,18 @@ namespace MovieManagement.Server.Services.MovieService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ICategoryService _categoryService;
-        public MovieService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IStringLocalizer _localizer;
+        public MovieService(IUnitOfWork unitOfWork, IMapper mapper, IStringLocalizerFactory factory)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _localizer = factory.Create("MovieResource", typeof(MovieResource).Assembly.FullName);
         }
 
         public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
         {
             var movies = _mapper.Map<List<MovieDto>>(await _unitOfWork.MovieRepository.GetAllAsyncDeletedFalse());
-            if(movies == null)
+            if (movies == null)
             {
                 throw new NotFoundException("Movies not found!");
             }
@@ -39,7 +39,7 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new BadRequestException("Page and PageSize is invalid");
             }
             var movies = await _unitOfWork.MovieRepository.GetMovieByPage(page, pageSize);
-            if(movies == null)
+            if (movies == null)
             {
                 throw new NotFoundException("Movies not found!");
             }
@@ -48,7 +48,16 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<MovieDto> GetMovieByIdAsync(Guid movieId)
         {
-            if(movieId == Guid.Empty)
+            var resourcePath = typeof(MovieResource).Assembly.FullName;
+            Console.WriteLine($"Resource Path: {resourcePath}");
+
+            var availableKeys = _localizer.GetAllStrings().Select(s => s.Name);
+            Console.WriteLine("Available Keys: " + string.Join(", ", availableKeys));
+
+            Console.WriteLine($"Current UI Culture: {CultureInfo.CurrentUICulture}");
+            Console.WriteLine($"Current Culture: {CultureInfo.CurrentCulture}");
+
+            if (movieId == Guid.Empty)
             {
                 throw new BadRequestException("MovieId is invalid");
             }
@@ -57,6 +66,10 @@ namespace MovieManagement.Server.Services.MovieService
             {
                 throw new NotFoundException("Movie does not found!");
             }
+
+            movie.MovieName = _localizer[movie.MovieName];
+            movie.Content = _localizer["content"];
+
             var response = _mapper.Map<MovieDto>(movie);
             var movieCategories = _unitOfWork.MovieCategoryRepository.GetMovieCategoriesByMovieId(movieId);
             foreach (var movieCategory in movieCategories)
@@ -153,12 +166,12 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<IEnumerable<MoviePreview>> GetMoviesNowShowing(int page, int pageSize)
         {
-            if(page < 0 || pageSize < 1)
+            if (page < 0 || pageSize < 1)
             {
                 throw new BadRequestException("Page and PageSize is invalid");
             }
             var moviesNowShowing = await _unitOfWork.MovieRepository.GetMoviesNowShowing(page, pageSize);
-            if(moviesNowShowing == null)
+            if (moviesNowShowing == null)
             {
                 throw new NotFoundException("Movies not found!");
             }
@@ -172,7 +185,7 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new BadRequestException("Page and PageSize is invalid");
             }
             var moviesUpComing = await _unitOfWork.MovieRepository.GetMoviesUpComing(page, pageSize);
-            if(moviesUpComing == null)
+            if (moviesUpComing == null)
             {
                 throw new NotFoundException("Movies not found!");
             }
@@ -181,7 +194,7 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<IEnumerable<MoviePreview>> GetMoviesByNameRelativePage(string name, int page, int pageSize)
         {
-            if(string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 throw new BadRequestException("Name is invalid");
             }
@@ -190,7 +203,7 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new BadRequestException("Page and PageSize is invalid");
             }
             var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelativePage(name, page, pageSize);
-            if(movies == null)
+            if (movies == null)
             {
                 throw new NotFoundException("Movies not found!");
             }
@@ -199,7 +212,7 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<MovieDto> SetMovieDeleted(Guid movieId)
         {
-            if(movieId == Guid.Empty)
+            if (movieId == Guid.Empty)
             {
                 throw new BadRequestException("MovieId is invalid");
             }
@@ -209,7 +222,7 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<IEnumerable<MovieDto>> GetMoviesByCategory(Guid categoryId, int page, int pageSize)
         {
-            if(categoryId == Guid.Empty)
+            if (categoryId == Guid.Empty)
             {
                 throw new BadRequestException("CategoryId is invalid");
             }
@@ -218,7 +231,7 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new BadRequestException("Page and PageSize is invalid");
             }
             var movies = await _unitOfWork.MovieRepository.GetMoviesByCategory(categoryId, page, pageSize);
-            if(movies == null)
+            if (movies == null)
             {
                 throw new NotFoundException("Movies not found!");
             }
@@ -227,12 +240,12 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<IEnumerable<MoviePreview>> GetMoviesByNameRelative(string searchValue)
         {
-            if(string.IsNullOrEmpty(searchValue))
+            if (string.IsNullOrEmpty(searchValue))
             {
                 throw new BadRequestException("Search value is invalid");
             }
             var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelative(searchValue);
-            if(movies == null)
+            if (movies == null)
             {
                 throw new NotFoundException("Movies not found!");
             }

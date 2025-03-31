@@ -73,4 +73,8 @@
     </ProjectReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\TranslationModels\" />
+  </ItemGroup>
+
 </Project>

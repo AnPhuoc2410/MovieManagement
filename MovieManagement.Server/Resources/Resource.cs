@@ -1,6 +1,6 @@
 ﻿namespace MovieManagement.Server.Resources
 {
-    public class SharedResource
+    public class Resource
     {
     }
 }

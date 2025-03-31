@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Localization;
 using MovieManagement.Server.Models;
 using MovieManagement.Server.Resources;
+using System.Globalization;
 
 namespace MovieManagement.Server.Services.TranslationService
 {
@@ -10,7 +11,7 @@ namespace MovieManagement.Server.Services.TranslationService
 
         public TestTranslationService(IStringLocalizerFactory factory)
         {
-            var type = typeof(SharedResource);
+            var type = typeof(Resource);
             _localizer = factory.Create("Resource", type.Assembly.FullName);
         }
         public List<TestModel> GetTestModels()

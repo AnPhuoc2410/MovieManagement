@@ -204,6 +204,9 @@ namespace MovieManagement.Server
 
             var app = builder.Build();
 
+            var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+            app.UseRequestLocalization(localizationOptions);
+
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
@@ -236,9 +239,6 @@ namespace MovieManagement.Server
 
             app.MapFallbackToFile("/index.html");
             app.UseHttpsRedirection();
-
-            var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
-            app.UseRequestLocalization(localizationOptions);
 
             // Add the ExceptionHandlerMiddleware to the pipeline
             // comment lai doan code phia duoi neu chuong khong doc duoc loi tu swagger
