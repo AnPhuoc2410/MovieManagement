@@ -19,5 +19,6 @@ namespace MovieManagement.Server.Data
         IOtpCodeRepository OtpCodeRepository { get; }
         IMovieTheaterRepository MovieTheaterRepository { get; }
         Task<int> CompleteAsync();
+        int Complete();
     }
 }

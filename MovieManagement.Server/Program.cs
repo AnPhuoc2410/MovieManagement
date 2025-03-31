@@ -80,7 +80,7 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("PhuocConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
 
             // Đăng ký UnitOfWork
@@ -162,7 +162,7 @@ namespace MovieManagement.Server
             // builder.Services.AddAuthorization();
 
             // ADD SignalR
-            builder.Services.AddSignalR().AddAzureSignalR();
+            builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]);
 
             // Register Hangfire
             builder.Services.AddHangfire(config => config.UseMemoryStorage());
