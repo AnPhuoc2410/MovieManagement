@@ -65,6 +65,11 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
   const [createError, setCreateError] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
+  // Function to navigate to create room page
+  const handleCreateRoomClick = () => {
+    navigate('/admin/ql-phong-chieu/create');
+  };
+
   // Fetch seat types
   const fetchSeatTypes = async () => {
     const response = await axios.get(`https://localhost:7119/api/seattype/all`);
