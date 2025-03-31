@@ -24,6 +24,7 @@ import { Movie } from "../../../types/movie.types";
 import { Room } from "../../../types/room.types";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import api from "../../../apis/axios.config";
 
 interface MovieApiResponse {
   message: string;
@@ -59,7 +60,7 @@ const ThemThoiGianChieu = () => {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await axios.get<MovieApiResponse>("https://localhost:7119/api/movie");
+        const response = await api.get<MovieApiResponse>("movie");
         if (response.data.isSuccess) {
           setMovies(response.data.data);
         } else {
@@ -73,7 +74,7 @@ const ThemThoiGianChieu = () => {
 
     const fetchRooms = async () => {
       try {
-        const response = await axios.get<RoomApiResponse>("https://localhost:7119/api/room/all");
+        const response = await api.get<RoomApiResponse>("room/all");
         if (response.data.isSuccess) {
           setRooms(response.data.data);
         } else {
@@ -129,8 +130,8 @@ const ThemThoiGianChieu = () => {
 
       console.log('Sending payload:', payload); // Debug log
 
-      const response = await axios.post(
-        "https://localhost:7119/api/showtime/createshowtime",
+      const response = await api.post(
+        "showtime/createshowtime",
         payload,
         {
           headers: {
@@ -158,15 +159,15 @@ const ThemThoiGianChieu = () => {
           endTime: "",
         });
       } else {
-        setMessage({ 
-          text: `Failed to create showtime: ${response.data?.message || 'Unknown error'}`, 
-          type: "error" 
+        setMessage({
+          text: `Failed to create showtime: ${response.data?.message || 'Unknown error'}`,
+          type: "error"
         });
       }
     } catch (error: any) {
       console.error("Error creating showtime:", error);
-      const errorMessage = error.response?.data?.message 
-        || error.message 
+      const errorMessage = error.response?.data?.message
+        || error.message
         || "Failed to create showtime. Please try again.";
       setMessage({
         text: errorMessage,
@@ -220,10 +221,10 @@ const ThemThoiGianChieu = () => {
                   </Button>
                   <Typography variant="h3">Thêm Thời Gian Chiếu</Typography>
                 </Box>
-                
+
                 {message.text && (
-                  <Typography 
-                    color={message.type === "error" ? "error" : "success"} 
+                  <Typography
+                    color={message.type === "error" ? "error" : "success"}
                     sx={{ mt: 2 }}
                   >
                     {message.text}

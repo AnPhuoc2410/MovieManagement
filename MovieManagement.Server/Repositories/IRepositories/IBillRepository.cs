@@ -5,9 +5,10 @@ namespace MovieManagement.Server.Repositories.IRepositories
 {
     public interface IBillRepository : IGenericRepository<Bill>
     {
-        Task<Bill> GetByIdAsync(long billId);
-        Bill GetById(long billId);
-        Task<bool> DeleteAsync(long billId);
-        Task<List<TicketBillResponse>> GetPurchasedTicketsForBill(long billId);
+        Task<Bill> GetByIdAsync(Guid billId);
+        Bill GetById(Guid billId);
+        Task<bool> DeleteAsync(Guid billId);
+        Task<List<TicketBillResponse>> GetPurchasedTicketsForBill(Guid billId);
+        Task<List<RevenueResponse.DailyStatistics>> GetDailyStatisticsAsync();
     }
 }

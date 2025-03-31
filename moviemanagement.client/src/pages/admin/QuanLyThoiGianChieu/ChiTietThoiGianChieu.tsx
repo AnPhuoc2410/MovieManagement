@@ -32,6 +32,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import api from '../../../apis/axios.config';
 
 const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomTheme?: boolean }) => {
   const { id } = useParams<{ id: string }>();
@@ -61,10 +62,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     ['showtime', id],
     async () => {
       try {
-        const response = await axios.get(`https://localhost:7119/api/showtime/${id}`);
-        console.log('API Response:', response.data);
-        
-        // Based on the screenshot, the response has a data field
+        const response = await api.get<ShowTime>(`showtime/${id}`);
         return response.data;
       } catch (error) {
         console.error('Error fetching showtime:', error);
@@ -81,7 +79,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
       const data = showtime.data || showtime;
       setSelectedMovieId(data.movieId || '');
       setSelectedRoomId(data.roomId || '');
-      
+
       // Set datetime values for the inputs
       if (data.startTime) {
         setStartTime(formatDateTimeForInput(data.startTime));
@@ -89,14 +87,14 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
       if (data.endTime) {
         setEndTime(formatDateTimeForInput(data.endTime));
       }
-    } 
+    }
   }, [showtime]);
 
   // Fetch movies list
   const { data: movies, isLoading: isLoadingMovies } = useQuery(
     'movies',
     async () => {
-      const response = await axios.get('https://localhost:7119/api/movie');
+      const response = await api.get('movie');
       console.log('Movies API Response:', response.data);
       // Handle both cases - direct array or nested data property
       return Array.isArray(response.data) ? response.data : response.data?.data || [];
@@ -107,7 +105,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   const { data: rooms, isLoading: isLoadingRooms } = useQuery(
     'rooms',
     async () => {
-      const response = await axios.get('https://localhost:7119/api/room/all');
+      const response = await api.get('room/all');
       console.log('Rooms API Response:', response.data);
 
       // Handle both cases - direct array or nested data property
@@ -119,7 +117,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   const handleMovieSelect = (movieId: string) => {
     setSelectedMovieId(movieId);
     setIsModified(true);
-    
+
     // Find the movie name to display
     if (movies) {
       const movie = movies.find((m: any) => m.movieId === movieId);
@@ -127,11 +125,11 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
         setSelectedMovieName(movie.movieName);
       }
     }
-    
+
     // Close the dialog
     setOpenMovieDialog(false);
   };
-  
+
   // Update the movie name when data is loaded
   useEffect(() => {
     if (movies && selectedMovieId) {
@@ -170,7 +168,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
       if (!showtime) return;
 
       const data = showtime.data || showtime;
-      
+
       const updatedShowtime = {
         ...data,
         movieId: selectedMovieId,
@@ -179,9 +177,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
         endTime: formatDateTime(endTime)
       };
 
-      console.log('Sending updated showtime:', updatedShowtime);
-
-      await axios.put(`https://localhost:7119/api/showtime/updateshowtime/${id}`, updatedShowtime);
+      await api.put(`showtime/${id}`, updatedShowtime);
       alert('Lịch chiếu đã được cập nhật thành công!');
       setIsModified(false);
     } catch (error) {
@@ -308,8 +304,8 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                         }}
                         placeholder="Chưa chọn phim"
                       />
-                      <Button 
-                        variant="contained" 
+                      <Button
+                        variant="contained"
                         onClick={() => setOpenMovieDialog(true)}
                         sx={{ whiteSpace: 'nowrap' }}
                       >
@@ -357,7 +353,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                     <Typography variant="subtitle1">Thời gian kết thúc</Typography>
                     <TextField
                       fullWidth
-                      variant="outlined" 
+                      variant="outlined"
                       size="small"
                       type="datetime-local"
                       value={endTime}
@@ -407,17 +403,17 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
       </Box>
 
       {/* Movie Selection Dialog */}
-      <Dialog 
-        open={openMovieDialog} 
+      <Dialog
+        open={openMovieDialog}
         onClose={() => setOpenMovieDialog(false)}
         maxWidth="lg"
         fullWidth
       >
         <DialogTitle>Chọn phim chiếu</DialogTitle>
         <DialogContent dividers>
-          <AdminNowShowingMovies 
-            onMovieSelect={handleMovieSelect} 
-            selectedMovieId={selectedMovieId} 
+          <AdminNowShowingMovies
+            onMovieSelect={handleMovieSelect}
+            selectedMovieId={selectedMovieId}
           />
         </DialogContent>
         <DialogActions>

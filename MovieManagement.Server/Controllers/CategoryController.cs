@@ -23,7 +23,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet]
-        [ProducesResponseType(typeof(ApiResponse<CategoryDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<CategoryDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -31,7 +31,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetAllCategories()
         {
             var categories = await _categoryService.GetAllCategoriesAsync();
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<CategoryDto>>
             {
                 StatusCode = 200,
                 Message = "Get all categories are a success",
@@ -41,9 +41,8 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-
         [HttpGet("page/{page:int}/size/{pageSize:int}")]
-        [ProducesResponseType(typeof(ApiResponse<CategoryDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<CategoryDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -51,7 +50,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetCategoryPages(int page, int pageSize)
         {
             var categories = await _categoryService.GetCategoryPageAsync(page, pageSize);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<CategoryDto>>
             {
                 StatusCode = 200,
                 Message = "Get categories are a success",
@@ -70,7 +69,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<Category>> GetCategoryById(Guid categoryId, Guid movieId)
         {
             var categories = await _categoryService.GetCategoryByComposeIdAsync(categoryId, movieId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<CategoryDto>
             {
                 StatusCode = 200,
                 Message = "Get categories in movie is success",
@@ -79,7 +78,6 @@ namespace MovieManagement.Server.Controllers
             };
             return Ok(response);
         }
-
 
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<CategoryDto>), StatusCodes.Status200OK)]
@@ -90,8 +88,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CategoryDto categoryDto)
         {
             var newCategory = await _categoryService.CreateCategoryAsync(categoryDto);
-
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<CategoryDto>
             {
                 StatusCode = 200,
                 Message = "Create category is success",
@@ -99,7 +96,6 @@ namespace MovieManagement.Server.Controllers
             };
             return Ok(response);
         }
-
 
         [HttpPut]
         [Route("{categoryId:guid}")]
@@ -111,7 +107,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<CategoryDto>> UpdateCategory(Guid categoryId, Guid movieId, [FromBody] CategoryDto categoryDto)
         {
             var updatedCategory = await _categoryService.UpdateCategoryAsync(categoryId, movieId, categoryDto);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<CategoryDto>
             {
                 StatusCode = 200,
                 Message = "Update category is success",
@@ -120,10 +116,9 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-
         [HttpDelete]
         [Route("{categoryId:guid}")]
-        [ProducesResponseType(typeof(ApiResponse<CategoryDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -132,7 +127,7 @@ namespace MovieManagement.Server.Controllers
         {
             var isDeleted = await _categoryService.DeleteCategoryComposeAsync(categoryId, movieId);
 
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<bool>
             {
                 StatusCode = 200,
                 Message = "Category was deleted",

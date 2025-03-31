@@ -7,6 +7,7 @@ import TicketWrapper from "./layouts/TicketWrapper";
 import PromotionDetailManagement from "./pages/admin/QuanLyKhuyenMai/PromotionDetail";
 import PromotionManagement from "./pages/admin/QuanLyKhuyenMai/Promotions";
 import SearchPage from "./pages/movie/SearchPage";
+import { Role, UserRole } from "./types/roles.type";
 
 // Lazy load components
 const Home = lazy(() => import("./pages/Home/Home"));
@@ -137,16 +138,24 @@ export default function useRouteElements() {
           ),
           children: [
             { path: ":movieId", element: <ClientPages.Ticket.Booking /> },
-            { path: "movie-seat", element: <ClientPages.Ticket.Seat /> },
-            { path: "payment", element: <ClientPages.Ticket.Payment /> },
-            { path: "confirmation", element: <ClientPages.Ticket.Confirmation /> },
+            {
+              path: "movie-seat",
+              element: <ProtectedRoute redirectPath="/ticket/movie-seat"/>,
+              children: [
+                { path: "", element: <ClientPages.Ticket.Seat /> }
+              ]
+            }, { path: "payment", element: <ClientPages.Ticket.Payment /> },
+            {
+              path: "confirmation",
+              element: <ClientPages.Ticket.Confirmation />,
+            },
           ],
         },
       ],
     },
     // Protected Admin Routes
     {
-    
+      element: <ProtectedRoute allowedRoles={[Role.Admin]} />,
       children: [
         {
           path: "/admin",
@@ -177,10 +186,16 @@ export default function useRouteElements() {
               ),
               children: [
                 { path: "", element: <AdminPages.Ticket.BuyTicket /> },
-                { path: "ticket/:movieId", element: <AdminPages.Ticket.Booking /> },
+                {
+                  path: "ticket/:movieId",
+                  element: <AdminPages.Ticket.Booking />,
+                },
                 { path: "movie-seat", element: <AdminPages.Ticket.Seat /> },
                 { path: "payment", element: <AdminPages.Ticket.Payment /> },
-                { path: "confirmation", element: <AdminPages.Ticket.Confirmation /> },
+                {
+                  path: "confirmation",
+                  element: <AdminPages.Ticket.Confirmation />,
+                },
               ],
             },
             {

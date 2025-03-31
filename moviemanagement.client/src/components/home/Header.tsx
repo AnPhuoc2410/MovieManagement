@@ -150,7 +150,7 @@ const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
           >
             {/* Book Ticket Button */}
             <Button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/movies/now-showing")}
               variant="contained"
               sx={{
                 display: { xs: "none", md: "flex" },

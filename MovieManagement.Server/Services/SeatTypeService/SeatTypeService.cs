@@ -31,6 +31,8 @@ namespace MovieManagement.Server.Services.SeatTypeService
 
         public async Task<bool> DeleteSeatTypeAsync(Guid seatTypeId)
         {
+            if(seatTypeId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var seatType = await _unitOfWork.SeatTypeRepository.GetByIdAsync(seatTypeId);
             if (seatType == null)
                 throw new NotFoundException("SeatType not found!");
@@ -48,6 +50,8 @@ namespace MovieManagement.Server.Services.SeatTypeService
 
         public async Task<SeatTypeDto> GetSeatTypeByIdAsync(Guid seatTypeId)
         {
+            if(seatTypeId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var seatType = await _unitOfWork.SeatTypeRepository.GetByIdAsync(seatTypeId);
             if (seatType == null)
                 throw new NotFoundException("SeatType not found!");
@@ -56,6 +60,8 @@ namespace MovieManagement.Server.Services.SeatTypeService
 
         public async Task<IEnumerable<SeatTypeDto>> GetSeatTypePageAsync(int page, int pageSize)
         {
+            if(page < 0 || pageSize < 1)
+                throw new BadRequestException("Page and PageSize is invalid");
             var seatTypes = await _unitOfWork.SeatTypeRepository.GetPageAsync(page, pageSize);
             if (seatTypes == null)
                 throw new NotFoundException("SeatTypes not found!");
@@ -64,6 +70,8 @@ namespace MovieManagement.Server.Services.SeatTypeService
 
         public async Task<SeatTypeDto> UpdateSeatTypeAsync(Guid seatTypeId, SeatTypeDto seatType)
         {
+            if(seatTypeId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var existingSeatType = await _unitOfWork.SeatTypeRepository.GetByIdAsync(seatTypeId);
             if (existingSeatType == null)
                 throw new NotFoundException("SeatType not found!");

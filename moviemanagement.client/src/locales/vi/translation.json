@@ -40,7 +40,8 @@
         "title": "PHIM",
         "now_showing": "Phim đang chiếu",
         "coming_soon": "Phim sắp chiếu",
-        "special_screening": "Suất chiếu đặc biệt"
+        "special_screening": "Suất chiếu đặc biệt",
+        "not_existing": "Movie does not exist"
       },
       "theaters": {
         "title": "HỆ THỐNG RẠP",
@@ -222,7 +223,9 @@
       "location": {
         "HaNoi": "Hà Nội",
         "HCM": "Hồ Chí Minh",
-        "DaNang": "Đà Nẵng"
+        "DaNang": "Đà Nẵng",
+        "BinhDuong": "Bình Dương",
+        "BinhPhuoc": "Bình Phước"
       },
       "notification": {
         "loading_showtime": "Đang tải danh sách lịch chiếu...",
@@ -247,7 +250,57 @@
       "select_show_time": "Chọn lịch chiếu",
       "select_seat": "Chọn ghế",
       "payment": "Thanh toán",
-      "success": "Thành công"
+      "success": "Thành công",
+      "failed": "Hủy thanh toán"
+    },
+    "payment": {
+      "timer": "Thời gian giữ ghế còn lại",
+      "total_amount": "Tổng cộng:",
+      "origin_price": "Giá gốc:",
+      "user_infor": "Thông Tin Khách Hàng",
+      "confirm": "Xác nhận đặt vé",
+      "back": "Quay lại",
+      "promotion": {
+        "title": "Khuyến Mãi",
+        "discount": "Giảm giá",
+        "used": "Đã áp dụng giảm giá",
+        "notfound": "Hiện không có khuyến mãi nào có sẵn",
+        "from": "Có hiệu lực từ",
+        "to": "đến"
+      },
+      "ticket": {
+        "payment": "Thanh Toán Vé",
+        "infor": "Thông Tin Vé",
+        "price": "Giá:",
+        "seat": "Ghế:"
+      },
+      "movie": {
+        "default": "Phim Mặc Định",
+        "name": "Tên phim:",
+        "description": "Thông Tin Phim",
+        "room": "Phòng chiếu:"
+      },
+      "showtime": {
+        "day": "Ngày chiếu:",
+        "hour": "Giờ chiếu:"
+      }
+    },
+    "movie_seat": {
+      "timer": "Thời gian giữ ghế còn lại:",
+      "selection": "Chọn ghế:",
+      "continue": "Tiếp tục"
+    },
+    "movie_detail": {
+      "description": "MÔ TẢ",
+      "director": "Đạo diễn:",
+      "actors": "Diễn viên:",
+      "release_date": "Khởi chiếu:",
+      "content": "NỘI DUNG PHIM",
+      "trailer": "XEM TRAILER",
+      "book_now": "ĐẶT VÉ NGAY"
+    },
+    "seat_cinema": {
+      "screening": "Màn hình"
     },
     "common": {
       "button": {

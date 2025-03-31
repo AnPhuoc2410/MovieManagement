@@ -1,5 +1,3 @@
-export type Role = "ROLE_MEMBER" | "ROLE_STAFF" | "ROLE_MANAGER";
-
 export const RoleName = {
   MEMBER: "MEMBER",
   STAFF: "STAFF",
@@ -16,4 +14,10 @@ export enum UserRole {
 export interface RoleModel {
   id: number;
   userRole: UserRole;
+}
+
+export enum Role {
+  Member = 0,
+  Employee = 1,
+  Admin = 2,
 }

@@ -35,6 +35,8 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 
         public async Task<TicketDetailDto> GetTicketDetailByIdAsync(Guid id)
         {
+            if(id == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var ticketDetails = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id);
             if (ticketDetails == null)
                 throw new NotFoundException("Ticket not found");
@@ -43,6 +45,8 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 
         public async Task<IEnumerable<TicketDetailDto>> GetTicketDetailPageAsync(int page, int pageSize)
         {
+            if(page < 0 || pageSize < 1)
+                throw new BadRequestException("Page and PageSize is invalid");
             var ticketDetails = await _unitOfWork.TicketDetailRepository.GetPageAsync(page, pageSize);
             if (ticketDetails == null)
                 throw new NotFoundException("Ticket details not found!");
@@ -59,6 +63,8 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 
         public async Task<TicketDetailDto> UpdateTicketDetailAsync(Guid id, TicketDetailDto ticketDetail)
         {
+            if(id == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var existingTicketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id);
             if (existingTicketDetail == null)
                 throw new NotFoundException("Ticket detail not found");
@@ -71,6 +77,8 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 
         public async Task<bool> DeleteTicketDetailAsync(Guid id)
         {
+            if(id == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var ticketDetail = await _unitOfWork.TicketDetailRepository.GetByIdAsync(id);
             if (ticketDetail == null)
                 throw new NotFoundException("Ticket detail not found!");
@@ -79,7 +87,8 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 
         public async Task<IEnumerable<TicketDetailResponseModel>> GetTicketByShowTimeId(Guid showTimeId)
         {
-
+            if(showTimeId == Guid.Empty)
+                throw new BadRequestException("ShowTimeId is invalid!");
             var ticketDetails = await _unitOfWork.TicketDetailRepository.GetTicketByShowTimeId(showTimeId) ?? throw new NotFoundException("Ticket details not found!");
             return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
         }
@@ -129,6 +138,8 @@ namespace MovieManagement.Server.Services.TicketDetailServices
 
         public async Task<bool> DeleteRemainingTicket(Guid showTimeId)
         {
+            if (showTimeId == Guid.Empty)
+                throw new BadRequestException("ShowTimeId is invalid!");
             var ticketDetails = (await _unitOfWork.TicketDetailRepository.GetTicketByShowTimeId(showTimeId)).Where(t => t.Status == TicketStatus.Created)
                 ?? throw new NotFoundException("Ticket details not found!");
             foreach (var t in ticketDetails)
@@ -138,33 +149,41 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return await _unitOfWork.TicketDetailRepository.SaveAsync() == ticketDetails.Count();
         }
 
-        public bool PurchasedTicket(List<Guid> list, long billId)
+        public async Task<bool> PurchasedTicket(List<Guid> list, Guid billId, Guid userId)
         {
-
             foreach (var t in list)
             {
                 var ticketDetail = _unitOfWork.TicketDetailRepository.GetById(t);
                 if (ticketDetail == null)
                     throw new NotFoundException("Ticket detail not found!");
-                if (ticketDetail.Status != TicketStatus.Pending)
+                if (ticketDetail.Status != TicketStatus.Created)
                     throw new BadRequestException("Ticket is not pending.");
                 ticketDetail.Status = TicketStatus.Paid;
                 ticketDetail.BillId = billId;
                 _unitOfWork.TicketDetailRepository.PrepareUpdate(ticketDetail);
             }
-            var checker = _unitOfWork.TicketDetailRepository.Save();
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) ??
+                throw new NotFoundException("User not found!");
+
+            var bill = await _unitOfWork.BillRepository.GetByIdAsync(billId) ??
+                throw new NotFoundException("Bill not found!");
+
+            user.Point += bill.Point;
+
+            _unitOfWork.UserRepository.PrepareUpdate(user);
+
+            var checker = await _unitOfWork.CompleteAsync();
 
             //Check this line later cause im being lazy
             return checker > 0;
-
-
         }
 
 
-        public async Task<IEnumerable<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(long billId)
+        public async Task<IEnumerable<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(Guid billId)
         {
             if (billId == null)
-                throw new BadRequestException("BillId is invalid!");
+                throw new BadRequestException("PaymentId is invalid!");
             var isExist = await _unitOfWork.BillRepository.GetByIdAsync(billId);
             if (isExist == null)
                 throw new NotFoundException("Bill not found!");
@@ -173,6 +192,5 @@ namespace MovieManagement.Server.Services.TicketDetailServices
                 throw new NotFoundException("No purchased ticket found!");
             return purchasedTicketResponses;
         }
-
     }
 }

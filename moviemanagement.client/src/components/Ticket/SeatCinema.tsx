@@ -7,6 +7,9 @@ import { TicketDetail } from "../../types/ticketdetail.types";
 import { SelectedSeat } from "../../types/selectedseat.types";
 import { useSignalR } from "../../contexts/SignalRContext";
 import Loader from "../shared/Loading";
+import { useAuth } from "../../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
+
 
 interface SeatProps {
   showTimeId: string;
@@ -16,7 +19,9 @@ interface SeatProps {
 }
 
 const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelectedSeats, groupConnected }) => {
-  const { connection } = useSignalR(); // Get the shared SignalR connection
+  const { t } = useTranslation();
+  const { connection } = useSignalR();
+  const { userDetails } = useAuth();
   const [seats, setSeats] = useState<TicketDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -29,7 +34,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
 
     const handleSeatPending = (seatId: string, userId: string) => {
       console.log("Seat marked as pending:", seatId);
-      const currentUserId = localStorage.getItem("userId") || "anonymous";
+      const currentUserId = userDetails?.userId;
       if (userId !== currentUserId) {
         setSeats((prev) =>
           prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
@@ -54,7 +59,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     };
 
     const handleSeatSelected = (seatId: string, userId: string) => {
-      const currentUserId = localStorage.getItem("userId") || "anonymous";
+      const currentUserId = userDetails?.userId;
       if (userId !== currentUserId) {
         setSeats((prev) =>
           prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
@@ -91,7 +96,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
   useEffect(() => {
     const releaseSeatsOnReturn = async () => {
       if (connection && selectedSeats.length > 0) {
-        const userId = localStorage.getItem("userId") || "anonymous";
+        const userId = userDetails?.userId;
         const ticketRequests = selectedSeats.map((seat) => ({
           TicketId: seat.ticketId,
           Version: seat.version,
@@ -102,7 +107,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           setSelectedSeats([]); // Clear locally stored selections
           toast('Các ghế đã được hủy do bạn quay lại.', {
             position: "top-center",
-            });
+          });
         } catch (error) {
           console.error("Error releasing seats on return:", error);
         }
@@ -160,7 +165,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     };
 
     try {
-      const userId = localStorage.getItem("userId") || "anonymous";
+      const userId = userDetails?.userId;
 
       // Prepare the updated seats selection based on the user's action
       let updatedSeats: SelectedSeat[] = [...selectedSeats]; // Start with current selection
@@ -230,7 +235,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           }}
         />
         <Typography variant="h6" sx={{ mt: -2, color: "white" }}>
-          Màn hình
+          {t("movie_seat.selection")}
         </Typography>
       </Box>
 
@@ -246,6 +251,21 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           ).map(([row, rowSeats]) => (
             <Box key={row} sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
               {rowSeats.map((ticket) => {
+
+                if (!ticket.seat.isActive) {
+                  return (
+                    <Box
+                      key={ticket.seatId}
+                      sx={{
+                        minWidth: "50px",
+                        minHeight: "50px",
+                        visibility: "hidden",
+                        p: 0.5,
+                      }}
+                    />
+                  );
+                }
+
                 const isSelectedByMe = selectedSeats.some(
                   (s) => s.id === ticket.seatId && s.isMine
                 );

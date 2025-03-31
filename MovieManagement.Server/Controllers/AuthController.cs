@@ -140,7 +140,7 @@ namespace MovieManagement.Server.Controllers
         // [Authorize(Policy = "Employee")]
         // [Authorize(Policy = "Member")]
         [HttpPost("extract-token")]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
@@ -148,7 +148,7 @@ namespace MovieManagement.Server.Controllers
         {
             var userData = await _authenticateService.ExtractTokenAsync(tokenRequest.AccessToken);
 
-            return Ok(new ApiResponse<object>
+            return Ok(new ApiResponse<UserDto.UserResponse>
             {
                 StatusCode = 200,
                 Message = "Token extracted is success",
@@ -156,9 +156,6 @@ namespace MovieManagement.Server.Controllers
                 Data = userData
             });
         }
-
-
-
 
         [HttpGet]
         [Authorize(Roles = "Admin,Member")]

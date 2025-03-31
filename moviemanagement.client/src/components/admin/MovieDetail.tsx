@@ -74,7 +74,6 @@ export default function MovieDetail({ onSubmit, movie }: MovieDetailProps) {
   const ratings = MovieRatings;
   const versions = MovieVersions;
   const { userDetails } = useAuth();
-  // const currentUserId = localStorage.getItem("userId") || "anonymous";
 
   const { watch, control, handleSubmit, reset, setValue } = useForm<Movie>({
     defaultValues: {

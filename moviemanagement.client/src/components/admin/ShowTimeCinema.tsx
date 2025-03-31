@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   Typography,
   ToggleButtonGroup,
@@ -17,7 +17,9 @@ import { vi as viLocale } from "date-fns/locale";
 import axios from "axios";
 import { ShowTime } from "../../types/showtime.types";
 import { Cinema } from "../../types/cinema.types";
+import { Theater } from "../../types/theater.types";
 import { useTranslation } from "react-i18next";
+import api from "../../apis/axios.config";
 
 interface ShowTimeCinemaProps {
   movieId: string;
@@ -42,10 +44,12 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
 
   const [selectedDate, setSelectedDate] = useState<string>(todayFormatted);
   const [selectedCity, setSelectedCity] = useState<string>("hcm");
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedShowtime, setSelectedShowtime] = useState<{ time: string, id: string } | null>(null);
   const [cinemas, setCinemas] = useState<Cinema[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { t, i18n } = useTranslation();
+  const lastAvailabilityRef = useRef<boolean | null>(null);
+
 
   const days = useMemo(() => {
     return Array.from({ length: 4 }, (_, i) => {
@@ -53,7 +57,6 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
       const dayName = format(date, "EEEE", {
         locale: i18n.language === "vi" ? viLocale : undefined,
       });
-
       return {
         date,
         formatted: format(date, "dd/MM"),
@@ -67,94 +70,129 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
       if (newDate) {
         setSelectedDate(newDate);
         onSelectDate(newDate);
-        setSelectedTime(null);
+        setSelectedShowtime(null);
       }
     },
     [onSelectDate],
   );
 
+  const getFromCache = (key: string) => {
+    const data = showtimesCache.get(key);
+    return data;
+  };
+
   useEffect(() => {
     onSelectDate(todayFormatted);
-  }, []);
+  }, [onSelectDate, todayFormatted]);
 
   const handleTimeSelect = useCallback(
     (time: string, showTimeId: string) => {
-      setSelectedTime(time);
+      setSelectedShowtime({ time, id: showTimeId });
       onSelectTime(time);
       onRoomSelect(showTimeId);
-
       sessionStorage.setItem("currentShowTimeId", showTimeId);
     },
     [onSelectTime, onRoomSelect],
   );
 
-  // Fetch showtimes with caching
+  // Fetch showtimes with caching and error handling for 404
   useEffect(() => {
     const selectedDay = days.find((day) => day.formatted === selectedDate);
     if (!selectedDay) return;
 
     const fromDate = format(selectedDay.date, "yyyy-MM-dd");
     const toDate = format(addDays(selectedDay.date, 3), "yyyy-MM-dd");
-    const apiKey = `${fromDate}T00:00:00`;
+    const dateKey = format(selectedDay.date, "yyyy-MM-dd");
 
     // Create a cache key based on movie, date and city
     const cacheKey = `${movieId}_${fromDate}_${selectedCity}`;
 
+    // Track if the component is still mounted
+    let isMounted = true;
+
     const fetchShowtimes = async () => {
-      // Check if we have cached data
-      if (showtimesCache.has(cacheKey)) {
-        const cachedCinemas = showtimesCache.get(cacheKey)!;
-        setCinemas(cachedCinemas);
-        onShowtimeAvailability(cachedCinemas.length > 0);
+      // Check cache with enhanced logging
+      const cachedData = getFromCache(cacheKey);
+      if (cachedData) {
+        if (isMounted) {
+          setCinemas(cachedData);
+          setIsLoading(false);
+          onShowtimeAvailability(cachedData.length > 0);
+        }
         return;
       }
 
       setIsLoading(true);
       try {
-        const response = await axios.get(
-          `https://localhost:7119/api/showtime/getshowtimebydates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}`,
+        const response = await api.get(
+          `showtime/getshowtimebydates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}&location=${selectedCity.toUpperCase()}`
         );
-        const showtimes: ShowTime[] = response.data.data[apiKey] || [];
+        if (!isMounted) return;
 
-        if (showtimes.length === 0) {
-          setCinemas([]);
-          showtimesCache.set(cacheKey, []);
+        const dateData = response.data.data[dateKey];
+
+        if (
+          !dateData ||
+          !dateData[selectedCity.toUpperCase()] ||
+          dateData[selectedCity.toUpperCase()].length === 0
+        ) {
+          // Cache the empty result
+          const emptyResult: Cinema[] = [];
+          setCinemas(emptyResult);
+          showtimesCache.set(cacheKey, emptyResult);
           onShowtimeAvailability(false);
           return;
         }
 
-        const dummyCinema: Cinema = {
-          name: "Cinema Eiga",
-          address: "S10.06 Origami, Vinhomes Grandpark, Thủ Đức, Hồ Chí Minh",
-          times: showtimes.map((show) => ({
+        const cinemaResults: Cinema[] = dateData[selectedCity.toUpperCase()].map((theater: Theater) => ({
+          name: theater.nameTheater,
+          address: theater.addressTheater,
+          times: theater.listShowTime.map((show: ShowTime) => ({
             time: format(new Date(show.startTime), "HH:mm"),
             showTimeId: show.showTimeId,
           })),
-        };
+        }));
 
-        const cinemaResult = [dummyCinema];
-        setCinemas(cinemaResult);
-        showtimesCache.set(cacheKey, cinemaResult);
-        onShowtimeAvailability(true);
-      } catch (error) {
-        console.error("Error fetching showtimes:", error);
+        const validCinemas = cinemaResults.filter(cinema =>
+          cinema.name && cinema.times && cinema.times.length > 0
+        );
+
+        // Update state and cache
+        setCinemas(validCinemas);
+        showtimesCache.set(cacheKey, validCinemas);
+        onShowtimeAvailability(validCinemas.length > 0);
+      } catch (error: any) {
+        const emptyResult: Cinema[] = [];
+        setCinemas(emptyResult);
+        showtimesCache.set(cacheKey, emptyResult);
         onShowtimeAvailability(false);
-        setCinemas([]);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
+    // Rest of the effect remains the same
     const timerId = setTimeout(() => {
       fetchShowtimes();
-    }, 100);
+    }, 300);
 
-    return () => clearTimeout(timerId);
+    return () => {
+      isMounted = false;
+      clearTimeout(timerId);
+    };
   }, [selectedCity, selectedDate, days, movieId, onShowtimeAvailability]);
 
-  // Only update parent about availability when cinemas state changes
+  // Update parent about availability whenever cinemas change
   useEffect(() => {
-    onShowtimeAvailability(cinemas.length > 0);
+    const isAvailable = cinemas.length > 0;
+
+    // Only notify parent if availability has changed
+    if (lastAvailabilityRef.current !== isAvailable) {
+      lastAvailabilityRef.current = isAvailable;
+      onShowtimeAvailability(isAvailable);
+    }
   }, [cinemas.length, onShowtimeAvailability]);
 
   return (
@@ -263,8 +301,11 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                 <MenuItem value="hn">
                   {t("showtime_cinema.location.HaNoi")}
                 </MenuItem>
-                <MenuItem value="dn">
-                  {t("showtime_cinema.location.DaNang")}
+                <MenuItem value="bd">
+                  {t("showtime_cinema.location.BinhDuong")}
+                </MenuItem>
+                <MenuItem value="bp">
+                  {t("showtime_cinema.location.BinhPhuoc")}
                 </MenuItem>
               </Select>
             </FormControl>
@@ -301,7 +342,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                       {cinema.times.map((showtime, idx) => (
                         <Button
                           key={idx}
-                          variant={selectedTime === showtime.time ? "contained" : "outlined"}
+                          variant={selectedShowtime?.time === showtime.time ? "contained" : "outlined"}
                           size="small"
                           sx={{
                             fontWeight: "bold",

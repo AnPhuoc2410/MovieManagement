@@ -14,6 +14,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import dayjs from "dayjs";
+import api from "../../apis/axios.config";
 
 interface Promotion {
   promotionId: string;
@@ -37,8 +38,8 @@ const PromotionDetail: React.FC = () => {
 
   useEffect(() => {
     if (id) {
-      axios
-        .get(`https://localhost:7119/api/promotions/${id}`)
+      api
+        .get(`promotions/${id}`)
         .then((response) => {
           setPromotion(response.data);
           setLoading(false);

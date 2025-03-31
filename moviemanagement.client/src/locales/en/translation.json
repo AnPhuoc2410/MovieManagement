@@ -41,7 +41,8 @@
         "title": "MOVIES",
         "now_showing": "Now Showing",
         "coming_soon": "Coming Soon",
-        "special_screening": "Special Screening"
+        "special_screening": "Special Screening",
+        "not_existing": "Phim không tồn tại"
       },
       "theaters": {
         "title": "OUR THEATERS",
@@ -223,7 +224,9 @@
       "location": {
         "HaNoi": "Ha Noi",
         "HCM": "Ho Chi Minh City",
-        "DaNang": "Da Nang"
+        "DaNang": "Da Nang",
+        "BinhDuong": "Binh Duong",
+        "BinhPhuoc": "Binh Phuoc"
       },
       "notification": {
         "loading_showtime": "Loading Showtime",
@@ -248,9 +251,58 @@
       "select_show_time": "Select showtimes",
       "select_seat": "Select seat",
       "payment": "Payment",
-      "success": "Success"
+      "success": "Success",
+      "failed": "Payment cancel"
     },
-
+    "payment": {
+      "timer": "Remaining seat holding time",
+      "total_amount": "Total:",
+      "origin_price": "Original price:",
+      "user_infor": "Customer Information",
+      "confirm": "Confirm booking",
+      "back": "Back",
+      "promotion": {
+        "title": "Promotion",
+        "discount": "Discount",
+        "used": "Discount applied",
+        "notfound": "No promotions available at the moment",
+        "from": "Valid from",
+        "to": "to"
+      },
+      "ticket": {
+        "payment": "Ticket Payment",
+        "infor": "Ticket Information",
+        "price": "Price:",
+        "seat": "Seat:"
+      },
+      "movie": {
+        "default": "Default Movie",
+        "name": "Movie Name:",
+        "description": "Movie Information",
+        "room": "Screening Room:"
+      },
+      "showtime": {
+        "day": "Show Date:",
+        "hour": "Show Time:"
+      }
+    },
+    "movie_seat": {
+      "timer": "Remaining seat holding time",
+      "selection": "Select seat",
+      "continue": "Continue"
+    },
+    "movie_detail": {
+      "description": "DESCRIPTION",
+      "director": "Director:",
+      "actors": "Actors:",
+      "release_date": "Release Date:",
+      "content": "MOVIE CONTENT",
+      "trailer": "WATCH TRAILER",
+      "book_now": "BOOK NOW"
+    },
+    "seat_cinema": {
+      "screening": "SCREEN"
+    },
     "common": {
       "button": {
         "action": {
@@ -264,12 +316,24 @@
           "fullname": "Full Name",
           "email": "Email",
           "phone": "Phone Number",
+          "id_card": "ID Card",
           "status": "Status",
           "address": "Address",
           "join_date": "Join Date",
-          "points": "Points"
+          "points": "Points",
+          "gender": "Gender"
         },
         "actions": "Actions"
+      },
+      "stats": {
+        "total_members": "Total Members",
+        "total_employees": "Total Employees",
+        "active_members": "Active Members",
+        "inactive_members": "Inactive Members",
+        "total_points": "Total Points",
+        "new_members_in30days": "New Members In 30 Days",
+        "male_members": "Male Members",
+        "female_members": "Female Members"
       }
     },
     "toast": {

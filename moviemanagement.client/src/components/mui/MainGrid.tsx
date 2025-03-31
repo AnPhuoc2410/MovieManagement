@@ -10,7 +10,7 @@ import StatCard, { StatCardProps } from "./StatCard";
 
 const data: StatCardProps[] = [
   {
-    title: "Users",
+    title: "Members",
     value: "14k",
     interval: "Last 30 days",
     trend: "up",

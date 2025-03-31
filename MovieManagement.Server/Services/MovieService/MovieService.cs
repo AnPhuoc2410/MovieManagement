@@ -7,6 +7,7 @@ using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Repositories;
 using MovieManagement.Server.Services.CategoryService;
 using System.Drawing.Printing;
+using static MovieManagement.Server.Models.Enums.UserEnum;
 
 namespace MovieManagement.Server.Services.MovieService
 {
@@ -24,20 +25,33 @@ namespace MovieManagement.Server.Services.MovieService
         public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
         {
             var movies = _mapper.Map<List<MovieDto>>(await _unitOfWork.MovieRepository.GetAllAsyncDeletedFalse());
-            if (movies == null)
+            if(movies == null)
             {
-                throw new NotFoundException("Movies do not found!");
+                throw new NotFoundException("Movies not found!");
             }
             return movies;
         }
+
         public async Task<IEnumerable<MoviePreview>> GetPageAsync(int page, int pageSize)
         {
+            if (page < 0 || pageSize < 1)
+            {
+                throw new BadRequestException("Page and PageSize is invalid");
+            }
             var movies = await _unitOfWork.MovieRepository.GetMovieByPage(page, pageSize);
+            if(movies == null)
+            {
+                throw new NotFoundException("Movies not found!");
+            }
             return _mapper.Map<IEnumerable<MoviePreview>>(movies);
         }
 
         public async Task<MovieDto> GetMovieByIdAsync(Guid movieId)
         {
+            if(movieId == Guid.Empty)
+            {
+                throw new BadRequestException("MovieId is invalid");
+            }
             var movie = await _unitOfWork.MovieRepository.GetMovieById(movieId);
             if (movie == null)
             {
@@ -55,6 +69,19 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<MovieDto> CreateMovieAsync(Guid employeeId, MovieRequest movieRequest)
         {
+            if (employeeId == Guid.Empty)
+            {
+                throw new BadRequestException("EmployeeId is invalid");
+            }
+            var existingEmployee = await _unitOfWork.UserRepository.GetByIdAsync(employeeId);
+            if (existingEmployee == null)
+            {
+                throw new NotFoundException("Employee cannot found!");
+            }
+            if (existingEmployee.Role == Role.Member)
+            {
+                throw new BadRequestException("Employee is not member");
+            }
 
             movieRequest.UserId = employeeId;
             var movie = _mapper.Map<Movie>(movieRequest);
@@ -62,7 +89,7 @@ namespace MovieManagement.Server.Services.MovieService
             var response = _mapper.Map<MovieDto>(await _unitOfWork.MovieRepository.CreateAsync(movie));
             //var response = _mapper.Map<MovieDto>(movie);
 
-            if(movieRequest.CategoriesIds.Count != 0)
+            if (movieRequest.CategoriesIds.Count != 0)
                 foreach (var categoryId in movieRequest.CategoriesIds)
                 {
                     var movieCategory = new MovieCategory
@@ -79,6 +106,11 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<MovieDto> UpdateMovieAsync(Guid movieId, MovieRequest movieRequest)
         {
+            if (movieId == Guid.Empty)
+            {
+                throw new BadRequestException("MovieId is invalid");
+            }
+
             var updateMovie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
 
             movieRequest.UserId = updateMovie.UserId;
@@ -113,52 +145,97 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<bool> DeleteMovieAsync(Guid movieId)
         {
-            try
-            {
-                var existingMovie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
-                if (existingMovie == null)
-                    throw new NotFoundException("Movie cannot found!");
-                return await _unitOfWork.MovieRepository.DeleteAsync(movieId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
-            }
+            var existingMovie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
+            if (existingMovie == null)
+                throw new NotFoundException("Movie cannot found!");
+            return await _unitOfWork.MovieRepository.DeleteAsync(movieId);
         }
 
         public async Task<IEnumerable<MoviePreview>> GetMoviesNowShowing(int page, int pageSize)
         {
+            if(page < 0 || pageSize < 1)
+            {
+                throw new BadRequestException("Page and PageSize is invalid");
+            }
             var moviesNowShowing = await _unitOfWork.MovieRepository.GetMoviesNowShowing(page, pageSize);
+            if(moviesNowShowing == null)
+            {
+                throw new NotFoundException("Movies not found!");
+            }
             return _mapper.Map<IEnumerable<MoviePreview>>(moviesNowShowing);
         }
 
         public async Task<IEnumerable<MoviePreview>> GetMoviesUpComing(int page, int pageSize)
         {
+            if (page < 0 || pageSize < 1)
+            {
+                throw new BadRequestException("Page and PageSize is invalid");
+            }
             var moviesUpComing = await _unitOfWork.MovieRepository.GetMoviesUpComing(page, pageSize);
+            if(moviesUpComing == null)
+            {
+                throw new NotFoundException("Movies not found!");
+            }
             return _mapper.Map<IEnumerable<MoviePreview>>(moviesUpComing);
         }
 
         public async Task<IEnumerable<MoviePreview>> GetMoviesByNameRelativePage(string name, int page, int pageSize)
         {
+            if(string.IsNullOrEmpty(name))
+            {
+                throw new BadRequestException("Name is invalid");
+            }
+            if (page < 0 || pageSize < 1)
+            {
+                throw new BadRequestException("Page and PageSize is invalid");
+            }
             var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelativePage(name, page, pageSize);
+            if(movies == null)
+            {
+                throw new NotFoundException("Movies not found!");
+            }
             return _mapper.Map<IEnumerable<MoviePreview>>(movies);
         }
 
         public async Task<MovieDto> SetMovieDeleted(Guid movieId)
         {
+            if(movieId == Guid.Empty)
+            {
+                throw new BadRequestException("MovieId is invalid");
+            }
             var movie = await _unitOfWork.MovieRepository.SetMovieDeleted(movieId);
             return _mapper.Map<MovieDto>(movie);
         }
 
         public async Task<IEnumerable<MovieDto>> GetMoviesByCategory(Guid categoryId, int page, int pageSize)
         {
+            if(categoryId == Guid.Empty)
+            {
+                throw new BadRequestException("CategoryId is invalid");
+            }
+            if (page < 0 || pageSize < 1)
+            {
+                throw new BadRequestException("Page and PageSize is invalid");
+            }
             var movies = await _unitOfWork.MovieRepository.GetMoviesByCategory(categoryId, page, pageSize);
+            if(movies == null)
+            {
+                throw new NotFoundException("Movies not found!");
+            }
             return _mapper.Map<IEnumerable<MovieDto>>(movies);
         }
 
         public async Task<IEnumerable<MoviePreview>> GetMoviesByNameRelative(string searchValue)
         {
+            if(string.IsNullOrEmpty(searchValue))
+            {
+                throw new BadRequestException("Search value is invalid");
+            }
             var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelative(searchValue);
+            if(movies == null)
+            {
+                throw new NotFoundException("Movies not found!");
+            }
             return _mapper.Map<IEnumerable<MoviePreview>>(movies);
         }
     }

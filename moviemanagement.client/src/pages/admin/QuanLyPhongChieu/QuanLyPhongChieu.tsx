@@ -9,6 +9,7 @@ import RoomTable, { Room } from "./BangRoom";
 import Loader from "../../../components/shared/Loading/LoadingScreen";
 import ChiTietPhongChieu from "./ChiTietPhongChieu";
 import CreateRoom from "./CreateRoom";
+import api from "../../../apis/axios.config";
 
 const QuanLyPhongChieu: React.FC = () => {
   const location = useLocation();
@@ -20,12 +21,12 @@ const QuanLyPhongChieu: React.FC = () => {
   // Use the new API endpoint instead of the mock API
   const fetchRooms = async (): Promise<Room[]> => {
     try {
-      const response = await axios.get('https://localhost:7119/api/room/all');
+      const response = await api.get('room/all');
       console.log("API Response:", response.data);
-      
+
       // The API returns data in a nested 'data' property
       const rooms = response.data.data || [];
-      
+
       // Make sure each room has the expected properties
       return rooms.map((room: any) => ({
         roomId: room.roomId,

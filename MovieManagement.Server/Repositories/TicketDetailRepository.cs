@@ -16,7 +16,7 @@ namespace MovieManagement.Server.Repositories
             _context = context;
         }
 
-        public async Task<List<TicketDetail>> GetTicketByBillIdAsync(long billId)
+        public async Task<List<TicketDetail>> GetTicketByBillIdAsync(Guid billId)
         {
             return await _context.TicketDetails
                 .Where(b => b.BillId == billId)
@@ -36,7 +36,7 @@ namespace MovieManagement.Server.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(long billId)
+        public async Task<List<PurchasedTicketResponse>> GetPurchasedTicketsByBillId(Guid billId)
         {
             return await _context.Bills
                 .Where(b => b.BillId == billId)
