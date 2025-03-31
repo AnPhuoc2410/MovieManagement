@@ -1,9 +1,9 @@
-import { 
-  Typography, 
-  Grid, 
-  Card, 
-  Box, 
-  IconButton, 
+import {
+  Typography,
+  Grid,
+  Card,
+  Box,
+  IconButton,
   Divider,
   Paper,
   Container,
@@ -33,6 +33,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useQuery } from "react-query";
+import api from "../../../apis/axios.config";
 
 export interface Room {
   roomId: string;
@@ -67,7 +68,7 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
 
   // Fetch seat types
   const fetchSeatTypes = async () => {
-    const response = await axios.get(`https://localhost:7119/api/seattype/all`);
+    const response = await api.get(`seattype/all`);
     return response.data.data || [];
   };
 
@@ -122,8 +123,8 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
 
     try {
       // Call the API to create seat for the room
-      const response = await axios.post(
-        `https://localhost:7119/api/seat/createbyroomid?roomId=${selectedRoomId}&seatTypeId=${selectedSeatTypeId}`,
+      const response = await api.post(
+        `seat/createbyroomid?roomId=${selectedRoomId}&seatTypeId=${selectedSeatTypeId}`,
         '',
         {
           headers: {
@@ -191,8 +192,8 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
 
     try {
       // Call the API to delete all seats for the room
-      const response = await axios.delete(
-        `https://localhost:7119/api/seat/deletebyroomid?roomId=${selectedRoomId}`,
+      const response = await api.delete(
+        `seat/deletebyroomid?roomId=${selectedRoomId}`,
         {
           headers: {
             "accept": "text/plain"
@@ -230,14 +231,14 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
           Danh sách phòng chiếu
         </Typography>
       </Box>
-      
+
       <Paper elevation={0} sx={{ borderRadius: 2, bgcolor: '#f8f9fa', p: 3 }}>
         <Grid container spacing={3}>
           {rooms.map((room) => (
             <Grid item xs={12} sm={6} md={4} key={room.roomId}>
-              <Card 
-                elevation={3} 
-                sx={{ 
+              <Card
+                elevation={3}
+                sx={{
                   borderRadius: 3,
                   overflow: 'hidden',
                   transition: 'all 0.3s ease',
@@ -250,9 +251,9 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
                   flexDirection: 'column'
                 }}
               >
-                <Box 
-                  sx={{ 
-                    bgcolor: 'primary.main', 
+                <Box
+                  sx={{
+                    bgcolor: 'primary.main',
                     color: 'white',
                     py: 2,
                     px: 2.5,
@@ -266,11 +267,11 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
                     <Typography variant="h6" fontWeight="bold">{room.roomName}</Typography>
                   </Box>
                   <Tooltip title="Chỉnh sửa phòng">
-                    <IconButton 
-                      size="small" 
+                    <IconButton
+                      size="small"
                       onClick={() => handleEditClick(room.roomId)}
-                      sx={{ 
-                        color: 'white', 
+                      sx={{
+                        color: 'white',
                         bgcolor: 'rgba(255,255,255,0.2)',
                         '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' }
                       }}
@@ -279,18 +280,18 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
                     </IconButton>
                   </Tooltip>
                 </Box>
-                
-                <Box sx={{ 
-                  p: 3, 
-                  display: 'flex', 
+
+                <Box sx={{
+                  p: 3,
+                  display: 'flex',
                   flexDirection: 'column',
-                  alignItems: 'center', 
+                  alignItems: 'center',
                   justifyContent: 'center',
                   flexGrow: 1
                 }}>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
                     justifyContent: 'center',
                     mb: 2
                   }}>
@@ -302,28 +303,28 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
                       ghế
                     </Typography>
                   </Box>
-                  
+
                   <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Button 
+                    <Button
                       variant="outlined"
                       color="primary"
                       fullWidth
                       onClick={() => handleEditClick(room.roomId)}
-                      sx={{ 
+                      sx={{
                         borderRadius: 2,
                         py: 1
                       }}
                     >
                       Xem chi tiết
                     </Button>
-                    
+
                     {room.total === 0 ? (
-                      <Button 
+                      <Button
                         variant="contained"
                         color="secondary"
                         fullWidth
                         onClick={() => handleCreateSeatsClick(room.roomId)}
-                        sx={{ 
+                        sx={{
                           borderRadius: 2,
                           py: 1
                         }}
@@ -333,12 +334,12 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
                       </Button>
                     ) : (
                       <>
-                        <Button 
+                        <Button
                           variant="outlined"
                           color="secondary"
                           fullWidth
                           onClick={() => handleCreateSeatsClick(room.roomId)}
-                          sx={{ 
+                          sx={{
                             borderRadius: 2,
                             py: 1
                           }}
@@ -346,12 +347,12 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
                         >
                           Tạo thêm ghế
                         </Button>
-                        <Button 
+                        <Button
                           variant="outlined"
                           color="error"
                           fullWidth
                           onClick={() => handleDeleteSeatsClick(room.roomId)}
-                          sx={{ 
+                          sx={{
                             borderRadius: 2,
                             py: 1
                           }}
@@ -370,25 +371,25 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
       </Paper>
 
       {/* Dialog for creating seats */}
-      <Dialog 
-        open={openDialog} 
+      <Dialog
+        open={openDialog}
         onClose={handleCloseDialog}
         fullWidth
         maxWidth="xs"
       >
         <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white', pb: 2 }}>
           <EventSeatIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
-          {rooms.find(r => r.roomId === selectedRoomId)?.total === 0 ? 
-            "Tạo ghế cho phòng" : 
+          {rooms.find(r => r.roomId === selectedRoomId)?.total === 0 ?
+            "Tạo ghế cho phòng" :
             "Tạo thêm ghế cho phòng"}
         </DialogTitle>
         <DialogContent sx={{ pt: 3, pb: 2 }}>
           <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
-            {rooms.find(r => r.roomId === selectedRoomId)?.total === 0 ? 
-              "Chọn loại ghế để tạo cho phòng chiếu. Tất cả ghế trong phòng sẽ được tạo với loại ghế này." : 
+            {rooms.find(r => r.roomId === selectedRoomId)?.total === 0 ?
+              "Chọn loại ghế để tạo cho phòng chiếu. Tất cả ghế trong phòng sẽ được tạo với loại ghế này." :
               "Tạo thêm ghế cho phòng chiếu hiện có. Ghế mới sẽ được thêm vào với loại ghế được chọn."}
           </Typography>
-          
+
           <FormControl fullWidth sx={{ mt: 1, mb: 2 }}>
             <InputLabel>Loại ghế</InputLabel>
             <Select
@@ -398,8 +399,8 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
               disabled={isLoadingSeatTypes || creating}
             >
               {seatTypes?.map((type) => (
-                <MenuItem 
-                  key={type.seatTypeId} 
+                <MenuItem
+                  key={type.seatTypeId}
                   value={type.seatTypeId}
                   sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
                 >
@@ -412,13 +413,13 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
               ))}
             </Select>
           </FormControl>
-          
+
           {getSelectedSeatTypeName() && (
-            <Box sx={{ 
-              p: 2, 
-              bgcolor: '#f5f5f5', 
-              borderRadius: 1, 
-              display: 'flex', 
+            <Box sx={{
+              p: 2,
+              bgcolor: '#f5f5f5',
+              borderRadius: 1,
+              display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
               mb: 2
@@ -431,13 +432,13 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
               </Typography>
             </Box>
           )}
-          
+
           {createSuccess && (
             <Alert severity="success" sx={{ mb: 2 }}>
               Tạo ghế thành công!
             </Alert>
           )}
-          
+
           {createError && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {createError}
@@ -445,14 +446,14 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
           )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button 
+          <Button
             onClick={handleCloseDialog}
             disabled={creating}
             variant="outlined"
           >
             Hủy
           </Button>
-          <Button 
+          <Button
             onClick={handleCreateSeats}
             variant="contained"
             disabled={creating || !selectedSeatTypeId}
@@ -464,8 +465,8 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
       </Dialog>
 
       {/* Dialog for deleting seats */}
-      <Dialog 
-        open={openDeleteDialog} 
+      <Dialog
+        open={openDeleteDialog}
         onClose={handleCloseDeleteDialog}
         fullWidth
         maxWidth="xs"
@@ -478,10 +479,10 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
           <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
             Bạn có chắc chắn muốn xóa tất cả ghế trong phòng này? Hành động này không thể hoàn tác.
           </Typography>
-          
-          <Box sx={{ 
-            p: 2, 
-            bgcolor: '#fff8e1', 
+
+          <Box sx={{
+            p: 2,
+            bgcolor: '#fff8e1',
             borderRadius: 1,
             border: '1px solid #ffe57f',
             mb: 2
@@ -490,13 +491,13 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
               <strong>Lưu ý:</strong> Việc xóa tất cả ghế sẽ ảnh hưởng đến các lịch chiếu nếu có. Hãy chắc chắn rằng phòng này không còn được sử dụng cho bất kỳ lịch chiếu nào.
             </Typography>
           </Box>
-          
+
           {deleteSuccess && (
             <Alert severity="success" sx={{ mb: 2 }}>
               Xóa ghế thành công!
             </Alert>
           )}
-          
+
           {deleteError && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {deleteError}
@@ -504,14 +505,14 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
           )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button 
+          <Button
             onClick={handleCloseDeleteDialog}
             disabled={deleting}
             variant="outlined"
           >
             Hủy
           </Button>
-          <Button 
+          <Button
             onClick={handleDeleteSeats}
             variant="contained"
             color="error"
