@@ -117,29 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="One Piece Film: Red" xml:space="preserve">
-    <value>One Piece Film: Red</value>
-  </data>
-  <data name="Mèo Đi Hia: Điều Ước Cuối Cùng" xml:space="preserve">
-    <value>Puss in Boots: The Last Wish</value>
-  </data>
-  <data name="Vùng Đất Linh Hồn" xml:space="preserve">
-    <value>Spirit Land</value>
-  </data>
-  <data name="Thiếu Niên Và Chim Diệc" xml:space="preserve">
-    <value>The Boy and the Heron</value>
-  </data>
-  <data name="Loài Mèo Trả Ơn" xml:space="preserve">
-    <value>The Cat Returns the Gratitude</value>
-  </data>
   <data name="Chúa Tể Của Những Chiếc Nhẫn: Cuộc Chiến Của Rohirrim" xml:space="preserve">
     <value>The Lord of the Rings: The War of the Rohirrim</value>
-  </data>
-  <data name="Your Name" xml:space="preserve">
-    <value>Your Name</value>
-  </data>
-  <data name="The Wind Rises - Gió Nổi" xml:space="preserve">
-    <value>The Wind Rises</value>
   </data>
   <data name="Kung Fu Panda 4" xml:space="preserve">
     <value>Kung Fu Panda 4</value>
@@ -147,20 +126,14 @@
   <data name="Belle: Rồng Và Công Chúa Tàn Nhang" xml:space="preserve">
     <value>Belle: The Dragon and the Freckled Princess</value>
   </data>
-  <data name="content" xml:space="preserve">
+  <data name="Cuộc phiêu lưu mới bắt đầu với Luffy và thủy thủ đoàn khi siêu sao nhạc pop bí ẩn Uta tiết lộ danh tính của cô và khởi động kế hoạch lầm lạc vì hòa bình thế giới." xml:space="preserve">
     <value>A new adventure begins for Luffy and his crew when mysterious pop superstar Uta reveals her identity and sets in motion a misguided plan for world peace.</value>
   </data>
   <data name="Khi những chiến công huyền thoại khiến chín mạng sống của cậu chỉ còn một, Mèo Đi Hia lên đường tìm Ngôi Sao Ước kỳ ​​diệu trong cuộc phiêu lưu táo bạo nhất từ ​​trước đến nay." xml:space="preserve">
     <value>When legendary feats leave his nine lives reduced to one, Puss in Boots sets out to find the magical Wishing Star in his most daring adventure yet.</value>
   </data>
-  <data name="Trên đường chuyển đến ngôi nhà mới, Chihiro và bố mẹ tình cờ đi qua một đường hầm bí ẩn. Ở phía bên kia đường hầm, họ tìm thấy một ngọn đồi rộng lớn dẫn lối đến một thị trấn kỳ lạ. Nhưng đây không phải là nơi con người nên đặt chân đến. Khi bố mẹ Chihiro ăn những món ăn không được phép ăn ở trên quầy, họ bị nguyền rủa và biến thành heo. Chỉ còn lại một mình, Chihiro buộc phải tuân theo hai điều kiện để sinh tồn trong thị trấn bí ẩn này: làm việc cho mụ phù thủy Yubaba và từ bỏ tên của mình. Mất tên cũng có nghĩa là mất liên kết với thế giới con người, nhưng Chihiro không từ bỏ hy vọng. Dưới cái tên Sen, cô bắt đầu làm việc tại một nhà tắm, nơi cô được Haku, Lin, Kamaji và những người khác giúp đỡ, từng bước đối mặt với những thử thách và lấy lại sức mạnh để tiếp tục sống." xml:space="preserve">
-    <value>On the way to their new home, Chihiro and her parents stumble upon a mysterious tunnel. On the other side of the tunnel, they find a large hill that leads to a strange town. But this is not a place where humans should set foot. When Chihiro's parents eat the forbidden food on the counter, they are cursed and turned into pigs. Left alone, Chihiro is forced to follow two conditions to survive in this mysterious town: work for the witch Yubaba and give up her name. Losing her name also means losing her connection to the human world, but Chihiro does not give up hope. Under the name Sen, she begins working at a bathhouse, where she is helped by Haku, Lin, Kamaji and others, step by step facing challenges and regaining the strength to continue living.</value>
-  </data>
   <data name="Đến từ Studio Ghibli và đạo diễn Miyazaki Hayao, bộ phim là câu chuyện về hành trình kỳ diệu của cậu thiếu niên Mahito trong một thế giới hoàn toàn mới lạ. Trải qua nỗi đau mất mẹ cùng mối quan hệ chẳng mấy vui vẻ với gia đình cũng như bạn học, Mahito dần cô lập bản thân... cho đến khi cậu gặp một chú chim diệc biết nói kỳ lạ. Mahito cùng chim diệc bước vào một tòa tháp bí ẩn, nơi một thế giới thần kỳ mở ra, đưa cậu gặp gỡ những người mình yêu thương... trong một nhân dạng hoàn toàn khác." xml:space="preserve">
     <value>From Studio Ghibli and directed by Miyazaki Hayao, the film follows the magical journey of a young boy named Mahito in a completely new world. Experiencing the pain of losing his mother and having an unhappy relationship with his family and classmates, Mahito gradually isolates himself... until he meets a strange talking heron. Mahito and the heron enter a mysterious tower, where a magical world opens up, leading him to meet the people he loves... in a completely different identity.</value>
-  </data>
-  <data name="Yoshioka Haru là một nữ sinh trung học bình thường, nhưng mọi thứ thay đổi hoàn toàn khi cô cứu một chú mèo khỏi bị xe tông. Chú mèo đó lại là Lune, hoàng tử của Vương quốc Mèo. Để cảm ơn cô, Vua Mèo quyết định mời Haru đến vương quốc của họ. Sau khi Haru nghe theo lời dẫn dắt của một giọng nói bí ẩn, cô đã gặp mèo mập Muta để tìm đến Văn phòng Mèo, nơi cô gặp Baron – quý ông mèo thanh lịch và bức tượng đá sống biết bay - Toto. Cuối cùng, Haru bị cuốn đến Vương quốc Mèo và suýt phải kết hôn với Lune theo kế hoạch của Vua Mèo. Nhưng với sự giúp đỡ của Baron và những người bạn, cô đã thoát khỏi âm mưu và tạo ra một trận náo loạn khó quên tại vương quốc này." xml:space="preserve">
-    <value>Yoshioka Haru is an ordinary high school girl, but everything changes when she saves a cat from being hit by a car. That cat turns out to be Lune, the prince of the Cat Kingdom. To thank her, the Cat King decides to invite Haru to their kingdom. After Haru follows the guidance of a mysterious voice, she meets the fat cat Muta to find her way to the Cat Office, where she meets the elegant cat Baron and the flying living stone statue Toto. Haru ends up in the Cat Kingdom and is almost forced to marry Lune according to the Cat King's plan. But with the help of Baron and her friends, she escapes the plot and creates an unforgettable chaos in the kingdom.</value>
   </data>
   <data name="Lấy bối cảnh 261 năm trước các sự kiện xảy ra trong Chúa tể những chiếc nhẫn: Hai tòa tháp, Cuộc chiến của Rohirrim là câu chuyện xoay quanh Helm Hammerhand, vị vua huyền thoại của Rohan, người phải đứng lên chống lại đoàn quân của Dunlendings." xml:space="preserve">
     <value>Set 261 years before the events of The Lord of the Rings: The Two Towers, The War of the Rohirrim follows Helm Hammerhand, the legendary king of Rohan, who must stand against the armies of the Dunlendings.</value>
@@ -171,10 +144,34 @@
   <data name="Bộ phim dựa trên cuốn tiểu thuyết giả tưởng cùng tên, lấy bối cảnh nước Nhật từ những năm 1918 tới khi Thế chiến II kết thúc, với nhân vật chính là Horikoshi Jiro, một kỹ sư chế tạo máy bay của Mitsubishi. Bộ phim là hành trình theo đuổi giấc mơ từ thuở bé của Jiro, khi anh mang trong mình khao khát cháy bỏng được chinh phục bầu trời. Khi điều kiện sức khoẻ không cho phép Jiro được làm phi công, anh quyết định trở thành một kỹ sư hàng không." xml:space="preserve">
     <value>The film is based on the fantasy novel of the same name, set in Japan from 1918 to the end of World War II, with the main character being Horikoshi Jiro, an aircraft engineer for Mitsubishi. The film is Jiro's journey to pursue his childhood dream, when he had a burning desire to conquer the sky. When his health condition did not allow Jiro to be a pilot, he decided to become an aeronautical engineer.</value>
   </data>
-  <data name="Sau khi Po được chọn trở thành Thủ lĩnh tinh thần của Thung lũng Hòa bình, anh cần tìm và huấn luyện một Chiến binh Rồng mới, trong khi một mụ phù thủy độc ác lên kế hoạch triệu hồi lại tất cả những kẻ phản diện bậc thầy mà Po đã đánh bại về cõi linh hồn." xml:space="preserve">
-    <value>After Po is chosen to become the Spiritual Leader of the Valley of Peace, he must find and train a new Dragon Warrior, while an evil witch plans to recall all the master villains Po has defeated to the spirit realm.</value>
+  <data name="One Piece Film: Red" xml:space="preserve">
+    <value>One Piece Film: Red</value>
+  </data>
+  <data name="Vùng Đất Linh Hồn" xml:space="preserve">
+    <value>Spirit Land</value>
+  </data>
+  <data name="Thiếu Niên Và Chim Diệc" xml:space="preserve">
+    <value>The Boy and the Heron</value>
+  </data>
+  <data name="Loài Mèo Trả Ơn" xml:space="preserve">
+    <value>The Cat Returns the Gratitude</value>
+  </data>
+  <data name="Your Name" xml:space="preserve">
+    <value>Your Name</value>
+  </data>
+  <data name="The Wind Rises - Gió Nổi" xml:space="preserve">
+    <value>The Wind Rises</value>
+  </data>
+  <data name="Trên đường chuyển đến ngôi nhà mới, Chihiro và bố mẹ tình cờ đi qua một đường hầm bí ẩn. Ở phía bên kia đường hầm, họ tìm thấy một ngọn đồi rộng lớn dẫn lối đến một thị trấn kỳ lạ. Nhưng đây không phải là nơi con người nên đặt chân đến. Khi bố mẹ Chihiro ăn những món ăn không được phép ăn ở trên quầy, họ bị nguyền rủa và biến thành heo. Chỉ còn lại một mình, Chihiro buộc phải tuân theo hai điều kiện để sinh tồn trong thị trấn bí ẩn này: làm việc cho mụ phù thủy Yubaba và từ bỏ tên của mình. Mất tên cũng có nghĩa là mất liên kết với thế giới con người, nhưng Chihiro không từ bỏ hy vọng. Dưới cái tên Sen, cô bắt đầu làm việc tại một nhà tắm, nơi cô được Haku, Lin, Kamaji và những người khác giúp đỡ, từng bước đối mặt với những thử thách và lấy lại sức mạnh để tiếp tục sống." xml:space="preserve">
+    <value>On the way to their new home, Chihiro and her parents stumble upon a mysterious tunnel. On the other side of the tunnel, they find a large hill that leads to a strange town. But this is not a place where humans should set foot. When Chihiro's parents eat the forbidden food on the counter, they are cursed and turned into pigs. Left alone, Chihiro is forced to follow two conditions to survive in this mysterious town: work for the witch Yubaba and give up her name. Losing her name also means losing her connection to the human world, but Chihiro does not give up hope. Under the name Sen, she begins working at a bathhouse, where she is helped by Haku, Lin, Kamaji and others, step by step facing challenges and regaining the strength to continue living.</value>
+  </data>
+  <data name="Yoshioka Haru là một nữ sinh trung học bình thường, nhưng mọi thứ thay đổi hoàn toàn khi cô cứu một chú mèo khỏi bị xe tông. Chú mèo đó lại là Lune, hoàng tử của Vương quốc Mèo. Để cảm ơn cô, Vua Mèo quyết định mời Haru đến vương quốc của họ. Sau khi Haru nghe theo lời dẫn dắt của một giọng nói bí ẩn, cô đã gặp mèo mập Muta để tìm đến Văn phòng Mèo, nơi cô gặp Baron – quý ông mèo thanh lịch và bức tượng đá sống biết bay - Toto. Cuối cùng, Haru bị cuốn đến Vương quốc Mèo và suýt phải kết hôn với Lune theo kế hoạch của Vua Mèo. Nhưng với sự giúp đỡ của Baron và những người bạn, cô đã thoát khỏi âm mưu và tạo ra một trận náo loạn khó quên tại vương quốc này." xml:space="preserve">
+    <value>Yoshioka Haru is an ordinary high school girl, but everything changes when she saves a cat from being hit by a car. That cat turns out to be Lune, the prince of the Cat Kingdom. To thank her, the Cat King decides to invite Haru to their kingdom. After Haru follows the guidance of a mysterious voice, she meets the fat cat Muta to find her way to the Cat Office, where she meets the elegant cat Baron and the flying living stone statue Toto. Haru ends up in the Cat Kingdom and is almost forced to marry Lune according to the Cat King's plan. But with the help of Baron and her friends, she escapes the plot and creates an unforgettable chaos in the kingdom.</value>
   </data>
   <data name="Suzu là một cô bé 17 tuổi sống cùng cha tại phần ngoại ô hẻo lánh ở tỉnh Kochi. Cô thích ca hát nhưng phải tạm gác lại niềm đam mê sau khi người mẹ qua đời, cũng vì thế mà mối quan hệ giữa cha cô và cô càng xa cách. Khi Suzu trở nên tách biệt với thế giới xung quanh và chỉ còn âm nhạc là mục đích sống duy nhất của cô, cô đã được mời đến một thế giới ảo mang tên 'U' với 5 tỷ người dùng. Tại nơi đây, Suzu đã bắt đầu cuộc sống mới dưới thân phận 'Belle' và mang tiếng hát đến toàn thế giới. Cho đến khi một sinh vật huyền bí xuất hiện và làm đảo lộn cuộc sống của cô..." xml:space="preserve">
     <value>Suzu is a 17-year-old girl who lives with her father in a remote suburb of Kochi Prefecture. She loves singing but had to put her passion aside after her mother passed away, which caused the relationship between her and her father to become more distant. When Suzu became isolated from the world around her and only music was her purpose in life, she was invited to a virtual world called 'U' with 5 billion users. There, Suzu started a new life as 'Belle' and brought her singing to the world. Until a mysterious creature appeared and turned her life upside down...</value>
+  </data>
+  <data name="Mèo Đi Hia: Điều Ước Cuối Cùng" xml:space="preserve">
+    <value>Puss in Boots: The Last Wish</value>
   </data>
 </root>

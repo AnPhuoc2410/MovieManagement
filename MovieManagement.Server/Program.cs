@@ -96,9 +96,10 @@ namespace MovieManagement.Server
                 {
                     new CultureInfo("en"),
                     new CultureInfo("vi"),
+                    new CultureInfo("ja"),
                 };
 
-                options.DefaultRequestCulture = new RequestCulture("vi");
+                options.DefaultRequestCulture = new RequestCulture("en");
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
             });

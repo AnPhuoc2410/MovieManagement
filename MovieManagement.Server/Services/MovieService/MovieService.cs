@@ -14,12 +14,14 @@ namespace MovieManagement.Server.Services.MovieService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IStringLocalizer _localizer;
+        private readonly IStringLocalizer _localizerMovieTranslate;
+        private readonly IStringLocalizer _localizerCategoryTranslate;
         public MovieService(IUnitOfWork unitOfWork, IMapper mapper, IStringLocalizerFactory factory)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _localizer = factory.Create("MovieResource", typeof(MovieResource).Assembly.FullName);
+            _localizerMovieTranslate = factory.Create("MovieResource", typeof(MovieResource).Assembly.FullName);
+            _localizerCategoryTranslate = factory.Create("CategoryResource", typeof(CategoryResource).Assembly.FullName);
         }
 
         public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
@@ -39,24 +41,26 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new BadRequestException("Page and PageSize is invalid");
             }
             var movies = await _unitOfWork.MovieRepository.GetMovieByPage(page, pageSize);
+
             if (movies == null)
             {
                 throw new NotFoundException("Movies not found!");
             }
-            return _mapper.Map<IEnumerable<MoviePreview>>(movies);
+
+            List<Movie> translationMovies = new List<Movie>();
+
+            foreach(var movie in movies)
+            {
+                movie.MovieName = _localizerMovieTranslate[movie.MovieName];
+                movie.Content = _localizerMovieTranslate[movie.Content];
+                translationMovies.Add(movie);
+            }
+
+            return _mapper.Map<IEnumerable<MoviePreview>>(translationMovies);
         }
 
         public async Task<MovieDto> GetMovieByIdAsync(Guid movieId)
         {
-            var resourcePath = typeof(MovieResource).Assembly.FullName;
-            Console.WriteLine($"Resource Path: {resourcePath}");
-
-            var availableKeys = _localizer.GetAllStrings().Select(s => s.Name);
-            Console.WriteLine("Available Keys: " + string.Join(", ", availableKeys));
-
-            Console.WriteLine($"Current UI Culture: {CultureInfo.CurrentUICulture}");
-            Console.WriteLine($"Current Culture: {CultureInfo.CurrentCulture}");
-
             if (movieId == Guid.Empty)
             {
                 throw new BadRequestException("MovieId is invalid");
@@ -67,14 +71,15 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new NotFoundException("Movie does not found!");
             }
 
-            movie.MovieName = _localizer[movie.MovieName];
-            movie.Content = _localizer["content"];
+            movie.MovieName = _localizerMovieTranslate[movie.MovieName];
+            movie.Content = _localizerMovieTranslate[movie.Content];
 
             var response = _mapper.Map<MovieDto>(movie);
             var movieCategories = _unitOfWork.MovieCategoryRepository.GetMovieCategoriesByMovieId(movieId);
             foreach (var movieCategory in movieCategories)
             {
                 var category = await _unitOfWork.CategoryRepository.GetByIdAsync(movieCategory.CategoryId);
+                category.Name = _localizerCategoryTranslate[category.Name];
                 response.Categories.Add(_mapper.Map<CategoryDto>(category));
             }
             return response;
@@ -171,11 +176,22 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new BadRequestException("Page and PageSize is invalid");
             }
             var moviesNowShowing = await _unitOfWork.MovieRepository.GetMoviesNowShowing(page, pageSize);
+
             if (moviesNowShowing == null)
             {
                 throw new NotFoundException("Movies not found!");
             }
-            return _mapper.Map<IEnumerable<MoviePreview>>(moviesNowShowing);
+
+            List<Movie> translationMovies = new List<Movie>();
+
+            foreach(var movie in moviesNowShowing)
+            {
+                movie.MovieName = _localizerMovieTranslate[movie.MovieName];
+                movie.Content = _localizerMovieTranslate[movie.Content];
+                translationMovies.Add(movie);
+            }
+
+            return _mapper.Map<IEnumerable<MoviePreview>>(translationMovies);
         }
 
         public async Task<IEnumerable<MoviePreview>> GetMoviesUpComing(int page, int pageSize)
@@ -189,7 +205,17 @@ namespace MovieManagement.Server.Services.MovieService
             {
                 throw new NotFoundException("Movies not found!");
             }
-            return _mapper.Map<IEnumerable<MoviePreview>>(moviesUpComing);
+
+            List<Movie> translationMovies = new List<Movie>();
+
+            foreach(var movie in moviesUpComing)
+            {
+                movie.MovieName = _localizerMovieTranslate[movie.MovieName];
+                movie.Content = _localizerMovieTranslate[movie.Content];
+                translationMovies.Add(movie);
+            }
+
+            return _mapper.Map<IEnumerable<MoviePreview>>(translationMovies);
         }
 
         public async Task<IEnumerable<MoviePreview>> GetMoviesByNameRelativePage(string name, int page, int pageSize)
@@ -203,11 +229,22 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new BadRequestException("Page and PageSize is invalid");
             }
             var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelativePage(name, page, pageSize);
+
             if (movies == null)
             {
                 throw new NotFoundException("Movies not found!");
             }
-            return _mapper.Map<IEnumerable<MoviePreview>>(movies);
+
+            List<Movie> translationMovies = new List<Movie>();
+
+            foreach (var movie in movies)
+            {
+                movie.MovieName = _localizerMovieTranslate[movie.MovieName];
+                movie.Content = _localizerMovieTranslate[movie.Content];
+                translationMovies.Add(movie);
+            }
+
+            return _mapper.Map<IEnumerable<MoviePreview>>(translationMovies);
         }
 
         public async Task<MovieDto> SetMovieDeleted(Guid movieId)
@@ -231,11 +268,22 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new BadRequestException("Page and PageSize is invalid");
             }
             var movies = await _unitOfWork.MovieRepository.GetMoviesByCategory(categoryId, page, pageSize);
+
             if (movies == null)
             {
                 throw new NotFoundException("Movies not found!");
             }
-            return _mapper.Map<IEnumerable<MovieDto>>(movies);
+
+            List<Movie> translationMovies = new List<Movie>();
+
+            foreach (var movie in movies)
+            {
+                movie.MovieName = _localizerMovieTranslate[movie.MovieName];
+                movie.Content = _localizerMovieTranslate[movie.Content];
+                translationMovies.Add(movie);
+            }
+
+            return _mapper.Map<IEnumerable<MovieDto>>(translationMovies);
         }
 
         public async Task<IEnumerable<MoviePreview>> GetMoviesByNameRelative(string searchValue)
@@ -245,11 +293,22 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new BadRequestException("Search value is invalid");
             }
             var movies = await _unitOfWork.MovieRepository.GetMoviesByNameRelative(searchValue);
+
             if (movies == null)
             {
                 throw new NotFoundException("Movies not found!");
             }
-            return _mapper.Map<IEnumerable<MoviePreview>>(movies);
+
+            List<Movie> translationMovies = new List<Movie>();
+
+            foreach (var movie in movies)
+            {
+                movie.MovieName = _localizerMovieTranslate[movie.MovieName];
+                movie.Content = _localizerMovieTranslate[movie.Content];
+                translationMovies.Add(movie);
+            }
+
+            return _mapper.Map<IEnumerable<MoviePreview>>(translationMovies);
         }
     }
 }
