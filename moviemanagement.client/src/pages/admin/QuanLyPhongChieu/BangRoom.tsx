@@ -224,11 +224,21 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-        <TheaterComedyIcon sx={{ fontSize: 32, color: 'primary.main', mr: 2 }} />
-        <Typography variant="h4" fontWeight="bold">
-          Danh sách phòng chiếu
-        </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <TheaterComedyIcon sx={{ fontSize: 32, color: 'primary.main', mr: 2 }} />
+          <Typography variant="h4" fontWeight="bold">
+            Danh sách phòng chiếu
+          </Typography>
+        </Box>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          startIcon={<AddIcon />}
+          onClick={handleCreateRoomClick}
+        >
+          Tạo phòng chiếu mới
+        </Button>
       </Box>
       
       <Paper elevation={0} sx={{ borderRadius: 2, bgcolor: '#f8f9fa', p: 3 }}>
@@ -265,19 +275,6 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
                     <ChairIcon sx={{ mr: 1 }} />
                     <Typography variant="h6" fontWeight="bold">{room.roomName}</Typography>
                   </Box>
-                  <Tooltip title="Chỉnh sửa phòng">
-                    <IconButton 
-                      size="small" 
-                      onClick={() => handleEditClick(room.roomId)}
-                      sx={{ 
-                        color: 'white', 
-                        bgcolor: 'rgba(255,255,255,0.2)',
-                        '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' }
-                      }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
                 </Box>
                 
                 <Box sx={{ 
