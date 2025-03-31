@@ -44,6 +44,7 @@ interface ManagementTableProps<T extends TableData> {
   onDelete?: (id: string) => void;
   showActions?: boolean;
   isLoading?: boolean;
+  rowHeight?: number; // Add this new prop for row height
   actionColumn?: {
     align?: "left" | "center" | "right";
     width?: string | number;
@@ -119,6 +120,7 @@ function ManagementTable<T extends TableData>({
   onDelete,
   showActions = true,
   isLoading = false,
+  rowHeight = 53, // Default row height (MUI default is ~53px)
   actionColumn = {
     align: "center",
     headerName: "Actions",
@@ -232,7 +234,9 @@ function ManagementTable<T extends TableData>({
     <TableContainer component={Paper}>
       <Table>
         <TableHead>
-          <TableRow>{renderHeaderCells()}</TableRow>
+          <TableRow>
+            {renderHeaderCells()}
+          </TableRow>
         </TableHead>
         <TableBody>
           {data.map((item) => (
@@ -240,6 +244,12 @@ function ManagementTable<T extends TableData>({
               key={
                 item.userId || item.roomId || item.MaNhanVien || item.movieId
               }
+              sx={{ 
+                height: `${rowHeight}px`,
+                '& .MuiTableCell-root': {
+                  padding: rowHeight < 53 ? '8px 16px' : undefined // Adjust padding for smaller rows
+                }
+              }}
             >
               {renderRowCells(item)}
             </TableRow>
