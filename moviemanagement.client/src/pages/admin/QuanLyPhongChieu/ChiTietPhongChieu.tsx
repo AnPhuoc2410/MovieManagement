@@ -5,6 +5,7 @@ import ChairIcon from "@mui/icons-material/Chair";
 import GridViewIcon from "@mui/icons-material/GridView";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useState, useEffect } from "react";
 import {
   Box,
@@ -32,6 +33,10 @@ import {
   CardHeader,
   Avatar,
   useTheme,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -85,17 +90,121 @@ const ChiTietPhongChieu = () => {
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [isActiveStatus, setIsActiveStatus] = useState<boolean>(true);
+  
+  // Delete confirmation dialog states
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [seatToDelete, setSeatToDelete] = useState<Seat | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+
+  // Disable confirmation dialog states
+  const [openDisableDialog, setOpenDisableDialog] = useState(false);
+  const [seatsToDisable, setSeatsToDisable] = useState<Seat[]>([]);
+  const [disabling, setDisabling] = useState(false);
+  const [disableError, setDisableError] = useState<string | null>(null);
+  const [disableSuccess, setDisableSuccess] = useState(false);
+
+  // Handle opening delete dialog
+  const handleOpenDeleteDialog = (seat: Seat) => {
+    setSeatToDelete(seat);
+    setOpenDeleteDialog(true);
+  };
+
+  // Handle closing delete dialog
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setSeatToDelete(null);
+    setDeleteError(null);
+    setDeleteSuccess(false);
+  };
+
+  // Handle actual seat deletion
+  const handleDeleteSeat = async () => {
+    if (!seatToDelete) return;
+
+    setDeleting(true);
+    setDeleteError(null);
+    setDeleteSuccess(false);
+
+    try {
+      const response = await api.delete(`seat/${seatToDelete.seatId}/single`);
+      
+      if (response.data.isSuccess) {
+        setDeleteSuccess(true);
+        toast.success("Đã xóa ghế thành công!");
+        // Refresh the data after a short delay
+        setTimeout(() => {
+          handleCloseDeleteDialog();
+          // Refresh the room data
+          queryClient.invalidateQueries(["roomDetail", roomId]);
+        }, 1500);
+      } else {
+        setDeleteError(response.data.message || "Xóa ghế không thành công");
+        toast.error(`Lỗi: ${response.data.message}`);
+      }
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "Đã xảy ra lỗi khi xóa ghế";
+      setDeleteError(errorMsg);
+      toast.error(`Lỗi: ${errorMsg}`);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  // Handle opening disable dialog
+  const handleOpenDisableDialog = (seats: Seat[]) => {
+    setSeatsToDisable(seats);
+    setOpenDisableDialog(true);
+  };
+
+  // Handle closing disable dialog
+  const handleCloseDisableDialog = () => {
+    setOpenDisableDialog(false);
+    setSeatsToDisable([]);
+    setDisableError(null);
+    setDisableSuccess(false);
+  };
+
+  // Handle actual seat disabling
+  const handleDisableSeat = async () => {
+    if (seatsToDisable.length === 0) return;
+
+    setDisabling(true);
+    setDisableError(null);
+    setDisableSuccess(false);
+
+    try {
+      const seatIds = seatsToDisable.map(seat => seat.seatId);
+      const isActive = !seatsToDisable[0].isActive; // All seats will have the same isActive status
+      await updateSeatActiveStatus(seatIds, isActive);
+      setDisableSuccess(true);
+      toast.success(`Đã ${isActive ? 'kích hoạt' : 'vô hiệu hóa'} ${seatsToDisable.length} ghế thành công!`);
+      // Refresh the data after a short delay
+      setTimeout(() => {
+        handleCloseDisableDialog();
+        // Refresh the room data
+        queryClient.invalidateQueries(["roomDetail", roomId]);
+      }, 1500);
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "Đã xảy ra lỗi khi cập nhật trạng thái ghế";
+      setDisableError(errorMsg);
+      toast.error(`Lỗi: ${errorMsg}`);
+    } finally {
+      setDisabling(false);
+    }
+  };
 
   // Fetch room data
   const fetchRoom = async (id: string) => {
-    const response = await api.get(`room/getroomInfo/${id}`);
+    const response = await api.get(`room/${id}/info`);
     const roomData = response.data.data;
     return roomData;
   };
 
   // Fetch seat types
   const fetchSeatTypes = async () => {
-    const response = await api.get(`seattype/all`);
+    const response = await api.get(`seattype`);
     return response.data.data || [];
   };
 
@@ -137,7 +246,7 @@ const ChiTietPhongChieu = () => {
 
     try {
       // Get the seats in the selected row/column
-      const roomResponse = await api.get(`room/getroomInfo/${roomId}`);
+      const roomResponse = await api.get(`room/${roomId}/info`);
       const roomData = roomResponse.data.data;
 
       // Filter seats by row or column based on selection mode
@@ -152,11 +261,14 @@ const ChiTietPhongChieu = () => {
 
       // Update the seats with the new seat type
       const response = await api.put(
-        `seat/updatebyroomid?seatTypeId=${seatTypeId}`,
-        JSON.stringify(seatIds),
+        `seat/updatebyroomid`,
+        {
+          seatIds: seatIds,
+          seatTypeId: seatTypeId
+        },
         {
           headers: {
-            "Content-Type": "application/json-patch+json",
+            "Content-Type": "application/json",
             "accept": "text/plain"
           }
         }
@@ -191,10 +303,14 @@ const ChiTietPhongChieu = () => {
     try {
       // Use the API endpoint for adding a row as shown in the screenshot
       const response = await api.post(
-        `seat/addrowbyroomid?roomId=${roomId}&seatTypeId=${seatTypeId}`,
-        '',
+        `seat/addRowByRoomId`,
+        {
+          roomId: roomId,
+          seatTypeId: seatTypeId
+        },
         {
           headers: {
+            "Content-Type": "application/json",
             "accept": "text/plain"
           }
         }
@@ -229,10 +345,14 @@ const ChiTietPhongChieu = () => {
     try {
       // Use the API endpoint for adding a column as shown in the screenshot
       const response = await api.post(
-        `seat/addcolumnbyroomid?roomId=${roomId}&seatTypeId=${seatTypeId}`,
-        '',
+        `seat/addColumnByRoomId`,
+        {
+          roomId: roomId,
+          seatTypeId: seatTypeId
+        },
         {
           headers: {
+            "Content-Type": "application/json",
             "accept": "text/plain"
           }
         }
@@ -366,14 +486,18 @@ const ChiTietPhongChieu = () => {
   };
 
   // Handle seat click
-  const handleSeatClick = async (seat: any) => {
+  const handleSeatClick = async (seat: any, event: React.MouseEvent) => {
     if (updateLoading) return;
 
-    try {
-      await updateSeatStatus(seat.seatId, seat);
-    } catch (error) {
-      console.error("Error updating seat status:", error);
+    // Handle right click to delete
+    if (event.button === 2) {
+      event.preventDefault();
+      handleOpenDeleteDialog(seat);
+      return;
     }
+
+    // Toggle seat selection for left click
+    toggleSeatSelection(seat.seatId);
   };
 
   // Get color for seat status
@@ -400,12 +524,15 @@ const ChiTietPhongChieu = () => {
 
     try {
       // Update seats active status using the API
-      const response = await axios.put(
-        `https://localhost:7119/api/seat/updatebylist?isActived=${isActive}`,
-        JSON.stringify(seatIds),
+      const response = await api.put(
+        `seat/updatebylist`,
+        {
+          seatIds: seatIds,
+          isActive: isActive
+        },
         {
           headers: {
-            "Content-Type": "application/json-patch+json",
+            "Content-Type": "application/json",
             "accept": "text/plain"
           }
         }
@@ -455,11 +582,13 @@ const ChiTietPhongChieu = () => {
       return;
     }
 
-    try {
-      await updateSeatActiveStatus(selectedSeats, isActiveStatus);
-    } catch (error) {
-      console.error("Error updating seats active status:", error);
-    }
+    // Get the selected seats from the room data
+    const selectedSeatObjects = room.seats.filter((seat: Seat) => 
+      selectedSeats.includes(seat.seatId)
+    );
+
+    // Show confirmation dialog
+    handleOpenDisableDialog(selectedSeatObjects);
   };
 
   // Create a single seat at specific position
@@ -470,8 +599,8 @@ const ChiTietPhongChieu = () => {
 
     try {
       // Create the seat using the API
-      const response = await axios.post(
-        `https://localhost:7119/api/seat/create`,
+      const response = await api.post(
+        `seat/create`,
         {
           roomId: roomId,
           seatTypeId: seatTypeId,
@@ -1187,8 +1316,12 @@ const ChiTietPhongChieu = () => {
                                   onClick={(event) =>
                                     event.ctrlKey || event.metaKey
                                       ? toggleSeatSelection(seat.seatId)
-                                      : handleSeatClick(seat)
+                                      : handleSeatClick(seat, event)
                                   }
+                                  onContextMenu={(event) => {
+                                    event.preventDefault();
+                                    handleOpenDeleteDialog(seat);
+                                  }}
                                   sx={{
                                     width: "40px",
                                     height: "40px",
@@ -1285,12 +1418,196 @@ const ChiTietPhongChieu = () => {
                       Nhấp vào vị trí trống để tạo ghế mới với loại ghế đã chọn
                     </Typography>
                   </Box>
+
+                  {/* Floating action buttons when seats are selected */}
+                  {selectedSeats.length > 0 && (
+                    <Paper 
+                      elevation={3}
+                      sx={{
+                        position: 'sticky',
+                        bottom: 20,
+                        left: 0,
+                        right: 0,
+                        zIndex: 10,
+                        p: 2,
+                        mt: 3,
+                        borderRadius: 2,
+                        bgcolor: alpha(theme.palette.background.paper, 0.9),
+                        backdropFilter: 'blur(8px)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <EventSeatIcon sx={{ color: '#9c27b0', mr: 1 }} />
+                        <Typography variant="body1" fontWeight="medium">
+                          Đã chọn {selectedSeats.length} ghế
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={() => setSelectedSeats([])}
+                        >
+                          Hủy chọn
+                        </Button>
+                        <FormControl variant="outlined" size="small" sx={{ minWidth: 120, mx: 2 }}>
+                          <InputLabel id="active-status-select-label">Trạng thái</InputLabel>
+                          <Select
+                            labelId="active-status-select-label"
+                            id="active-status-select"
+                            value={isActiveStatus ? 'true' : 'false'}
+                            onChange={handleIsActiveChange}
+                            label="Trạng thái"
+                          >
+                            <MenuItem value="true">Kích hoạt</MenuItem>
+                            <MenuItem value="false">Vô hiệu hóa</MenuItem>
+                          </Select>
+                        </FormControl>
+                        <Button
+                          variant="contained"
+                          color="warning"
+                          onClick={handleUpdateSeatsActiveStatus}
+                          startIcon={<EventSeatIcon />}
+                        >
+                          Cập nhật ghế
+                        </Button>
+                      </Box>
+                    </Paper>
+                  )}
                 </>
               )}
             </Box>
           </Card>
         </Grid>
       </Grid>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle sx={{ bgcolor: 'error.main', color: 'white', pb: 2 }}>
+          <DeleteIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+          Xóa ghế
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3, pb: 2 }}>
+          <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+            Bạn có chắc chắn muốn xóa ghế {seatToDelete?.atRow}{seatToDelete?.atColumn}? 
+            Hành động này không thể hoàn tác.
+          </Typography>
+
+          <Box sx={{
+            p: 2,
+            bgcolor: '#fff8e1',
+            borderRadius: 1,
+            border: '1px solid #ffe57f',
+            mb: 2
+          }}>
+            <Typography variant="body2" color="warning.dark">
+              <strong>Lưu ý:</strong> Việc xóa ghế sẽ ảnh hưởng đến các lịch chiếu nếu có. 
+              Hãy chắc chắn rằng ghế này không còn được sử dụng cho bất kỳ lịch chiếu nào.
+            </Typography>
+          </Box>
+
+          {deleteSuccess && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              Xóa ghế thành công!
+            </Alert>
+          )}
+
+          {deleteError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {deleteError}
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button
+            onClick={handleCloseDeleteDialog}
+            disabled={deleting}
+            variant="outlined"
+          >
+            Hủy
+          </Button>
+          <Button
+            onClick={handleDeleteSeat}
+            variant="contained"
+            color="error"
+            disabled={deleting}
+            startIcon={deleting ? <CircularProgress size={20} color="inherit" /> : <DeleteIcon />}
+          >
+            {deleting ? 'Đang xóa...' : 'Xác nhận xóa'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Disable Confirmation Dialog */}
+      <Dialog
+        open={openDisableDialog}
+        onClose={handleCloseDisableDialog}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle sx={{ bgcolor: 'warning.main', color: 'white', pb: 2 }}>
+          <EventSeatIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+          {seatsToDisable[0]?.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'} ghế
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3, pb: 2 }}>
+          <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+            Bạn có chắc chắn muốn {seatsToDisable[0]?.isActive ? 'vô hiệu hóa' : 'kích hoạt'} {seatsToDisable.length} ghế đã chọn?
+          </Typography>
+
+          <Box sx={{
+            p: 2,
+            bgcolor: '#fff8e1',
+            borderRadius: 1,
+            border: '1px solid #ffe57f',
+            mb: 2
+          }}>
+            <Typography variant="body2" color="warning.dark">
+              <strong>Lưu ý:</strong> {seatsToDisable[0]?.isActive 
+                ? 'Việc vô hiệu hóa ghế sẽ không cho phép đặt vé cho các ghế này trong các lịch chiếu.'
+                : 'Việc kích hoạt ghế sẽ cho phép đặt vé cho các ghế này trong các lịch chiếu.'}
+            </Typography>
+          </Box>
+
+          {disableSuccess && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {seatsToDisable[0]?.isActive ? 'Đã vô hiệu hóa' : 'Đã kích hoạt'} {seatsToDisable.length} ghế thành công!
+            </Alert>
+          )}
+
+          {disableError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {disableError}
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button
+            onClick={handleCloseDisableDialog}
+            disabled={disabling}
+            variant="outlined"
+          >
+            Hủy
+          </Button>
+          <Button
+            onClick={handleDisableSeat}
+            variant="contained"
+            color="warning"
+            disabled={disabling}
+            startIcon={disabling ? <CircularProgress size={20} color="inherit" /> : <EventSeatIcon />}
+          >
+            {disabling ? 'Đang xử lý...' : seatsToDisable[0]?.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </ManagementPageLayout>
   );
 };

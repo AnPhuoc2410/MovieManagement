@@ -281,19 +281,6 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
                     <ChairIcon sx={{ mr: 1 }} />
                     <Typography variant="h6" fontWeight="bold">{room.roomName}</Typography>
                   </Box>
-                  <Tooltip title="Chỉnh sửa phòng">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleEditClick(room.roomId)}
-                      sx={{
-                        color: 'white',
-                        bgcolor: 'rgba(255,255,255,0.2)',
-                        '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' }
-                      }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
                 </Box>
 
                 <Box sx={{

@@ -22,6 +22,7 @@ import axios from 'axios';
 import AddIcon from '@mui/icons-material/Add';
 import TheaterComedyIcon from '@mui/icons-material/TheaterComedy';
 import { useNavigate } from 'react-router-dom';
+import api from '../../../apis/axios.config';
 
 interface MovieTheater {
   movieTheaterId: string;
@@ -46,7 +47,7 @@ const CreateRoom: React.FC = () => {
     // Fetch all movie theaters
     const fetchMovieTheaters = async () => {
       try {
-        const response = await axios.get('https://localhost:7119/api/MovieTheater');
+        const response = await api.get('movietheater');
         if (response.data.isSuccess) {
           setMovieTheaters(response.data.data);
           if (response.data.data.length > 0) {
@@ -88,8 +89,8 @@ const CreateRoom: React.FC = () => {
     };
 
     try {
-      const response = await axios.post(
-        `https://localhost:7119/api/room?MovieTheaterId=${selectedTheater}`,
+      const response = await api.post(
+        `room?MovieTheaterId=${selectedTheater}`,
         roomData,
         {
           headers: {

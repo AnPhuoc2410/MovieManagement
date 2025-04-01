@@ -62,7 +62,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     ['showtime', id],
     async () => {
       try {
-        const response = await api.get<ShowTime>(`showtime/${id}`);
+        const response = await api.get(`showtime/${id}`);
         return response.data;
       } catch (error) {
         console.error('Error fetching showtime:', error);
@@ -105,7 +105,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   const { data: rooms, isLoading: isLoadingRooms } = useQuery(
     'rooms',
     async () => {
-      const response = await api.get('room/all');
+      const response = await api.get('room');
       console.log('Rooms API Response:', response.data);
 
       // Handle both cases - direct array or nested data property

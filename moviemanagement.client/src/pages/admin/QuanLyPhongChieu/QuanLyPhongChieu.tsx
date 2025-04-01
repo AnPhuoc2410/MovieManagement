@@ -2,7 +2,6 @@ import type {} from "@mui/x-charts/themeAugmentation";
 import type {} from "@mui/x-data-grid-pro/themeAugmentation";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
 import { useQuery } from "react-query";
-import axios from "axios";
 import { Routes, Route, useLocation } from "react-router-dom";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import RoomTable, { Room } from "./BangRoom";
@@ -21,12 +20,12 @@ const QuanLyPhongChieu: React.FC = () => {
   // Use the new API endpoint instead of the mock API
   const fetchRooms = async (): Promise<Room[]> => {
     try {
-      const response = await api.get('room/all');
+      const response = await api.get('room'); 
       console.log("API Response:", response.data);
-
+      
       // The API returns data in a nested 'data' property
       const rooms = response.data.data || [];
-
+      
       // Make sure each room has the expected properties
       return rooms.map((room: any) => ({
         roomId: room.roomId,
