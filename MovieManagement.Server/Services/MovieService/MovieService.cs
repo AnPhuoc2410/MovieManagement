@@ -86,11 +86,11 @@ namespace MovieManagement.Server.Services.MovieService
 
         public async Task<MovieDto> CreateMovieAsync(Guid userId, MovieRequest movieRequest)
         {
-            if (employeeId == Guid.Empty)
+            if (userId == Guid.Empty)
             {
                 throw new BadRequestException("EmployeeId is invalid");
             }
-            var existingEmployee = await _unitOfWork.UserRepository.GetByIdAsync(employeeId);
+            var existingEmployee = await _unitOfWork.UserRepository.GetByIdAsync(userId);
             if (existingEmployee == null)
             {
                 throw new NotFoundException("Employee cannot found!");
