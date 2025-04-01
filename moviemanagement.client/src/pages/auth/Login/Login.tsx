@@ -3,16 +3,16 @@ import {
   Box,
   Button,
   Checkbox,
-  Divider,
+  // Divider,
   FormControlLabel,
   IconButton,
   InputAdornment,
-  Link,
+  // Link,
   TextField,
   Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
-import { createRef, useState } from "react";
+import { createRef, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -22,7 +22,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import ReCAPTCHA from "react-google-recaptcha";
 import { ENV } from "../../../env/env.config";
 import { Link as RouterLink } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
+// import { GoogleLogin } from "@react-oauth/google";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +34,7 @@ export const Login = () => {
   const { authLogin } = useAuth();
   const { t } = useTranslation();
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const recaptchaRef = createRef<ReCAPTCHA>();
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const validationSchema = yup.object({
     email: yup
@@ -72,8 +72,13 @@ export const Login = () => {
   };
 
   const resetCaptcha = () => {
-    recaptchaRef.current?.reset();
-    setCaptchaToken(null);
+    console.log("Resetting captcha", recaptchaRef.current);
+    if (recaptchaRef.current) {
+      recaptchaRef.current.reset();
+      setCaptchaToken(null);
+    } else {
+      console.error("ReCAPTCHA ref is not available");
+    }
   };
 
   const formik = useFormik({
@@ -94,6 +99,7 @@ export const Login = () => {
 
       if (!captchaToken) {
         toast.error(t("auth.login.captcha_required"));
+        resetCaptcha();
         return;
       }
 
@@ -106,7 +112,7 @@ export const Login = () => {
         });
         toast.dismiss(toastId);
 
-        if (response.isSuccess) {
+        if (response) {
           const tokenData = response.data.token;
 
           // Save email for remember me
@@ -131,10 +137,12 @@ export const Login = () => {
             navigate("/");
           }, 1000);
         } else {
-          toast.error(response.message);
+          toast.error("Wrong email or password");
+
+          console.log("Login fail");
+
           // Reset captcha on failed login attempt
-          recaptchaRef.current?.reset();
-          setCaptchaToken(null);
+          resetCaptcha();
         }
       } catch (error) {
         toast.dismiss(toastId);
@@ -351,31 +359,31 @@ export const Login = () => {
             : t("auth.login.login_button")}
       </Button>
 
-      <Divider sx={{ my: 1.5 }} />
+      {/*<Divider sx={{ my: 1.5 }} />*/}
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 1,
-          pl: 4,
-          pr: 4,
-        }}
-      >
-        <Typography>Or</Typography>
-        <GoogleLogin
-          onSuccess={(credentialResponse) => {
-            console.log(credentialResponse);
-          }}
-          onError={() => {
-            toast.error("Google login failed");
-          }}
-          useOneTap
-          shape="pill"
-        />
-      </Box>
+      {/*<Box*/}
+      {/*  sx={{*/}
+      {/*    display: "flex",*/}
+      {/*    flexDirection: "column",*/}
+      {/*    justifyContent: "center",*/}
+      {/*    alignItems: "center",*/}
+      {/*    gap: 1,*/}
+      {/*    pl: 4,*/}
+      {/*    pr: 4,*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  <Typography>Or</Typography>*/}
+      {/*  <GoogleLogin*/}
+      {/*    onSuccess={(credentialResponse) => {*/}
+      {/*      console.log(credentialResponse);*/}
+      {/*    }}*/}
+      {/*    onError={() => {*/}
+      {/*      toast.error("Google login failed");*/}
+      {/*    }}*/}
+      {/*    useOneTap*/}
+      {/*    shape="pill"*/}
+      {/*  />*/}
+      {/*</Box>*/}
     </form>
   );
 };

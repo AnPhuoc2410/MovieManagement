@@ -37,9 +37,9 @@ const ScrollToTop = () => {
         role="presentation"
         sx={{
           position: "fixed",
-          bottom: 32,
+          bottom: 110,
           right: { xs: 16, sm: 32 },
-          zIndex: 1000,
+          zIndex: 900, // Lower z-index than chatbot
         }}
       >
         <IconButton

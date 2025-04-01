@@ -10,7 +10,9 @@ import { UserResponse } from "../types/users.type";
 import { ApiResponse } from "./api.config";
 import api from "./axios.config";
 
-export const login = async (user: LoginRequest): Promise<LoginResponse> => {
+export const login = async (
+  user: LoginRequest,
+): Promise<LoginResponse | null> => {
   try {
     const response = await api.post("/auth/login", {
       email: user.email,
@@ -19,7 +21,8 @@ export const login = async (user: LoginRequest): Promise<LoginResponse> => {
     return response.data;
   } catch (error) {
     console.log(`Login error: ${error}`);
-    throw error;
+    // throw error;
+    return null;
   }
 };
 
