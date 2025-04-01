@@ -24,7 +24,7 @@ namespace MovieManagement.Server.Repositories
         {
             return await _context.Movies
                 .Where(m => m.FromDate <= DateTime.Now && m.ToDate >= DateTime.Now && m.IsDeleted == false)
-                .Skip(page * pageSize)
+                .Skip((page-1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
         }

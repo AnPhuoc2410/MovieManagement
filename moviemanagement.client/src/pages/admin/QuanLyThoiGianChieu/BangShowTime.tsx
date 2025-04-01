@@ -26,10 +26,6 @@ const ShowTimeTable: React.FC<{
 
   const columns: ColumnDef<ShowTime>[] = [
     {
-      field: "showTimeId",
-      headerName: "Mã thời gian chiếu",
-    },
-    {
       field: "movie",
       headerName: "Tên phim",
       renderCell: (item: ShowTime) => item.movie?.movieName || "N/A"

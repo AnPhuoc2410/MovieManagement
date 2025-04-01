@@ -60,21 +60,37 @@ const ThemThoiGianChieu = () => {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await api.get<MovieApiResponse>("movie");
-        if (response.data.isSuccess) {
+        const response = await api.get("movie/showing/page/1/size/100");
+        console.log('Movie API Response:', response.data); // Debug log
+        
+        // Handle direct data response from showing movies API
+        if (response.data && response.data.items) {
+          // If the response has paginated structure
+          setMovies(response.data.items);
+        } else if (Array.isArray(response.data)) {
+          // If the response is a direct array
+          setMovies(response.data);
+        } else if (response.data && response.data.data) {
+          // If the response has the wrapper structure
           setMovies(response.data.data);
         } else {
-          setMessage({ text: "Failed to load movies: " + response.data.message, type: "error" });
+          setMessage({ 
+            text: "Không tìm thấy phim nào đang chiếu", 
+            type: "error" 
+          });
         }
       } catch (error) {
         console.error("Failed to fetch movies:", error);
-        setMessage({ text: "Failed to load movies", type: "error" });
+        setMessage({ 
+          text: "Không thể tải danh sách phim", 
+          type: "error" 
+        });
       }
     };
 
     const fetchRooms = async () => {
       try {
-        const response = await api.get<RoomApiResponse>("room/all");
+        const response = await api.get<RoomApiResponse>("room");
         if (response.data.isSuccess) {
           setRooms(response.data.data);
         } else {
@@ -131,7 +147,7 @@ const ThemThoiGianChieu = () => {
       console.log('Sending payload:', payload); // Debug log
 
       const response = await api.post(
-        "showtime/createshowtime",
+        "showtime",
         payload,
         {
           headers: {
@@ -210,18 +226,6 @@ const ThemThoiGianChieu = () => {
                   py: 3,
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<ArrowBackIcon />}
-                    onClick={handleReturn}
-                    sx={{ mr: 2 }}
-                  >
-                    Quay lại
-                  </Button>
-                  <Typography variant="h3">Thêm Thời Gian Chiếu</Typography>
-                </Box>
-
                 {message.text && (
                   <Typography
                     color={message.type === "error" ? "error" : "success"}
