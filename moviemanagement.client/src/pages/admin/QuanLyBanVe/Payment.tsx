@@ -1,40 +1,37 @@
-import React, { useEffect, useState } from "react";
 import {
+  Alert,
+  Avatar,
   Box,
   Button,
-  TextField,
+  Chip,
+  CircularProgress,
+  CssBaseline,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
   Grid,
   Paper,
-  Typography,
-  CssBaseline,
-  Stack,
-  FormControl,
-  InputAdornment,
-  Divider,
-  Chip,
-  Avatar,
-  CircularProgress,
-  Alert,
-  RadioGroup,
-  FormControlLabel,
   Radio,
-  FormLabel,
+  RadioGroup,
   Slider,
+  Stack,
+  Typography
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import { alpha } from "@mui/material/styles";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../../apis/axios.config";
-import { useSignalR } from "../../../contexts/SignalRContext";
 import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
-import AppTheme from "../../../shared-theme/AppTheme";
-import { UserInfo } from "../../../types/users.type";
+import UserSearchComponent from "../../../components/shared/UserSearchComponent";
 import { phoneRegex } from "../../../constants/regex";
 import { useAuth } from "../../../contexts/AuthContext";
-import UserSearchComponent from "../../../components/shared/UserSearchComponent";
+import { useSignalR } from "../../../contexts/SignalRContext";
+import AppTheme from "../../../shared-theme/AppTheme";
+import { UserInfo } from "../../../types/users.type";
 
 interface SeatInfo {
   ticketId: string;
@@ -61,6 +58,9 @@ const Payment: React.FC = () => {
   const [usedPoints, setUsedPoints] = useState<number>(0);
   const [maxUsablePoints, setMaxUsablePoints] = useState<number>(0);
   const [partialPointPayment, setPartialPointPayment] = useState<boolean>(false);
+  const [selectedTicketsForPoints, setSelectedTicketsForPoints] = useState<string[]>([]);
+  const [ticketPointCosts, setTicketPointCosts] = useState<{ [key: string]: number }>({});
+
   const handleUserSelect = (user: UserInfo) => {
     setSelectedUser(user);
     setPointsToAdd(Math.floor(totalPrice / 10000));
@@ -70,7 +70,6 @@ const Payment: React.FC = () => {
     setUsers(foundUsers);
   };
 
-  // Location state destructuring
   const {
     movieId,
     selectedTime = "Not selected",
@@ -83,12 +82,10 @@ const Payment: React.FC = () => {
     roomName = "",
   } = location.state || {};
 
-  // Derive info from location state
   const movieTitle = movieData?.movieName || "Phim Mặc Định";
   const showDate = selectedDate;
   const showTime = selectedTime;
 
-  // Effective showTimeId from state or fallback to session storage
   const effectiveShowTimeId =
     showTimeId || sessionStorage.getItem("currentShowTimeId") || "";
 
@@ -98,9 +95,6 @@ const Payment: React.FC = () => {
     0
   );
 
-  /**
-   * Handler for payment method changes (tiền mặt vs. điểm)
-   */
   const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newMethod = e.target.value;
     setPaymentMethod(newMethod);
@@ -120,10 +114,6 @@ const Payment: React.FC = () => {
     }
   };
 
-  /**
-   * Release seats if user refreshes or closes tab
-   * using sendBeacon to ensure the request is sent.
-   */
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (
@@ -278,8 +268,48 @@ const Payment: React.FC = () => {
   };
 
   useEffect(() => {
+    if (selectedUser && tickets.length > 0) {
+      const pointCosts = tickets.reduce((acc: { [key: string]: number }, ticket: any, index: number) => {
+        const ticketId = selectedSeatsInfo[index]?.ticketId;
+        if (ticketId) {
+          acc[ticketId] = Math.floor(ticket.price / 100); // Convert price to points (1 point = 1 VND)
+        }
+        return acc;
+      }, {});
+      setTicketPointCosts(pointCosts);
+    }
+  }, [selectedUser, tickets, selectedSeatsInfo]);
+
+  const toggleTicketForPoints = (ticketId: string) => {
+    setSelectedTicketsForPoints(prev =>
+      prev.includes(ticketId)
+        ? prev.filter(id => id !== ticketId)
+        : [...prev, ticketId]
+    );
+  };
+
+  const calculateTotalPointsNeeded = () => {
+    return selectedTicketsForPoints.reduce((total, ticketId) =>
+      total + (ticketPointCosts[ticketId] || 0), 0);
+  };
+
+  const calculateRemainingAmount = () => {
+    const ticketsForMoney = tickets.filter((ticket: any, index: number) => {
+      const ticketId = selectedSeatsInfo[index]?.ticketId;
+      return ticketId && !selectedTicketsForPoints.includes(ticketId);
+    });
+
+    return ticketsForMoney.reduce((sum: number, t: any) => sum + t.price, 0);
+  };
+
+  // Calculate points that will be earned from money payment
+  const calculatePointsToEarn = () => {
+    const moneyAmount = calculateRemainingAmount();
+    return Math.floor(moneyAmount / 1000); // 1 point per 1000 VND
+  };
+
+  useEffect(() => {
     if (selectedUser) {
-      // Calculate max points that can be used (100 points = 1 VND)
       const maxPoints = Math.min(selectedUser.point, totalPrice * 100);
       setMaxUsablePoints(maxPoints);
     } else {
@@ -292,80 +322,80 @@ const Payment: React.FC = () => {
     setUsedPoints(newValue as number);
   };
 
-  const calculateRemainingAmount = () => {
-    const amountCoveredByPoints = usedPoints / 100; // Convert points to VND
-    return Math.max(0, totalPrice - amountCoveredByPoints);
-  };
-
   const handleConfirmPayment = async () => {
     setIsPaying(true);
     try {
-      
-      const payload = {
+      const userId = selectedUser?.id;
+
+      // Create base payload for both member and non-member purchases
+      const basePayload = {
         totalTicket: seats.length,
         amount: totalPrice,
         tickets: selectedSeatsInfo.map((seat: any) => seat.ticketId),
         promotionId: null,
-        usedPoint: usedPoints
       };
 
-      const userId = selectedUser?.id;
-      if (userId) {
-        const response = await api.post(`/users/test/${userId}`, payload);
+      let response;
 
-        if (response.status === 200) {
-          toast.success("Thanh toán thành công!");
+      if (userId && selectedTicketsForPoints.length > 0) {
+        // Member with point exchange
+        const pointPayload = {
+          ...basePayload,
+          usedPoint: calculateTotalPointsNeeded()
+        };
 
-          navigate("/admin/ql-ban-ve/confirmation", {
-            state: {
-              movieId,
-              movieData,
-              selectedTime,
-              selectedDate,
-              seats,
-              roomName,
-              showTimeId: effectiveShowTimeId,
-              tickets,
-              selectedSeatsInfo,
-              totalPrice,
-              selectedUser,
-              paymentMethod,
-              pointsToAdd: paymentMethod === "points" ? 0 : pointsToAdd,
-              usedPoints,
-              amountPaidWithPoints: usedPoints / 100,
-              amountPaidWithMoney: calculateRemainingAmount()
-            }
-          });
-        } else {
-          throw new Error("Payment failed");
-        }
+        response = await api.post(`users/test?userId=${userId}`, pointPayload);
+
+        toast.success("Thanh toán thành công! Đã sử dụng điểm thành viên.");
       } else {
-        // Handle case where no user is selected (regular cash payment)
+        response = await api.post('/tickets/purchase', basePayload);
         toast.success("Thanh toán thành công!");
-        navigate("/admin/ql-ban-ve/confirmation", {
-          state: {
-            movieId,
-            movieData,
-            selectedTime,
-            selectedDate,
-            seats,
-            roomName,
-            showTimeId: effectiveShowTimeId,
-            tickets,
-            selectedSeatsInfo,
-            totalPrice,
-            paymentMethod: "money"
-          }
-        });
       }
-    } catch (error) {
+
+      const amountPaidWithPoints = selectedTicketsForPoints.length > 0
+        ? selectedTicketsForPoints.reduce((sum, ticketId) => {
+          const ticketIndex = selectedSeatsInfo.findIndex((s: { ticketId: string; }) => s.ticketId === ticketId);
+          return sum + (tickets[ticketIndex]?.price || 0);
+        }, 0)
+        : 0;
+
+      // Navigate to confirmation page with detailed info
+      navigate("/admin/ql-ban-ve/confirmation", {
+        state: {
+          movieData,
+          movieTitle,
+          showDate,
+          showTime,
+          roomName,
+          seats,
+          tickets,
+          totalPrice,
+          userId: selectedUser?.id,
+          userName: selectedUser?.userName,
+          selectedTicketsForPoints,
+          pointsUsed: calculateTotalPointsNeeded(),
+          pointsEarned: calculatePointsToEarn(),
+          amountPaidWithPoints,
+          amountPaidWithMoney: calculateRemainingAmount(),
+          transactionId: response?.data?.transactionId || null,
+          paymentDate: new Date().toISOString()
+        }
+      });
+    } catch (error: any) {
       console.error("Payment error:", error);
-      toast.error("Lỗi khi thanh toán");
+
+      // More detailed error handling
+      if (error.response?.data?.message) {
+        toast.error(`Lỗi: ${error.response.data.message}`);
+      } else if (error.message) {
+        toast.error(`Lỗi: ${error.message}`);
+      } else {
+        toast.error("Lỗi khi thanh toán. Vui lòng thử lại.");
+      }
     } finally {
       setIsPaying(false);
     }
   };
-
 
   return (
     <AppTheme disableCustomTheme={disableCustomTheme}>
@@ -546,58 +576,68 @@ const Payment: React.FC = () => {
                               </Typography>
                             </Box>
 
-                            <Box sx={{ mt: 3 }}>
-                              <FormControl component="fieldset">
-                                <FormLabel component="legend">
-                                  Hình thức thanh toán
-                                </FormLabel>
-                                <RadioGroup
-                                  row
-                                  value={paymentMethod}
-                                  onChange={handlePaymentMethodChange}
-                                >
-                                  <FormControlLabel
-                                    value="money"
-                                    control={<Radio />}
-                                    label="Tiền mặt"
-                                  />
-                                  <FormControlLabel
-                                    value="points"
-                                    control={<Radio />}
-                                    label="Dùng điểm"
-                                    disabled={selectedUser?.point < 100} // Disable if user has less than 100 points
-                                  />
-                                  <FormControlLabel
-                                    value="partial_points"
-                                    control={<Radio />}
-                                    label="Kết hợp điểm + tiền"
-                                    disabled={selectedUser?.point < 100} // Disable if user has less than 100 points
-                                  />
-                                </RadioGroup>
-                              </FormControl>
+                            {selectedUser && (
+                              <Box sx={{ mt: 3 }}>
+                                <Typography variant="h6" gutterBottom>
+                                  Chọn vé thanh toán bằng điểm
+                                </Typography>
+                                <Typography variant="body2" gutterBottom>
+                                  Điểm hiện có: {selectedUser.point} điểm
+                                </Typography>
 
-                              {paymentMethod === 'partial_points' && (
-                                <Box sx={{ mt: 3, px: 2 }}>
-                                  <Typography gutterBottom>
-                                    Điểm sử dụng: {usedPoints} điểm ({(usedPoints / 100).toLocaleString('vi-VN')}đ)
-                                  </Typography>
-                                  <Slider
-                                    value={usedPoints}
-                                    onChange={handlePointsChange}
-                                    aria-labelledby="points-slider"
-                                    valueLabelDisplay="auto"
-                                    step={100}
-                                    marks
-                                    min={0}
-                                    max={maxUsablePoints}
-                                  />
-                                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                                    <Typography variant="body2">0 điểm</Typography>
-                                    <Typography variant="body2">{maxUsablePoints.toLocaleString('vi-VN')} điểm</Typography>
-                                  </Box>
+                                <Box sx={{ mt: 2 }}>
+                                  {tickets.map((ticket: any, index: number) => {
+                                    const ticketId = selectedSeatsInfo[index]?.ticketId;
+                                    const seatName = seats[index];
+                                    const pointCost = ticketPointCosts[ticketId] || 0;
+                                    const canUsePoints = selectedUser.point >= pointCost;
+                                    const isSelected = selectedTicketsForPoints.includes(ticketId);
+
+                                    return (
+                                      <Box
+                                        key={ticketId}
+                                        sx={{
+                                          display: 'flex',
+                                          justifyContent: 'space-between',
+                                          alignItems: 'center',
+                                          p: 1,
+                                          border: '1px solid',
+                                          borderColor: isSelected ? 'primary.main' : 'divider',
+                                          borderRadius: 1,
+                                          mb: 1,
+                                          bgcolor: isSelected ? 'primary.light' : 'background.paper',
+                                          opacity: canUsePoints ? 1 : 0.6
+                                        }}
+                                      >
+                                        <Box>
+                                          <Typography variant="body1">Ghế {seatName}</Typography>
+                                          <Typography variant="body2">
+                                            {ticket.price.toLocaleString('vi-VN')}đ ({pointCost} điểm)
+                                          </Typography>
+                                        </Box>
+                                        <Button
+                                          variant={isSelected ? "contained" : "outlined"}
+                                          size="small"
+                                          disabled={!canUsePoints}
+                                          onClick={() => toggleTicketForPoints(ticketId)}
+                                        >
+                                          {isSelected ? "Bỏ chọn" : "Dùng điểm"}
+                                        </Button>
+                                      </Box>
+                                    );
+                                  })}
                                 </Box>
-                              )}
-                            </Box>
+
+                                <Box sx={{ mt: 2 }}>
+                                  <Typography variant="body1">
+                                    Tổng điểm sử dụng: {calculateTotalPointsNeeded()} điểm
+                                  </Typography>
+                                  <Typography variant="body1">
+                                    Điểm còn lại sau giao dịch: {selectedUser.point - calculateTotalPointsNeeded() + calculatePointsToEarn()} điểm
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            )}
                           </Box>
                         ) : (
                           <Alert severity="info" sx={{ mb: 2 }}>
@@ -612,6 +652,7 @@ const Payment: React.FC = () => {
                         <Typography variant="h6" gutterBottom>
                           Thông Tin Thanh Toán
                         </Typography>
+
                         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                           <Typography variant="body1">Tổng tiền vé:</Typography>
                           <Typography variant="body1" fontWeight="bold">
@@ -619,16 +660,21 @@ const Payment: React.FC = () => {
                           </Typography>
                         </Box>
 
-                        {(paymentMethod === 'points' || paymentMethod === 'partial_points') && selectedUser && (
+                        {selectedTicketsForPoints.length > 0 && (
                           <>
                             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                              <Typography variant="body1">Thanh toán bằng điểm:</Typography>
+                              <Typography variant="body1">
+                                Thanh toán bằng điểm ({selectedTicketsForPoints.length} vé):
+                              </Typography>
                               <Typography variant="body1" color="success.main">
-                                -{(usedPoints / 100).toLocaleString("vi-VN")}đ
+                                -{selectedTicketsForPoints.reduce((sum, ticketId) => {
+                                  const ticketIndex = selectedSeatsInfo.findIndex((s: { ticketId: string; }) => s.ticketId === ticketId);
+                                  return sum + (tickets[ticketIndex]?.price || 0);
+                                }, 0).toLocaleString("vi-VN")}đ
                               </Typography>
                             </Box>
                             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                              <Typography variant="body1">Còn lại:</Typography>
+                              <Typography variant="body1">Còn lại thanh toán tiền mặt:</Typography>
                               <Typography variant="body1">
                                 {calculateRemainingAmount().toLocaleString("vi-VN")}đ
                               </Typography>
