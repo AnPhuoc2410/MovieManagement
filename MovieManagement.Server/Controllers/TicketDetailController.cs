@@ -30,7 +30,6 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet]
-        [Route("all")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<TicketDetailDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -49,7 +48,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        [HttpGet("page/{page:int}/size/{pageSize:int}")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<TicketDetailDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -87,7 +86,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("ticket-details")]
+        [HttpGet("details/bill/{billId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<PurchasedTicketResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -160,7 +159,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("GetByShowTimeId/{showTimeId:guid}")]
+        [HttpGet("showtime/{showTimeId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<TicketDetailResponseModel>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -197,7 +196,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpPut("ChangeStatus/{status}")]
+        [HttpPut("status/{status}")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<TicketDetailResponseModel>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -215,7 +214,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("DeleteRemainingTicket/{showTimeId:guid}")]
+        [HttpDelete("remaining/showtime/{showTimeId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

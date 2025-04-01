@@ -117,19 +117,49 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="One Piece Film: Red" xml:space="preserve">
-    <value>One Piece Film: Red</value>
+  <data name="Chiến tranh" xml:space="preserve">
+    <value>Chiến tranh</value>
   </data>
-  <data name="Puss in Boots: The Last Wish" xml:space="preserve">
-    <value>Mèo Đi Hia: Điều Ước Cuối Cùng</value>
+  <data name="Gia đình" xml:space="preserve">
+    <value>Gia đình</value>
   </data>
-  <data name="Spirited Away" xml:space="preserve">
-    <value>Vùng Đất Linh Hồn</value>
+  <data name="Hoạt hình" xml:space="preserve">
+    <value>Hoạt hình</value>
   </data>
-  <data name="The Boy and the Heron" xml:space="preserve">
-    <value>Thiếu Niên Và Chim Diệc</value>
+  <data name="Hài hước" xml:space="preserve">
+    <value>Hài hước</value>
   </data>
-  <data name="The Cat Returns" xml:space="preserve">
-    <value>Loài Mèo Trả Ơn</value>
+  <data name="Hành động" xml:space="preserve">
+    <value>Hành động</value>
+  </data>
+  <data name="Kinh dị" xml:space="preserve">
+    <value>Kinh dị</value>
+  </data>
+  <data name="Kiếm hiệp" xml:space="preserve">
+    <value>Kiếm hiệp</value>
+  </data>
+  <data name="Lãng mạn" xml:space="preserve">
+    <value>Lãng mạn</value>
+  </data>
+  <data name="Phiêu Lưu" xml:space="preserve">
+    <value>Phiêu Lưu</value>
+  </data>
+  <data name="Thần thoại" xml:space="preserve">
+    <value>Thần thoại</value>
+  </data>
+  <data name="Tâm lý" xml:space="preserve">
+    <value>Tâm lý</value>
+  </data>
+  <data name="Tình cảm" xml:space="preserve">
+    <value>Tình cảm</value>
+  </data>
+  <data name="Viễn tưởng" xml:space="preserve">
+    <value>Viễn tưởng</value>
+  </data>
+  <data name="Võ thuật" xml:space="preserve">
+    <value>Võ thuật</value>
+  </data>
+  <data name="Âm nhạc" xml:space="preserve">
+    <value>Âm nhạc</value>
   </data>
 </root>

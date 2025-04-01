@@ -36,7 +36,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("{movieTheaterId}")]
+        [Route("{movieTheaterId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<MovieTheaterDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -56,7 +56,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("page/{page}/{pageSize}")]
+        [Route("page/{page}/size/{pageSize}")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<MovieTheaterDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -76,7 +76,6 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost]
-        [Route("create")]
         [ProducesResponseType(typeof(ApiResponse<MovieTheaterDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -95,7 +94,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPut]
-        [Route("update/{movieTheaterId}")]
+        [Route("{movieTheaterId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<MovieTheaterDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -114,7 +113,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpDelete]
-        [Route("delete/{movieTheaterId}")]
+        [Route("{movieTheaterId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<MovieTheaterDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

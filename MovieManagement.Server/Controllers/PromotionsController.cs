@@ -20,7 +20,7 @@ namespace MovieManagement.Server.Controllers
             _promotionService = promotionService;
         }
 
-        [HttpGet("all")]
+        [HttpGet]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<PromotionDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -39,7 +39,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        [HttpGet("page/{page:int}/size/{pageSize:int}")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<PromotionDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

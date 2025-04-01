@@ -22,7 +22,6 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("all")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<SeatTypeDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -62,7 +61,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("page/{page:int}/pageSize/{pageSize:int}")]
+        [Route("page/{page:int}/size/{pageSize:int}")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<SeatTypeDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
