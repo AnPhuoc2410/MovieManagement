@@ -48,20 +48,19 @@ namespace MovieManagement.Server.Services.PromotionService
         public async Task<IEnumerable<PromotionDto>> GetAllPromotionsAsync()
         {
             var promotions = _mapper.Map<List<PromotionDto>>(await _unitOfWork.PromotionRepository.GetAllAsync());
+
             if (promotions == null)
             {
                 throw new NotFoundException("Promotion not found!");
             }
 
-            List<PromotionDto> promotionTranslate = new List<PromotionDto>();
             foreach (var item in promotions)
             {
                 item.PromotionName = _localizerPromotionTranslate[item.PromotionName];
                 item.Content = _localizerPromotionTranslate[item.Content];
-                promotionTranslate.Add(item);
             }
 
-            return promotionTranslate;
+            return promotions;
         }
 
         public async Task<PromotionDto> UpdatePromotionAsync(Guid id, PromotionDto promotionDto)
@@ -97,16 +96,13 @@ namespace MovieManagement.Server.Services.PromotionService
             if (promotions == null)
                 throw new NotFoundException("Promotion cannot found!");
 
-            List<Promotion> promotionTranslate = new List<Promotion>();
-
             foreach (var promotion in promotions)
             {
                 promotion.PromotionName = _localizerPromotionTranslate[promotion.PromotionName];
                 promotion.Content = _localizerPromotionTranslate[promotion.Content];
-                promotionTranslate.Add(promotion);
             }
 
-            return _mapper.Map<IEnumerable<PromotionDto>>(promotionTranslate);
+            return _mapper.Map<IEnumerable<PromotionDto>>(promotions);
         }
     }
 }

@@ -47,16 +47,13 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new NotFoundException("Movies not found!");
             }
 
-            List<Movie> translationMovies = new List<Movie>();
-
             foreach(var movie in movies)
             {
                 movie.MovieName = _localizerMovieTranslate[movie.MovieName];
                 movie.Content = _localizerMovieTranslate[movie.Content];
-                translationMovies.Add(movie);
             }
 
-            return _mapper.Map<IEnumerable<MoviePreview>>(translationMovies);
+            return _mapper.Map<IEnumerable<MoviePreview>>(movies);
         }
 
         public async Task<MovieDto> GetMovieByIdAsync(Guid movieId)
@@ -75,7 +72,9 @@ namespace MovieManagement.Server.Services.MovieService
             movie.Content = _localizerMovieTranslate[movie.Content];
 
             var response = _mapper.Map<MovieDto>(movie);
+
             var movieCategories = _unitOfWork.MovieCategoryRepository.GetMovieCategoriesByMovieId(movieId);
+
             foreach (var movieCategory in movieCategories)
             {
                 var category = await _unitOfWork.CategoryRepository.GetByIdAsync(movieCategory.CategoryId);
@@ -182,16 +181,13 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new NotFoundException("Movies not found!");
             }
 
-            List<Movie> translationMovies = new List<Movie>();
-
             foreach(var movie in moviesNowShowing)
             {
                 movie.MovieName = _localizerMovieTranslate[movie.MovieName];
                 movie.Content = _localizerMovieTranslate[movie.Content];
-                translationMovies.Add(movie);
             }
 
-            return _mapper.Map<IEnumerable<MoviePreview>>(translationMovies);
+            return _mapper.Map<IEnumerable<MoviePreview>>(moviesNowShowing);
         }
 
         public async Task<IEnumerable<MoviePreview>> GetMoviesUpComing(int page, int pageSize)
@@ -206,16 +202,13 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new NotFoundException("Movies not found!");
             }
 
-            List<Movie> translationMovies = new List<Movie>();
-
             foreach(var movie in moviesUpComing)
             {
                 movie.MovieName = _localizerMovieTranslate[movie.MovieName];
                 movie.Content = _localizerMovieTranslate[movie.Content];
-                translationMovies.Add(movie);
             }
 
-            return _mapper.Map<IEnumerable<MoviePreview>>(translationMovies);
+            return _mapper.Map<IEnumerable<MoviePreview>>(moviesUpComing);
         }
 
         public async Task<IEnumerable<MoviePreview>> GetMoviesByNameRelativePage(string name, int page, int pageSize)
@@ -235,16 +228,13 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new NotFoundException("Movies not found!");
             }
 
-            List<Movie> translationMovies = new List<Movie>();
-
             foreach (var movie in movies)
             {
                 movie.MovieName = _localizerMovieTranslate[movie.MovieName];
                 movie.Content = _localizerMovieTranslate[movie.Content];
-                translationMovies.Add(movie);
             }
 
-            return _mapper.Map<IEnumerable<MoviePreview>>(translationMovies);
+            return _mapper.Map<IEnumerable<MoviePreview>>(movies);
         }
 
         public async Task<MovieDto> SetMovieDeleted(Guid movieId)
@@ -299,16 +289,13 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new NotFoundException("Movies not found!");
             }
 
-            List<Movie> translationMovies = new List<Movie>();
-
             foreach (var movie in movies)
             {
                 movie.MovieName = _localizerMovieTranslate[movie.MovieName];
                 movie.Content = _localizerMovieTranslate[movie.Content];
-                translationMovies.Add(movie);
             }
 
-            return _mapper.Map<IEnumerable<MoviePreview>>(translationMovies);
+            return _mapper.Map<IEnumerable<MoviePreview>>(movies);
         }
     }
 }
