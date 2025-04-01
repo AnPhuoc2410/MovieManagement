@@ -125,7 +125,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
       setIsLoading(true);
       try {
         const response = await api.get(
-          `showtime/getshowtimebydates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}&location=${selectedCity.toUpperCase()}`
+          `showtime/${movieId}/from/${fromDate}/to/${toDate}/locate/${selectedCity.toUpperCase()}`
         );
         if (!isMounted) return;
 

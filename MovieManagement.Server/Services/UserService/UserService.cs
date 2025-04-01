@@ -175,11 +175,9 @@ namespace MovieManagement.Server.Services.UserService
             await _unitOfWork.UserRepository.UpdateAsync(existingUser);
         }
 
-
         public async Task<bool> ExchangeTickets(Guid userId, BillRequest billRequest)
         {
-
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) 
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId)
                 ?? throw new NotFoundException("User not found!");
 
             var pointBill = new Bill
@@ -195,51 +193,62 @@ namespace MovieManagement.Server.Services.UserService
             {
                 BillId = Guid.NewGuid(),
                 UserId = userId,
-                PaymentId = null,
+                PaymentId = null, // Consider adding a real PaymentId if needed
                 Status = BillStatus.Completed,
                 CreatedDate = DateTime.Now,
             };
 
-
             foreach (var ticket in billRequest.Tickets)
             {
-                var purchasedTicket = await _unitOfWork.TicketDetailRepository.GetTicketInfo(ticket) 
+                var purchasedTicket = await _unitOfWork.TicketDetailRepository.GetTicketInfo(ticket)
                     ?? throw new NotFoundException("Ticket not found!");
-                var exchangePoint = purchasedTicket.Seat.SeatType.Price/100;
-                if (exchangePoint < user.Point || billRequest.UsedPoint >= exchangePoint)
+
+                var exchangePoint = purchasedTicket.Seat.SeatType.Price / 100;
+
+                if (exchangePoint <= user.Point && billRequest.UsedPoint >= exchangePoint)
                 {
+                    // Pay with points
                     user.Point -= exchangePoint;
                     purchasedTicket.Status = TicketStatus.Paid;
                     purchasedTicket.BillId = pointBill.BillId;
-                    pointBill.Point -= exchangePoint;
+
+                    pointBill.Point += exchangePoint; // Fixed point calculation
                     pointBill.Amount += purchasedTicket.Seat.SeatType.Price;
                     pointBill.TotalTicket++;
+
                     billRequest.UsedPoint -= exchangePoint;
                 }
                 else
                 {
+                    // Pay with money
                     moneyBill.Amount += purchasedTicket.Seat.SeatType.Price;
                     purchasedTicket.Status = TicketStatus.Paid;
                     purchasedTicket.BillId = moneyBill.BillId;
+
                     moneyBill.TotalTicket++;
-                    moneyBill.Point += exchangePoint / 10;
-                    user.Point += exchangePoint / 10;
+
+                    int earnedPoints = (int)Math.Round(exchangePoint / 10m);
+                    moneyBill.Point += earnedPoints;
+                    user.Point += earnedPoints;
                 }
 
                 _unitOfWork.TicketDetailRepository.PrepareUpdate(purchasedTicket);
-
             }
+
+            // Prevent negative user points
+            if (user.Point < 0) user.Point = 0;
 
             if (pointBill.TotalTicket > 0)
                 _unitOfWork.BillRepository.PrepareCreate(pointBill);
+
             if (moneyBill.TotalTicket > 0)
                 _unitOfWork.BillRepository.PrepareCreate(moneyBill);
+
             _unitOfWork.UserRepository.PrepareUpdate(user);
 
             var checker = await _unitOfWork.CompleteAsync();
 
             return checker > 0;
-
         }
 
     }
