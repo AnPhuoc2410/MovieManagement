@@ -68,12 +68,12 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
 
   // Function to navigate to create room page
   const handleCreateRoomClick = () => {
-    navigate('/admin/ql-phong-chieu/create');
+    navigate('/admin/ql-phong-chieu/them-phong-chieu');
   };
 
   // Fetch seat types
   const fetchSeatTypes = async () => {
-    const response = await api.get(`seattype/all`);
+    const response = await api.get(`seattype`);
     return response.data.data || [];
   };
 
@@ -129,8 +129,7 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
     try {
       // Call the API to create seat for the room
       const response = await api.post(
-        `seat/createbyroomid?roomId=${selectedRoomId}&seatTypeId=${selectedSeatTypeId}`,
-        '',
+        `seat/room/${selectedRoomId}?seatTypeId=${selectedSeatTypeId}`,
         {
           headers: {
             "accept": "text/plain"
@@ -198,7 +197,7 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
     try {
       // Call the API to delete all seats for the room
       const response = await api.delete(
-        `seat/deletebyroomid?roomId=${selectedRoomId}`,
+        `seat/room/${selectedRoomId}`,
         {
           headers: {
             "accept": "text/plain"

@@ -148,12 +148,12 @@ const CreateRoom: React.FC = () => {
             Create New Room
           </Typography>
         </Box>
-        <Button 
-          variant="contained" 
-          startIcon={<AddIcon />}
-          onClick={handleOpenDialog}
+        <Button
+          variant="outlined"
+          onClick={() => navigate('/admin/ql-phong-chieu')}
+          sx={{ borderRadius: 2 }}
         >
-          Add Room
+          Return to Room List
         </Button>
       </Box>
       
@@ -219,7 +219,7 @@ const CreateRoom: React.FC = () => {
               variant="contained"
               color="primary"
               size="large"
-              onClick={handleSubmit}
+              onClick={handleOpenDialog}
               sx={{ minWidth: 200 }}
             >
               Create Room

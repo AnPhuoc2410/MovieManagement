@@ -6,6 +6,7 @@ import GridViewIcon from "@mui/icons-material/GridView";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { useState, useEffect } from "react";
 import {
   Box,
@@ -37,6 +38,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  TextField,
+  IconButton,
 } from "@mui/material";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -104,6 +107,13 @@ const ChiTietPhongChieu = () => {
   const [disabling, setDisabling] = useState(false);
   const [disableError, setDisableError] = useState<string | null>(null);
   const [disableSuccess, setDisableSuccess] = useState(false);
+
+  // Add these new states for room editing
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [editRoomName, setEditRoomName] = useState("");
+  const [isUpdatingRoom, setIsUpdatingRoom] = useState(false);
+  const [updateRoomError, setUpdateRoomError] = useState<string | null>(null);
+  const [updateRoomSuccess, setUpdateRoomSuccess] = useState(false);
 
   // Handle opening delete dialog
   const handleOpenDeleteDialog = (seat: Seat) => {
@@ -261,11 +271,7 @@ const ChiTietPhongChieu = () => {
 
       // Update the seats with the new seat type
       const response = await api.put(
-        `seat/updatebyroomid`,
-        {
-          seatIds: seatIds,
-          seatTypeId: seatTypeId
-        },
+        `seat/type?seatTypeId=${seatTypeId}`,seatIds,
         {
           headers: {
             "Content-Type": "application/json",
@@ -303,11 +309,7 @@ const ChiTietPhongChieu = () => {
     try {
       // Use the API endpoint for adding a row as shown in the screenshot
       const response = await api.post(
-        `seat/addRowByRoomId`,
-        {
-          roomId: roomId,
-          seatTypeId: seatTypeId
-        },
+        `seat/row?roomId=${roomId}&seatTypeId=${seatTypeId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -345,11 +347,7 @@ const ChiTietPhongChieu = () => {
     try {
       // Use the API endpoint for adding a column as shown in the screenshot
       const response = await api.post(
-        `seat/addColumnByRoomId`,
-        {
-          roomId: roomId,
-          seatTypeId: seatTypeId
-        },
+        `seat/column?roomId=${roomId}&seatTypeId=${seatTypeId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -525,11 +523,7 @@ const ChiTietPhongChieu = () => {
     try {
       // Update seats active status using the API
       const response = await api.put(
-        `seat/updatebylist`,
-        {
-          seatIds: seatIds,
-          isActive: isActive
-        },
+        `seat/room/status?isActived=${isActive}`,seatIds,
         {
           headers: {
             "Content-Type": "application/json",
@@ -649,6 +643,60 @@ const ChiTietPhongChieu = () => {
     }
   };
 
+  // Handle opening edit dialog
+  const handleOpenEditDialog = () => {
+    setEditRoomName(room.roomName || "");
+    setOpenEditDialog(true);
+    setUpdateRoomError(null);
+    setUpdateRoomSuccess(false);
+  };
+
+  // Handle closing edit dialog
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false);
+  };
+
+  // Update room information
+  const updateRoom = async () => {
+    if (!roomId || !editRoomName.trim()) {
+      toast.error("Tên phòng không được để trống");
+      return;
+    }
+
+    setIsUpdatingRoom(true);
+    setUpdateRoomError(null);
+    setUpdateRoomSuccess(false);
+
+    try {
+      const response = await api.put(`room/${roomId}`, {
+        row: room.row,
+        column: room.column,
+        total: room.total,
+        movieTheaterId: room.movieTheaterId
+      });
+
+      if (response.data.isSuccess) {
+        setUpdateRoomSuccess(true);
+        toast.success("Cập nhật thông tin phòng thành công!");
+        // Refresh the room data
+        queryClient.invalidateQueries(["roomDetail", roomId]);
+        // Close the dialog after a short delay
+        setTimeout(() => {
+          handleCloseEditDialog();
+        }, 1500);
+      } else {
+        setUpdateRoomError(response.data.message || "Cập nhật không thành công");
+        toast.error(`Lỗi: ${response.data.message}`);
+      }
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "Đã xảy ra lỗi khi cập nhật thông tin phòng";
+      setUpdateRoomError(errorMsg);
+      toast.error(`Lỗi: ${errorMsg}`);
+    } finally {
+      setIsUpdatingRoom(false);
+    }
+  };
+
   // For debugging
   useEffect(() => {
     if (room) {
@@ -706,18 +754,33 @@ const ChiTietPhongChieu = () => {
             bgcolor: 'primary.main',
             color: 'white',
             display: 'flex',
-            alignItems: 'center'
+            alignItems: 'center',
+            justifyContent: 'space-between'
           }}
         >
-          <TheaterIcon sx={{ mr: 2, fontSize: 28 }} />
-          <Box>
-            <Typography variant="h5" component="h1" fontWeight="bold">
-              {room.roomName}
-            </Typography>
-            <Typography variant="body2" sx={{ opacity: 0.8 }}>
-              Mã phòng: {room.roomId}
-            </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <TheaterIcon sx={{ mr: 2, fontSize: 28 }} />
+            <Box>
+              <Typography variant="h5" component="h1" fontWeight="bold">
+                {room.roomName}
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                Mã phòng: {room.roomId}
+              </Typography>
+            </Box>
           </Box>
+          
+          {/* Add Edit Button */}
+          <IconButton 
+            color="inherit" 
+            onClick={handleOpenEditDialog}
+            sx={{ 
+              bgcolor: 'rgba(255,255,255,0.1)', 
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } 
+            }}
+          >
+            <EditIcon />
+          </IconButton>
         </Paper>
       </Box>
 
@@ -1605,6 +1668,63 @@ const ChiTietPhongChieu = () => {
             startIcon={disabling ? <CircularProgress size={20} color="inherit" /> : <EventSeatIcon />}
           >
             {disabling ? 'Đang xử lý...' : seatsToDisable[0]?.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Add Room Edit Dialog */}
+      <Dialog
+        open={openEditDialog}
+        onClose={handleCloseEditDialog}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white', pb: 2 }}>
+          <EditIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+          Chỉnh sửa thông tin phòng
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3, pb: 2 }}>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="roomName"
+            label="Tên phòng"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={editRoomName}
+            onChange={(e) => setEditRoomName(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+
+          {updateRoomSuccess && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              Cập nhật thông tin phòng thành công!
+            </Alert>
+          )}
+
+          {updateRoomError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {updateRoomError}
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button
+            onClick={handleCloseEditDialog}
+            disabled={isUpdatingRoom}
+            variant="outlined"
+          >
+            Hủy
+          </Button>
+          <Button
+            onClick={updateRoom}
+            variant="contained"
+            color="primary"
+            disabled={isUpdatingRoom}
+            startIcon={isUpdatingRoom ? <CircularProgress size={20} color="inherit" /> : <CheckCircleOutlineIcon />}
+          >
+            {isUpdatingRoom ? 'Đang cập nhật...' : 'Cập nhật'}
           </Button>
         </DialogActions>
       </Dialog>

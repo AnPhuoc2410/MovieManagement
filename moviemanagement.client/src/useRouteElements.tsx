@@ -42,6 +42,9 @@ const AdminPages = {
     Detail: lazy(
       () => import("./pages/admin/QuanLyPhongChieu/ChiTietPhongChieu"),
     ),
+    CreateRoom: lazy(
+      () => import("./pages/admin/QuanLyPhongChieu/CreateRoom"),
+    ),
   },
   ShowTime: {
     Management: lazy(
@@ -218,6 +221,7 @@ export default function useRouteElements() {
               children: [
                 { path: "", element: <AdminPages.Room.Management /> },
                 { path: ":roomId", element: <AdminPages.Room.Detail /> },
+                { path: "them-phong-chieu", element: <AdminPages.Room.CreateRoom /> },
               ],
             },
             {
