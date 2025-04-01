@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Resources;
 
 namespace MovieManagement.Server.Services.PromotionService
 {
@@ -11,11 +12,13 @@ namespace MovieManagement.Server.Services.PromotionService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IStringLocalizer _localizerPromotionTranslate;
 
-        public PromotionService(IUnitOfWork unitOfWork, IMapper mapper)
+        public PromotionService(IUnitOfWork unitOfWork, IMapper mapper, IStringLocalizerFactory factory)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _localizerPromotionTranslate = factory.Create("PromotionResource", typeof(PromotionResource).Assembly.FullName);
         }
 
         public async Task<PromotionDto> CreatePromotionAsync(PromotionDto promotionDto)
@@ -32,22 +35,32 @@ namespace MovieManagement.Server.Services.PromotionService
             {
                 throw new BadRequestException("Id cannot be empty!");
             }
-            var bill = _mapper.Map<PromotionDto>(await _unitOfWork.PromotionRepository.GetByIdAsync(id));
-            if (bill == null)
+            var promotion = _mapper.Map<PromotionDto>(await _unitOfWork.PromotionRepository.GetByIdAsync(id));
+            if (promotion == null)
             {
                 throw new NotFoundException("Bill does not found!");
             }
-            return bill;
+            promotion.PromotionName = _localizerPromotionTranslate[promotion.PromotionName];
+            promotion.Content = _localizerPromotionTranslate[promotion.Content];
+            return promotion;
         }
 
         public async Task<IEnumerable<PromotionDto>> GetAllPromotionsAsync()
         {
-            var promotion = _mapper.Map<List<PromotionDto>>(await _unitOfWork.PromotionRepository.GetAllAsync());
-            if(promotion == null)
+            var promotions = _mapper.Map<List<PromotionDto>>(await _unitOfWork.PromotionRepository.GetAllAsync());
+
+            if (promotions == null)
             {
                 throw new NotFoundException("Promotion not found!");
             }
-            return promotion;
+
+            foreach (var item in promotions)
+            {
+                item.PromotionName = _localizerPromotionTranslate[item.PromotionName];
+                item.Content = _localizerPromotionTranslate[item.Content];
+            }
+
+            return promotions;
         }
 
         public async Task<PromotionDto> UpdatePromotionAsync(Guid id, PromotionDto promotionDto)
@@ -77,9 +90,18 @@ namespace MovieManagement.Server.Services.PromotionService
         {
             if (page < 0 || pageSize < 1)
                 throw new BadRequestException("Page and PageSize is invalid");
+
             var promotions = await _unitOfWork.PromotionRepository.GetPageAsync(page, pageSize);
+
             if (promotions == null)
                 throw new NotFoundException("Promotion cannot found!");
+
+            foreach (var promotion in promotions)
+            {
+                promotion.PromotionName = _localizerPromotionTranslate[promotion.PromotionName];
+                promotion.Content = _localizerPromotionTranslate[promotion.Content];
+            }
+
             return _mapper.Map<IEnumerable<PromotionDto>>(promotions);
         }
     }

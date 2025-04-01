@@ -6,6 +6,7 @@ using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.MovieService;
+using System.Globalization;
 
 namespace MovieManagement.Server.Controllers
 {

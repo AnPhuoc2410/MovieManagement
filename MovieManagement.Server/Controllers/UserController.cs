@@ -128,7 +128,7 @@ namespace MovieManagement.Server.Controllers
                 Data = users
             });
         }
-        [HttpGet("users")]
+        [HttpGet("idcard/page/{page:int}/limit/{limit:int}")]
         [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
             StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),

@@ -21,7 +21,6 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllShowTime")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<ShowTimeInfo>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -41,7 +40,6 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost]
-        [Route("CreateShowTime")]
         [ProducesResponseType(typeof(ApiResponse<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -78,7 +76,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpPut("UpdateShowTime/{showTimeId:guid}")]
+        [HttpPut("{showTimeId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -96,7 +94,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("Delete/{showTimeId:guid}")]
+        [HttpDelete("{showTimeId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -114,7 +112,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("GetShowTimeByDates")]
+        [HttpGet("{movieId:guid}/from/{fromDate:datetime}/to/{toDate:datetime}/locate/{location}")]
         [ProducesResponseType(typeof(ApiResponse<Dictionary<string, Dictionary<string, List<object>>>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

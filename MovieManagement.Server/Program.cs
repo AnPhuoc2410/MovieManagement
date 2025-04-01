@@ -27,6 +27,8 @@ using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.JwtService;
 using MovieManagement.Server.Services.QRService;
 using Newtonsoft.Json;
+using System.Globalization;
+using Microsoft.Extensions.Options;
 
 namespace MovieManagement.Server
 {
@@ -85,6 +87,22 @@ namespace MovieManagement.Server
 
             // Đăng ký UnitOfWork
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            builder.Services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en"),
+                    new CultureInfo("vi"),
+                    new CultureInfo("ja"),
+                };
+
+                options.DefaultRequestCulture = new RequestCulture("en");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
 
             // Đăng Ký GenericRepository, Repository và Service
             builder.Services.AddAllDependencies("Repository", "Service", "UnitOfWork");
@@ -178,12 +196,6 @@ namespace MovieManagement.Server
             // Đăng ký QR Code
             builder.Services.AddScoped<IQRCodeService, QRCodeService>();
 
-            // ADD Localization
-            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-            builder.Services.AddControllers()
-                .AddDataAnnotationsLocalization()
-                .AddViewLocalization();
-
             builder.Services.Configure<RouteOptions>(options =>
             {
                 options.LowercaseUrls = true; // Forces lowercase routes
@@ -194,6 +206,8 @@ namespace MovieManagement.Server
 
             var app = builder.Build();
 
+            var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+            app.UseRequestLocalization(localizationOptions);
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -225,16 +239,8 @@ namespace MovieManagement.Server
             // Enable Websocket support
             app.MapHub<SeatHub>("/seatHub");
 
-            //Configure language
-            var supportedCultures = new[] { "en", "vi", "jp" };
-            var localizationOptions = new RequestLocalizationOptions()
-                .SetDefaultCulture("vi")
-                .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures);
-
             app.MapFallbackToFile("/index.html");
             app.UseHttpsRedirection();
-            app.UseRequestLocalization(localizationOptions);
 
             // Add the ExceptionHandlerMiddleware to the pipeline
             // comment lai doan code phia duoi neu chuong khong doc duoc loi tu swagger

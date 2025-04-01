@@ -21,7 +21,6 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("all")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<SeatDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -40,7 +39,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
+        [HttpGet("page/{page:int}/size/{pageSize:int}")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<SeatDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -79,7 +78,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpPost]
+        [HttpPost("single")]
         [ProducesResponseType(typeof(ApiResponse<SeatDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -98,7 +97,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPut]
-        [Route("{seatId:guid}")]
+        [Route("{seatId:guid}/single")]
         [ProducesResponseType(typeof(ApiResponse<SeatDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -117,7 +116,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpDelete]
-        [Route("{seatId:guid}")]
+        [Route("{seatId:guid}/single")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -136,7 +135,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost]
-        [Route("CreateByRoomId")]
+        [Route("room/{roomId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -155,7 +154,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateByList")]
+        [Route("room/status")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -174,7 +173,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateByRoomId")]
+        [Route("type")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -193,7 +192,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost]
-        [Route("AddRowByRoomId")]
+        [Route("row")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -218,7 +217,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost]
-        [Route("AddColumnByRoomId")]
+        [Route("column")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -243,7 +242,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("GetByRoomId")]
+        [Route("room/{roomId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -263,7 +262,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpDelete]
-        [Route("DeleteByRoomId")]
+        [Route("room/{roomId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
