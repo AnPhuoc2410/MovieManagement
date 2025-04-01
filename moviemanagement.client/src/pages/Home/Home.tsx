@@ -16,6 +16,8 @@ import QuickBookingComponent from "../../components/home/QuickBookingComponent";
 import Aurora from "../../components/shared/Aurora";
 import { bannerslider } from "../../data/movieBanner.data";
 import { styles } from "./style";
+import ChatBot from "react-chatbotify";
+import MyChatBot from "../../components/chatbot";
 
 const Homepage: React.FC = () => {
   const { t } = useTranslation();
@@ -86,6 +88,7 @@ const Homepage: React.FC = () => {
 
       {/* Footer */}
       <ScrollToTop />
+      <MyChatBot />
       <Footer />
     </Box>
   );
