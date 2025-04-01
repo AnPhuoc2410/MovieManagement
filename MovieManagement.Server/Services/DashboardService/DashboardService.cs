@@ -1,6 +1,7 @@
 ﻿using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.ResponseModel;
+using System.Linq;
 using static MovieManagement.Server.Models.Enums.BillEnum;
 using static MovieManagement.Server.Models.Enums.TicketEnum;
 
@@ -101,6 +102,7 @@ namespace MovieManagement.Server.Services.DashboardService
             }
             return topCategoryDaily.ToList();
         }
+
         public async Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeRevenues()
         {
             var topShowtimeRevenues = new TopShowtimeResponse.ShowtimeRevenue();
@@ -108,14 +110,17 @@ namespace MovieManagement.Server.Services.DashboardService
             foreach (var hour in GetHoursInDay())
             {
                 var showTimes = await _unitOfWork.ShowtimeRepository.GetTopShowtimeRevenues(hour);
-                var revenue = showTimes
-                    .SelectMany(st => st.TicketDetails)
-                    .Where(td => td.Bill != null)
-                    .GroupBy(td => td.Bill.BillId.ToString())
-                    .Sum(group => group.First().Bill.Amount);
 
                 string key = $"{hour:HH:mm}-{hour.AddHours(1):HH:mm}";
-                topShowtimeRevenues.TopRevenue[key] = revenue;
+
+                decimal revenue = showTimes
+                    .SelectMany(st => st.TicketDetails)
+                    .Where(td => td.Bill != null)
+                    .GroupBy(td => td.Bill.BillId)
+                    .Select(g => g.First().Bill.Amount)
+                    .Sum();
+
+                topShowtimeRevenues.TopRevenue.Add(key, revenue);
             }
 
             return new List<TopShowtimeResponse.ShowtimeRevenue> { topShowtimeRevenues };
@@ -129,19 +134,12 @@ namespace MovieManagement.Server.Services.DashboardService
 
             foreach (var time in timeDaily)
             {
-                var revenueByHour = new Dictionary<string, decimal>();
-
-                foreach (var hour in hoursInDay)
-                {
-                    var showtimeInDay = await _unitOfWork.ShowtimeRepository.GetTopShowtimeDailyRevenues(from, to, hour, time);
-                    string key = $"{hour:HH:mm}-{hour.AddHours(1):HH:mm}";
-                    decimal revenue = showtimeInDay
+                var revenueByHour = hoursInDay.ToDictionary(
+                    hour => $"{hour:HH:mm}-{hour.AddHours(1):HH:mm}",
+                    hour => _unitOfWork.ShowtimeRepository.GetTopShowtimeDailyRevenues(from, to, hour, time).Result
                         .SelectMany(st => st.TicketDetails)
                         .Where(td => td.Status == TicketStatus.Paid && td.Bill.Status == BillStatus.Completed)
-                        .Sum(td => td.Bill.Amount);
-
-                    revenueByHour[key] = revenue;
-                }
+                        .Sum(td => td.Bill.Amount));
 
                 topShowtimeRevenues.Add(new TopShowtimeResponse.ShowtimeDaily
                 {
@@ -155,6 +153,7 @@ namespace MovieManagement.Server.Services.DashboardService
 
             return topShowtimeRevenues;
         }
+
 
         /// <summary>
         /// Hàm lấy danh sách ngày từ ngày bắt đầu đến ngày kết thúc.
