@@ -11,5 +11,11 @@
                 TopRevenue = new Dictionary<String, decimal>();
             }
         }
+
+        public class ShowtimeDaily
+        {
+            public DateTime Day { get; set; }
+            public List<ShowtimeRevenue> ShowtimeRevenues { get; set; }
+        }
     }
 }

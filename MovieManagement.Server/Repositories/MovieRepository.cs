@@ -101,11 +101,11 @@ namespace MovieManagement.Server.Repositories
                 {
                     m.MovieName,
                     Revenue = m.Showtimes
-                        .SelectMany(st => st.TicketDetails
-                            .Where(td => td.Status == TicketStatus.Paid && td.Bill.Status == BillStatus.Completed)
-                            .Select(td => td.Bill))
-                        .GroupBy(b => b.BillId)
-                        .Select(g => g.FirstOrDefault().Amount)
+                       .SelectMany(st => st.TicketDetails
+                            .Where(td => td.Status == TicketStatus.Paid
+                                        && td.Bill != null
+                                        && td.Bill.Status == BillStatus.Completed)
+                            .Select(td => td.Bill.Amount))
                         .Sum()
                 })
                 .OrderByDescending(m => m.Revenue)
