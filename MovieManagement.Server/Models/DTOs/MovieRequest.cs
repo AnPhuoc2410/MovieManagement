@@ -26,7 +26,7 @@
 
         public string Content { get; set; }
 
-        public Guid UserId { get; set; }
+        //public Guid UserId { get; set; }
 
         public ICollection<Guid> CategoriesIds { get; set; } = new List<Guid>();
 
