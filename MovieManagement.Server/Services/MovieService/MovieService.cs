@@ -84,7 +84,7 @@ namespace MovieManagement.Server.Services.MovieService
             return response;
         }
 
-        public async Task<MovieDto> CreateMovieAsync(Guid employeeId, MovieRequest movieRequest)
+        public async Task<MovieDto> CreateMovieAsync(Guid userId, MovieRequest movieRequest)
         {
             if (employeeId == Guid.Empty)
             {
@@ -100,9 +100,12 @@ namespace MovieManagement.Server.Services.MovieService
                 throw new BadRequestException("Employee is not member");
             }
 
-            movieRequest.UserId = employeeId;
+            //movieRequest.UserId = userId;
             var movie = _mapper.Map<Movie>(movieRequest);
             movie.PostDate = DateTime.Now;
+            //Checking user is existing
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) ?? throw new NotFoundException("User not found.");
+            movie.UserId = user.UserId;
             var response = _mapper.Map<MovieDto>(await _unitOfWork.MovieRepository.CreateAsync(movie));
             //var response = _mapper.Map<MovieDto>(movie);
 
@@ -129,8 +132,10 @@ namespace MovieManagement.Server.Services.MovieService
             }
 
             var updateMovie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
+            if (updateMovie == null)
+                throw new NotFoundException("Movie cannot found!");
 
-            movieRequest.UserId = updateMovie.UserId;
+            //movieRequest.UserId = updateMovie.UserId;
             updateMovie = _mapper.Map(movieRequest, updateMovie);
 
             var updateMovieCategories = _unitOfWork.MovieCategoryRepository.GetMovieCategoriesByMovieId(updateMovie.MovieId.Value);
