@@ -156,7 +156,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
                 var ticketDetail = _unitOfWork.TicketDetailRepository.GetById(t);
                 if (ticketDetail == null)
                     throw new NotFoundException("Ticket detail not found!");
-                if (ticketDetail.Status != TicketStatus.Created)
+                if (ticketDetail.Status != TicketStatus.Pending)
                     throw new BadRequestException("Ticket is not pending.");
                 ticketDetail.Status = TicketStatus.Paid;
                 ticketDetail.BillId = billId;
