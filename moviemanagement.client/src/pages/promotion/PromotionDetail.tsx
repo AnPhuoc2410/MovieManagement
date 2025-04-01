@@ -41,7 +41,7 @@ const PromotionDetail: React.FC = () => {
       api
         .get(`promotions/${id}`)
         .then((response) => {
-          setPromotion(response.data);
+          setPromotion(response.data.data);
           setLoading(false);
         })
         .catch((err) => {

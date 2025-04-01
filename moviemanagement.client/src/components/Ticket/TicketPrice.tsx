@@ -52,7 +52,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
   useEffect(() => {
     const fetchSeatTypes = async () => {
       try {
-        const response = await api.get(`seattype/all`);
+        const response = await api.get(`seattype`);
         const seatData = response.data.data.map((seat: SeatType) => ({
           ...seat,
           quantity: 0,

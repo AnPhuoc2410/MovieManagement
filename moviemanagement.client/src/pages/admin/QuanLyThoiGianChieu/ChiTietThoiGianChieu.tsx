@@ -17,7 +17,7 @@ import {
   FormControl,
   InputLabel
 } from '@mui/material';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import MovieIcon from '@mui/icons-material/Movie';
 import TheatersIcon from '@mui/icons-material/Theaters';
@@ -27,6 +27,11 @@ import Header from '../../../components/mui/Header';
 import SideMenu from '../../../components/mui/SideMenu';
 import AppTheme from '../../../shared-theme/AppTheme';
 import { useState, useEffect } from 'react';
+import AdminNowShowingMovies from '../../../components/admin/AdminNowShowingMovies';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import api from '../../../apis/axios.config';
 
 const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomTheme?: boolean }) => {
@@ -35,13 +40,29 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   const [selectedMovieId, setSelectedMovieId] = useState<string>('');
   const [selectedRoomId, setSelectedRoomId] = useState<string>('');
   const [isModified, setIsModified] = useState<boolean>(false);
+  const [startTime, setStartTime] = useState<string>('');
+  const [endTime, setEndTime] = useState<string>('');
+  const [openMovieDialog, setOpenMovieDialog] = useState<boolean>(false);
+  const [selectedMovieName, setSelectedMovieName] = useState<string>('');
+
+  // Format datetime string for datetime-local input
+  const formatDateTimeForInput = (dateTimeString: string | undefined): string => {
+    if (!dateTimeString) return '';
+    try {
+      const date = new Date(dateTimeString);
+      return format(date, "yyyy-MM-dd'T'HH:mm");
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return '';
+    }
+  };
 
   // Fetch showtime details
-  const { data: showtime, isLoading: isLoadingShowtime, error: showtimeError } = useQuery<ShowTime, Error>(
+  const { data: showtime, isLoading: isLoadingShowtime, error: showtimeError } = useQuery<any, Error>(
     ['showtime', id],
     async () => {
       try {
-        const response = await api.get<ShowTime>(`showtime/${id}`);
+        const response = await api.get(`showtime/${id}`);
         return response.data;
       } catch (error) {
         console.error('Error fetching showtime:', error);
@@ -53,8 +74,19 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   // Update local state when showtime data is loaded
   useEffect(() => {
     if (showtime) {
-      setSelectedMovieId(showtime.movieId || '');
-      setSelectedRoomId(showtime.roomId || '');
+      console.log("Setting movie and room IDs from showtime:", showtime);
+      // Check if the data property exists and use it if available
+      const data = showtime.data || showtime;
+      setSelectedMovieId(data.movieId || '');
+      setSelectedRoomId(data.roomId || '');
+
+      // Set datetime values for the inputs
+      if (data.startTime) {
+        setStartTime(formatDateTimeForInput(data.startTime));
+      }
+      if (data.endTime) {
+        setEndTime(formatDateTimeForInput(data.endTime));
+      }
     }
   }, [showtime]);
 
@@ -64,7 +96,8 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     async () => {
       const response = await api.get('movie');
       console.log('Movies API Response:', response.data);
-      return response.data?.data || [];
+      // Handle both cases - direct array or nested data property
+      return Array.isArray(response.data) ? response.data : response.data?.data || [];
     }
   );
 
@@ -72,7 +105,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   const { data: rooms, isLoading: isLoadingRooms } = useQuery(
     'rooms',
     async () => {
-      const response = await api.get('room/all');
+      const response = await api.get('room');
       console.log('Rooms API Response:', response.data);
 
       // Handle both cases - direct array or nested data property
@@ -80,24 +113,68 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     }
   );
 
-  const handleMovieChange = (event: any) => {
-    setSelectedMovieId(event.target.value);
+  // Handle movie selection from the dialog
+  const handleMovieSelect = (movieId: string) => {
+    setSelectedMovieId(movieId);
     setIsModified(true);
+
+    // Find the movie name to display
+    if (movies) {
+      const movie = movies.find((m: any) => m.movieId === movieId);
+      if (movie) {
+        setSelectedMovieName(movie.movieName);
+      }
+    }
+
+    // Close the dialog
+    setOpenMovieDialog(false);
   };
+
+  // Update the movie name when data is loaded
+  useEffect(() => {
+    if (movies && selectedMovieId) {
+      const movie = movies.find((m: any) => m.movieId === selectedMovieId);
+      if (movie) {
+        setSelectedMovieName(movie.movieName);
+      }
+    }
+  }, [movies, selectedMovieId]);
 
   const handleRoomChange = (event: any) => {
     setSelectedRoomId(event.target.value);
     setIsModified(true);
   };
 
+  const handleStartTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStartTime(event.target.value);
+    setIsModified(true);
+  };
+
+  const handleEndTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEndTime(event.target.value);
+    setIsModified(true);
+  };
+
+  const formatDateTime = (dateTimeString: string) => {
+    if (!dateTimeString) return "";
+    // Create a date object but keep the time as selected by user
+    const dt = new Date(dateTimeString);
+    // Format date in yyyy-MM-ddTHH:mm:ss format (no timezone conversion)
+    return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00`;
+  };
+
   const handleSave = async () => {
     try {
       if (!showtime) return;
 
+      const data = showtime.data || showtime;
+
       const updatedShowtime = {
-        ...showtime,
+        ...data,
         movieId: selectedMovieId,
-        roomId: selectedRoomId
+        roomId: selectedRoomId,
+        startTime: formatDateTime(startTime),
+        endTime: formatDateTime(endTime)
       };
 
       await api.put(`showtime/${id}`, updatedShowtime);
@@ -135,7 +212,7 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
               py: 2,
             })}>
               <Typography color="error" variant="h6">
-                Error: {showtimeError.message}
+                Error: {showtimeError instanceof Error ? showtimeError.message : 'Unknown error'}
               </Typography>
               <Button variant="contained" onClick={handleBack} sx={{ mt: 2 }}>
                 Quay lại
@@ -208,29 +285,33 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                       fullWidth
                       variant="outlined"
                       size="small"
-                      value={showtime.showTimeId}
+                      value={showtime?.data?.showTimeId || showtime?.showTimeId || ''}
                       InputProps={{ readOnly: true }}
                     />
                   </Box>
 
                   <Box sx={{ mt: 2 }}>
                     <Typography variant="subtitle1">Phim</Typography>
-                    <FormControl fullWidth size="small">
-                      <Select
-                        value={selectedMovieId}
-                        onChange={handleMovieChange}
-                        displayEmpty
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        value={selectedMovieName}
+                        InputProps={{
+                          readOnly: true,
+                          startAdornment: selectedMovieId ? <MovieIcon sx={{ mr: 1, color: 'primary.main' }} /> : null,
+                        }}
+                        placeholder="Chưa chọn phim"
+                      />
+                      <Button
+                        variant="contained"
+                        onClick={() => setOpenMovieDialog(true)}
+                        sx={{ whiteSpace: 'nowrap' }}
                       >
-                        <MenuItem value="">
-                          <em>Không có phim</em>
-                        </MenuItem>
-                        {Array.isArray(movies) && movies.map((movie: any) => (
-                          <MenuItem key={movie.movieId} value={movie.movieId}>
-                            {movie.movieName}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                        Chọn phim
+                      </Button>
+                    </Box>
                   </Box>
 
                   <Box sx={{ mt: 2 }}>
@@ -259,8 +340,12 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                       fullWidth
                       variant="outlined"
                       size="small"
-                      value={format(new Date(showtime.startTime), 'dd/MM/yyyy HH:mm')}
-                      InputProps={{ readOnly: true }}
+                      type="datetime-local"
+                      value={startTime}
+                      onChange={handleStartTimeChange}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                     />
                   </Box>
 
@@ -270,8 +355,12 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                       fullWidth
                       variant="outlined"
                       size="small"
-                      value={format(new Date(showtime.endTime), 'dd/MM/yyyy HH:mm')}
-                      InputProps={{ readOnly: true }}
+                      type="datetime-local"
+                      value={endTime}
+                      onChange={handleEndTimeChange}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                     />
                   </Box>
 
@@ -312,6 +401,25 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
           </Box>
         </Box>
       </Box>
+
+      {/* Movie Selection Dialog */}
+      <Dialog
+        open={openMovieDialog}
+        onClose={() => setOpenMovieDialog(false)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogTitle>Chọn phim chiếu</DialogTitle>
+        <DialogContent dividers>
+          <AdminNowShowingMovies
+            onMovieSelect={handleMovieSelect}
+            selectedMovieId={selectedMovieId}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenMovieDialog(false)}>Đóng</Button>
+        </DialogActions>
+      </Dialog>
     </AppTheme>
   );
 };

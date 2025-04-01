@@ -17,7 +17,7 @@ interface ApiResponse<T> {
 }
 
 const fetchShowtimes = async (): Promise<ShowTimeType[]> => {
-  const response = await api.get<ApiResponse<ShowTimeType[]>>("showtime/getallshowtime");
+  const response = await api.get<ApiResponse<ShowTimeType[]>>("showtime");
   if (!response.data.isSuccess) {
     throw new Error(response.data.message);
   }

@@ -19,6 +19,7 @@ import {
   FormControlLabel,
   Radio,
   FormLabel,
+  Slider,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { alpha } from "@mui/material/styles";
@@ -35,10 +36,6 @@ import { phoneRegex } from "../../../constants/regex";
 import { useAuth } from "../../../contexts/AuthContext";
 import UserSearchComponent from "../../../components/shared/UserSearchComponent";
 
-/**
- * This is a placeholder interface for seats/tickets in your location.state.
- * You can replace it with the actual type from your codebase if available.
- */
 interface SeatInfo {
   ticketId: string;
   version: number;
@@ -60,7 +57,10 @@ const Payment: React.FC = () => {
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [pointsToAdd, setPointsToAdd] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState("money");
-  const [isPaying, setIsPaying] = useState(false); // for final payment flow
+  const [isPaying, setIsPaying] = useState(false);
+  const [usedPoints, setUsedPoints] = useState<number>(0);
+  const [maxUsablePoints, setMaxUsablePoints] = useState<number>(0);
+  const [partialPointPayment, setPartialPointPayment] = useState<boolean>(false);
   const handleUserSelect = (user: UserInfo) => {
     setSelectedUser(user);
     setPointsToAdd(Math.floor(totalPrice / 10000));
@@ -102,7 +102,22 @@ const Payment: React.FC = () => {
    * Handler for payment method changes (tiền mặt vs. điểm)
    */
   const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPaymentMethod(e.target.value);
+    const newMethod = e.target.value;
+    setPaymentMethod(newMethod);
+
+    if (newMethod === 'points') {
+      // For full points payment, use all available points up to the total price
+      setUsedPoints(maxUsablePoints);
+      setPartialPointPayment(false);
+    } else if (newMethod === 'partial_points') {
+      // For partial payment, start with half of available points
+      setUsedPoints(Math.floor(maxUsablePoints / 2));
+      setPartialPointPayment(true);
+    } else {
+      // For money payment, don't use points
+      setUsedPoints(0);
+      setPartialPointPayment(false);
+    }
   };
 
   /**
@@ -262,34 +277,87 @@ const Payment: React.FC = () => {
     setUsers([]); // hide the search results after selection
   };
 
+  useEffect(() => {
+    if (selectedUser) {
+      // Calculate max points that can be used (100 points = 1 VND)
+      const maxPoints = Math.min(selectedUser.point, totalPrice * 100);
+      setMaxUsablePoints(maxPoints);
+    } else {
+      setMaxUsablePoints(0);
+      setUsedPoints(0);
+    }
+  }, [selectedUser, totalPrice]);
+
+  const handlePointsChange = (event: Event, newValue: number | number[]) => {
+    setUsedPoints(newValue as number);
+  };
+
+  const calculateRemainingAmount = () => {
+    const amountCoveredByPoints = usedPoints / 100; // Convert points to VND
+    return Math.max(0, totalPrice - amountCoveredByPoints);
+  };
+
   const handleConfirmPayment = async () => {
     setIsPaying(true);
     try {
-      toast.success("Thanh toán thành công!");
-      navigate("/admin/ql-ban-ve/confirmation", {
-        state: {
-          // Pass movie and booking information
-          movieId,
-          movieData,
-          selectedTime,
-          selectedDate,
-          seats,
-          roomName,
-          showTimeId: effectiveShowTimeId,
+      
+      const payload = {
+        totalTicket: seats.length,
+        amount: totalPrice,
+        tickets: selectedSeatsInfo.map((seat: any) => seat.ticketId),
+        promotionId: null,
+        usedPoint: usedPoints
+      };
 
-          // Pass ticket and payment information
-          tickets,
-          selectedSeatsInfo,
-          totalPrice,
+      const userId = selectedUser?.id;
+      if (userId) {
+        const response = await api.post(`/users/test/${userId}`, payload);
 
-          // Pass user and payment method
-          selectedUser,
-          paymentMethod,
+        if (response.status === 200) {
+          toast.success("Thanh toán thành công!");
 
-          // Add any additional data you might need
-          pointsToAdd
+          navigate("/admin/ql-ban-ve/confirmation", {
+            state: {
+              movieId,
+              movieData,
+              selectedTime,
+              selectedDate,
+              seats,
+              roomName,
+              showTimeId: effectiveShowTimeId,
+              tickets,
+              selectedSeatsInfo,
+              totalPrice,
+              selectedUser,
+              paymentMethod,
+              pointsToAdd: paymentMethod === "points" ? 0 : pointsToAdd,
+              usedPoints,
+              amountPaidWithPoints: usedPoints / 100,
+              amountPaidWithMoney: calculateRemainingAmount()
+            }
+          });
+        } else {
+          throw new Error("Payment failed");
         }
-      });
+      } else {
+        // Handle case where no user is selected (regular cash payment)
+        toast.success("Thanh toán thành công!");
+        navigate("/admin/ql-ban-ve/confirmation", {
+          state: {
+            movieId,
+            movieData,
+            selectedTime,
+            selectedDate,
+            seats,
+            roomName,
+            showTimeId: effectiveShowTimeId,
+            tickets,
+            selectedSeatsInfo,
+            totalPrice,
+            paymentMethod: "money"
+          }
+        });
+      }
     } catch (error) {
       console.error("Payment error:", error);
       toast.error("Lỗi khi thanh toán");
@@ -297,6 +365,7 @@ const Payment: React.FC = () => {
       setIsPaying(false);
     }
   };
+
 
   return (
     <AppTheme disableCustomTheme={disableCustomTheme}>
@@ -496,10 +565,38 @@ const Payment: React.FC = () => {
                                     value="points"
                                     control={<Radio />}
                                     label="Dùng điểm"
-                                    disabled={selectedUser.point < totalPrice / 1000}
+                                    disabled={selectedUser?.point < 100} // Disable if user has less than 100 points
+                                  />
+                                  <FormControlLabel
+                                    value="partial_points"
+                                    control={<Radio />}
+                                    label="Kết hợp điểm + tiền"
+                                    disabled={selectedUser?.point < 100} // Disable if user has less than 100 points
                                   />
                                 </RadioGroup>
                               </FormControl>
+
+                              {paymentMethod === 'partial_points' && (
+                                <Box sx={{ mt: 3, px: 2 }}>
+                                  <Typography gutterBottom>
+                                    Điểm sử dụng: {usedPoints} điểm ({(usedPoints / 100).toLocaleString('vi-VN')}đ)
+                                  </Typography>
+                                  <Slider
+                                    value={usedPoints}
+                                    onChange={handlePointsChange}
+                                    aria-labelledby="points-slider"
+                                    valueLabelDisplay="auto"
+                                    step={100}
+                                    marks
+                                    min={0}
+                                    max={maxUsablePoints}
+                                  />
+                                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                                    <Typography variant="body2">0 điểm</Typography>
+                                    <Typography variant="body2">{maxUsablePoints.toLocaleString('vi-VN')} điểm</Typography>
+                                  </Box>
+                                </Box>
+                              )}
                             </Box>
                           </Box>
                         ) : (
@@ -515,23 +612,37 @@ const Payment: React.FC = () => {
                         <Typography variant="h6" gutterBottom>
                           Thông Tin Thanh Toán
                         </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            mb: 1,
-                          }}
-                        >
+                        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                           <Typography variant="body1">Tổng tiền vé:</Typography>
                           <Typography variant="body1" fontWeight="bold">
                             {totalPrice.toLocaleString("vi-VN")}đ
                           </Typography>
                         </Box>
+
+                        {(paymentMethod === 'points' || paymentMethod === 'partial_points') && selectedUser && (
+                          <>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                              <Typography variant="body1">Thanh toán bằng điểm:</Typography>
+                              <Typography variant="body1" color="success.main">
+                                -{(usedPoints / 100).toLocaleString("vi-VN")}đ
+                              </Typography>
+                            </Box>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                              <Typography variant="body1">Còn lại:</Typography>
+                              <Typography variant="body1">
+                                {calculateRemainingAmount().toLocaleString("vi-VN")}đ
+                              </Typography>
+                            </Box>
+                          </>
+                        )}
+
                         <Divider sx={{ my: 2 }} />
                         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                           <Typography variant="h6">Tổng thanh toán:</Typography>
                           <Typography variant="h6" color="primary" fontWeight="bold">
-                            {totalPrice.toLocaleString("vi-VN")}đ
+                            {(paymentMethod === 'points' ? 0 :
+                              paymentMethod === 'partial_points' ? calculateRemainingAmount() :
+                                totalPrice).toLocaleString("vi-VN")}đ
                           </Typography>
                         </Box>
 

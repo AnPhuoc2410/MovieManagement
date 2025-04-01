@@ -120,7 +120,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     const fetchSeats = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`ticketdetail/getbyshowtimeid/${effectiveShowTimeId}`);
+        const response = await api.get(`ticketdetail/showtime/${effectiveShowTimeId}`);
         if (response.data?.data) {
           setSeats(response.data.data);
         } else {
@@ -288,6 +288,48 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           ).map(([row, rowSeats]) => (
             <Box key={row} sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
               {rowSeats.map((ticket) => {
+
+                if (!ticket.seat.isActive) {
+                  return (
+                    <Box
+                      key={ticket.seatId}
+                      sx={{
+                        minWidth: "50px",
+                        minHeight: "50px",
+                        p: 0.5,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        border: "1px dashed rgba(255, 255, 255, 0.2)",
+                        borderRadius: "4px",
+                        opacity: 0.3,
+                        position: "relative",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          width: "90%",
+                          height: "1px",
+                          backgroundColor: "rgba(255, 255, 255, 0.3)",
+                          transform: "rotate(45deg)",
+                        }}
+                      />
+                      <Typography
+                        variant="body2"
+                        align="center"
+                        sx={{
+                          color: "rgba(255, 255, 255, 0.5)",
+                          fontSize: "0.7rem"
+                        }}
+                      >
+                        {ticket.seat.atRow}
+                        {ticket.seat.atColumn}
+                      </Typography>
+                    </Box>
+                  );
+                }
+
                 const isSelectedByMe = selectedSeats.some(
                   (s) => s.id === ticket.seatId && s.isMine
                 );

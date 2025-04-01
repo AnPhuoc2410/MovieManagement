@@ -249,7 +249,7 @@ const MovieSeat: React.FC = () => {
                 fontFamily={"JetBrains Mono"}
                 sx={{ textTransform: "uppercase", mb: 4 }}
               >
-                {t("movie_seat.selection")}
+                {t("seat_cinema.screening")}
               </Typography>
 
               {/* Mobile timer display */}
