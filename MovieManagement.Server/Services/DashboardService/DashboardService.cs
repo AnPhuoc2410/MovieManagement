@@ -1,6 +1,8 @@
 ﻿using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.ResponseModel;
+using static MovieManagement.Server.Models.Enums.BillEnum;
+using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Services.DashboardService
 {
@@ -98,6 +100,60 @@ namespace MovieManagement.Server.Services.DashboardService
                 topCategoryDaily.Add(categoryDayRevenue);
             }
             return topCategoryDaily.ToList();
+        }
+        public async Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeRevenues()
+        {
+            var topShowtimeRevenues = new TopShowtimeResponse.ShowtimeRevenue();
+
+            foreach (var hour in GetHoursInDay())
+            {
+                var showTimes = await _unitOfWork.ShowtimeRepository.GetTopShowtimeRevenues(hour);
+                var revenue = showTimes
+                    .SelectMany(st => st.TicketDetails)
+                    .Where(td => td.Bill != null)
+                    .GroupBy(td => td.Bill.BillId.ToString())
+                    .Sum(group => group.First().Bill.Amount);
+
+                string key = $"{hour:HH:mm}-{hour.AddHours(1):HH:mm}";
+                topShowtimeRevenues.TopRevenue[key] = revenue;
+            }
+
+            return new List<TopShowtimeResponse.ShowtimeRevenue> { topShowtimeRevenues };
+        }
+
+        public async Task<IEnumerable<TopShowtimeResponse.ShowtimeDaily>> GetTopShowtimeDailyRevenues(DateTime from, DateTime to)
+        {
+            var topShowtimeRevenues = new List<TopShowtimeResponse.ShowtimeDaily>();
+            var timeDaily = GetFromTo(from, to);
+            var hoursInDay = GetHoursInDay();
+
+            foreach (var time in timeDaily)
+            {
+                var revenueByHour = new Dictionary<string, decimal>();
+
+                foreach (var hour in hoursInDay)
+                {
+                    var showtimeInDay = await _unitOfWork.ShowtimeRepository.GetTopShowtimeDailyRevenues(from, to, hour, time);
+                    string key = $"{hour:HH:mm}-{hour.AddHours(1):HH:mm}";
+                    decimal revenue = showtimeInDay
+                        .SelectMany(st => st.TicketDetails)
+                        .Where(td => td.Status == TicketStatus.Paid && td.Bill.Status == BillStatus.Completed)
+                        .Sum(td => td.Bill.Amount);
+
+                    revenueByHour[key] = revenue;
+                }
+
+                topShowtimeRevenues.Add(new TopShowtimeResponse.ShowtimeDaily
+                {
+                    Day = time,
+                    ShowtimeRevenues = new List<TopShowtimeResponse.ShowtimeRevenue>
+            {
+                new TopShowtimeResponse.ShowtimeRevenue { TopRevenue = revenueByHour }
+            }
+                });
+            }
+
+            return topShowtimeRevenues;
         }
 
         /// <summary>

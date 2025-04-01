@@ -13,6 +13,7 @@ namespace MovieManagement.Server.Services.DashboardService
         Task<IEnumerable<TopCategoryResponse.CategoryRevenue>> GetTopCategoryRevenues();
         Task<IEnumerable<TopCategoryResponse.Daily>> GetTopCategoryDailyRevenues(DateTime from, DateTime to);
 
-       
+        Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeRevenues();
+        Task<IEnumerable<TopShowtimeResponse.ShowtimeDaily>> GetTopShowtimeDailyRevenues(DateTime from, DateTime to);
     }
 }

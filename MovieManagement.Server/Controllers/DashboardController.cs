@@ -133,5 +133,43 @@ namespace MovieManagement.Server.Controllers
             };
             return Ok(response);
         }
+
+        [HttpGet("showtime")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetShowtimesRevenueAsync()
+        {
+            var showtimes = await _dashboardService.GetTopShowtimeRevenues();
+            var response = new ApiResponse<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "Top showtime genres with the most tickets sold",
+                Data = showtimes
+            };
+            return Ok(response);
+        }
+
+        [HttpGet("showtime/daily")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopShowtimeResponse.ShowtimeDaily>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetShowtimesDailyRevenueAsync(DateTime from, DateTime to)
+        {
+            var showtimes = await _dashboardService.GetTopShowtimeDailyRevenues(from, to);
+            var response = new ApiResponse<IEnumerable<TopShowtimeResponse.ShowtimeDaily>>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "Top showtime genres with the most tickets sold by day",
+                Data = showtimes
+            };
+            return Ok(response);
+        }
     }
 }

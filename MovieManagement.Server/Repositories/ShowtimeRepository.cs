@@ -52,27 +52,32 @@ namespace MovieManagement.Server.Repositories
 
         public async Task<List<ShowTime>> GetAllInfoAsync()
         {
-            return await _context.Showtimes
+            var showTimes = await _context.Showtimes
                 .Include(st => st.Movie)
                 .Include(st => st.Room)
                     .ThenInclude(r => r.MovieTheater)
                 .ToListAsync();
+            return showTimes;
         }
 
-        public async Task<TopShowtimeResponse.ShowtimeRevenue> GetTopShowtimeRevenues(DateTime time)
+        public async Task<List<ShowTime>> GetTopShowtimeRevenues(DateTime time)
         {
-            var showtimeTicketsSold = await _context.TicketDetails
-                .Where(td => td.Status == TicketStatus.Paid && td.ShowTime.StartTime.Hour == time.Hour) // Chỉ lấy vé đã thanh toán
-                .GroupBy(td => td.ShowTime.StartTime.Hour) // Nhóm theo giờ của suất chiếu
-                .Select(g => new TopShowtimeResponse.ShowtimeRevenue
-                {
-                    TimeInDay = g.Key,
-                    TicketsSold = g.Count() // Đếm số vé bán được
-                })
-                .FirstOrDefaultAsync(); // Use FirstOrDefaultAsync to get a single result
-
-            return showtimeTicketsSold;
+            var showtimeRevenue = await _context.Showtimes
+                .Where(st => st.StartTime.Hour >= time.Hour && st.StartTime.Hour < time.AddHours(1).Hour)
+                .Include(st => st.TicketDetails.Where(td => td.Status == TicketStatus.Paid && td.Bill.Status == BillStatus.Completed))
+                .ThenInclude(td => td.Bill)
+                .ToListAsync();
+            return showtimeRevenue;
         }
 
+        public async Task<List<ShowTime>> GetTopShowtimeDailyRevenues(DateTime from, DateTime to, DateTime timeInDay, DateTime day)
+        {
+            var showtimeRevenue = await _context.Showtimes
+                .Where(st => st.StartTime.Hour >= timeInDay.Hour && st.StartTime.Hour < timeInDay.AddHours(1).Hour && st.StartTime.Day == day.Day)
+                .Include(st => st.TicketDetails.Where(td => td.Status == TicketStatus.Paid && td.Bill.Status == BillStatus.Completed))
+                    .ThenInclude(td => td.Bill)
+                .ToListAsync();
+            return showtimeRevenue;
+        }
     }
 }
