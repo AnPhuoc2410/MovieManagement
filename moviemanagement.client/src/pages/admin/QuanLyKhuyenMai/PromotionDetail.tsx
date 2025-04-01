@@ -16,6 +16,7 @@ import { ENV } from "../../../env/env.config";
 import AppTheme from "../../../shared-theme/AppTheme";
 import toast from "react-hot-toast";
 import { Promotion } from "../../../types/promotion.types";
+import api from "../../../apis/axios.config";
 
 export default function PromotionDetail() {
   const location = useLocation();
@@ -70,8 +71,8 @@ export default function PromotionDetail() {
         toDate: dayjs(data.toDate).toISOString(),
       };
 
-      await axios.put(
-        `https://localhost:7119/api/promotions/${data.promotionId}`,
+      await api.put(
+        `promotions/${data.promotionId}`,
         payload,
         {
           headers: {

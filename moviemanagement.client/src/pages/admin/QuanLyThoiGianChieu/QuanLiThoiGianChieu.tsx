@@ -7,6 +7,7 @@ import { ShowTime as ShowTimeType } from "../../../types/showtime.types";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import ShowTimeTable, { ShowTime as ShowTimeDisplay } from "./BangShowTime";
 import Loader from "../../../components/shared/Loading/LoadingScreen";
+import api from "../../../apis/axios.config";
 
 interface ApiResponse<T> {
   statusCode: number;
@@ -16,7 +17,7 @@ interface ApiResponse<T> {
 }
 
 const fetchShowtimes = async (): Promise<ShowTimeType[]> => {
-  const response = await axios.get<ApiResponse<ShowTimeType[]>>("https://localhost:7119/api/showtime/getallshowtime");
+  const response = await api.get<ApiResponse<ShowTimeType[]>>("showtime/getallshowtime");
   if (!response.data.isSuccess) {
     throw new Error(response.data.message);
   }

@@ -113,8 +113,8 @@ export default function Movies({
       };
 
       // Create new movie
-      const response = await axios.post(
-        "https://localhost:7119/api/movies",
+      const response = await api.post(
+        "movies",
         payload,
         { headers: { "Content-Type": "application/json" } },
       );
