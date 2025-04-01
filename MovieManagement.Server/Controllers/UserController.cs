@@ -218,8 +218,8 @@ namespace MovieManagement.Server.Controllers
             return NoContent();
         }
 
-        [HttpPost("Test")]
-        public async Task<IActionResult> Test(Guid userId, BillRequest billRequest)
+        [HttpPost("buyticket")]
+        public async Task<IActionResult> ExchangeTicket(Guid userId, BillRequest billRequest)
         {
             await _userService.ExchangeTickets(userId, billRequest);
             return Ok(new ApiResponse<object>
@@ -227,6 +227,21 @@ namespace MovieManagement.Server.Controllers
                 StatusCode = 200,
                 Message = "Exchange ticket successfully",
                 IsSuccess = true
+            });
+        }
+
+        [HttpGet("current-time")]
+        public IActionResult GetCurrentTime()
+        {
+            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            DateTime utcNow = DateTime.UtcNow;
+            DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, timeZone);
+
+            return Ok(new
+            {
+                TimeZone = timeZone.DisplayName,
+                UtcNow = utcNow,
+                LocalTime = localTime
             });
         }
 

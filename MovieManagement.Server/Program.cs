@@ -193,6 +193,7 @@ namespace MovieManagement.Server
 
             var app = builder.Build();
 
+
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
