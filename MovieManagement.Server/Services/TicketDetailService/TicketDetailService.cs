@@ -149,7 +149,7 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return await _unitOfWork.TicketDetailRepository.SaveAsync() == ticketDetails.Count();
         }
 
-        public async Task<bool> PurchasedTicket(List<Guid> list, Guid billId, Guid userId)
+        public bool PurchasedTicket(List<Guid> list, Guid billId, Guid userId)
         {
             foreach (var t in list)
             {
@@ -163,17 +163,17 @@ namespace MovieManagement.Server.Services.TicketDetailServices
                 _unitOfWork.TicketDetailRepository.PrepareUpdate(ticketDetail);
             }
 
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) ??
+            var user = _unitOfWork.UserRepository.GetById(userId) ??
                 throw new NotFoundException("User not found!");
 
-            var bill = await _unitOfWork.BillRepository.GetByIdAsync(billId) ??
+            var bill = _unitOfWork.BillRepository.GetById(billId) ??
                 throw new NotFoundException("Bill not found!");
 
             user.Point += bill.Point;
 
             _unitOfWork.UserRepository.PrepareUpdate(user);
 
-            var checker = await _unitOfWork.CompleteAsync();
+            var checker = _unitOfWork.Complete();
 
             //Check this line later cause im being lazy
             return checker > 0;
