@@ -21,6 +21,7 @@ namespace MovieManagement.Server.Services.UserService
 
         Task<bool> ExchangeTickets(Guid userId, BillRequest billRequest);
 
+        Task<bool> BuyTickets(BillRequest billRequest);
 
     }
 }

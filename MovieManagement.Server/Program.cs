@@ -106,7 +106,8 @@ namespace MovieManagement.Server
                             "https://localhost:3000",
                             "http://localhost:3000",
                             "https://localhost:7119",
-                            "https://eigaa.vercel.app")
+                            "https://eigaa.vercel.app",
+                            "https://eigacinemaapi.azurewebsites.net")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials());

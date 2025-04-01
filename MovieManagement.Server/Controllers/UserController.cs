@@ -230,6 +230,18 @@ namespace MovieManagement.Server.Controllers
             });
         }
 
+        [HttpPost("guestbuyticket")]
+        public async Task<IActionResult> GuestBuyTicket(BillRequest billRequest)
+        {
+            await _userService.BuyTickets(billRequest);
+            return Ok(new ApiResponse<object>
+            {
+                StatusCode = 200,
+                Message = "Exchange ticket successfully",
+                IsSuccess = true
+            });
+        }
+
         [HttpGet("current-time")]
         public IActionResult GetCurrentTime()
         {
