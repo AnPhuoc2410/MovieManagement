@@ -49,7 +49,9 @@ import { format, parseISO } from "date-fns";
 export default function UserDetail() {
   const { userId } = useParams();
   const { userDetails } = useAuth();
+
   const navigate = useNavigate();
+
   const [tabValue, setTabValue] = useState(0);
   const [showPassword, setShowPassword] = useState({
     old: false,
@@ -67,22 +69,7 @@ export default function UserDetail() {
     confirmPassword: "",
   });
 
-  const [profile, setProfile] = useState<UserProfile>({
-    fullName: "",
-    birthDate: "",
-    gender: 0,
-    email: "",
-    idCard: "",
-    phoneNumber: "",
-    address: "",
-    point: 0,
-    userName: "",
-    avatar: "",
-    ticket: {
-      history: [],
-      data: [],
-    },
-  });
+  const [profile, setProfile] = useState<UserProfile>({} as UserProfile);
 
   useEffect(() => {
     if (userDetails && userId === userDetails.userId) {

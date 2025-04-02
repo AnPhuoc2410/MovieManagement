@@ -103,6 +103,7 @@ export default function useRouteElements() {
             { path: "", element: <AuthForm /> },
             { path: "login", element: <AuthForm /> },
             { path: "signup", element: <AuthForm /> },
+            { path: "forgot-password", element: <ForgotPassword /> },
           ],
         },
       ],

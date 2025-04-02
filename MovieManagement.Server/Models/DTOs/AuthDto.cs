@@ -57,6 +57,11 @@ namespace MovieManagement.Server.Models.DTOs
             [StringLength(15, ErrorMessage = "Phone number cannot be longer than 15 characters")]
             public string PhoneNumber { get; set; }
         }
+        
+        public class FindExistingUser
+        {
+            public string Email { get; set; }
+        }
 
     }
 }
