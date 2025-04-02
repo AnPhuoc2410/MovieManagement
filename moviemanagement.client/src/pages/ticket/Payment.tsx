@@ -132,7 +132,7 @@ const Payment: React.FC = () => {
       setIsPromotionsLoading(true);
       try {
         // Adjust the endpoint to match your actual API
-        const response = await api.get('promotions/all');
+        const response = await api.get('promotions');
 
         // Assuming the API returns the data directly or inside a data property
         const promotionsData = response.data.data || response.data || [];

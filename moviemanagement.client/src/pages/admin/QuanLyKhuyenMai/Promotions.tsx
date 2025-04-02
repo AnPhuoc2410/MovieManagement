@@ -50,9 +50,9 @@ export default function Promotions({
     async function fetchPromotions() {
       try {
         const response = await api.get(
-          "promotions/all",
+          "promotions",
         );
-        setPromotions(response.data);
+        setPromotions(response.data.data);
       } catch (error) {
         console.error("Error fetching promotions:", error);
       }
