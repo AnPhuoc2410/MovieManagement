@@ -39,14 +39,15 @@ namespace MovieManagement.Server.Repositories
             return showTimes;
         }
 
-        public async Task<List<ShowTime>> GetShowTimeFromDateToDate(Guid movieId, DateTime date1, DateTime date2, string location)
+        public async Task<List<ShowTime>> GetShowTimeFromDateToDate(Guid movieId, DateTime from, DateTime to, string location)
         {
             var showTimes = await _context.Showtimes
                     .Include(st => st.Room)
                         .ThenInclude(r => r.MovieTheater)
                     .Where(st => st.MovieId == movieId
-                                 && st.StartTime <= date2
-                                 && st.StartTime >= DateTime.Now
+                                 && st.StartTime <= to
+                                 && st.StartTime >= from
+                                 && st.StartTime.AddMinutes(15) >= DateTime.Now
                                  && st.Room.MovieTheater.Location == location)
                     .OrderBy(st => st.StartTime)
                     .ToListAsync();
