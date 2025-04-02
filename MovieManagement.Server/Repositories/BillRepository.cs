@@ -55,5 +55,15 @@ namespace MovieManagement.Server.Repositories
                 })
                 .ToListAsync();
         }
+
+        public async Task<List<Bill>> GetTransactionHistoryByUserId(Guid userId)
+        {
+            return await _context.Bills
+                    .Include(b => b.TicketDetails)
+                        .ThenInclude(td => td.ShowTime)
+                            .ThenInclude(st => st.Movie)
+                .Where(u => u.UserId == userId).ToListAsync();
+        }
+
     }
 }

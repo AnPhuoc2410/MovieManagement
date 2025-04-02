@@ -1,4 +1,5 @@
-﻿using MovieManagement.Server.Models.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Repositories.IRepositories
@@ -10,5 +11,8 @@ namespace MovieManagement.Server.Repositories.IRepositories
         Task<bool> DeleteAsync(Guid billId);
         Task<List<TicketBillResponse>> GetPurchasedTicketsForBill(Guid billId);
         Task<List<RevenueResponse.DailyStatistics>> GetDailyStatisticsAsync();
+
+        Task<List<Bill>> GetTransactionHistoryByUserId(Guid userId);
+
     }
 }

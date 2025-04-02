@@ -31,16 +31,17 @@ namespace MovieManagement.Server.Services.EmailService
         public bool SendEmailReportBill(Guid billId)
         {
             //Get user bill
-            var userBill = _unitOfWork.BillRepository.GetById(billId);
-            if (userBill == null)
+            var userBill = _unitOfWork.BillRepository.GetById(billId) ??
                 throw new NotFoundException("No bills found!");
 
             if (userBill.Status != BillEnum.BillStatus.Completed)
                 throw new BadRequestException("Bill is not paid!");
 
+            if (!userBill.UserId.HasValue)
+                throw new BadRequestException("User is not found!");
+
             // Get user email
-            string userEmail = (_unitOfWork.UserRepository.GetById(userBill.UserId)).Email;
-            if (userEmail == null)
+            string userEmail = (_unitOfWork.UserRepository.GetById(userBill.UserId.Value)).Email ??
                 throw new NotFoundException("No user found!");
 
             // Create email

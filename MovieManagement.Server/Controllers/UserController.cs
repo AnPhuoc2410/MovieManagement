@@ -219,6 +219,11 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost("buyticket")]
+        [Authorize(Roles = "Employee")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> ExchangeTicket(Guid userId, BillRequest billRequest)
         {
             await _userService.ExchangeTickets(userId, billRequest);
@@ -230,32 +235,22 @@ namespace MovieManagement.Server.Controllers
             });
         }
 
-        [HttpPost("guestbuyticket")]
-        public async Task<IActionResult> GuestBuyTicket(BillRequest billRequest)
+        [HttpGet("transaction")]
+        [Authorize(Roles = "Admin,Employee,Member")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<BillTransaction>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> TransactionHistory(Guid userId)
         {
-            await _userService.BuyTickets(billRequest);
-            return Ok(new ApiResponse<object>
+            var transactions = await _userService.GetTransactionByUserId(userId);
+            return Ok(new ApiResponse<IEnumerable<BillTransaction>>
             {
                 StatusCode = 200,
-                Message = "Exchange ticket successfully",
-                IsSuccess = true
+                Message = "Get transaction history successfully",
+                IsSuccess = true,
+                Data = transactions
             });
         }
 
-        [HttpGet("current-time")]
-        public IActionResult GetCurrentTime()
-        {
-            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            DateTime utcNow = DateTime.UtcNow;
-            DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, timeZone);
-
-            return Ok(new
-            {
-                TimeZone = timeZone.DisplayName,
-                UtcNow = utcNow,
-                LocalTime = localTime
-            });
-        }
 
     }
 }

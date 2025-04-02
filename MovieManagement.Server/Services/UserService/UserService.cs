@@ -223,7 +223,10 @@ namespace MovieManagement.Server.Services.UserService
                     purchasedTicket.BillId = moneyBill.BillId;
                     moneyBill.TotalTicket++;
                     moneyBill.Point += exchangePoint / 10;
-                    user.Point += exchangePoint / 10;
+                    if (user.Role == Role.Employee || user.Role == Role.Admin)
+                        user.Point += exchangePoint / 100;
+                    else
+                        user.Point += exchangePoint / 10;
                 }
 
                 _unitOfWork.TicketDetailRepository.PrepareUpdate(purchasedTicket);
@@ -242,43 +245,14 @@ namespace MovieManagement.Server.Services.UserService
 
         }
 
-
-        public async Task<bool> BuyTickets(BillRequest billRequest)
+        public async Task<IEnumerable<BillTransaction>> GetTransactionByUserId(Guid userId)
         {
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId)
+                    ?? throw new NotFoundException("User not found!");
 
+            var transactions = _mapper.Map<IEnumerable<BillTransaction>>(await _unitOfWork.BillRepository.GetTransactionHistoryByUserId(userId));
 
-            var moneyBill = new Bill
-            {
-                BillId = Guid.NewGuid(),
-                UserId = new Guid(),
-                PaymentId = null,
-                Status = BillStatus.Completed,
-                CreatedDate = DateTime.Now,
-            };
-
-
-            foreach (var ticket in billRequest.Tickets)
-            {
-                var purchasedTicket = await _unitOfWork.TicketDetailRepository.GetTicketInfo(ticket)
-                    ?? throw new NotFoundException("Ticket not found!");
-                var exchangePoint = purchasedTicket.Seat.SeatType.Price / 100;
-
-                moneyBill.Amount += purchasedTicket.Seat.SeatType.Price;
-                purchasedTicket.Status = TicketStatus.Paid;
-                purchasedTicket.BillId = moneyBill.BillId;
-                moneyBill.TotalTicket++;
-                moneyBill.Point += exchangePoint / 10;
-
-                _unitOfWork.TicketDetailRepository.PrepareUpdate(purchasedTicket);
-
-            }
-
-            if (moneyBill.TotalTicket > 0)
-                _unitOfWork.BillRepository.PrepareCreate(moneyBill);
-
-            var checker = await _unitOfWork.CompleteAsync();
-
-            return checker > 0;
+            return transactions;
 
         }
 
