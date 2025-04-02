@@ -13,7 +13,7 @@ export type Movie = {
   director: string;
   rating: string;
   duration: number; // int in C#
-  version: string; // int in C#
+  version: number; // int in C#
   trailer: string;
   content: string;
   userId?: string; // Guid in C#

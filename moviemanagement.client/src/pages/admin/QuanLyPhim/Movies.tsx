@@ -19,14 +19,23 @@ import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
 
+
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import api from "../../../apis/axios.config";
 import { ENV } from "../../../env/env.config";
 import AppTheme from "../../../shared-theme/AppTheme";
 import { useTranslation } from "react-i18next";
-import { Movie } from "../../../types/movie.types";
-import { useLanguage } from "../../../hooks/useLanguage";
+
+interface Movie {
+  movieId: string;
+  movieName: string;
+  image?: string;
+  fromDate: string;
+  director: string;
+  duration: number;
+  version: string;
+}
 
 export default function Movies({
   disableCustomTheme = false,
@@ -38,7 +47,6 @@ export default function Movies({
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string>("");
   const { t } = useTranslation();
-
 
   useEffect(() => {
     async function fetchMovies() {
@@ -58,7 +66,7 @@ export default function Movies({
       movieId: "",
       movieName: "",
       image: "",
-      fromDate: undefined,
+      fromDate: "",
       director: "",
       duration: 0,
       version: "",
