@@ -5,7 +5,12 @@ import { useNavigate } from "react-router-dom";
 import api from "../../apis/axios.config";
 import { Movie } from "../../types/movie.types";
 
-const AdminNowShowingMovies: React.FC = () => {
+interface AdminNowShowingMoviesProps {
+  onMovieSelect?: (movieId: string) => void;
+  selectedMovieId?: string;
+}
+
+const AdminNowShowingMovies: React.FC<AdminNowShowingMoviesProps> = ({ onMovieSelect, selectedMovieId }) => {
   const navigate = useNavigate();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -30,7 +35,11 @@ const AdminNowShowingMovies: React.FC = () => {
   }, []);
 
   const handleSelectMovie = (movie: Movie) => {
-    navigate(`/admin/ql-ban-ve/ticket/${movie.movieId}`);
+    if (onMovieSelect) {
+      onMovieSelect(movie.movieId);
+    } else {
+      navigate(`/admin/ql-ban-ve/ticket/${movie.movieId}`);
+    }
   };
 
   if (loading) {
@@ -111,8 +120,14 @@ const AdminNowShowingMovies: React.FC = () => {
                   variant="contained"
                   fullWidth
                   onClick={() => handleSelectMovie(movie)}
+                  sx={{
+                    bgcolor: selectedMovieId === movie.movieId ? 'primary.dark' : 'primary.main',
+                    '&:hover': {
+                      bgcolor: selectedMovieId === movie.movieId ? 'primary.dark' : 'primary.dark',
+                    },
+                  }}
                 >
-                  Chọn phim này
+                  {selectedMovieId === movie.movieId ? 'Đã chọn' : 'Chọn phim này'}
                 </Button>
               </Box>
             </Box>

@@ -72,8 +72,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
             var createdShowTime = _unitOfWork.ShowtimeRepository.PrepareCreateEntity(newShowTime);
 
-            var IsGenerated = CreateTicketByShowTime(createdShowTime.ShowTimeId, room.RoomId);
-            if (IsGenerated.Result <= 1)
+            var IsGenerated = await CreateTicketByShowTime(createdShowTime.ShowTimeId, room.RoomId);
+            if (IsGenerated <= 1)
             {
                 throw new ApplicationException("Unable to create due to systems error.");
             }
@@ -174,7 +174,6 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 throw new NotFoundException("ShowTime does not found!");
             }
 
-
             existingShowTime.StartTime = new DateTime(showtime.StartTime.Year, showtime.StartTime.Month, showtime.StartTime.Day, showtime.StartTime.Hour, showtime.StartTime.Minute, 0);
             existingShowTime.EndTime = existingShowTime.StartTime.Add(TimeSpan.FromMinutes(movie.Duration));
             existingShowTime.MovieId = showtime.MovieId;
@@ -195,8 +194,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
             foreach (var st in showTimesByRoom)
             {
-                if ((existingShowTime.StartTime < st.EndTime && existingShowTime.EndTime > st.StartTime) ||
-                    (existingShowTime.EndTime > st.StartTime && existingShowTime.StartTime < st.EndTime))
+                if (existingShowTime.ShowTimeId != st.ShowTimeId &&
+                     existingShowTime.StartTime < st.EndTime && existingShowTime.EndTime > st.StartTime)
                 {
                     throw new ApplicationException("Unable to create due to other StartTime and EndTime.");
                 }

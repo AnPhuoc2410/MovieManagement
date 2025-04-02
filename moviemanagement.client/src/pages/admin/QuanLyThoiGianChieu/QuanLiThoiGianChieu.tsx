@@ -8,6 +8,7 @@ import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import ShowTimeTable, { ShowTime as ShowTimeDisplay } from "./BangShowTime";
 import Loader from "../../../components/shared/Loading/LoadingScreen";
 import api from "../../../apis/axios.config";
+import { Box, Typography } from "@mui/material";
 
 interface ApiResponse<T> {
   statusCode: number;
@@ -17,11 +18,17 @@ interface ApiResponse<T> {
 }
 
 const fetchShowtimes = async (): Promise<ShowTimeType[]> => {
-  const response = await api.get<ApiResponse<ShowTimeType[]>>("showtime/getallshowtime");
-  if (!response.data.isSuccess) {
-    throw new Error(response.data.message);
+  try {
+    const response = await api.get<ApiResponse<ShowTimeType[]>>("showtime");
+    if (!response.data.isSuccess) {
+      console.error("API returned error:", response.data.message);
+      return [];
+    }
+    return response.data.data || [];
+  } catch (error) {
+    console.error("Error fetching showtimes:", error);
+    return [];
   }
-  return response.data.data;
 };
 
 const transformShowTimeForDisplay = (showtime: ShowTimeType): ShowTimeDisplay => {
@@ -45,15 +52,33 @@ const QuanLyPhongChieu: React.FC = () => {
     data: danhSachThoiGianChieu = [],
     isLoading,
     error,
-  } = useQuery<ShowTimeType[]>("ThoiGianChieuData", fetchShowtimes);
+  } = useQuery<ShowTimeType[]>("ThoiGianChieuData", fetchShowtimes, {
+    onError: (error) => {
+      console.error("Query error:", error);
+    },
+    retry: 1,
+  });
 
   if (isLoading) return <Loader />;
-  if (error) return <div>Failed to fetch data</div>;
 
-  const transformedShowTimes = danhSachThoiGianChieu.map(transformShowTimeForDisplay);
+  const transformedShowTimes = danhSachThoiGianChieu?.map(transformShowTimeForDisplay) || [];
 
   return (
     <ManagementPageLayout>
+      {error ? (
+        <Box sx={{ textAlign: 'center', mt: 3, mb: 2 }}>
+          <Typography color="error" variant="body1">
+            Không thể tải dữ liệu lịch chiếu. Bạn vẫn có thể tạo mới lịch chiếu.
+          </Typography>
+        </Box>
+      ) : danhSachThoiGianChieu.length === 0 ? (
+        <Box sx={{ textAlign: 'center', mt: 3, mb: 2 }}>
+          <Typography variant="body1">
+            Không có dữ liệu lịch chiếu. Vui lòng tạo mới lịch chiếu.
+          </Typography>
+        </Box>
+      ) : null}
+      
       <ShowTimeTable
         showTimes={transformedShowTimes}
         onEdit={(id: string) => {

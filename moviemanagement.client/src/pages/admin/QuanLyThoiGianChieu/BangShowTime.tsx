@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Typography, Button, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import ManagementTable, {
   ColumnDef,
@@ -25,10 +25,6 @@ const ShowTimeTable: React.FC<{
   const navigate = useNavigate();
 
   const columns: ColumnDef<ShowTime>[] = [
-    {
-      field: "showTimeId",
-      headerName: "Mã thời gian chiếu",
-    },
     {
       field: "movie",
       headerName: "Tên phim",
@@ -72,8 +68,17 @@ const ShowTimeTable: React.FC<{
 
   return (
     <>
-      <Typography
-        variant="h5"
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "1rem",
+          padding: "1rem",  
+        }}
+      >
+        <Typography
+          variant="h5"
         sx={{
           textAlign: "left",
           flexGrow: 1,
@@ -81,7 +86,19 @@ const ShowTimeTable: React.FC<{
       >
         Danh sách thời gian chiếu
       </Typography>
-
+      <Button
+          variant="contained"
+          color="primary"
+          sx={{
+            flexShrink: 0, // Prevent button from shrinking
+          }}
+          onClick={() => {
+            navigate("/admin/ql-thoi-gian-chieu/them-thoi-gian-chieu");
+          }}
+        >
+          Thêm thời gian chiếu
+        </Button>
+      </Box>
       <ManagementTable
         data={showTimes}
         columns={columns}

@@ -42,6 +42,9 @@ const AdminPages = {
     Detail: lazy(
       () => import("./pages/admin/QuanLyPhongChieu/ChiTietPhongChieu"),
     ),
+    CreateRoom: lazy(
+      () => import("./pages/admin/QuanLyPhongChieu/CreateRoom"),
+    ),
   },
   ShowTime: {
     Management: lazy(
@@ -50,6 +53,7 @@ const AdminPages = {
     Detail: lazy(
       () => import("./pages/admin/QuanLyThoiGianChieu/ChiTietThoiGianChieu"),
     ),
+    Add: lazy(() => import("./pages/admin/QuanLyThoiGianChieu/ThemThoiGianChieu")),
   },
   Member: {
     Management: lazy(
@@ -130,7 +134,7 @@ export default function useRouteElements() {
         },
         {
           path: "/ticket",
-          element: (  
+          element: (
             <SignalRProvider>
               <TicketWrapper />
             </SignalRProvider>
@@ -217,6 +221,7 @@ export default function useRouteElements() {
               children: [
                 { path: "", element: <AdminPages.Room.Management /> },
                 { path: ":roomId", element: <AdminPages.Room.Detail /> },
+                { path: "them-phong-chieu", element: <AdminPages.Room.CreateRoom /> },
               ],
             },
             {
@@ -224,6 +229,7 @@ export default function useRouteElements() {
               children: [
                 { path: "", element: <AdminPages.ShowTime.Management /> },
                 { path: ":id", element: <AdminPages.ShowTime.Detail /> },
+                { path: "them-thoi-gian-chieu", element: <AdminPages.ShowTime.Add /> },
               ],
             },
           ],

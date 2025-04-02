@@ -301,6 +301,9 @@
       "trailer": "WATCH TRAILER",
       "book_now": "BOOK NOW"
     },
+    "seat_cinema": {
+      "screening": "SCREEN"
+    },
     "common": {
       "button": {
         "action": {

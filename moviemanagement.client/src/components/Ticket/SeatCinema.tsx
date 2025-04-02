@@ -123,7 +123,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     const fetchSeats = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`ticketdetail/getbyshowtimeid/${effectiveShowTimeId}`);
+        const response = await api.get(`ticketdetail/showtime/${effectiveShowTimeId}`);
         if (response.data?.data) {
           setSeats(response.data.data);
         } else {
@@ -235,7 +235,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           }}
         />
         <Typography variant="h6" sx={{ mt: -2, color: "white" }}>
-          {t("seat_cinema.screen")}
+          {t("movie_seat.selection")}
         </Typography>
       </Box>
 
@@ -251,6 +251,21 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           ).map(([row, rowSeats]) => (
             <Box key={row} sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
               {rowSeats.map((ticket) => {
+
+                if (!ticket.seat.isActive) {
+                  return (
+                    <Box
+                      key={ticket.seatId}
+                      sx={{
+                        minWidth: "50px",
+                        minHeight: "50px",
+                        visibility: "hidden",
+                        p: 0.5,
+                      }}
+                    />
+                  );
+                }
+
                 const isSelectedByMe = selectedSeats.some(
                   (s) => s.id === ticket.seatId && s.isMine
                 );
