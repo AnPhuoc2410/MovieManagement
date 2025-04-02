@@ -62,7 +62,6 @@ const ThemThoiGianChieu = () => {
     movieId: "",
     roomId: "",
     startTime: "",
-    endTime: "",
   });
 
   useEffect(() => {
@@ -143,7 +142,7 @@ const ThemThoiGianChieu = () => {
     setMessage({ text: "", type: "" });
 
     // Validate form data
-    if (!formData.movieId || !formData.roomId || !formData.startTime || !formData.endTime) {
+    if (!formData.movieId || !formData.roomId || !formData.startTime) {
       setLoading(false);
       setMessage({ 
         text: "Vui lòng điền đầy đủ thông tin lịch chiếu", 
@@ -152,33 +151,35 @@ const ThemThoiGianChieu = () => {
       return;
     }
 
-    // Validate that startTime is before endTime
-    const startDate = new Date(formData.startTime);
-    const endDate = new Date(formData.endTime);
-    if (startDate >= endDate) {
-      setLoading(false);
-      setMessage({ 
-        text: "Thời gian bắt đầu phải trước thời gian kết thúc", 
-        type: "error" 
-      });
-      return;
-    }
-
     try {
+      // Find the selected movie to get duration
+      const selectedMovie = movies.find(m => m.movieId === formData.movieId);
+      if (!selectedMovie) {
+        setLoading(false);
+        setMessage({ 
+          text: "Không tìm thấy thông tin phim đã chọn", 
+          type: "error" 
+        });
+        return;
+      }
+
+      // Calculate end time based on movie duration
+      const startDate = new Date(formData.startTime);
+      const durationInMinutes = selectedMovie.duration || 120; // Default to 2 hours if duration is not available
+      const endDate = new Date(startDate.getTime() + durationInMinutes * 60000); // Convert minutes to milliseconds
+
       // Fix timezone issues by keeping the selected time as is without conversion
-      const formatDateTime = (dateTimeString: string) => {
-        if (!dateTimeString) return "";
-        // Create a date object but keep the time as selected by user
-        const dt = new Date(dateTimeString);
+      const formatDateTime = (dateTime: Date) => {
+        if (!dateTime) return "";
         // Format date in yyyy-MM-ddTHH:mm:ss.000Z format (ISO format with UTC designation)
-        return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00.000Z`;
+        return `${dateTime.getFullYear()}-${String(dateTime.getMonth() + 1).padStart(2, '0')}-${String(dateTime.getDate()).padStart(2, '0')}T${String(dateTime.getHours()).padStart(2, '0')}:${String(dateTime.getMinutes()).padStart(2, '0')}:00.000Z`;
       };
 
       const payload = {
         movieId: formData.movieId,
         roomId: formData.roomId,
-        startTime: formatDateTime(formData.startTime),
-        endTime: formatDateTime(formData.endTime),
+        startTime: formatDateTime(startDate),
+        endTime: formatDateTime(endDate),
       };
 
       console.log('Sending payload:', payload); // Debug log
@@ -209,7 +210,6 @@ const ThemThoiGianChieu = () => {
           movieId: "",
           roomId: "",
           startTime: "",
-          endTime: "",
         });
       } else {
         setMessage({
@@ -365,7 +365,6 @@ const ThemThoiGianChieu = () => {
                     <Button onClick={() => setOpenMovieDialog(false)}>Đóng</Button>
                   </DialogActions>
                 </Dialog>
-
                 <Box
                   sx={{
                     mt: 2,
@@ -426,31 +425,38 @@ const ThemThoiGianChieu = () => {
                   />
                 </Box>
 
-                <Box
-                  sx={{
-                    mt: 2,
-                    display: "flex",
-                    gap: 2,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
+                {formData.movieId && (
+                  <Box
+                    sx={{
+                      mt: 2,
+                      display: "flex",
+                      gap: 2,
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
                   >
-                    Thời gian kết thúc
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    size="small"
-                    type="datetime-local"
-                    name="endTime"
-                    value={formData.endTime}
-                    onChange={handleInputChange}
-                  />
-                </Box>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
+                    >
+                      Thời lượng
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        bgcolor: '#e8f4fd',
+                        px: 2,
+                        py: 1,
+                        borderRadius: 1,
+                        border: '1px solid',
+                        borderColor: 'info.light',
+                        color: 'text.primary',
+                      }}
+                    >
+                      {movies.find(m => m.movieId === formData.movieId)?.duration || 'N/A'} phút
+                    </Typography>
+                  </Box>
+                )}
 
                 <Box sx={{ mt: 3, display: "flex", justifyContent: "center", gap: 2 }}>
                   <Button

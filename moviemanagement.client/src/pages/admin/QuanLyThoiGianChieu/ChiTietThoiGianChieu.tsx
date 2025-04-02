@@ -41,9 +41,9 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
   const [selectedRoomId, setSelectedRoomId] = useState<string>('');
   const [isModified, setIsModified] = useState<boolean>(false);
   const [startTime, setStartTime] = useState<string>('');
-  const [endTime, setEndTime] = useState<string>('');
-  const [openMovieDialog, setOpenMovieDialog] = useState<boolean>(false);
   const [selectedMovieName, setSelectedMovieName] = useState<string>('');
+  const [movieDuration, setMovieDuration] = useState<number>(0);
+  const [openMovieDialog, setOpenMovieDialog] = useState<boolean>(false);
 
   // Format datetime string for datetime-local input
   const formatDateTimeForInput = (dateTimeString: string | undefined): string => {
@@ -84,9 +84,6 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
       if (data.startTime) {
         setStartTime(formatDateTimeForInput(data.startTime));
       }
-      if (data.endTime) {
-        setEndTime(formatDateTimeForInput(data.endTime));
-      }
     }
   }, [showtime]);
 
@@ -118,11 +115,12 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     setSelectedMovieId(movieId);
     setIsModified(true);
 
-    // Find the movie name to display
+    // Find the movie name and duration to display
     if (movies) {
       const movie = movies.find((m: any) => m.movieId === movieId);
       if (movie) {
         setSelectedMovieName(movie.movieName);
+        setMovieDuration(movie.duration || 120);
       }
     }
 
@@ -130,12 +128,13 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     setOpenMovieDialog(false);
   };
 
-  // Update the movie name when data is loaded
+  // Update the movie name and duration when data is loaded
   useEffect(() => {
     if (movies && selectedMovieId) {
       const movie = movies.find((m: any) => m.movieId === selectedMovieId);
       if (movie) {
         setSelectedMovieName(movie.movieName);
+        setMovieDuration(movie.duration || 120);
       }
     }
   }, [movies, selectedMovieId]);
@@ -150,11 +149,6 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     setIsModified(true);
   };
 
-  const handleEndTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEndTime(event.target.value);
-    setIsModified(true);
-  };
-
   const formatDateTime = (dateTimeString: string) => {
     if (!dateTimeString) return "";
     // Create a date object but keep the time as selected by user
@@ -163,18 +157,29 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
     return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00.000Z`;
   };
 
+  // Calculate end time based on start time and movie duration
+  const calculateEndTime = (): string => {
+    if (!startTime) return "";
+    const startDate = new Date(startTime);
+    const endDate = new Date(startDate.getTime() + movieDuration * 60000); // Convert minutes to milliseconds
+    return formatDateTime(endDate.toISOString());
+  };
+
   const handleSave = async () => {
     try {
       if (!showtime) return;
 
       const data = showtime.data || showtime;
 
+      // Calculate end time based on start time and movie duration
+      const calculatedEndTime = calculateEndTime();
+
       const updatedShowtime = {
         ...data,
         movieId: selectedMovieId,
         roomId: selectedRoomId,
         startTime: formatDateTime(startTime),
-        endTime: formatDateTime(endTime)
+        endTime: calculatedEndTime
       };
 
       await api.put(`showtime/${id}`, updatedShowtime);
@@ -349,20 +354,26 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
                     />
                   </Box>
 
-                  <Box sx={{ mt: 2 }}>
-                    <Typography variant="subtitle1">Thời gian kết thúc</Typography>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                      type="datetime-local"
-                      value={endTime}
-                      onChange={handleEndTimeChange}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                  </Box>
+                  {selectedMovieId && (
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="subtitle1">Thời lượng</Typography>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        bgcolor: '#e8f4fd',
+                        px: 2,
+                        py: 1.5,
+                        borderRadius: 1,
+                        border: '1px solid',
+                        borderColor: 'info.light'
+                      }}>
+                        <AccessTimeIcon sx={{ mr: 1, color: 'info.main' }} />
+                        <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                          {movieDuration} phút
+                        </Typography>
+                      </Box>
+                    </Box>
+                  )}
 
                   <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', gap: 2 }}>
                     {isModified ? (
