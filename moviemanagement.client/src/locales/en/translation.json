@@ -277,6 +277,7 @@
       },
       "movie": {
         "default": "Default Movie",
+        "poster": "Movie poster",
         "name": "Movie Name:",
         "description": "Movie Information",
         "room": "Screening Room:"
@@ -337,6 +338,46 @@
       "employee": {
         "deleteSuccess": "Employee deleted successfully",
         "deleteFailed": "Employee deletion failed"
+      },
+      "success": {
+        "seat": {
+          "change_from": "Change seat from ",
+          "change_to": " to seat ",
+          "select": "Select seat ",
+          "cancel_booking": "Booking canceled"
+        },
+        "change_direct": {
+          "payment": "Redirecting to payment page..."
+        }
+      },
+      "error": {
+        "server": {
+          "connection": "Lost connection to server!"
+        },
+        "seat": {
+          "cancel_select": "Unselected seat: ",
+          "by_someone": "by someone else",
+          "selecting": "is being selected",
+          "bought": "has been purchased",
+          "loading_list": "Error loading seat list.",
+          "infor": "Seat information not found",
+          "cancel_booking": "Error canceling booking",
+          "remainder": "Seat holding time has expired. Please select a seat again.",
+          "max_selection": "Please select exactly: ",
+          "someone_selected": "has already been selected by someone else. Please choose another seat.",
+          "cannot_selected": "Error booking seat! The seat may have been selected by someone else.",
+          "cancel_booking_bc_back": "Seats have been canceled because you went back."
+        },
+        "promotion": {
+          "loading": "Unable to load promotions"
+        },
+        "ticket": {
+          "booking": "Ticket booking failed!",
+          "selection": "Please select at least one ticket!"
+        },
+        "showtime": {
+          "selection": "Please select a showtime!"
+        }
       }
     },
     "menu": {

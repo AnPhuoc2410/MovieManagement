@@ -45,7 +45,7 @@ const Ticket: React.FC = () => {
   const handleTicketSelection = useCallback(
     (tickets: SeatType[]) => {
       if (!selectedTime) {
-        toast.error("Vui lòng chọn suất chiếu!");
+        toast.error(t("toast.error.showtime.selection"));
         return;
       }
       const totalTickets = tickets.reduce(
@@ -53,7 +53,7 @@ const Ticket: React.FC = () => {
         0,
       );
       if (totalTickets === 0) {
-        toast.error("Vui lòng chọn ít nhất 1 vé!");
+        toast.error(t("toast.error.ticket.selection"));
         return;
       }
       navigate("/ticket/movie-seat", {

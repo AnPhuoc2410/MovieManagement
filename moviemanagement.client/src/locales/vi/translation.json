@@ -276,6 +276,7 @@
       },
       "movie": {
         "default": "Phim Mặc Định",
+        "poster": "Poster phim",
         "name": "Tên phim:",
         "description": "Thông Tin Phim",
         "room": "Phòng chiếu:"
@@ -336,6 +337,54 @@
       "employee": {
         "deleteSuccess": "Xóa thành viên thành công",
         "deleteFailed": "Xóa thành viên thất bại"
+      },
+      "success": {
+        "seat": {
+          "change_from": "Đổi ghế từ ",
+          "change_to": "sang ghế ",
+          "select": "Chọn ghế ",
+          "cancel_booking": "Đã hủy đặt chỗ"
+        },
+        "change_direct": {
+          "payment": "Chuyển đến trang thanh toán..."
+        }
+      },
+      "error": {
+        "server": {
+          "connection": "Mất kết nối đến server!"
+        },
+        "seat": {
+          "cancel_select": "Bỏ chọn ghế: ",
+          "by_someone": "bởi người khác",
+          "selecting": "đang được chọn",
+          "bought": "đã được mua",
+          "loading_list": "Lỗi khi tải danh sách ghế.",
+          "infor": "Không tìm thấy thông tin ghế",
+          "cancel_booking": "Lỗi khi hủy đặt chỗ",
+          "remainder": "Thời gian giữ ghế đã hết. Vui lòng chọn lại ghế.",
+          "max_selection": "Vui lòng chọn đúng số ghế: ",
+          "someone_selected": "đã được người khác chọn. Vui lòng chọn ghế khác.",
+          "cannot_selected": "Lỗi khi đặt chỗ! Có thể ghế đã được người khác chọn.",
+          "cancel_booking_bc_back": "Các ghế đã được hủy do bạn quay lại."
+        },
+        "promotion": {
+          "loading": "Không thể tải khuyến mãi"
+        },
+        "ticket": {
+          "booking": "Đặt vé thất bại!",
+          "selection": "Vui lòng chọn ít nhất 1 vé!"
+        },
+        "showtime": {
+          "selection": "Vui lòng chọn suất chiếu!"
+        }
+      }
+    },
+    "helperText": {
+      "error": {
+        "fullname": "Vui lòng nhập họ tên",
+        "email": "Vui lòng nhập email",
+        "id_number": "Vui lòng nhập chứng minh nhân dân",
+        "phone": "Vui lòng nhập số điện thoại"
       }
     },
     "menu": {

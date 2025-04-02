@@ -50,7 +50,7 @@ const Payment: React.FC = () => {
   } = location.state || {};
 
 
-  const movieTitle = movieData?.movieName || "Phim Mặc Định";
+  const movieTitle = movieData?.movieName || t("payment.movie.default");
   const showDate = selectedDate;
   const showTime = selectedTime;
 
@@ -114,11 +114,11 @@ const Payment: React.FC = () => {
         }));
 
         await connection.invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId);
-        toast.success("Đã hủy đặt chỗ");
+        toast.success(t("toast.success.seat.cancel_booking"));
         navigate(-1);
       } catch (error) {
         console.error("Error releasing seats:", error);
-        toast.error("Lỗi khi hủy đặt chỗ");
+        toast.error(t("toast.error.seat.cancel_booking"));
         // Navigate anyway as fallback
         navigate(-1);
       }
@@ -141,7 +141,7 @@ const Payment: React.FC = () => {
         console.log("Loaded promotions:", promotionsData);
       } catch (error) {
         console.error("Failed to load promotions", error);
-        toast.error("Không thể tải khuyến mãi");
+        toast.error(t("toast.error.promotion.loading"));
       } finally {
         setIsPromotionsLoading(false);
       }
@@ -249,7 +249,7 @@ const Payment: React.FC = () => {
       window.location.href = response.data;
     } catch (error) {
       console.error(error);
-      toast.error("Đặt vé thất bại!");
+      toast.error(t("toast.error.ticket.booking"));
       return;
     }
   };
@@ -339,7 +339,7 @@ const Payment: React.FC = () => {
                     startTime={lastSelectionTime}
                     resetTrigger={resetCounter}
                     onTimeout={() => {
-                      toast.error("Thời gian giữ ghế đã hết. Vui lòng chọn lại ghế.");
+                      toast.error(t("toast.error.seat.remainder"));
                       navigate(`/ticket/${movieId}`, { replace: true });
                     }}
                   />
@@ -391,7 +391,7 @@ const Payment: React.FC = () => {
                       startTime={lastSelectionTime}
                       resetTrigger={resetCounter}
                       onTimeout={() => {
-                        toast.error("Thời gian giữ ghế đã hết. Vui lòng chọn lại ghế.");
+                        toast.error(t("toast.error.seat.remainder"));
                         navigate(`/ticket/${movieId}`, { replace: true });
                       }}
                     />
@@ -431,7 +431,7 @@ const Payment: React.FC = () => {
                   <Box
                     component="img"
                     src={movieData?.image}
-                    alt={movieData?.movieName || "Movie Poster"}
+                    alt={movieData?.movieName || t("payment.movie.poster")}
                     sx={{
                       width: "100%",
                       borderRadius: 2,
@@ -738,7 +738,7 @@ const Payment: React.FC = () => {
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         error={fullNameError}
-                        helperText={fullNameError ? "Vui lòng nhập họ tên" : ""}
+                        helperText={fullNameError ? t("helperText.error.fullname") : ""}
                         sx={{
                           maxWidth: "400px",
                           input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
@@ -758,7 +758,7 @@ const Payment: React.FC = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         error={emailError}
-                        helperText={emailError ? "Vui lòng nhập email" : ""}
+                        helperText={emailError ? t("helperText.error.email") : ""}
                         sx={{
                           maxWidth: "400px",
                           input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
@@ -778,7 +778,7 @@ const Payment: React.FC = () => {
                         value={idNumber}
                         onChange={(e) => setIdNumber(e.target.value)}
                         error={idNumberError}
-                        helperText={idNumberError ? "Vui lòng nhập CMND" : ""}
+                        helperText={idNumberError ? t("helperText.error.id_number") : ""}
                         sx={{
                           maxWidth: "400px",
                           input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
@@ -798,7 +798,7 @@ const Payment: React.FC = () => {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         error={phoneError}
-                        helperText={phoneError ? "Vui lòng nhập số điện thoại" : ""}
+                        helperText={phoneError ? t("helperText.error.phone") : ""}
                         sx={{
                           maxWidth: "400px",
                           input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },

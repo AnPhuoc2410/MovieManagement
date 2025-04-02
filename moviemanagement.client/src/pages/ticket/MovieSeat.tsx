@@ -42,7 +42,7 @@ const MovieSeat: React.FC = () => {
 
   // Handle what happens when seat timer expires
   const handleSeatsTimeout = useCallback(() => {
-    toast.error(`Thời gian giữ chỗ đã hết cho tất cả ghế đã chọn.`);
+    toast.error(t("toast.error.seat.remainder"));
     setSelectedSeats([]);
   }, []);
 
@@ -78,12 +78,12 @@ const MovieSeat: React.FC = () => {
 
   const handleNext = async () => {
     if (selectedSeats.length !== maxSeats) {
-      toast.error(`Vui lòng chọn đúng ${maxSeats} ghế.`);
+      toast.error(`${t("toast.error.seat.max_selection")} ${maxSeats}`);
       return;
     }
 
     if (!connection) {
-      toast.error("Mất kết nối đến server!");
+      toast.error(t("toast.error.server.connection"));
       return;
     }
 
@@ -99,7 +99,7 @@ const MovieSeat: React.FC = () => {
 
       if (unavailableSeats.length > 0) {
         const seatNames = unavailableSeats.map(seat => seat.name).join(', ');
-        toast.error(`Ghế ${seatNames} đã được người khác chọn. Vui lòng chọn ghế khác.`);
+        toast.error(`${seatNames} ${t("toast.error.seat.someone_selected")}`);
         return;
       }
 
@@ -112,7 +112,7 @@ const MovieSeat: React.FC = () => {
       // Call the SetSeatPending method on the server using the current showTimeId
       await connection.invoke("SetSeatPending", ticketRequests, currentShowTimeId, userId);
 
-      toast.success("Chuyển đến trang thanh toán...");
+      toast.success(t("toast.success.change_direct.payment"));
 
       // Navigate to the payment page, passing the current showTimeId along with other state
       navigate("/ticket/payment", {
@@ -132,7 +132,7 @@ const MovieSeat: React.FC = () => {
       });
     } catch (error) {
       console.error("Error when booking:", error);
-      toast.error("Lỗi khi đặt chỗ! Có thể ghế đã được người khác chọn.");
+      toast.error(t("toast.error.seat.cannot_selected"));
     }
   };
 

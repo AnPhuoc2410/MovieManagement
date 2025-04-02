@@ -275,6 +275,7 @@
       },
       "movie": {
         "default": "デフォルトの映画",
+        "poster": "映画のポスター",
         "name": "映画名：",
         "description": "映画情報",
         "room": "上映ルーム："
@@ -335,6 +336,46 @@
       "employee": {
         "deleteSuccess": "メンバーの削除に成功しました",
         "deleteFailed": "メンバーの削除に失敗しました"
+      },
+      "success": {
+        "seat": {
+          "change_from": "座席を ",
+          "change_to": " に変更",
+          "select": "座席を選択 ",
+          "cancel_booking": "予約がキャンセルされました"
+        },
+        "change_direct": {
+          "payment": "支払いページに移動中..."
+        }
+      },
+      "error": {
+        "server": {
+          "connection": "サーバーへの接続が失われました！"
+        },
+        "seat": {
+          "cancel_select": "選択解除した座席: ",
+          "by_someone": "他の人によって",
+          "selecting": "選択中",
+          "bought": "購入済み",
+          "loading_list": "座席リストの読み込みエラー。",
+          "infor": "座席情報が見つかりません",
+          "cancel_booking": "予約キャンセルエラー",
+          "remainder": "座席の保持時間が切れました。再度座席を選択してください。",
+          "max_selection": "正しい座席数を選択してください: ",
+          "someone_selected": "他の人に選択されました。別の座席を選択してください。",
+          "cannot_selected": "予約エラー！この座席は他の人に選択された可能性があります。",
+          "cancel_booking_bc_back": "戻ったため、座席はキャンセルされました。"
+        },
+        "promotion": {
+          "loading": "プロモーションを読み込めません"
+        },
+        "ticket": {
+          "booking": "チケットの予約に失敗しました！",
+          "selection": "少なくとも1枚のチケットを選択してください！"
+        },
+        "showtime": {
+          "selection": "上映時間を選択してください！"
+        }
       }
     },
     "menu": {
