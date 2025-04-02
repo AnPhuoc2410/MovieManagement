@@ -157,10 +157,21 @@ const ChiTietThoiGianChieu = ({ disableCustomTheme = false }: { disableCustomThe
 
   const formatDateTime = (dateTimeString: string) => {
     if (!dateTimeString) return "";
-    // Create a date object but keep the time as selected by user
-    const dt = new Date(dateTimeString);
-    // Format date in yyyy-MM-ddTHH:mm:ss format (no timezone conversion)
-    return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00`;
+    try {
+      // Create a date object but keep the time as selected by user
+      const dt = new Date(dateTimeString);
+      
+      // Format 1: yyyy-MM-ddTHH:mm:ss (no timezone, which .NET often prefers)
+      const dotNetFormat = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00`;
+      
+      // Log the formatted date for debugging
+      console.log(`Formatted date: ${dotNetFormat}`);
+      
+      return dotNetFormat;
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateTimeString; // Return the original string if formatting fails
+    }
   };
 
   const handleSave = async () => {

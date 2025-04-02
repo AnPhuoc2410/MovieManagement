@@ -72,8 +72,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
             var createdShowTime = _unitOfWork.ShowtimeRepository.PrepareCreateEntity(newShowTime);
 
-            var IsGenerated = CreateTicketByShowTime(createdShowTime.ShowTimeId, room.RoomId);
-            if (IsGenerated.Result <= 1)
+            var IsGenerated = await CreateTicketByShowTime(createdShowTime.ShowTimeId, room.RoomId);
+            if (IsGenerated <= 1)
             {
                 throw new ApplicationException("Unable to create due to systems error.");
             }

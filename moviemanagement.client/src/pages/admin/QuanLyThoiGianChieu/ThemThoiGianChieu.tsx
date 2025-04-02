@@ -60,7 +60,7 @@ const ThemThoiGianChieu = () => {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await api.get("movie/showing/page/1/size/100");
+        const response = await api.get("movie/showing/page/0/size/100");
         console.log('Movie API Response:', response.data); // Debug log
         
         // Handle direct data response from showing movies API
@@ -126,18 +126,51 @@ const ThemThoiGianChieu = () => {
     setLoading(true);
     setMessage({ text: "", type: "" });
 
+    // Validate form data
+    if (!formData.movieId || !formData.roomId || !formData.startTime || !formData.endTime) {
+      setLoading(false);
+      setMessage({ 
+        text: "Vui lòng điền đầy đủ thông tin lịch chiếu", 
+        type: "error" 
+      });
+      return;
+    }
+
+    // Validate that startTime is before endTime
+    const startDate = new Date(formData.startTime);
+    const endDate = new Date(formData.endTime);
+    if (startDate >= endDate) {
+      setLoading(false);
+      setMessage({ 
+        text: "Thời gian bắt đầu phải trước thời gian kết thúc", 
+        type: "error" 
+      });
+      return;
+    }
+
     try {
       // Fix timezone issues by keeping the selected time as is without conversion
       const formatDateTime = (dateTimeString: string) => {
         if (!dateTimeString) return "";
-        // Create a date object but keep the time as selected by user
-        const dt = new Date(dateTimeString);
-        // Format date in yyyy-MM-ddTHH:mm:ss format (no timezone conversion)
-        return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00`;
+        try {
+          // Create a date object but keep the time as selected by user
+          const dt = new Date(dateTimeString);
+          
+          // Try multiple date formats for better compatibility with backend
+          // Format 1: yyyy-MM-ddTHH:mm:ss (no timezone, which .NET often prefers)
+          const dotNetFormat = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00`;
+          
+          // Log the formatted date for debugging
+          console.log(`Formatted date: ${dotNetFormat}`);
+          
+          return dotNetFormat;
+        } catch (error) {
+          console.error("Error formatting date:", error);
+          return dateTimeString; // Return the original string if formatting fails
+        }
       };
 
       const payload = {
-        showTimeId: crypto.randomUUID(),
         movieId: formData.movieId,
         roomId: formData.roomId,
         startTime: formatDateTime(formData.startTime),
@@ -153,9 +186,6 @@ const ThemThoiGianChieu = () => {
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
-          },
-          validateStatus: function (status) {
-            return status < 500; // Resolve only if the status code is less than 500
           }
         }
       );
@@ -182,6 +212,28 @@ const ThemThoiGianChieu = () => {
       }
     } catch (error: any) {
       console.error("Error creating showtime:", error);
+      
+      // Log detailed error information
+      if (error.response) {
+        console.error("Error response:", {
+          data: error.response.data,
+          status: error.response.status,
+          headers: error.response.headers
+        });
+        
+        // Try to parse any JSON error message from the server
+        try {
+          if (typeof error.response.data === 'string') {
+            const parsedError = JSON.parse(error.response.data);
+            console.error("Parsed error data:", parsedError);
+          }
+        } catch (parseError) {
+          console.error("Error parsing error response data:", parseError);
+        }
+      } else if (error.request) {
+        console.error("Error request:", error.request);
+      }
+      
       const errorMessage = error.response?.data?.message
         || error.message
         || "Failed to create showtime. Please try again.";

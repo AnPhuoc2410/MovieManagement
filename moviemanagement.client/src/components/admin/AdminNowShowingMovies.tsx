@@ -20,7 +20,7 @@ const AdminNowShowingMovies: React.FC<AdminNowShowingMoviesProps> = ({ onMovieSe
       try {
         setLoading(true);
         const response = await api.get(
-          `/movie/showing/page/1/size/100`
+          `/movie/showing/page/0/size/100`
         );
         setMovies(response.data);
       } catch (error) {
