@@ -1,5 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { getCookie } from "../utils/cookieUtils.ts";
+import { getLanguageHeader } from "../utils/language.utils.ts";
 import { ENV } from "../env/env.config.ts";
 
 const api = axios.create({
@@ -14,6 +15,8 @@ const handleBefore = (
   if (token) {
     config.headers.set("Authorization", `Bearer ${token}`);
   }
+  const language = getLanguageHeader(localStorage.getItem("language") || "vi");
+  config.headers.set("Accept-Language", language);
   return config;
 };
 

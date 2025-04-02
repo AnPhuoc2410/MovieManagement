@@ -325,77 +325,73 @@ const Payment: React.FC = () => {
   const handleConfirmPayment = async () => {
     setIsPaying(true);
     try {
-      const userId = selectedUser?.id;
-
-      // Create base payload for both member and non-member purchases
-      const basePayload = {
+      // Create the request payload for exchanging tickets
+      const payload = {
         totalTicket: seats.length,
         amount: totalPrice,
         tickets: selectedSeatsInfo.map((seat: any) => seat.ticketId),
         promotionId: null,
+        usedPoint: usedPoints
       };
 
-      let response;
+      const userId = selectedUser?.id;
+      if (userId) {
+        // Call the backend API for ticket exchange
+        const response = await api.post(`users/test/${userId}`, payload);
 
-      if (userId && selectedTicketsForPoints.length > 0) {
-        // Member with point exchange
-        const pointPayload = {
-          ...basePayload,
-          usedPoint: calculateTotalPointsNeeded()
-        };
+        if (response.status === 200) {
+          toast.success("Thanh toán thành công!");
 
-        response = await api.post(`users/test?userId=${userId}`, pointPayload);
-
-        toast.success("Thanh toán thành công! Đã sử dụng điểm thành viên.");
-      } else {
-        response = await api.post('/tickets/purchase', basePayload);
-        toast.success("Thanh toán thành công!");
-      }
-
-      const amountPaidWithPoints = selectedTicketsForPoints.length > 0
-        ? selectedTicketsForPoints.reduce((sum, ticketId) => {
-          const ticketIndex = selectedSeatsInfo.findIndex((s: { ticketId: string; }) => s.ticketId === ticketId);
-          return sum + (tickets[ticketIndex]?.price || 0);
-        }, 0)
-        : 0;
-
-      // Navigate to confirmation page with detailed info
-      navigate("/admin/ql-ban-ve/confirmation", {
-        state: {
-          movieData,
-          movieTitle,
-          showDate,
-          showTime,
-          roomName,
-          seats,
-          tickets,
-          totalPrice,
-          userId: selectedUser?.id,
-          userName: selectedUser?.userName,
-          selectedTicketsForPoints,
-          pointsUsed: calculateTotalPointsNeeded(),
-          pointsEarned: calculatePointsToEarn(),
-          amountPaidWithPoints,
-          amountPaidWithMoney: calculateRemainingAmount(),
-          transactionId: response?.data?.transactionId || null,
-          paymentDate: new Date().toISOString()
+          navigate("/admin/ql-ban-ve/confirmation", {
+            state: {
+              movieId,
+              movieData,
+              selectedTime,
+              selectedDate,
+              seats,
+              roomName,
+              showTimeId: effectiveShowTimeId,
+              tickets,
+              selectedSeatsInfo,
+              totalPrice,
+              selectedUser,
+              paymentMethod,
+              pointsToAdd: paymentMethod === "points" ? 0 : pointsToAdd,
+              usedPoints,
+              amountPaidWithPoints: usedPoints / 100,
+              amountPaidWithMoney: calculateRemainingAmount()
+            }
+          });
+        } else {
+          throw new Error("Payment failed");
         }
-      });
-    } catch (error: any) {
-      console.error("Payment error:", error);
-
-      // More detailed error handling
-      if (error.response?.data?.message) {
-        toast.error(`Lỗi: ${error.response.data.message}`);
-      } else if (error.message) {
-        toast.error(`Lỗi: ${error.message}`);
       } else {
-        toast.error("Lỗi khi thanh toán. Vui lòng thử lại.");
+        // Handle case where no user is selected (regular cash payment)
+        toast.success("Thanh toán thành công!");
+        navigate("/admin/ql-ban-ve/confirmation", {
+          state: {
+            movieId,
+            movieData,
+            selectedTime,
+            selectedDate,
+            seats,
+            roomName,
+            showTimeId: effectiveShowTimeId,
+            tickets,
+            selectedSeatsInfo,
+            totalPrice,
+            paymentMethod: "money"
+          }
+        });
       }
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error("Lỗi khi thanh toán");
     } finally {
       setIsPaying(false);
     }
   };
+
 
   return (
     <AppTheme disableCustomTheme={disableCustomTheme}>

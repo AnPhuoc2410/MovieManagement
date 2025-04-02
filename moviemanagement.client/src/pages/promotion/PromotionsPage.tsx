@@ -54,8 +54,8 @@ const PromotionsPage: React.FC = () => {
     };
 
     fetchPromotions();
-  }, []); // No dependency on currentPage anymore
-
+  }, []);
+  
   // Client-side pagination like UpComingMoviesPage
   const pageCount = Math.ceil(allPromotions.length / pageSize);
   const indexOfLastPromotion = currentPage * pageSize;
