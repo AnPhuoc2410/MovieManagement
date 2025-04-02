@@ -10,6 +10,10 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -22,9 +26,10 @@ import SideMenu from "../../../components/mui/SideMenu";
 import AppTheme from "../../../shared-theme/AppTheme";
 import { Movie } from "../../../types/movie.types";
 import { Room } from "../../../types/room.types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import api from "../../../apis/axios.config";
+import AdminNowShowingMovies from "../../../components/admin/AdminNowShowingMovies";
 
 interface MovieApiResponse {
   message: string;
@@ -45,10 +50,13 @@ interface RoomApiResponse {
 // Component
 const ThemThoiGianChieu = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+  const [openMovieDialog, setOpenMovieDialog] = useState(false);
+  const [selectedMovieId, setSelectedMovieId] = useState("");
 
   const [formData, setFormData] = useState({
     movieId: "",
@@ -58,6 +66,14 @@ const ThemThoiGianChieu = () => {
   });
 
   useEffect(() => {
+    // Check if roomId was passed in location state
+    if (location.state && location.state.roomId) {
+      setFormData(prev => ({
+        ...prev,
+        roomId: location.state.roomId
+      }));
+    }
+    
     const fetchMovies = async () => {
       try {
         const response = await api.get("movie/showing/page/0/size/100");
@@ -104,7 +120,7 @@ const ThemThoiGianChieu = () => {
 
     fetchMovies();
     fetchRooms();
-  }, []);
+  }, [location]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -152,22 +168,10 @@ const ThemThoiGianChieu = () => {
       // Fix timezone issues by keeping the selected time as is without conversion
       const formatDateTime = (dateTimeString: string) => {
         if (!dateTimeString) return "";
-        try {
-          // Create a date object but keep the time as selected by user
-          const dt = new Date(dateTimeString);
-          
-          // Try multiple date formats for better compatibility with backend
-          // Format 1: yyyy-MM-ddTHH:mm:ss (no timezone, which .NET often prefers)
-          const dotNetFormat = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00`;
-          
-          // Log the formatted date for debugging
-          console.log(`Formatted date: ${dotNetFormat}`);
-          
-          return dotNetFormat;
-        } catch (error) {
-          console.error("Error formatting date:", error);
-          return dateTimeString; // Return the original string if formatting fails
-        }
+        // Create a date object but keep the time as selected by user
+        const dt = new Date(dateTimeString);
+        // Format date in yyyy-MM-ddTHH:mm:ss.000Z format (ISO format with UTC designation)
+        return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00.000Z`;
       };
 
       const payload = {
@@ -186,6 +190,9 @@ const ThemThoiGianChieu = () => {
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
+          },
+          validateStatus: function (status) {
+            return status < 500; // Resolve only if the status code is less than 500
           }
         }
       );
@@ -220,16 +227,6 @@ const ThemThoiGianChieu = () => {
           status: error.response.status,
           headers: error.response.headers
         });
-        
-        // Try to parse any JSON error message from the server
-        try {
-          if (typeof error.response.data === 'string') {
-            const parsedError = JSON.parse(error.response.data);
-            console.error("Parsed error data:", parsedError);
-          }
-        } catch (parseError) {
-          console.error("Error parsing error response data:", parseError);
-        }
       } else if (error.request) {
         console.error("Error request:", error.request);
       }
@@ -248,6 +245,15 @@ const ThemThoiGianChieu = () => {
 
   const handleReturn = () => {
     navigate("/admin/ql-thoi-gian-chieu");
+  };
+
+  const handleMovieSelect = (movieId: string) => {
+    setSelectedMovieId(movieId);
+    setFormData(prev => ({
+      ...prev,
+      movieId: movieId
+    }));
+    setOpenMovieDialog(false);
   };
 
   return (
@@ -302,24 +308,63 @@ const ThemThoiGianChieu = () => {
                   >
                     Chọn Phim
                   </Typography>
-                  <FormControl fullWidth variant="outlined" size="small">
-                    <InputLabel id="movie-select-label">Phim</InputLabel>
-                    <Select
-                      labelId="movie-select-label"
-                      id="movie-select"
-                      name="movieId"
-                      value={formData.movieId}
-                      onChange={handleSelectChange}
-                      label="Phim"
+                  <Box sx={{ display: 'flex', width: '100%', gap: 2 }}>
+                    <Button 
+                      variant="contained" 
+                      color="primary" 
+                      onClick={() => setOpenMovieDialog(true)}
+                      sx={{ flexShrink: 0 }}
                     >
-                      {movies.map((movie) => (
-                        <MenuItem key={movie.movieId} value={movie.movieId}>
-                          {movie.movieName}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                      Chọn phim
+                    </Button>
+                    <Box 
+                      sx={{ 
+                        flexGrow: 1, 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        bgcolor: formData.movieId ? alpha('#f5f5f5', 0.8) : 'transparent',
+                        px: 2,
+                        py: 1,
+                        borderRadius: 1,
+                        border: '1px solid',
+                        borderColor: formData.movieId ? 'primary.light' : 'divider',
+                      }}
+                    >
+                      <Typography 
+                        variant="body1" 
+                        sx={{
+                          fontWeight: formData.movieId ? 'medium' : 'normal',
+                          color: formData.movieId ? 'text.primary' : 'text.secondary',
+                        }}
+                      >
+                        {formData.movieId ? (
+                          movies.find(m => m.movieId === formData.movieId)?.movieName || 'Phim đã chọn'
+                        ) : (
+                          'Chưa chọn phim'
+                        )}
+                      </Typography>
+                    </Box>
+                  </Box>
                 </Box>
+
+                {/* Movie Selection Dialog */}
+                <Dialog
+                  open={openMovieDialog}
+                  onClose={() => setOpenMovieDialog(false)}
+                  maxWidth="lg"
+                  fullWidth
+                >
+                  <DialogTitle>Chọn phim chiếu</DialogTitle>
+                  <DialogContent dividers>
+                    <AdminNowShowingMovies
+                      onMovieSelect={handleMovieSelect}
+                      selectedMovieId={selectedMovieId}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setOpenMovieDialog(false)}>Đóng</Button>
+                  </DialogActions>
+                </Dialog>
 
                 <Box
                   sx={{

@@ -142,7 +142,7 @@ const ChiTietPhongChieu = () => {
       
       if (response.data.isSuccess) {
         setDeleteSuccess(true);
-        toast.success("Đã xóa ghế thành công!");
+        // Don't show toast here as it duplicates the dialog success message
         // Refresh the data after a short delay
         setTimeout(() => {
           handleCloseDeleteDialog();
@@ -187,9 +187,9 @@ const ChiTietPhongChieu = () => {
     try {
       const seatIds = seatsToDisable.map(seat => seat.seatId);
       const isActive = !seatsToDisable[0].isActive; // All seats will have the same isActive status
-      await updateSeatActiveStatus(seatIds, isActive);
+      await updateSeatActiveStatus(seatIds, isActive, false);
       setDisableSuccess(true);
-      toast.success(`Đã ${isActive ? 'kích hoạt' : 'vô hiệu hóa'} ${seatsToDisable.length} ghế thành công!`);
+      // Don't show toast here as it duplicates the dialog success message
       // Refresh the data after a short delay
       setTimeout(() => {
         handleCloseDisableDialog();
@@ -515,7 +515,7 @@ const ChiTietPhongChieu = () => {
   };
 
   // Update isActive status for selected seats
-  const updateSeatActiveStatus = async (seatIds: string[], isActive: boolean) => {
+  const updateSeatActiveStatus = async (seatIds: string[], isActive: boolean, showToast: boolean = true) => {
     setUpdateLoading(true);
     setUpdateSuccess(false);
     setUpdateError(null);
@@ -534,7 +534,10 @@ const ChiTietPhongChieu = () => {
 
       if (response.data.isSuccess) {
         setUpdateSuccess(true);
-        toast.success(`Đã cập nhật trạng thái kích hoạt của ${seatIds.length} ghế!`);
+        // Only show toast if showToast parameter is true
+        if (showToast) {
+          toast.success(`Đã cập nhật trạng thái kích hoạt của ${seatIds.length} ghế!`);
+        }
         queryClient.invalidateQueries(["roomDetail", roomId]);
         setSelectedSeats([]);
       } else {
@@ -856,6 +859,18 @@ const ChiTietPhongChieu = () => {
                       </Box>
                       <ChairIcon sx={{ fontSize: 48, color: theme.palette.primary.light, opacity: 0.7 }} />
                     </Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      startIcon={<EventSeatIcon />}
+                      onClick={() => navigate('/admin/ql-thoi-gian-chieu/them-thoi-gian-chieu', { state: { roomId: roomId } })}
+                      sx={{ mt: 2 }}
+                    >
+                      Tạo lịch chiếu cho phòng này
+                    </Button>
                   </Grid>
                 </Grid>
               </Box>

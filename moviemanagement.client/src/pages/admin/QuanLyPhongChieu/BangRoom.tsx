@@ -21,7 +21,7 @@ import {
   CircularProgress,
   Alert
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Room as RoomType } from "../../../types/room.types";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import EditIcon from "@mui/icons-material/Edit";
@@ -32,7 +32,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import api from "../../../apis/axios.config";
 
 export interface Room {
@@ -51,10 +51,13 @@ interface RoomTableProps {
   rooms: Room[];
   onEdit: (id: string) => void;
   rowHeight?: number;
+  onRefreshData?: () => void;
 }
 
-const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
+const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit, onRefreshData }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryClient = useQueryClient();
   const [openDialog, setOpenDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedRoomId, setSelectedRoomId] = useState("");
@@ -70,6 +73,23 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
   const handleCreateRoomClick = () => {
     navigate('/admin/ql-phong-chieu/them-phong-chieu');
   };
+
+  // Check if we returned from creating a new room
+  useEffect(() => {
+    // Check location state for indications that we need to refresh
+    if (location.state && location.state.refresh) {
+      // Invalidate and refetch the rooms data
+      queryClient.invalidateQueries('rooms');
+      
+      // Call parent component's refresh function if available
+      if (onRefreshData) {
+        onRefreshData();
+      }
+      
+      // Clear the state to prevent repeated refreshes
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, queryClient, navigate, onRefreshData]);
 
   // Fetch seat types
   const fetchSeatTypes = async () => {
@@ -143,9 +163,13 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
         // Refresh the data after a short delay
         setTimeout(() => {
           handleCloseDialog();
-          // Refresh the page to show updated data
-          window.location.reload();
-        }, 2000);
+          // Invalidate and refetch the rooms data
+          queryClient.invalidateQueries('rooms');
+          // Call parent component's refresh function if available
+          if (onRefreshData) {
+            onRefreshData();
+          }
+        }, 1500);
       } else {
         setCreateError(response.data.message || "Tạo ghế không thành công");
         toast.error(`Lỗi: ${response.data.message}`);
@@ -211,9 +235,13 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
         // Refresh the data after a short delay
         setTimeout(() => {
           handleCloseDeleteDialog();
-          // Refresh the page to show updated data
-          window.location.reload();
-        }, 2000);
+          // Invalidate and refetch the rooms data
+          queryClient.invalidateQueries('rooms');
+          // Call parent component's refresh function if available
+          if (onRefreshData) {
+            onRefreshData();
+          }
+        }, 1500);
       } else {
         setDeleteError(response.data.message || "Xóa ghế không thành công");
         toast.error(`Lỗi: ${response.data.message}`);

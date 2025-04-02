@@ -13,7 +13,12 @@ export default function UpdateMovie() {
   const fetchMovie = async () => {
     try {
       console.log("MovieID: ", movieId);
-      const response = await api.get(`/movie/${movieId}`);
+      const response = await api.get(`/movie/${movieId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": "ja",
+        },
+      });
       setMovie(response.data.data);
       console.log("Movie: ", response.data.data);
     } catch (error: any) {
