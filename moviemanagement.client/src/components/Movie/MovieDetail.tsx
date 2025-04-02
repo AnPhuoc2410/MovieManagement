@@ -47,7 +47,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
 
   useEffect(() => {
     fetchMovieById();
-  }, []);
+  }, [t]);
 
   const handleOpenTrailer = (url: string) => {
     let embedUrl = url.replace("youtu.be", "youtube.com/embed");

@@ -25,6 +25,7 @@ import { Room } from "../../../types/room.types";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import api from "../../../apis/axios.config";
+import { useTranslation } from "react-i18next";
 
 interface MovieApiResponse {
   message: string;
@@ -49,6 +50,7 @@ const ThemThoiGianChieu = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+  const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
     movieId: "",
@@ -62,7 +64,7 @@ const ThemThoiGianChieu = () => {
       try {
         const response = await api.get("movie/showing/page/0/size/100");
         console.log('Movie API Response:', response.data); // Debug log
-        
+
         // Handle direct data response from showing movies API
         if (response.data && response.data.items) {
           // If the response has paginated structure
@@ -74,16 +76,16 @@ const ThemThoiGianChieu = () => {
           // If the response has the wrapper structure
           setMovies(response.data.data);
         } else {
-          setMessage({ 
-            text: "Không tìm thấy phim nào đang chiếu", 
-            type: "error" 
+          setMessage({
+            text: "Không tìm thấy phim nào đang chiếu",
+            type: "error"
           });
         }
       } catch (error) {
         console.error("Failed to fetch movies:", error);
-        setMessage({ 
-          text: "Không thể tải danh sách phim", 
-          type: "error" 
+        setMessage({
+          text: "Không thể tải danh sách phim",
+          type: "error"
         });
       }
     };
@@ -104,7 +106,7 @@ const ThemThoiGianChieu = () => {
 
     fetchMovies();
     fetchRooms();
-  }, []);
+  }, [t]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -129,9 +131,9 @@ const ThemThoiGianChieu = () => {
     // Validate form data
     if (!formData.movieId || !formData.roomId || !formData.startTime || !formData.endTime) {
       setLoading(false);
-      setMessage({ 
-        text: "Vui lòng điền đầy đủ thông tin lịch chiếu", 
-        type: "error" 
+      setMessage({
+        text: "Vui lòng điền đầy đủ thông tin lịch chiếu",
+        type: "error"
       });
       return;
     }
@@ -141,9 +143,9 @@ const ThemThoiGianChieu = () => {
     const endDate = new Date(formData.endTime);
     if (startDate >= endDate) {
       setLoading(false);
-      setMessage({ 
-        text: "Thời gian bắt đầu phải trước thời gian kết thúc", 
-        type: "error" 
+      setMessage({
+        text: "Thời gian bắt đầu phải trước thời gian kết thúc",
+        type: "error"
       });
       return;
     }
@@ -155,14 +157,14 @@ const ThemThoiGianChieu = () => {
         try {
           // Create a date object but keep the time as selected by user
           const dt = new Date(dateTimeString);
-          
+
           // Try multiple date formats for better compatibility with backend
           // Format 1: yyyy-MM-ddTHH:mm:ss (no timezone, which .NET often prefers)
           const dotNetFormat = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00`;
-          
+
           // Log the formatted date for debugging
           console.log(`Formatted date: ${dotNetFormat}`);
-          
+
           return dotNetFormat;
         } catch (error) {
           console.error("Error formatting date:", error);
@@ -212,7 +214,7 @@ const ThemThoiGianChieu = () => {
       }
     } catch (error: any) {
       console.error("Error creating showtime:", error);
-      
+
       // Log detailed error information
       if (error.response) {
         console.error("Error response:", {
@@ -220,7 +222,7 @@ const ThemThoiGianChieu = () => {
           status: error.response.status,
           headers: error.response.headers
         });
-        
+
         // Try to parse any JSON error message from the server
         try {
           if (typeof error.response.data === 'string') {
@@ -233,7 +235,7 @@ const ThemThoiGianChieu = () => {
       } else if (error.request) {
         console.error("Error request:", error.request);
       }
-      
+
       const errorMessage = error.response?.data?.message
         || error.message
         || "Failed to create showtime. Please try again.";

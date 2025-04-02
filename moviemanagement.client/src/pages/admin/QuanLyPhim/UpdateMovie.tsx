@@ -4,11 +4,13 @@ import toast from "react-hot-toast";
 import api from "../../../apis/axios.config";
 import MovieDetail from "../../../components/admin/MovieDetail";
 import Loader from "../../../components/shared/Loading";
+import { useTranslation } from "react-i18next";
 
 export default function UpdateMovie() {
   const { movieId } = useParams<{ movieId: string }>();
   const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
+  const {t} = useTranslation();
 
   const fetchMovie = async () => {
     try {
@@ -25,7 +27,7 @@ export default function UpdateMovie() {
     if (movieId) {
       fetchMovie();
     }
-  }, []);
+  }, [movieId, t]);
 
   const handleUpdateMovie = async (updatedMovie: any) => {
     try {

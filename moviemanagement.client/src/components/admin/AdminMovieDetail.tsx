@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import api from "../../apis/axios.config";
 import { Movie } from "../../types/movie.types";
 import Loader from "../shared/Loading";
+import { useTranslation } from "react-i18next";
 
 interface MovieDetailProps {
   onMovieLoad?: (movie: Movie) => void;
@@ -20,11 +21,12 @@ const AdminMovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
   const { movieId } = useParams();
   const [movie, setMovie] = useState<Movie>();
   const [loading, setLoading] = useState<boolean>(true);
+  const {t} = useTranslation();
 
   const fetchMovieById = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`Movie/${movieId}`);
+      const response = await api.get(`movie/${movieId}`);
       setMovie(response.data.data);
       // Pass the movie data to the parent component when it's loaded
       if (onMovieLoad) {
@@ -41,7 +43,7 @@ const AdminMovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
 
   useEffect(() => {
     fetchMovieById();
-  }, []);
+  }, [t]);
 
   const formatDate = (dateString?: Date) => {
     if (!dateString) return "N/A";

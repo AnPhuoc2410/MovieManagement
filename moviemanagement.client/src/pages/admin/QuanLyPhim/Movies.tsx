@@ -1,47 +1,32 @@
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Popconfirm } from 'antd';
 import {
   Box,
   Button,
   CssBaseline,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   IconButton,
-  Stack,
-  TextField,
+  Stack
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import axios from "axios";
+import { Popconfirm } from 'antd';
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
 
-import CloudinaryUploadWidget from "../../../components/cloudinary/CloudinaryUploadWidget";
-
 import dayjs from "dayjs";
-import { ENV } from "../../../env/env.config";
-import AppTheme from "../../../shared-theme/AppTheme";
 import toast from "react-hot-toast";
 import api from "../../../apis/axios.config";
-
-interface Movie {
-  movieId: string;
-  movieName: string;
-  image?: string;
-  fromDate: string;
-  director: string;
-  duration: number;
-  version: string;
-}
+import { ENV } from "../../../env/env.config";
+import AppTheme from "../../../shared-theme/AppTheme";
+import { useTranslation } from "react-i18next";
+import { Movie } from "../../../types/movie.types";
+import { useLanguage } from "../../../hooks/useLanguage";
 
 export default function Movies({
   disableCustomTheme = false,
@@ -52,6 +37,8 @@ export default function Movies({
   const [open, setOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string>("");
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     async function fetchMovies() {
@@ -64,14 +51,14 @@ export default function Movies({
       }
     }
     fetchMovies();
-  }, []);
+  }, [t]);
 
   const { watch, control, handleSubmit, reset, setValue } = useForm<Movie>({
     defaultValues: {
       movieId: "",
       movieName: "",
       image: "",
-      fromDate: "",
+      fromDate: undefined,
       director: "",
       duration: 0,
       version: "",
@@ -216,17 +203,17 @@ export default function Movies({
             <EditIcon color="primary" />
           </IconButton>
           <Popconfirm
-          placement="topRight"
-          title={"Xác nhận"}
-          description={"Bạn có chắc chắn muốn xóa phim này không?"}
-          okText="Yes"
-          cancelText="No"
-          onConfirm={() => handleDelete(params.row.movieId)}
-        >
-          <IconButton>
-            <DeleteIcon color="error" />
-          </IconButton>
-        </Popconfirm>
+            placement="topRight"
+            title={"Xác nhận"}
+            description={"Bạn có chắc chắn muốn xóa phim này không?"}
+            okText="Yes"
+            cancelText="No"
+            onConfirm={() => handleDelete(params.row.movieId)}
+          >
+            <IconButton>
+              <DeleteIcon color="error" />
+            </IconButton>
+          </Popconfirm>
 
         </>
       ),
