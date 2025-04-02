@@ -15,8 +15,10 @@ namespace MovieManagement.Server.Services.UserService
         Task<List<UserDto.UserResponse>> GetUserByRoleAsync(Role role);
         Task<List<UserDto.UserResponse>> FindUserByPhone(string phone);
         Task<List<UserDto.UserResponse>> FindUserByIdCard(string idCard);
+        Task<bool> FindUserByEmailAddress(string email);
         Task UpdateUserAsync(Guid id, UserDto.UpdateRequest updateRequest);
         Task ChangeUserPasswordByUserId(Guid userId, string currentPassword, string newPassword);
+        Task ChangeUserPasswordByEmail(String email, string? currentPassword, string newPassword);
         Task<bool> DeleteUserAsync(Guid id);
 
 

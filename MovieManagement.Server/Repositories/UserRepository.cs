@@ -66,6 +66,18 @@ namespace MovieManagement.Server.Repositories
             await _context.SaveChangesAsync();
             return user != null;
         }
+        
+        public async Task<bool> ResetUserPasswordByEmailAsync(String email, string currentPassword,
+            string newPassword)
+        {
+            var user = await _context.Users
+                .Where(user => user.Email == email)
+                .OrderBy(user => user.JoinDate)
+                .LastOrDefaultAsync();
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return user != null;
+        }
 
         public User GetUserByUniqueFields(string email, string idCard, string phoneNumber,
             string userName)

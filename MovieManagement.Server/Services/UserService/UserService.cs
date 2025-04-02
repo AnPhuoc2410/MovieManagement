@@ -61,6 +61,44 @@ namespace MovieManagement.Server.Services.UserService
                 throw new Exception("Failed to change password.");
         }
 
+        public async Task ChangeUserPasswordByEmail(string email, string? currentPassword,
+            string newPassword)
+        {
+            //Checking userId is existing
+            var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
+            if (user == null)
+                throw new NotFoundException("User not found!");
+
+            //Checking new password is blank
+            if (string.IsNullOrEmpty(newPassword))
+                throw new Exception("New password is blank!");
+            Console.WriteLine($"Stored Hashed Password: {user.Password}");
+            Console.WriteLine($"Input Password: {currentPassword}");
+            //Create PasswordHasher
+            var passwordHasher = new PasswordHasher<User>();
+
+            //Verify password
+            if (currentPassword != null)
+            {
+                var verificationResult =
+                    new PasswordHasher<User>().VerifyHashedPassword(user, user.Password,
+                        currentPassword);
+                Console.WriteLine($"Verification Result: {verificationResult}");
+                if (verificationResult == PasswordVerificationResult.Failed)
+                    throw new Exception("Current password is incorrect.");
+            }
+
+            //Hash new password
+            user.Password = passwordHasher.HashPassword(user, newPassword);
+
+            //Update new password
+            var updatedUser =
+                await _unitOfWork.UserRepository.ResetUserPasswordByEmailAsync(email,
+                    user.Password, newPassword);
+            if (updatedUser == null)
+                throw new Exception("Failed to change password.");
+        }
+
         public Task<IEnumerable<UserDto.UserResponse>> GetAllUsersAsync()
         {
             var users = _unitOfWork.UserRepository.GetAll();
@@ -123,6 +161,12 @@ namespace MovieManagement.Server.Services.UserService
         {
             var user = await _unitOfWork.UserRepository.GetUsersByIdCardAsync(idCard);
             return _mapper.Map<List<UserDto.UserResponse>>(user);
+        }
+
+        public async Task<bool> FindUserByEmailAddress(string email)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
+            return user != null;
         }
 
         public async Task<IEnumerable<UserDto.UserResponse>> GetUserPageAsync(int page,
