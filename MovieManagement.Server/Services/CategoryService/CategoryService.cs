@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Resources;
 
 namespace MovieManagement.Server.Services.CategoryService
 {
@@ -12,11 +14,13 @@ namespace MovieManagement.Server.Services.CategoryService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IStringLocalizer _localizerCategoryTranslation;
 
-        public CategoryService(IUnitOfWork unitOfWork, IMapper mapper)
+        public CategoryService(IUnitOfWork unitOfWork, IMapper mapper, IStringLocalizerFactory factory)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _localizerCategoryTranslation = factory.Create("CategoryResource", typeof(CategoryResource).Assembly.FullName);
         }
 
         public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
@@ -25,6 +29,10 @@ namespace MovieManagement.Server.Services.CategoryService
             if (categories == null)
             {
                 throw new NotFoundException("Categories not found!");
+            }
+            foreach(var category in categories)
+            {
+                category.Name = _localizerCategoryTranslation[category.Name];
             }
             return _mapper.Map<List<CategoryDto>>(categories);
         }
@@ -38,6 +46,10 @@ namespace MovieManagement.Server.Services.CategoryService
             var categories = await _unitOfWork.CategoryRepository.GetPageAsync(page, pageSize);
             if (categories == null) {
                 throw new NotFoundException("Categories not found!");
+            }
+            foreach (var category in categories)
+            {
+                category.Name = _localizerCategoryTranslation[category.Name];
             }
             return _mapper.Map<List<CategoryDto>>(categories);
         }
@@ -53,6 +65,7 @@ namespace MovieManagement.Server.Services.CategoryService
             {
                 throw new NotFoundException("Category cannot found!");
             }
+            category.Name = _localizerCategoryTranslation[category.Name];
             return category;
         }
 
