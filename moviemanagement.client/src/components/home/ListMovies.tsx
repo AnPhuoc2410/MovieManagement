@@ -15,6 +15,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import api from "../../apis/axios.config";
 import Loader from "../shared/Loading";
 import { format, parseISO } from "date-fns";
+import { useLanguage } from "../../hooks/useLanguage";
 
 const MovieSlider = ({
   movies,
@@ -239,6 +240,7 @@ const MovieSlider = ({
 
 const ListMovies: React.FC = () => {
   const { t } = useTranslation();
+  const { currentLanguage } = useLanguage();
   const [nowShowingMovies, setNowShowingMovies] = useState<any[]>([]);
   const [upcomingMovies, setUpcomingMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -278,9 +280,16 @@ const ListMovies: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchNowShowingMovies();
-    fetchUpcomingMovies();
-  }, []);
+    const fetchAllMovies = async () => {
+      setLoading(true);
+      await Promise.all([
+        fetchNowShowingMovies(),
+        fetchUpcomingMovies()
+      ]);
+    };
+
+    fetchAllMovies();
+  }, [currentLanguage]);
 
   const handleOpenTrailer = (url: string) => {
     let embedUrl = url.replace("youtu.be", "youtube.com/embed");

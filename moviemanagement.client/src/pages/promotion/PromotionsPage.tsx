@@ -21,10 +21,12 @@ import Loader from "../../components/shared/Loading";
 import Aurora from "../../components/shared/Aurora";
 import ScrollFloat from "../../components/shared/ScrollFloat";
 import { Promotion } from "../../types/promotion.types";
+import { useLanguage } from "../../hooks/useLanguage";
 
 const PromotionsPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const {currentLanguage} = useLanguage();
   const [allPromotions, setAllPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -54,9 +56,8 @@ const PromotionsPage: React.FC = () => {
     };
 
     fetchPromotions();
-  }, []);
-  
-  // Client-side pagination like UpComingMoviesPage
+  }, [currentLanguage]);
+
   const pageCount = Math.ceil(allPromotions.length / pageSize);
   const indexOfLastPromotion = currentPage * pageSize;
   const indexOfFirstPromotion = indexOfLastPromotion - pageSize;
