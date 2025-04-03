@@ -52,13 +52,13 @@ interface RoomApiResponse {
 const ThemThoiGianChieu = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [openMovieDialog, setOpenMovieDialog] = useState(false);
   const [selectedMovieId, setSelectedMovieId] = useState("");
-  const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
     movieId: "",
@@ -121,7 +121,7 @@ const ThemThoiGianChieu = () => {
 
     fetchMovies();
     fetchRooms();
-  }, [location,t]);
+  }, [location, t]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -153,17 +153,17 @@ const ThemThoiGianChieu = () => {
       return;
     }
 
-    // Validate that startTime is before endTime
-    const startDate = new Date(formData.startTime);
-    const endDate = new Date(formData.endTime);
-    if (startDate >= endDate) {
-      setLoading(false);
-      setMessage({
-        text: "Thời gian bắt đầu phải trước thời gian kết thúc",
-        type: "error"
-      });
-      return;
-    }
+    try {
+      // Find the selected movie to get duration
+      const selectedMovie = movies.find(m => m.movieId === formData.movieId);
+      if (!selectedMovie) {
+        setLoading(false);
+        setMessage({
+          text: "Không tìm thấy thông tin phim đã chọn",
+          type: "error"
+        });
+        return;
+      }
 
       // Calculate end time based on movie duration
       const startDate = new Date(formData.startTime);
@@ -171,24 +171,10 @@ const ThemThoiGianChieu = () => {
       const endDate = new Date(startDate.getTime() + durationInMinutes * 60000); // Convert minutes to milliseconds
 
       // Fix timezone issues by keeping the selected time as is without conversion
-      const formatDateTime = (dateTimeString: string) => {
-        if (!dateTimeString) return "";
-        try {
-          // Create a date object but keep the time as selected by user
-          const dt = new Date(dateTimeString);
-
-          // Try multiple date formats for better compatibility with backend
-          // Format 1: yyyy-MM-ddTHH:mm:ss (no timezone, which .NET often prefers)
-          const dotNetFormat = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}T${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:00`;
-
-          // Log the formatted date for debugging
-          console.log(`Formatted date: ${dotNetFormat}`);
-
-          return dotNetFormat;
-        } catch (error) {
-          console.error("Error formatting date:", error);
-          return dateTimeString; // Return the original string if formatting fails
-        }
+      const formatDateTime = (dateTime: Date) => {
+        if (!dateTime) return "";
+        // Format date in yyyy-MM-ddTHH:mm:ss.000Z format (ISO format with UTC designation)
+        return `${dateTime.getFullYear()}-${String(dateTime.getMonth() + 1).padStart(2, '0')}-${String(dateTime.getDate()).padStart(2, '0')}T${String(dateTime.getHours()).padStart(2, '0')}:${String(dateTime.getMinutes()).padStart(2, '0')}:00.000Z`;
       };
 
       const payload = {
@@ -243,16 +229,6 @@ const ThemThoiGianChieu = () => {
           status: error.response.status,
           headers: error.response.headers
         });
-
-        // Try to parse any JSON error message from the server
-        try {
-          if (typeof error.response.data === 'string') {
-            const parsedError = JSON.parse(error.response.data);
-            console.error("Parsed error data:", parsedError);
-          }
-        } catch (parseError) {
-          console.error("Error parsing error response data:", parseError);
-        }
       } else if (error.request) {
         console.error("Error request:", error.request);
       }
