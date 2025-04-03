@@ -176,7 +176,7 @@ namespace MovieManagement.Server.Services.UserService
         }
 
 
-        public async Task<bool> ExchangeTickets(Guid userId, BillRequest billRequest)
+        public async Task<bool> MemberBuytickets(Guid userId, BillRequest billRequest)
         {
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) 
@@ -244,6 +244,33 @@ namespace MovieManagement.Server.Services.UserService
             return checker > 0;
 
         }
+
+        public async Task<bool> GuestBuyTickets(BillRequest billRequest)
+        {
+            var bill = new Bill
+            {
+                BillId = Guid.NewGuid(),
+                UserId = new Guid(),
+                PaymentId = null,
+                Status = BillStatus.Completed,
+                CreatedDate = DateTime.Now
+            };
+            foreach (var ticket in billRequest.Tickets)
+            {
+                var purchasedTicket = await _unitOfWork.TicketDetailRepository.GetTicketInfo(ticket)
+                    ?? throw new NotFoundException("Ticket not found!");
+                purchasedTicket.Status = TicketStatus.Paid;
+                purchasedTicket.BillId = bill.BillId;
+                bill.Amount += purchasedTicket.Seat.SeatType.Price;
+                bill.TotalTicket++;
+                _unitOfWork.TicketDetailRepository.PrepareUpdate(purchasedTicket);
+            }
+            if (bill.TotalTicket > 0)
+                _unitOfWork.BillRepository.PrepareCreate(bill);
+            var checker = await _unitOfWork.CompleteAsync();
+            return checker > 0;
+        }
+
 
         public async Task<IEnumerable<BillTransaction>> GetTransactionByUserId(Guid userId)
         {

@@ -218,7 +218,7 @@ namespace MovieManagement.Server.Controllers
             return NoContent();
         }
 
-        [HttpPost("buyticket")]
+        [HttpPost("tickets/member")]
         [Authorize(Roles = "Employee")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -226,7 +226,24 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> ExchangeTicket(Guid userId, BillRequest billRequest)
         {
-            await _userService.ExchangeTickets(userId, billRequest);
+            await _userService.MemberBuytickets(userId, billRequest);
+            return Ok(new ApiResponse<object>
+            {
+                StatusCode = 200,
+                Message = "Exchange ticket successfully",
+                IsSuccess = true
+            });
+        }
+
+        [HttpPost("tickets/guest")]
+        [Authorize(Roles = "Employee")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> ExchangeTicketGuest(BillRequest billRequest)
+        {
+            await _userService.GuestBuyTickets(billRequest);
             return Ok(new ApiResponse<object>
             {
                 StatusCode = 200,

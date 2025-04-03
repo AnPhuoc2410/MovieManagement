@@ -1,3 +1,4 @@
+
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Security.Claims;
@@ -181,7 +182,8 @@ namespace MovieManagement.Server
             // builder.Services.AddAuthorization();
 
             // ADD SignalR
-            builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]);
+            //builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]);
+            builder.Services.AddSignalR();
 
             // Register Hangfire
             builder.Services.AddHangfire(config => config.UseMemoryStorage());

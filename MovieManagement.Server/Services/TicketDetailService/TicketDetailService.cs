@@ -109,10 +109,63 @@ namespace MovieManagement.Server.Services.TicketDetailServices
                 ticketDetails.Add(current);
             }
 
-            var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
-            if (checker != Tickets.Count())
-                throw new DbUpdateException("Fail to update ticket detail.");
-            return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
+            //var isBeside = await CheckBeside(ticketDetails);
+            //if(isBeside == false)
+            //{
+            //    throw new BadRequestException("Seats are not beside each other in the same row.");
+            //}
+            //else
+            //{
+                var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
+                return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
+            //}
+        }
+
+        private async Task<bool> CheckBeside(List<TicketDetail> ticketDetails)
+        {
+            if (ticketDetails == null || !ticketDetails.Any())
+            {
+                throw new ArgumentException("ticketDetails list is null or empty.");
+            }
+
+            var showTimeId = ticketDetails.First().ShowTimeId;
+
+            var ticketPos = ticketDetails
+                .Where(t => t != null && t.Seat != null)
+                .Select(t => new TicketDetail
+                {
+                    Status = t.Status,
+                    Seat = new Seat
+                    {
+                        AtRow = t.Seat.AtRow,
+                        AtColumn = t.Seat.AtColumn,
+                        SeatType = t.Seat.SeatType
+                    }
+                }).ToList();
+
+            var ticket = await _unitOfWork.TicketDetailRepository.GetTicketByShowTimeId(showTimeId);
+
+            var seats = ticket
+                .Where(t => t.Seat != null)
+                .Select(t => new Seat
+                {
+                    AtRow = t.Seat.AtRow,
+                    AtColumn = t.Seat.AtColumn,
+                    SeatType = t.Seat.SeatType
+                }).ToList();
+
+            foreach (var seat in seats)
+            {
+                var selectedSeatsInRow = ticketPos.Where(t => t.Seat.AtRow == seat.AtRow).OrderBy(t => t.Seat.AtColumn).ToList();
+                for (int i = 0; i < selectedSeatsInRow.Count - 1; i++)
+                {
+                    if (selectedSeatsInRow[i + 1].Seat.AtColumn != selectedSeatsInRow[i].Seat.AtColumn + 1)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public async Task<IEnumerable<TicketDetailResponseModel>> ChangeStatusTicketDetailAsync(List<TicketDetailRequest> ticketRequests, TicketStatus status)

@@ -37,9 +37,6 @@ namespace MovieManagement.Server.Services.EmailService
             if (userBill.Status != BillEnum.BillStatus.Completed)
                 throw new BadRequestException("Bill is not paid!");
 
-            if (!userBill.UserId.HasValue)
-                throw new BadRequestException("User is not found!");
-
             // Get user email
             string userEmail = (_unitOfWork.UserRepository.GetById(userBill.UserId.Value)).Email ??
                 throw new NotFoundException("No user found!");
