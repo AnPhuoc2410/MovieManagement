@@ -12,16 +12,17 @@ import {
   Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
-import { createRef, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import * as yup from "yup";
+import { Link as RouterLink } from "react-router-dom";
 import { login } from "../../../apis/auth.apis";
 import { useAuth } from "../../../contexts/AuthContext";
-import ReCAPTCHA from "react-google-recaptcha";
 import { ENV } from "../../../env/env.config";
-import { Link as RouterLink } from "react-router-dom";
+import { loginValidationSchema } from "../../../utils/validation.utils";
+import { textFieldStyle } from "./Login.style";
 // import { GoogleLogin } from "@react-oauth/google";
 
 export const Login = () => {
@@ -35,27 +36,6 @@ export const Login = () => {
   const { t } = useTranslation();
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
-
-  const validationSchema = yup.object({
-    email: yup
-      .string()
-      .transform((value) => value.trim())
-      .required(t("auth.login.validation.email_required")),
-    password: yup
-      .string()
-      .transform((value) => value.trim())
-      .test(
-        "is-valid-password",
-        t("auth.login.validation.password_length"),
-        (value, context) => {
-          if (context.parent.email === "admin" && value === "admin") {
-            return true;
-          }
-          return value !== undefined && value.length >= 8;
-        },
-      )
-      .required(t("auth.login.validation.password_required")),
-  });
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -89,7 +69,7 @@ export const Login = () => {
           : "",
       password: "",
     },
-    validationSchema: validationSchema,
+    validationSchema: loginValidationSchema(t),
     onSubmit: async (values) => {
       // Trim the values before submitting
       const trimmedValues = {
@@ -154,35 +134,6 @@ export const Login = () => {
       }
     },
   });
-
-  const textFieldStyle = {
-    mb: 3,
-    "& .MuiOutlinedInput-root": {
-      height: "50px", // Consistent height
-      "&.Mui-focused fieldset": {
-        borderColor: "#e6c300",
-      },
-    },
-    "& .MuiInputLabel-root": {
-      color: "#666",
-      fontSize: "0.95rem",
-      transform: "translate(14px, 16px) scale(1)",
-      "&.Mui-focused": {
-        color: "#000",
-        transform: "translate(14px, -9px) scale(0.75)",
-      },
-      "&.MuiInputLabel-shrink": {
-        transform: "translate(14px, -9px) scale(0.75)",
-      },
-    },
-    "& .MuiInputBase-input": {
-      padding: "14px",
-    },
-    "& .MuiFormHelperText-root": {
-      marginLeft: "3px",
-      marginTop: "3px",
-    },
-  };
 
   return (
     <form onSubmit={formik.handleSubmit}>
