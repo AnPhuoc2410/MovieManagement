@@ -45,6 +45,7 @@ import api from "../../apis/axios.config";
 import { Category } from "../../types/category.types";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"; // Import DeleteForeverIcon
 import { useAuth } from "../../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 
 interface Movie {
   movieId?: string;
@@ -74,6 +75,7 @@ export default function MovieDetail({ onSubmit, movie }: MovieDetailProps) {
   const ratings = MovieRatings;
   const versions = MovieVersions;
   const { userDetails } = useAuth();
+  const { t } = useTranslation();
 
   const { watch, control, handleSubmit, reset, setValue } = useForm<Movie>({
     defaultValues: {
@@ -123,8 +125,8 @@ export default function MovieDetail({ onSubmit, movie }: MovieDetailProps) {
   };
 
   useEffect(() => {
-    fetchCategories(); // Use the new fetchCategories function
-  }, []);
+    fetchCategories();
+  }, [t]);
 
   const handleSetPublicId = (publicId: string) => {
     const imageUrl = `https://res.cloudinary.com/${ENV.CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;

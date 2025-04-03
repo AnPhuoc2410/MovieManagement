@@ -1,5 +1,9 @@
 ﻿using MovieManagement.Server.Data;
+using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.ResponseModel;
+using System.Linq;
+using static MovieManagement.Server.Models.Enums.BillEnum;
+using static MovieManagement.Server.Models.Enums.TicketEnum;
 
 namespace MovieManagement.Server.Services.DashboardService
 {
@@ -19,6 +23,14 @@ namespace MovieManagement.Server.Services.DashboardService
         }
         public async Task<IEnumerable<TopMemberResponse.MemberDaily>> GetTopMemberDailyRevenues(DateTime from, DateTime to)
         {
+            if(from > to)
+            {
+                throw new BadRequestException("From date must be less than to date");
+            }
+            if(from == null || to == null)
+            {
+                throw new BadRequestException("From date and to date must not be null");
+            }
             var timeDaily = GetFromTo(from, to);
             List<TopMemberResponse.MemberDaily> topMemberDaily = new List<TopMemberResponse.MemberDaily>();
             foreach (var day in timeDaily)
@@ -36,6 +48,14 @@ namespace MovieManagement.Server.Services.DashboardService
         }
         public async Task<IEnumerable<TopMovieResponse.MovieDaily>> GetTopMovieDailyRevenues(DateTime from, DateTime to)
         {
+            if (from > to)
+            {
+                throw new BadRequestException("From date must be less than to date");
+            }
+            if (from == null || to == null)
+            {
+                throw new BadRequestException("From date and to date must not be null");
+            }
             var timeDaily = GetFromTo(from, to);
 
             List<TopMovieResponse.MovieDaily> topMovieDaily = new List<TopMovieResponse.MovieDaily>();
@@ -45,7 +65,6 @@ namespace MovieManagement.Server.Services.DashboardService
                 var movieDayRevenue = await _unitOfWork.MovieRepository.GetTopMovieDailyRevenue(day);
                 topMovieDaily.Add(movieDayRevenue);
             }
-
             return topMovieDaily;
         }
 
@@ -61,6 +80,14 @@ namespace MovieManagement.Server.Services.DashboardService
         }
         public async Task<IEnumerable<TopCategoryResponse.Daily>> GetTopCategoryDailyRevenues(DateTime from, DateTime to)
         {
+            if (from > to)
+            {
+                throw new BadRequestException("From date must be less than to date");
+            }
+            if (from == null || to == null)
+            {
+                throw new BadRequestException("From date and to date must not be null");
+            }
             // Lấy ra danh sách thời gian chỉnh định theo từng ngày
             var timeDaily = GetFromTo(from, to);
 
@@ -80,71 +107,53 @@ namespace MovieManagement.Server.Services.DashboardService
         {
             var topShowtimeRevenues = new TopShowtimeResponse.ShowtimeRevenue();
 
-            // Lấy danh sách giờ từ 2:00 AM đến 11:00 PM
             foreach (var hour in GetHoursInDay())
             {
                 var showTimes = await _unitOfWork.ShowtimeRepository.GetTopShowtimeRevenues(hour);
-                if (showTimes.Count == 0)
-                {
-                    string key = hour.ToString("HH:mm") + "-" + hour.AddHours(1).ToString("HH:mm");
-                    topShowtimeRevenues.TopRevenue.Add(key, 0);
-                    continue;
-                }
-                decimal revenue = 0;
-                var processedBills = new HashSet<long>();
 
-                foreach (var st in showTimes)
-                {
-                    foreach (var td in st.TicketDetails)
-                    {
-                        if (!processedBills.Contains(td.Bill.BillId))
-                        {
-                            Console.WriteLine(td.Bill.BillId);
-                            revenue += td.Bill.Amount;
-                            processedBills.Add(td.Bill.BillId);
-                        }
-                    }
-                }
+                string key = $"{hour:HH:mm}-{hour.AddHours(1):HH:mm}";
 
-                topShowtimeRevenues.TopRevenue
-                    .Add(hour.ToString("HH:mm") + "-" + hour.AddHours(1).ToString("HH:mm"), revenue);
+                decimal revenue = showTimes
+                    .SelectMany(st => st.TicketDetails)
+                    .Where(td => td.Bill != null)
+                    .GroupBy(td => td.Bill.BillId)
+                    .Select(g => g.First().Bill.Amount)
+                    .Sum();
+
+                topShowtimeRevenues.TopRevenue.Add(key, revenue);
             }
 
             return new List<TopShowtimeResponse.ShowtimeRevenue> { topShowtimeRevenues };
         }
-        public async Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeDailyRevenues(DateTime from, DateTime to)
+
+        public async Task<IEnumerable<TopShowtimeResponse.ShowtimeDaily>> GetTopShowtimeDailyRevenues(DateTime from, DateTime to)
         {
-            var topShowtimeRevenues = new TopShowtimeResponse.ShowtimeRevenue();
+            var topShowtimeRevenues = new List<TopShowtimeResponse.ShowtimeDaily>();
+            var timeDaily = GetFromTo(from, to);
+            var hoursInDay = GetHoursInDay();
 
-            // Lấy danh sách ngày từ from đến to
-            foreach(var hour in GetHoursInDay())
+            foreach (var time in timeDaily)
             {
-                var showTimes = await _unitOfWork.ShowtimeRepository.GetTopShowtimeDailyRevenues(from, to, hour);
-                if (showTimes.Count == 0)
+                var revenueByHour = hoursInDay.ToDictionary(
+                    hour => $"{hour:HH:mm}-{hour.AddHours(1):HH:mm}",
+                    hour => _unitOfWork.ShowtimeRepository.GetTopShowtimeDailyRevenues(from, to, hour, time).Result
+                        .SelectMany(st => st.TicketDetails)
+                        .Where(td => td.Status == TicketStatus.Paid && td.Bill.Status == BillStatus.Completed)
+                        .Sum(td => td.Bill.Amount));
+
+                topShowtimeRevenues.Add(new TopShowtimeResponse.ShowtimeDaily
                 {
-                    string key = hour.ToString("HH:mm") + "-" + hour.AddHours(1).ToString("HH:mm");
-                    topShowtimeRevenues.TopRevenue.Add(key, 0);
-                    continue;
-                }
-                decimal revenue = 0;
-                var processedBills = new HashSet<long>();
-                foreach (var st in showTimes)
-                {
-                    foreach (var td in st.TicketDetails)
-                    {
-                        if (!processedBills.Contains(td.Bill.BillId))
-                        {
-                            Console.WriteLine(td.Bill.BillId);
-                            revenue += td.Bill.Amount;
-                            processedBills.Add(td.Bill.BillId);
-                        }
-                    }
-                }
-                topShowtimeRevenues.TopRevenue
-                    .Add(hour.ToString("HH:mm") + "-" + hour.AddHours(1).ToString("HH:mm"), revenue);
+                    Day = time,
+                    ShowtimeRevenues = new List<TopShowtimeResponse.ShowtimeRevenue>
+            {
+                new TopShowtimeResponse.ShowtimeRevenue { TopRevenue = revenueByHour }
             }
-            return new List<TopShowtimeResponse.ShowtimeRevenue> { topShowtimeRevenues };
+                });
+            }
+
+            return topShowtimeRevenues;
         }
+
 
         /// <summary>
         /// Hàm lấy danh sách ngày từ ngày bắt đầu đến ngày kết thúc.
@@ -166,7 +175,6 @@ namespace MovieManagement.Server.Services.DashboardService
 
             return dates;
         }
-
         private List<DateTime> GetHoursInDay()
         {
             var hours = new List<DateTime>();

@@ -28,8 +28,8 @@ const StepTracker: React.FC<StepTrackerProps> = ({
 
   const finalStep =
     paymentStatus === "failure"
-      ? { label: "Hủy Thanh Toán", icon: <CancelOutlined  /> }
-      : { label: "Thành Công", icon: <CheckCircleIcon /> };
+      ? { label: t("step_tracker.failed"), icon: <CancelOutlined  /> }
+      : { label: t("step_tracker.success"), icon: <CheckCircleIcon /> };
 
   return (
     <Box

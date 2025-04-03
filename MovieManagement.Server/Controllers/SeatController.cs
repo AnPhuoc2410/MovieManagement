@@ -21,8 +21,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("all")]
-        [ProducesResponseType(typeof(ApiResponse<SeatDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<SeatDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -30,7 +29,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetAllSeatsAsync()
         {
             var seats = await _seatService.GetAllSeatAsync();
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<SeatDto>>
             {
                 StatusCode = 200,
                 Message = "Get all seats is success",
@@ -40,8 +39,8 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
-        [ProducesResponseType(typeof(ApiResponse<SeatDto>), StatusCodes.Status200OK)]
+        [HttpGet("page/{page:int}/size/{pageSize:int}")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<SeatDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -49,7 +48,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetSeatPageAsync(int page, int pageSize)
         {
             var seats = await _seatService.GetSeatPageAsync(page, pageSize);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<SeatDto>>
             {
                 StatusCode = 200,
                 Message = "Get seats is success",
@@ -69,7 +68,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult> GetSeatByIdAsync(Guid seatId)
         {
             var seat = await _seatService.GetSeatByIdAsync(seatId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<SeatDto>
             {
                 StatusCode = 200,
                 Message = "Get seat is success",
@@ -79,7 +78,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpPost]
+        [HttpPost("single")]
         [ProducesResponseType(typeof(ApiResponse<SeatDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -88,7 +87,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult> CreateSeatAsync([FromBody] SeatDto seatDto)
         {
             var newSeat = await _seatService.CreateSeatAsync(seatDto);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<SeatDto>
             {
                 StatusCode = 200,
                 Message = "Seat created successfully",
@@ -98,7 +97,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPut]
-        [Route("{seatId:guid}")]
+        [Route("{seatId:guid}/single")]
         [ProducesResponseType(typeof(ApiResponse<SeatDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -107,7 +106,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult> UpdateSeatAsync(Guid seatId, [FromBody] SeatDto seatDto)
         {
             var updatedSeat = await _seatService.UpdateSeatAsync(seatId, seatDto);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<SeatDto>
             {
                 StatusCode = 200,
                 Message = "Seat updated successfully",
@@ -117,7 +116,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpDelete]
-        [Route("{seatId:guid}")]
+        [Route("{seatId:guid}/single")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -126,7 +125,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> DeleteSeatAsync(Guid seatId)
         {
             var isDeleted = await _seatService.DeleteSeatAsync(seatId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<bool>
             {
                 StatusCode = 200,
                 Message = "Seat deleted successfully",
@@ -136,7 +135,12 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost]
-        [Route("CreateByRoomId")]
+        [Route("room/{roomId:guid}")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ApiResponse<bool>>> CreateByRoomId(Guid roomId, Guid seatTypeId)
         {
             var isCompleted = await _seatService.CreateByRoomIdAsync(roomId, seatTypeId);
@@ -150,7 +154,12 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateByList")]
+        [Route("room/status")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ApiResponse<IEnumerable<SeatDto>>>> UpdateByList(List<Guid> list, bool isActived)
         {
             var updatedList = await _seatService.UpdateByList(list, isActived);
@@ -164,7 +173,12 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateByRoomId")]
+        [Route("type")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ApiResponse<IEnumerable<SeatDto>>>> UpdateTypeByList(List<Guid> list, Guid seatTypeId)
         {
             var updatedList = await _seatService.UpdateTypeByList(list, seatTypeId);
@@ -178,7 +192,12 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost]
-        [Route("AddRowByRoomId")]
+        [Route("row")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         /// <summary>
         /// Adds a row of seats by room ID and seat type ID.
         /// </summary>
@@ -198,7 +217,12 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost]
-        [Route("AddColumnByRoomId")]
+        [Route("column")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         /// <summary>
         /// Adds a column of seats by room ID and seat type ID.
         /// </summary>
@@ -218,7 +242,12 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("GetByRoomId")]
+        [Route("room/{roomId:guid}")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ApiResponse<IEnumerable<SeatDto>>>> GetByRoomId(Guid roomId)
         {
             var seats = await _seatService.GetByRoomId(roomId);
@@ -233,7 +262,12 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpDelete]
-        [Route("DeleteByRoomId")]
+        [Route("room/{roomId:guid}")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ApiResponse<bool>>> DeleteByRoomId(Guid roomId)
         {
             var isCompleted = await _seatService.DeleteByRoomId(roomId);

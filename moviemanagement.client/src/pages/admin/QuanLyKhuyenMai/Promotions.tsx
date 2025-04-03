@@ -32,6 +32,7 @@ import { ENV } from "../../../env/env.config";
 import AppTheme from "../../../shared-theme/AppTheme";
 import toast from "react-hot-toast";
 import { Promotion } from "../../../types/promotion.types";
+import api from "../../../apis/axios.config";
 
 export default function Promotions({
   disableCustomTheme = false,
@@ -48,10 +49,10 @@ export default function Promotions({
   useEffect(() => {
     async function fetchPromotions() {
       try {
-        const response = await axios.get(
-          "https://localhost:7119/api/promotions/all",
+        const response = await api.get(
+          "promotions",
         );
-        setPromotions(response.data);
+        setPromotions(response.data.data);
       } catch (error) {
         console.error("Error fetching promotions:", error);
       }
@@ -117,8 +118,8 @@ export default function Promotions({
       };
 
       // Create new promotion
-      const response = await axios.post(
-        "https://localhost:7119/api/promotions",
+      const response = await api.post(
+        "promotions",
         payload,
         { headers: { "Content-Type": "application/json" } },
       );
@@ -133,8 +134,8 @@ export default function Promotions({
 
   const handleDelete = async (promotionId: string) => {
     try {
-      await axios.delete(
-        `https://localhost:7119/api/promotions/${promotionId}`,
+      await api.delete(
+        `promotions/${promotionId}`,
         {
           headers: { "Content-Type": "application/json" },
         },

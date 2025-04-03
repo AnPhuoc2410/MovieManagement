@@ -111,6 +111,11 @@ namespace MovieManagement.Server.Models.DTOs
             public decimal Point { get; set; }
         }
 
+        public class UserTransaction
+        {
+
+        }
+
     }
 
 }

@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="&lt;p&gt;Áp dụng giá 45K/ 2D và 55K/ 3D cho khách hàng là thành viên Cinestar vào ngày thứ 4 hàng tuần.&lt;/p&gt;&lt;p&gt;Điều kiện&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Khách hàng là thành viên C’FRIEND hoặc C’VIP của Cinestar.&lt;/li&gt;&lt;li&gt;Áp dụng khi mua trực tiếp tại rạp.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Lưu ý&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Giảm thêm 10% giá trị hóa đơn bắp nước cho chủ thẻ C’FRIEND và 15% cho chủ thẻ C’VIP.&lt;/li&gt;&lt;li&gt;Không áp dụng cho các ngày lễ/tết.&lt;/li&gt;&lt;/ul&gt;" xml:space="preserve">
+    <value>&lt;p&gt;Apply 45K/2D and 55K/3D prices for Cinestar members every Wednesday.&lt;/p&gt;&lt;p&gt;Conditions&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Customers must be C’FRIEND or C’VIP members of Cinestar.&lt;/li&gt;&lt;li&gt;Applicable for direct purchases at the cinema.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Notes&lt;/p&gt;&lt;ul&gt;&lt;li&gt;An additional 10% discount on popcorn and drinks for C’FRIEND cardholders and 15% for C’VIP cardholders.&lt;/li&gt;&lt;li&gt;Not applicable on holidays or special occasions.&lt;/li&gt;&lt;/ul&gt;
+</value>
+  </data>
+  <data name="&lt;p&gt;Áp dụng giá 45K/ 2D và 55K/ 3D cho khách hàng xem phim trước 10h sáng và sau 10h tối.&lt;/p&gt;&lt;p&gt;Điều kiện&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Áp dụng tại App/Web Cinestar hoặc mua trực tiếp tại rạp.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Lưu ý&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Không áp dụng cho các ngày lễ/tết.&lt;/li&gt;&lt;/ul&gt;" xml:space="preserve">
+    <value>&lt;p&gt;Apply 45K/2D and 55K/3D prices for customers watching movies before 10 AM and after 10 PM.&lt;/p&gt;&lt;p&gt;Conditions&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Applicable for purchases via the Cinestar App/Web or directly at the cinema.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Notes&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Not applicable on holidays or Tet.&lt;/li&gt;&lt;/ul&gt;
+</value>
+  </data>
+  <data name="&lt;p&gt;Đồng giá 45K/2D cho HSSV/GV/U22 cả tuần tại mọi cụm rạp Cinestar&lt;/p&gt;&lt;p&gt;Điều kiện&lt;/p&gt;&lt;ul&gt;&lt;li&gt;HSSV xuất trình thẻ HSSV hoặc CCCD từ dưới 22 tuổi.&lt;/li&gt;&lt;li&gt;Giảng viên/ giáo viên xuất trình thẻ giảng viên.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Lưu ý&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Mỗi thẻ mua được một vé.&lt;/li&gt;&lt;li&gt;Không áp dụng cho các ngày Lễ, Tết, hoặc suất chiếu có phụ thu từ nhà phát hành phim.&lt;/li&gt;&lt;/ul&gt;" xml:space="preserve">
+    <value>&lt;p&gt;Flat price 45K/2D for Students, Teachers, and Under-22s all week at all Cinestar cinemas.&lt;/p&gt;&lt;p&gt;Conditions&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Students must present a student ID or a citizen ID (for those under 22 years old).&lt;/li&gt;&lt;li&gt;Teachers must present a teacher ID.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Notes&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Each ID can be used to purchase one ticket.&lt;/li&gt;&lt;li&gt;Not applicable on holidays, Tet, or screenings with additional fees from the film distributor.&lt;/li&gt;&lt;/ul&gt;
+</value>
+  </data>
+  <data name="&lt;p&gt;Đồng giá 45K/2D, 55K/3D vào thứ 2 hàng tuần&lt;/p&gt;&lt;p&gt;Điều kiện&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Áp dụng cho các suất chiếu vào ngày thứ 2 hàng tuần.&lt;/li&gt;&lt;li&gt;Mua vé trực tiếp tại App/Web Cinestar hoặc mua trực tiếp tại rạp.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Lưu ý&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Không áp dụng cho các ngày lễ/tết&lt;/li&gt;&lt;/ul&gt;" xml:space="preserve">
+    <value>&lt;p&gt;Flat price 45K/2D, 55K/3D every Monday.&lt;/p&gt;&lt;p&gt;Conditions&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Applicable for screenings on Mondays.&lt;/li&gt;&lt;li&gt;Tickets can be purchased directly via the Cinestar App/Web or at the cinema.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Notes&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Not applicable on holidays or Tet.&lt;/li&gt;&lt;/ul&gt;
+</value>
+  </data>
+  <data name="C'MEMBER - HAPPY MEMBER’S DAY - GIÁ CHỈ 45K/ 2D" xml:space="preserve">
+    <value>C'MEMBER - HAPPY MEMBER’S DAY - ONLY 45K/2 DAYS</value>
+  </data>
+  <data name="C'MONDAY - HAPPY DAY - ĐỒNG GIÁ 45K/ 2D" xml:space="preserve">
+    <value>C'MONDAY - HAPPY DAY - FLAT PRICE 45K/2 DAYS</value>
+  </data>
+  <data name="C'TEN - HAPPY HOUR - 45K/ 2D MỐC 10H" xml:space="preserve">
+    <value>C'TEN - HAPPY HOUR - 45K/2 DAYS AT 10 AM MARK</value>
+  </data>
+  <data name="C’STUDENT - 45K CHO HỌC SINH SINH VIÊN " xml:space="preserve">
+    <value>C’STUDENT - 45K FOR STUDENTS</value>
+  </data>
+</root>

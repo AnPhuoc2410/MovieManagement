@@ -14,6 +14,6 @@ namespace MovieManagement.Server.Services.DashboardService
         Task<IEnumerable<TopCategoryResponse.Daily>> GetTopCategoryDailyRevenues(DateTime from, DateTime to);
 
         Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeRevenues();
-        Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeDailyRevenues(DateTime from, DateTime to);
+        Task<IEnumerable<TopShowtimeResponse.ShowtimeDaily>> GetTopShowtimeDailyRevenues(DateTime from, DateTime to);
     }
 }

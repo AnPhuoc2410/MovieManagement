@@ -56,7 +56,7 @@ namespace MovieManagement.Server.Extensions.SignalR
                     BackgroundJob.Delete(existingJobId);
                 }
 
-                var newJobId = BackgroundJob.Schedule(() => AutoReleaseSeat(ticketRequests, showtimeId), TimeSpan.FromMinutes(1));
+                var newJobId = BackgroundJob.Schedule(() => AutoReleaseSeat(ticketRequests, showtimeId), TimeSpan.FromMinutes(5));
                 _seatJobTracker[ticketKey] = newJobId;
             }
         }

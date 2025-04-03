@@ -1,3 +1,4 @@
+
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Security.Claims;
@@ -14,6 +15,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Localization;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
 using MovieManagement.Server.Extensions.ConvertFile;
@@ -25,6 +28,8 @@ using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.JwtService;
 using MovieManagement.Server.Services.QRService;
 using Newtonsoft.Json;
+using System.Globalization;
+using Microsoft.Extensions.Options;
 
 namespace MovieManagement.Server
 {
@@ -78,11 +83,27 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("PhuocConnection"))
             );
 
             // Đăng ký UnitOfWork
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            builder.Services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en"),
+                    new CultureInfo("vi"),
+                    new CultureInfo("ja"),
+                };
+
+                options.DefaultRequestCulture = new RequestCulture("en");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
 
             // Đăng Ký GenericRepository, Repository và Service
             builder.Services.AddAllDependencies("Repository", "Service", "UnitOfWork");
@@ -104,7 +125,8 @@ namespace MovieManagement.Server
                             "https://localhost:3000",
                             "http://localhost:3000",
                             "https://localhost:7119",
-                            "https://eigaa.vercel.app")
+                            "https://eigaa.vercel.app",
+                            "https://eigacinemaapi.azurewebsites.net")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials());
@@ -160,6 +182,7 @@ namespace MovieManagement.Server
             // builder.Services.AddAuthorization();
 
             // ADD SignalR
+            //builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]);
             builder.Services.AddSignalR();
 
             // Register Hangfire
@@ -184,6 +207,9 @@ namespace MovieManagement.Server
             builder.Services.AddHostedService<SystemService>();
 
             var app = builder.Build();
+
+            var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+            app.UseRequestLocalization(localizationOptions);
 
             app.UseDefaultFiles();
             app.UseStaticFiles();

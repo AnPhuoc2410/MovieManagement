@@ -24,11 +24,11 @@ interface TicketPriceProps {
 }
 
 const currencyFormatMap: Record<string, { locale: string; currency: string }> =
-  {
-    en: { locale: "en-US", currency: "USD" },
-    jp: { locale: "ja-JP", currency: "JPY" },
-    vi: { locale: "vi-VN", currency: "VND" },
-  };
+{
+  en: { locale: "en-US", currency: "USD" },
+  jp: { locale: "ja-JP", currency: "JPY" },
+  vi: { locale: "vi-VN", currency: "VND" },
+};
 
 const exchangeRates = {
   VND: 1,
@@ -54,7 +54,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
   useEffect(() => {
     const fetchSeatTypes = async () => {
       try {
-        const response = await api.get(`seattype/all`);
+        const response = await api.get(`seattype`);
         const seatData = response.data.data.map((seat: SeatType) => ({
           ...seat,
           quantity: 0,
@@ -180,7 +180,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
               >
                 <CardContent>
                   <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 1 }}>
-                    {t("seat")} {seat.typeName}
+                    {seat.typeName}
                   </Typography>
 
                   <Typography

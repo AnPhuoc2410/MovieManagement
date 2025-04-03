@@ -4,6 +4,8 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieManagement.Server", "MovieManagement.Server\MovieManagement.Server.csproj", "{A6353AAD-597D-43F6-54E9-1CBF7BB965CC}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "moviemanagement.client", "moviemanagement.client\moviemanagement.client.esproj", "{95786F47-1481-4EFC-84BD-B8458DCA1C60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +16,12 @@ Global
 		{A6353AAD-597D-43F6-54E9-1CBF7BB965CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6353AAD-597D-43F6-54E9-1CBF7BB965CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6353AAD-597D-43F6-54E9-1CBF7BB965CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95786F47-1481-4EFC-84BD-B8458DCA1C60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95786F47-1481-4EFC-84BD-B8458DCA1C60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95786F47-1481-4EFC-84BD-B8458DCA1C60}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{95786F47-1481-4EFC-84BD-B8458DCA1C60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95786F47-1481-4EFC-84BD-B8458DCA1C60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95786F47-1481-4EFC-84BD-B8458DCA1C60}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

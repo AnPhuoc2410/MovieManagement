@@ -7,6 +7,9 @@ import { ShowTime as ShowTimeType } from "../../../types/showtime.types";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import ShowTimeTable, { ShowTime as ShowTimeDisplay } from "./BangShowTime";
 import Loader from "../../../components/shared/Loading/LoadingScreen";
+import api from "../../../apis/axios.config";
+import { useNavigate } from "react-router-dom";
+import { Button, Box, Typography } from "@mui/material";
 
 interface ApiResponse<T> {
   statusCode: number;
@@ -16,20 +19,32 @@ interface ApiResponse<T> {
 }
 
 const fetchShowtimes = async (): Promise<ShowTimeType[]> => {
-  const response = await axios.get<ApiResponse<ShowTimeType[]>>("https://localhost:7119/api/showtime/getallshowtime");
-  if (!response.data.isSuccess) {
-    throw new Error(response.data.message);
+  try {
+    const response = await api.get<ApiResponse<ShowTimeType[]>>("showtime");
+    if (!response.data.isSuccess) {
+      console.error("API returned error:", response.data.message);
+      return [];
+    }
+    return response.data.data || [];
+  } catch (error) {
+    console.error("Error fetching showtimes:", error);
+    return [];
   }
-  return response.data.data;
 };
 
 const transformShowTimeForDisplay = (showtime: ShowTimeType): ShowTimeDisplay => {
+  // Convert the Date object to string for consistent handling in DataGrid
+  const formattedStartTime = showtime.startTime instanceof Date ? 
+    showtime.startTime.toISOString() : 
+    String(showtime.startTime);
+    
   return {
+    id: showtime.showTimeId, // DataGrid requires a unique id field
     showTimeId: showtime.showTimeId,
     movieId: showtime.movieId,
     roomId: showtime.roomId,
-    startTime: new Date(showtime.startTime).toLocaleString(),
-    endTime: new Date(showtime.endTime).toLocaleString(),
+    startTime: formattedStartTime,
+    endTime: showtime.endTime,
     movie: {
       movieName: showtime.movie?.movieName || 'N/A'
     },
@@ -40,19 +55,58 @@ const transformShowTimeForDisplay = (showtime: ShowTimeType): ShowTimeDisplay =>
 };
 
 const QuanLyPhongChieu: React.FC = () => {
+  const navigate = useNavigate();
   const {
     data: danhSachThoiGianChieu = [],
     isLoading,
     error,
-  } = useQuery<ShowTimeType[]>("ThoiGianChieuData", fetchShowtimes);
+  } = useQuery<ShowTimeType[]>("ThoiGianChieuData", fetchShowtimes, {
+    onError: (error) => {
+      console.error("Query error:", error);
+    },
+    retry: 1,
+  });
+  
+  const handleNavigateToAddShowtime = () => {
+    navigate("/admin/ql-thoi-gian-chieu/them-thoi-gian-chieu");
+  };
 
   if (isLoading) return <Loader />;
-  if (error) return <div>Failed to fetch data</div>;
 
-  const transformedShowTimes = danhSachThoiGianChieu.map(transformShowTimeForDisplay);
+  const transformedShowTimes = danhSachThoiGianChieu?.map(transformShowTimeForDisplay) || [];
 
   return (
     <ManagementPageLayout>
+      {error ? (
+        <Box sx={{ textAlign: 'center', mt: 3, mb: 2 }}>
+          <Typography color="error" variant="body1">
+            Không thể tải dữ liệu lịch chiếu. Bạn vẫn có thể tạo mới lịch chiếu.
+          </Typography>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            sx={{ mt: 2 }}
+            onClick={handleNavigateToAddShowtime}
+          >
+            Thêm thời gian chiếu mới
+          </Button>
+        </Box>
+      ) : danhSachThoiGianChieu.length === 0 ? (
+        <Box sx={{ textAlign: 'center', mt: 3, mb: 2 }}>
+          <Typography variant="body1">
+            Không có dữ liệu lịch chiếu. Vui lòng tạo mới lịch chiếu.
+          </Typography>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            sx={{ mt: 2 }}
+            onClick={handleNavigateToAddShowtime}
+          >
+            Thêm thời gian chiếu mới
+          </Button>
+        </Box>
+      ) : null}
+      
       <ShowTimeTable
         showTimes={transformedShowTimes}
         onEdit={(id: string) => {

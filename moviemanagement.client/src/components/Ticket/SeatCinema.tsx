@@ -8,6 +8,8 @@ import { SelectedSeat } from "../../types/selectedseat.types";
 import { useSignalR } from "../../contexts/SignalRContext";
 import Loader from "../shared/Loading";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
+
 
 interface SeatProps {
   showTimeId: string;
@@ -17,6 +19,7 @@ interface SeatProps {
 }
 
 const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelectedSeats, groupConnected }) => {
+  const { t } = useTranslation();
   const { connection } = useSignalR();
   const { userDetails } = useAuth();
   const [seats, setSeats] = useState<TicketDetail[]>([]);
@@ -41,7 +44,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
         setSelectedSeats((prev) => {
           const selectedSeat = prev.find(seat => seat.id === seatId);
           if (selectedSeat) {
-            toast.error(`Ghế ${selectedSeat.name} đã được người khác chọn.`);
+            toast.error(`${selectedSeat.name} ${t("toast.error.seat.someone_selected")}`);
             return prev.filter(seat => seat.id !== seatId);
           }
           return prev;
@@ -102,9 +105,9 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
         try {
           await connection.invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId);
           setSelectedSeats([]); // Clear locally stored selections
-          toast('Các ghế đã được hủy do bạn quay lại.', {
+          toast(t("toast.error.seat.cancel_booking_bc_back"), {
             position: "top-center",
-            });
+          });
         } catch (error) {
           console.error("Error releasing seats on return:", error);
         }
@@ -120,14 +123,14 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     const fetchSeats = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`ticketdetail/getbyshowtimeid/${effectiveShowTimeId}`);
+        const response = await api.get(`ticketdetail/showtime/${effectiveShowTimeId}`);
         if (response.data?.data) {
           setSeats(response.data.data);
         } else {
-          toast.error("Không tìm thấy thông tin ghế.");
+          toast.error(t("toast.error.seat.infor"));
         }
       } catch (error) {
-        toast.error("Lỗi khi tải danh sách ghế.");
+        toast.error(t("toast.error.seat.loading_list"));
       } finally {
         setLoading(false);
       }
@@ -139,14 +142,14 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
 
   const handleSeatClick = async (ticket: TicketDetail) => {
     if (!connection) {
-      toast.error("Mất kết nối đến server!");
+      toast.error(t("toast.error.server.connection"));
       return;
     }
 
     // Don't allow selecting seats that are already pending or bought
     if (ticket.status === 1 || ticket.status === 2) {
-      const statusText = ticket.status === 1 ? "đang được chọn" : "đã được mua";
-      toast.error(`Ghế ${ticket.seat.atRow}${ticket.seat.atColumn} ${statusText} bởi người khác.`);
+      const statusText = ticket.status === 1 ? t("toast.error.seat.selecting") : t("toast.error.seat.bought");
+      toast.error(`${ticket.seat.atRow}${ticket.seat.atColumn} ${statusText} ${t("toast.error.seat.by_someone")}`);
       return;
     }
 
@@ -197,21 +200,21 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
         const existingSeat = prevSeats.find((s) => s.ticketId === ticket.ticketId);
         if (existingSeat) {
           if (existingSeat.id === ticket.seatId) {
-            toast.error(`Bỏ chọn ghế ${seatName}`);
+            toast.error(`${t("toast.error.seat.cancel_select")} ${seatName}`);
             return prevSeats.filter((s) => s.ticketId !== ticket.ticketId);
           } else {
-            toast.success(`Đổi ghế từ ${existingSeat.name} sang ${seatName}`);
+            toast.success(`${t("toast.success.seat.change_from")} ${existingSeat.name} ${t("toast.success.seat.change_to")} ${seatName}`);
             return prevSeats.map((s) =>
               s.ticketId === ticket.ticketId ? seatInfo : s
             );
           }
         } else {
-          toast.success(`Chọn ghế ${seatName}`);
+          toast.success(`${t("toast.success.seat.select")} ${seatName}`);
           return [...prevSeats, seatInfo];
         }
       });
     } catch (error) {
-      toast.error("Không thể chọn ghế này. Có thể ghế đã được người khác chọn.");
+      toast.error(t("toast.error.seat.cannot_selected"));
       console.error("Error selecting seat:", error);
     }
   };
@@ -232,7 +235,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           }}
         />
         <Typography variant="h6" sx={{ mt: -2, color: "white" }}>
-          Màn hình
+          {t("movie_seat.selection")}
         </Typography>
       </Box>
 
@@ -248,6 +251,21 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           ).map(([row, rowSeats]) => (
             <Box key={row} sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
               {rowSeats.map((ticket) => {
+
+                // if (!ticket.seat.isActive) {
+                //   return (
+                //     <Box
+                //       key={ticket.seatId}
+                //       sx={{
+                //         minWidth: "50px",
+                //         minHeight: "50px",
+                //         visibility: "hidden",
+                //         p: 0.5,
+                //       }}
+                //     />
+                //   );
+                // }
+
                 const isSelectedByMe = selectedSeats.some(
                   (s) => s.id === ticket.seatId && s.isMine
                 );

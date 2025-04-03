@@ -29,7 +29,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetMembersRevenueAsync()
         {
             var movies = await _dashboardService.GetTopMemberRevenues();
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<TopMemberResponse.MemberRevenue>>
             {
                 StatusCode = 200,
                 IsSuccess = true,
@@ -48,7 +48,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetMembersDailyRevenueAsync(DateTime from, DateTime to)
         {
             var movies = await _dashboardService.GetTopMemberDailyRevenues(from, to);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<TopMemberResponse.MemberDaily>>
             {
                 StatusCode = 200,
                 IsSuccess = true,
@@ -67,7 +67,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetMoviesRevenueAsync()
         {
             var movies = await _dashboardService.GetTopMovieRevenues();
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<TopMovieResponse.MovieRevenue>>
             {
                 StatusCode = 200,
                 IsSuccess = true,
@@ -86,7 +86,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetMoviesDailyRevenueAsync(DateTime from, DateTime to)
         {
             var movies = await _dashboardService.GetTopMovieDailyRevenues(from, to);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<TopMovieResponse.MovieDaily>>
             {
                 StatusCode = 200,
                 IsSuccess = true,
@@ -105,7 +105,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetCategoriesRevenueAsync()
         {
             var catogories = await _dashboardService.GetTopCategoryRevenues();
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<TopCategoryResponse.CategoryRevenue>>
             {
                 StatusCode = 200,
                 IsSuccess = true,
@@ -124,7 +124,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetCategoriesDailyRevenueAsync(DateTime from, DateTime to)
         {
             var catogories = await _dashboardService.GetTopCategoryDailyRevenues(from, to);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<TopCategoryResponse.Daily>>
             {
                 StatusCode = 200,
                 IsSuccess = true,
@@ -143,18 +143,18 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetShowtimesRevenueAsync()
         {
             var showtimes = await _dashboardService.GetTopShowtimeRevenues();
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>>
             {
                 StatusCode = 200,
                 IsSuccess = true,
-                Message = "Top movie screenings with the most tickets sold",
+                Message = "Top showtime genres with the most tickets sold",
                 Data = showtimes
             };
             return Ok(response);
         }
 
         [HttpGet("showtime/daily")]
-        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopShowtimeResponse.ShowtimeDaily>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -162,11 +162,11 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetShowtimesDailyRevenueAsync(DateTime from, DateTime to)
         {
             var showtimes = await _dashboardService.GetTopShowtimeDailyRevenues(from, to);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<TopShowtimeResponse.ShowtimeDaily>>
             {
                 StatusCode = 200,
                 IsSuccess = true,
-                Message = "Top movie screenings with the most tickets sold",
+                Message = "Top showtime genres with the most tickets sold by day",
                 Data = showtimes
             };
             return Ok(response);

@@ -1,43 +1,38 @@
-import React, { useEffect, useState } from "react";
 import {
+  Alert,
+  Avatar,
   Box,
   Button,
-  TextField,
+  Chip,
+  CircularProgress,
+  CssBaseline,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
   Grid,
   Paper,
-  Typography,
-  CssBaseline,
-  Stack,
-  FormControl,
-  InputAdornment,
-  Divider,
-  Chip,
-  Avatar,
-  CircularProgress,
-  Alert,
-  RadioGroup,
-  FormControlLabel,
   Radio,
-  FormLabel,
+  RadioGroup,
+  Slider,
+  Stack,
+  Typography
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import { alpha } from "@mui/material/styles";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../../apis/axios.config";
-import { useSignalR } from "../../../contexts/SignalRContext";
 import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
-import AppTheme from "../../../shared-theme/AppTheme";
-import { UserInfo } from "../../../types/users.type";
+import UserSearchComponent from "../../../components/shared/UserSearchComponent";
 import { phoneRegex } from "../../../constants/regex";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useSignalR } from "../../../contexts/SignalRContext";
+import AppTheme from "../../../shared-theme/AppTheme";
+import { UserInfo } from "../../../types/users.type";
 
-/**
- * This is a placeholder interface for seats/tickets in your location.state.
- * You can replace it with the actual type from your codebase if available.
- */
 interface SeatInfo {
   ticketId: string;
   version: number;
@@ -59,9 +54,22 @@ const Payment: React.FC = () => {
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [pointsToAdd, setPointsToAdd] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState("money");
-  const [isPaying, setIsPaying] = useState(false); // for final payment flow
+  const [isPaying, setIsPaying] = useState(false);
+  const [usedPoints, setUsedPoints] = useState<number>(0);
+  const [maxUsablePoints, setMaxUsablePoints] = useState<number>(0);
+  const [partialPointPayment, setPartialPointPayment] = useState<boolean>(false);
+  const [selectedTicketsForPoints, setSelectedTicketsForPoints] = useState<string[]>([]);
+  const [ticketPointCosts, setTicketPointCosts] = useState<{ [key: string]: number }>({});
 
-  // Location state destructuring
+  const handleUserSelect = (user: UserInfo) => {
+    setSelectedUser(user);
+    setPointsToAdd(Math.floor(totalPrice / 10000));
+  };
+
+  const handleUsersFound = (foundUsers: UserInfo[]) => {
+    setUsers(foundUsers);
+  };
+
   const {
     movieId,
     selectedTime = "Not selected",
@@ -74,12 +82,10 @@ const Payment: React.FC = () => {
     roomName = "",
   } = location.state || {};
 
-  // Derive info from location state
   const movieTitle = movieData?.movieName || "Phim Mặc Định";
   const showDate = selectedDate;
   const showTime = selectedTime;
 
-  // Effective showTimeId from state or fallback to session storage
   const effectiveShowTimeId =
     showTimeId || sessionStorage.getItem("currentShowTimeId") || "";
 
@@ -89,17 +95,25 @@ const Payment: React.FC = () => {
     0
   );
 
-  /**
-   * Handler for payment method changes (tiền mặt vs. điểm)
-   */
   const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPaymentMethod(e.target.value);
+    const newMethod = e.target.value;
+    setPaymentMethod(newMethod);
+
+    if (newMethod === 'points') {
+      // For full points payment, use all available points up to the total price
+      setUsedPoints(maxUsablePoints);
+      setPartialPointPayment(false);
+    } else if (newMethod === 'partial_points') {
+      // For partial payment, start with half of available points
+      setUsedPoints(Math.floor(maxUsablePoints / 2));
+      setPartialPointPayment(true);
+    } else {
+      // For money payment, don't use points
+      setUsedPoints(0);
+      setPartialPointPayment(false);
+    }
   };
 
-  /**
-   * Release seats if user refreshes or closes tab
-   * using sendBeacon to ensure the request is sent.
-   */
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (
@@ -253,34 +267,123 @@ const Payment: React.FC = () => {
     setUsers([]); // hide the search results after selection
   };
 
+  useEffect(() => {
+    if (selectedUser && tickets.length > 0) {
+      const pointCosts = tickets.reduce((acc: { [key: string]: number }, ticket: any, index: number) => {
+        const ticketId = selectedSeatsInfo[index]?.ticketId;
+        if (ticketId) {
+          acc[ticketId] = Math.floor(ticket.price / 100); // Convert price to points (1 point = 1 VND)
+        }
+        return acc;
+      }, {});
+      setTicketPointCosts(pointCosts);
+    }
+  }, [selectedUser, tickets, selectedSeatsInfo]);
+
+  const toggleTicketForPoints = (ticketId: string) => {
+    setSelectedTicketsForPoints(prev =>
+      prev.includes(ticketId)
+        ? prev.filter(id => id !== ticketId)
+        : [...prev, ticketId]
+    );
+  };
+
+  const calculateTotalPointsNeeded = () => {
+    return selectedTicketsForPoints.reduce((total, ticketId) =>
+      total + (ticketPointCosts[ticketId] || 0), 0);
+  };
+
+  const calculateRemainingAmount = () => {
+    const ticketsForMoney = tickets.filter((ticket: any, index: number) => {
+      const ticketId = selectedSeatsInfo[index]?.ticketId;
+      return ticketId && !selectedTicketsForPoints.includes(ticketId);
+    });
+
+    return ticketsForMoney.reduce((sum: number, t: any) => sum + t.price, 0);
+  };
+
+  // Calculate points that will be earned from money payment
+  const calculatePointsToEarn = () => {
+    const moneyAmount = calculateRemainingAmount();
+    return Math.floor(moneyAmount / 1000); // 1 point per 1000 VND
+  };
+
+  useEffect(() => {
+    if (selectedUser) {
+      const maxPoints = Math.min(selectedUser.point, totalPrice * 100);
+      setMaxUsablePoints(maxPoints);
+    } else {
+      setMaxUsablePoints(0);
+      setUsedPoints(0);
+    }
+  }, [selectedUser, totalPrice]);
+
+  const handlePointsChange = (event: Event, newValue: number | number[]) => {
+    setUsedPoints(newValue as number);
+  };
+
   const handleConfirmPayment = async () => {
     setIsPaying(true);
     try {
-      toast.success("Thanh toán thành công!");
-      navigate("/admin/ql-ban-ve/confirmation", {
-        state: {
-          // Pass movie and booking information
-          movieId,
-          movieData,
-          selectedTime,
-          selectedDate,
-          seats,
-          roomName,
-          showTimeId: effectiveShowTimeId,
+      // Create the request payload for exchanging tickets
+      const payload = {
+        totalTicket: seats.length,
+        amount: totalPrice,
+        tickets: selectedSeatsInfo.map((seat: any) => seat.ticketId),
+        promotionId: null,
+        usedPoint: usedPoints
+      };
 
-          // Pass ticket and payment information
-          tickets,
-          selectedSeatsInfo,
-          totalPrice,
+      const userId = selectedUser?.id;
+      if (userId) {
+        // Call the backend API for ticket exchange
+        const response = await api.post(`users/test/${userId}`, payload);
 
-          // Pass user and payment method
-          selectedUser,
-          paymentMethod,
+        if (response.status === 200) {
+          toast.success("Thanh toán thành công!");
 
-          // Add any additional data you might need
-          pointsToAdd
+          navigate("/admin/ql-ban-ve/confirmation", {
+            state: {
+              movieId,
+              movieData,
+              selectedTime,
+              selectedDate,
+              seats,
+              roomName,
+              showTimeId: effectiveShowTimeId,
+              tickets,
+              selectedSeatsInfo,
+              totalPrice,
+              selectedUser,
+              paymentMethod,
+              pointsToAdd: paymentMethod === "points" ? 0 : pointsToAdd,
+              usedPoints,
+              amountPaidWithPoints: usedPoints / 100,
+              amountPaidWithMoney: calculateRemainingAmount()
+            }
+          });
+        } else {
+          throw new Error("Payment failed");
         }
-      });
+      } else {
+        // Handle case where no user is selected (regular cash payment)
+        toast.success("Thanh toán thành công!");
+        navigate("/admin/ql-ban-ve/confirmation", {
+          state: {
+            movieId,
+            movieData,
+            selectedTime,
+            selectedDate,
+            seats,
+            roomName,
+            showTimeId: effectiveShowTimeId,
+            tickets,
+            selectedSeatsInfo,
+            totalPrice,
+            paymentMethod: "money"
+          }
+        });
+      }
     } catch (error) {
       console.error("Payment error:", error);
       toast.error("Lỗi khi thanh toán");
@@ -288,6 +391,7 @@ const Payment: React.FC = () => {
       setIsPaying(false);
     }
   };
+
 
   return (
     <AppTheme disableCustomTheme={disableCustomTheme}>
@@ -384,102 +488,11 @@ const Payment: React.FC = () => {
                         <Typography variant="h6" gutterBottom>
                           Thông Tin Khách Hàng
                         </Typography>
-                        <Box sx={{ mb: 3 }}>
-                          <TextField
-                            label="Tìm kiếm thành viên (CMND hoặc số điện thoại)"
-                            variant="outlined"
-                            fullWidth
-                            value={userSearchInput}
-                            onChange={(e) => setUserSearchInput(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                handleSearchUser();
-                              }
-                            }}
-                            InputProps={{
-                              endAdornment: (
-                                <InputAdornment position="end">
-                                  <Button
-                                    onClick={handleSearchUser}
-                                    disabled={isSearchingUser}
-                                    startIcon={
-                                      isSearchingUser ? (
-                                        <CircularProgress size={20} />
-                                      ) : (
-                                        <SearchIcon />
-                                      )
-                                    }
-                                  >
-                                    Tìm
-                                  </Button>
-                                </InputAdornment>
-                              ),
-                            }}
-                            sx={{ mb: 2 }}
-                          />
-
-                          {/* Multiple search results */}
-                          {users.length > 0 && (
-                            <Paper
-                              variant="outlined"
-                              sx={{ p: 2, maxHeight: 200, overflowY: "auto" }}
-                            >
-                              <Typography variant="subtitle2" gutterBottom>
-                                Kết quả tìm kiếm:
-                              </Typography>
-                              <Stack spacing={1}>
-                                {users.map((user) => (
-                                  <Box
-                                    key={user.id}
-                                    sx={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "space-between",
-                                      p: 1,
-                                      borderRadius: 1,
-                                      "&:hover": {
-                                        bgcolor: "action.hover",
-                                      },
-                                    }}
-                                  >
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: 1,
-                                      }}
-                                    >
-                                      <Avatar
-                                        src={user.avatarUrl}
-                                        alt={user.userName}
-                                      >
-                                        {user.userName?.charAt(0)}
-                                      </Avatar>
-                                      <Box>
-                                        <Typography variant="body1">
-                                          {user.userName}
-                                        </Typography>
-                                        <Typography
-                                          variant="caption"
-                                          color="text.secondary"
-                                        >
-                                          {user.email} • Điểm: {user.point}
-                                        </Typography>
-                                      </Box>
-                                    </Box>
-                                    <Button
-                                      size="small"
-                                      variant="contained"
-                                      onClick={() => handleSelectUser(user)}
-                                    >
-                                      Chọn
-                                    </Button>
-                                  </Box>
-                                ))}
-                              </Stack>
-                            </Paper>
-                          )}
-                        </Box>
+                        <UserSearchComponent
+                          totalPrice={totalPrice}
+                          onUserSelect={handleUserSelect}
+                          onUsersFound={handleUsersFound}
+                        />
 
                         {/* Display selected user info if found */}
                         {selectedUser ? (
@@ -559,30 +572,68 @@ const Payment: React.FC = () => {
                               </Typography>
                             </Box>
 
-                            <Box sx={{ mt: 3 }}>
-                              <FormControl component="fieldset">
-                                <FormLabel component="legend">
-                                  Hình thức thanh toán
-                                </FormLabel>
-                                <RadioGroup
-                                  row
-                                  value={paymentMethod}
-                                  onChange={handlePaymentMethodChange}
-                                >
-                                  <FormControlLabel
-                                    value="money"
-                                    control={<Radio />}
-                                    label="Tiền mặt"
-                                  />
-                                  <FormControlLabel
-                                    value="points"
-                                    control={<Radio />}
-                                    label="Dùng điểm"
-                                    disabled={selectedUser.point < totalPrice / 1000}
-                                  />
-                                </RadioGroup>
-                              </FormControl>
-                            </Box>
+                            {selectedUser && (
+                              <Box sx={{ mt: 3 }}>
+                                <Typography variant="h6" gutterBottom>
+                                  Chọn vé thanh toán bằng điểm
+                                </Typography>
+                                <Typography variant="body2" gutterBottom>
+                                  Điểm hiện có: {selectedUser.point} điểm
+                                </Typography>
+
+                                <Box sx={{ mt: 2 }}>
+                                  {tickets.map((ticket: any, index: number) => {
+                                    const ticketId = selectedSeatsInfo[index]?.ticketId;
+                                    const seatName = seats[index];
+                                    const pointCost = ticketPointCosts[ticketId] || 0;
+                                    const canUsePoints = selectedUser.point >= pointCost;
+                                    const isSelected = selectedTicketsForPoints.includes(ticketId);
+
+                                    return (
+                                      <Box
+                                        key={ticketId}
+                                        sx={{
+                                          display: 'flex',
+                                          justifyContent: 'space-between',
+                                          alignItems: 'center',
+                                          p: 1,
+                                          border: '1px solid',
+                                          borderColor: isSelected ? 'primary.main' : 'divider',
+                                          borderRadius: 1,
+                                          mb: 1,
+                                          bgcolor: isSelected ? 'primary.light' : 'background.paper',
+                                          opacity: canUsePoints ? 1 : 0.6
+                                        }}
+                                      >
+                                        <Box>
+                                          <Typography variant="body1">Ghế {seatName}</Typography>
+                                          <Typography variant="body2">
+                                            {ticket.price.toLocaleString('vi-VN')}đ ({pointCost} điểm)
+                                          </Typography>
+                                        </Box>
+                                        <Button
+                                          variant={isSelected ? "contained" : "outlined"}
+                                          size="small"
+                                          disabled={!canUsePoints}
+                                          onClick={() => toggleTicketForPoints(ticketId)}
+                                        >
+                                          {isSelected ? "Bỏ chọn" : "Dùng điểm"}
+                                        </Button>
+                                      </Box>
+                                    );
+                                  })}
+                                </Box>
+
+                                <Box sx={{ mt: 2 }}>
+                                  <Typography variant="body1">
+                                    Tổng điểm sử dụng: {calculateTotalPointsNeeded()} điểm
+                                  </Typography>
+                                  <Typography variant="body1">
+                                    Điểm còn lại sau giao dịch: {selectedUser.point - calculateTotalPointsNeeded() + calculatePointsToEarn()} điểm
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            )}
                           </Box>
                         ) : (
                           <Alert severity="info" sx={{ mb: 2 }}>
@@ -597,23 +648,43 @@ const Payment: React.FC = () => {
                         <Typography variant="h6" gutterBottom>
                           Thông Tin Thanh Toán
                         </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            mb: 1,
-                          }}
-                        >
+
+                        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                           <Typography variant="body1">Tổng tiền vé:</Typography>
                           <Typography variant="body1" fontWeight="bold">
                             {totalPrice.toLocaleString("vi-VN")}đ
                           </Typography>
                         </Box>
+
+                        {selectedTicketsForPoints.length > 0 && (
+                          <>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                              <Typography variant="body1">
+                                Thanh toán bằng điểm ({selectedTicketsForPoints.length} vé):
+                              </Typography>
+                              <Typography variant="body1" color="success.main">
+                                -{selectedTicketsForPoints.reduce((sum, ticketId) => {
+                                  const ticketIndex = selectedSeatsInfo.findIndex((s: { ticketId: string; }) => s.ticketId === ticketId);
+                                  return sum + (tickets[ticketIndex]?.price || 0);
+                                }, 0).toLocaleString("vi-VN")}đ
+                              </Typography>
+                            </Box>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                              <Typography variant="body1">Còn lại thanh toán tiền mặt:</Typography>
+                              <Typography variant="body1">
+                                {calculateRemainingAmount().toLocaleString("vi-VN")}đ
+                              </Typography>
+                            </Box>
+                          </>
+                        )}
+
                         <Divider sx={{ my: 2 }} />
                         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                           <Typography variant="h6">Tổng thanh toán:</Typography>
                           <Typography variant="h6" color="primary" fontWeight="bold">
-                            {totalPrice.toLocaleString("vi-VN")}đ
+                            {(paymentMethod === 'points' ? 0 :
+                              paymentMethod === 'partial_points' ? calculateRemainingAmount() :
+                                totalPrice).toLocaleString("vi-VN")}đ
                           </Typography>
                         </Box>
 

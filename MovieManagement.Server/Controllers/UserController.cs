@@ -4,6 +4,8 @@ using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Services.EmailService;
 using MovieManagement.Server.Services.UserService;
 using static MovieManagement.Server.Models.Enums.UserEnum;
 
@@ -14,10 +16,12 @@ namespace MovieManagement.Server.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IEmailService emailService)
         {
             _userService = userService;
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -79,6 +83,11 @@ namespace MovieManagement.Server.Controllers
         /// <response code="200">Find user by IdCard Or Phone successfully</response>
         [Authorize(Roles = "Admin")]
         [HttpGet("find")]
+        [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> FindUserByIdCardOrPhoneAsync([FromQuery] string? idCard,
             [FromQuery] string? phone)
         {
@@ -119,7 +128,7 @@ namespace MovieManagement.Server.Controllers
                 Data = users
             });
         }
-        [HttpGet("users")]
+        [HttpGet("idcard/page/{page:int}/limit/{limit:int}")]
         [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
             StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
@@ -198,6 +207,7 @@ namespace MovieManagement.Server.Controllers
         [Authorize(Roles = "Admin")]
         [HttpDelete("{empId:guid}")]
         [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserDto.UserResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -207,5 +217,57 @@ namespace MovieManagement.Server.Controllers
             await _userService.DeleteUserAsync(empId);
             return NoContent();
         }
+
+        [HttpPost("tickets/member")]
+        [Authorize(Roles = "Employee")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> ExchangeTicket(Guid userId, BillRequest billRequest)
+        {
+            await _userService.MemberBuytickets(userId, billRequest);
+            return Ok(new ApiResponse<object>
+            {
+                StatusCode = 200,
+                Message = "Exchange ticket successfully",
+                IsSuccess = true
+            });
+        }
+
+        [HttpPost("tickets/guest")]
+        [Authorize(Roles = "Employee")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> ExchangeTicketGuest(BillRequest billRequest)
+        {
+            await _userService.GuestBuyTickets(billRequest);
+            return Ok(new ApiResponse<object>
+            {
+                StatusCode = 200,
+                Message = "Exchange ticket successfully",
+                IsSuccess = true
+            });
+        }
+
+        [HttpGet("transaction")]
+        [Authorize(Roles = "Admin,Employee,Member")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<BillTransaction>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> TransactionHistory(Guid userId)
+        {
+            var transactions = await _userService.GetTransactionByUserId(userId);
+            return Ok(new ApiResponse<IEnumerable<BillTransaction>>
+            {
+                StatusCode = 200,
+                Message = "Get transaction history successfully",
+                IsSuccess = true,
+                Data = transactions
+            });
+        }
+
+
     }
 }

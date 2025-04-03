@@ -6,6 +6,8 @@ namespace MovieManagement.Server.Services
     public interface IUnitOfWorkFactory
     {
         IUnitOfWork Create();
+
+        IServiceScope CreateScope();
     }
 
     public class UnitOfWorkFactory : IUnitOfWorkFactory
@@ -21,6 +23,12 @@ namespace MovieManagement.Server.Services
         {
             return _serviceProvider.GetRequiredService<IUnitOfWork>();
         }
+
+        public IServiceScope CreateScope()
+        {
+            return _serviceProvider.CreateScope();
+        }
+
     }
 
     public class SystemService : BackgroundService
@@ -49,13 +57,15 @@ namespace MovieManagement.Server.Services
         private void ScheduleTask()
         {
             DateTime now = DateTime.Now;
-            DateTime nextOneAM = now.Date.AddDays(now.Hour >= 1 ? 1 : 0).AddHours(1); // Next occurrence of 1 AM
-            TimeSpan timeToOneAM = nextOneAM - now;
+            DateTime nextTwoAM = now.Date.AddDays(now.Hour >= 2 ? 1 : 0).AddHours(2); // Next occurrence of 2 AM
+            TimeSpan timeToTwoAM = nextTwoAM - now;
 
-            _logger.LogInformation($"Scheduling RemoveTicketDaily to run at {nextOneAM} (in {timeToOneAM}).");
+            _logger.LogInformation($"Scheduling RemoveTicketDaily to run at {nextTwoAM} (in {timeToTwoAM}).");
 
-            _timer = new Timer(RemoveTicketDaily, null, timeToOneAM, TimeSpan.FromDays(1));
+            _timer = new Timer(RemoveTicketDaily, null, timeToTwoAM, TimeSpan.FromDays(1));
         }
+
+
 
         private async void RemoveTicketDaily(object state)
         {
@@ -63,8 +73,9 @@ namespace MovieManagement.Server.Services
 
             try
             {
-                using (var unitOfWork = _unitOfWorkFactory.Create())
+                using (var scope = _unitOfWorkFactory.CreateScope())
                 {
+                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
                     var tickets = await unitOfWork.TicketDetailRepository.GetRemainingsTickets();
                     foreach (var ticket in tickets)
                     {
@@ -78,6 +89,7 @@ namespace MovieManagement.Server.Services
                 _logger.LogError(ex, "An error occurred while removing tickets.");
             }
         }
+
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {

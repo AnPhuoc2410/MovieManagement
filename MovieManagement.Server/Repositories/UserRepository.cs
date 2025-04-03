@@ -145,8 +145,8 @@ namespace MovieManagement.Server.Repositories
                     MemberName = u.UserName,
                     PurchasedTicket = u.Bills
                         .Where(b => b.Status == BillStatus.Completed)
-                        .Select(b => b.TicketDetails)
-                        .Count(),
+                        .Select(b => b.TotalTicket)
+                        .Sum(),
                     CurrentPoint = u.Point,
                     TotalPoint = u.Bills
                         .Where(b => b.Status == BillStatus.Completed)
@@ -176,8 +176,8 @@ namespace MovieManagement.Server.Repositories
                         {
                             MemberName = u.UserName,
                             PurchasedTicket = u.Bills
-                                .Select(b => b.TicketDetails)
-                                .Count(),
+                                .Select(b => b.TotalTicket)
+                                .Sum(),
                             CurrentPoint = u.Point,
                             TotalPoint = u.Bills
                                 .Sum(b => b.Point)

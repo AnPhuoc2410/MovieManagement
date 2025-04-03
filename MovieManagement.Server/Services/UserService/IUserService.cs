@@ -21,6 +21,10 @@ namespace MovieManagement.Server.Services.UserService
         Task ChangeUserPasswordByEmail(String email, string? currentPassword, string newPassword);
         Task<bool> DeleteUserAsync(Guid id);
 
+        Task<bool> MemberBuytickets(Guid userId, BillRequest billRequest);
+        Task<bool> GuestBuyTickets(BillRequest billRequest);
+
+        Task<IEnumerable<BillTransaction>> GetTransactionByUserId(Guid userId);
 
     }
 }

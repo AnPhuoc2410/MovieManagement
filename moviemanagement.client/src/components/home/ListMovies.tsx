@@ -278,9 +278,16 @@ const ListMovies: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchNowShowingMovies();
-    fetchUpcomingMovies();
-  }, []);
+    const fetchAllMovies = async () => {
+      setLoading(true);
+      await Promise.all([
+        fetchNowShowingMovies(),
+        fetchUpcomingMovies()
+      ]);
+    };
+
+    fetchAllMovies();
+  }, [t]);
 
   const handleOpenTrailer = (url: string) => {
     let embedUrl = url.replace("youtu.be", "youtube.com/embed");

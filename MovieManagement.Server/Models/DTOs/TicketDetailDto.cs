@@ -8,7 +8,7 @@ namespace MovieManagement.Server.Models.DTOs
 
         public Guid TicketId { get; set; }
 
-        public long? BillId { get; set; }
+        public Guid? BillId { get; set; }
 
         public Guid SeatId { get; set; }
 
@@ -20,4 +20,15 @@ namespace MovieManagement.Server.Models.DTOs
 
 
     }
+
+    public class TicketTransaction
+    {
+        public Guid TicketId { get; set; }
+        public Guid? BillId { get; set; }
+        public Guid SeatId { get; set; }
+        public Guid ShowTimeId { get; set; }
+        public TicketStatus Status { get; set; }
+        public ShowTimeInfo ShowTime { get; set; }
+    }
+
 }

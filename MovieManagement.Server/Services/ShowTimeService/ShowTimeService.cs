@@ -50,7 +50,10 @@ namespace MovieManagement.Server.Services.ShowTimeService
             }
 
             var showTimesByRoom = await _unitOfWork.ShowtimeRepository.GetShowTimeByRoomIdAsync(showtime.RoomId);
-
+            if(showTimesByRoom == null)
+            {
+                throw new NotFoundException("ShowTime does not found!");
+            }
 
             foreach (var st in showTimesByRoom)
             {
@@ -61,7 +64,7 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 }
             }
 
-            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(newShowTime.StartTime);
+            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(newShowTime.StartTime, room.MovieTheaterId);
             if (!checkStartTime)
             {
                 throw new ApplicationException("Unable to create due to other StartTime.");
@@ -69,8 +72,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
             var createdShowTime = _unitOfWork.ShowtimeRepository.PrepareCreateEntity(newShowTime);
 
-            var IsGenerated = CreateTicketByShowTime(createdShowTime.ShowTimeId, room.RoomId);
-            if (IsGenerated.Result <= 1)
+            var IsGenerated = await CreateTicketByShowTime(createdShowTime.ShowTimeId, room.RoomId);
+            if (IsGenerated <= 1)
             {
                 throw new ApplicationException("Unable to create due to systems error.");
             }
@@ -83,26 +86,27 @@ namespace MovieManagement.Server.Services.ShowTimeService
             var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
 
             if (seats.Count == 0)
-            {
                 throw new NotFoundException("Seats does not found!");
-            }
+            
 
             foreach (var s in seats)
-            {
-                _unitOfWork.TicketDetailRepository.PrepareCreate(new TicketDetail
-                {
-                    ShowTimeId = showTimeId,
-                    SeatId = s.SeatId,
-                    Version = new byte[8],
-                    TicketId = Guid.NewGuid()
-                });
-            }
+                if (s.IsActive)
+                    _unitOfWork.TicketDetailRepository.PrepareCreate(new TicketDetail
+                    {
+                        ShowTimeId = showTimeId,
+                        SeatId = s.SeatId,
+                        Version = new byte[8],
+                        TicketId = Guid.NewGuid()
+                    });
+            
 
-            return await _unitOfWork.TicketDetailRepository.SaveAsync();
+                return await _unitOfWork.CompleteAsync();
         }
 
         public async Task<bool> DeleteShowtimeAsync(Guid showTimeId)
         {
+            if(showTimeId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var showTime = await _unitOfWork.ShowtimeRepository.GetByIdAsync(showTimeId);
             if (showTime == null)
             {
@@ -121,15 +125,20 @@ namespace MovieManagement.Server.Services.ShowTimeService
             return showtimes;
         }
 
-
         public async Task<IEnumerable<ShowTimeDto>> GetShowtimePageAsync(int page, int pageSize)
         {
+            if(page < 0 || pageSize < 1)
+                throw new BadRequestException("Page and PageSize is invalid");
             var showtimes = await _unitOfWork.ShowtimeRepository.GetPageAsync(page, pageSize);
+            if(showtimes == null)
+                throw new NotFoundException("ShowTime not found!");
             return _mapper.Map<IEnumerable<ShowTimeDto>>(showtimes);
         }
 
         public async Task<ShowTimeDto> GetShowtimeByIdAsync(Guid showTimeId)
         {
+            if(showTimeId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var showTime = _mapper.Map<ShowTimeDto>(await _unitOfWork.ShowtimeRepository.GetByIdAsync(showTimeId));
             if (showTime == null)
             {
@@ -140,6 +149,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
         public async Task<ShowTimeDto> UpdateShowtimeAsync(Guid showTimeId, ShowTimeDto showtime)
         {
+            if (showTimeId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             if (showtime == null)
             {
                 throw new ArgumentNullException("ShowTime", "ShowTime is null");
@@ -163,7 +174,6 @@ namespace MovieManagement.Server.Services.ShowTimeService
                 throw new NotFoundException("ShowTime does not found!");
             }
 
-
             existingShowTime.StartTime = new DateTime(showtime.StartTime.Year, showtime.StartTime.Month, showtime.StartTime.Day, showtime.StartTime.Hour, showtime.StartTime.Minute, 0);
             existingShowTime.EndTime = existingShowTime.StartTime.Add(TimeSpan.FromMinutes(movie.Duration));
             existingShowTime.MovieId = showtime.MovieId;
@@ -184,14 +194,14 @@ namespace MovieManagement.Server.Services.ShowTimeService
 
             foreach (var st in showTimesByRoom)
             {
-                if ((existingShowTime.StartTime < st.EndTime && existingShowTime.EndTime > st.StartTime) ||
-                    (existingShowTime.EndTime > st.StartTime && existingShowTime.StartTime < st.EndTime))
+                if (existingShowTime.ShowTimeId != st.ShowTimeId &&
+                     existingShowTime.StartTime < st.EndTime && existingShowTime.EndTime > st.StartTime)
                 {
                     throw new ApplicationException("Unable to create due to other StartTime and EndTime.");
                 }
             }
 
-            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(existingShowTime.StartTime);
+            bool checkStartTime = await _unitOfWork.ShowtimeRepository.CheckStartTimeAsync(existingShowTime.StartTime, room.MovieTheaterId);
             if (!checkStartTime)
             {
                 throw new ApplicationException("Unable to create due to other StartTime.");
@@ -202,6 +212,8 @@ namespace MovieManagement.Server.Services.ShowTimeService
         }
         public async Task<Dictionary<string, Dictionary<string, List<object>>>> GetShowTimeFromDateToDate(Guid movieId, DateTime fromDate, DateTime toDate, string location)
         {
+            if(movieId == Guid.Empty)
+                throw new BadRequestException("MovieId cannot be empty!");
             var movie = await _unitOfWork.MovieRepository.GetByIdAsync(movieId);
             if (movie == null)
             {
@@ -236,9 +248,9 @@ namespace MovieManagement.Server.Services.ShowTimeService
                             locGroup => locGroup.Key,
                             locGroup => locGroup
                                 .GroupBy(st => st.Room.MovieTheater)
-                                .Select(theaterGroup => (object)new
+                                .Select(theaterGroup => (object)new //Lấy trong nhóm theaterGroup ra các thông tin cần thiết
                                 {
-                                    NameTheater = theaterGroup.Key.Name,
+                                    NameTheater = theaterGroup.Key.Name,// Lấy key của nhóm theaterGroup với Key là 1 đối tượng MovieTheater
                                     AddressTheater = theaterGroup.Key.Address,
                                     ListShowTime = theaterGroup.Select(st => new
                                     {

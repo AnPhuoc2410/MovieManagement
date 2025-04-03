@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Resources;
 
 namespace MovieManagement.Server.Services.CategoryService
 {
@@ -12,105 +14,98 @@ namespace MovieManagement.Server.Services.CategoryService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IStringLocalizer _localizerCategoryTranslation;
 
-        public CategoryService(IUnitOfWork unitOfWork, IMapper mapper)
+        public CategoryService(IUnitOfWork unitOfWork, IMapper mapper, IStringLocalizerFactory factory)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _localizerCategoryTranslation = factory.Create("CategoryResource", typeof(CategoryResource).Assembly.FullName);
         }
 
         public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
         {
-            try
+            var categories = await _unitOfWork.CategoryRepository.GetAllAsync();
+            if (categories == null)
             {
-                var categories = await _unitOfWork.CategoryRepository.GetAllAsync();
-                if (categories == null) 
-                    throw new NotFoundException("Category does not found!");
-                return _mapper.Map<List<CategoryDto>>(categories);
+                throw new NotFoundException("Categories not found!");
             }
-            catch (Exception ex)
+            foreach(var category in categories)
             {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
+                category.Name = _localizerCategoryTranslation[category.Name];
             }
+            return _mapper.Map<List<CategoryDto>>(categories);
         }
 
         public async Task<IEnumerable<CategoryDto>> GetCategoryPageAsync(int page, int pageSize)
         {
-            try
+            if (page < 0 || pageSize < 1)
             {
-                var categories = await _unitOfWork.CategoryRepository.GetPageAsync(page, pageSize);
-                if (categories == null) 
-                    throw new NotFoundException("Category does not found!");
-                return _mapper.Map<List<CategoryDto>>(categories);
+                throw new BadRequestException("Page and PageSize is invalid");
             }
-            catch (Exception ex)
+            var categories = await _unitOfWork.CategoryRepository.GetPageAsync(page, pageSize);
+            if (categories == null) {
+                throw new NotFoundException("Categories not found!");
+            }
+            foreach (var category in categories)
             {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
+                category.Name = _localizerCategoryTranslation[category.Name];
             }
+            return _mapper.Map<List<CategoryDto>>(categories);
         }
 
         public async Task<CategoryDto> GetCategoryByComposeIdAsync(Guid categoryId, Guid movieId)
         {
-            try
+            if (categoryId == Guid.Empty || movieId == Guid.Empty)
             {
-                var category = _mapper.Map<CategoryDto>(await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId));
-                if (category == null)
-                {
-                    throw new NotFoundException("Category cannot found!");
-                }
-                return category;
+                throw new BadRequestException("Category and Movie Id is invalid");
             }
-            catch (Exception ex)
+            var category = _mapper.Map<CategoryDto>(await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId));
+            if(category == null)
             {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
+                throw new NotFoundException("Category cannot found!");
             }
+            category.Name = _localizerCategoryTranslation[category.Name];
+            return category;
         }
 
         public async Task<CategoryDto> CreateCategoryAsync(CategoryDto categoryDto)
         {
-            try
+            categoryDto.CategoryId = null;
+            var createdCategory = await _unitOfWork.CategoryRepository.CreateAsync(_mapper.Map<Category>(categoryDto));
+            if (createdCategory == null)
             {
-                categoryDto.CategoryId = null;
-                var createdCategory = await _unitOfWork.CategoryRepository.CreateAsync(_mapper.Map<Category>(categoryDto));
-                if (createdCategory == null)
-                    throw new Exception("Failed to create bill.");
-                return _mapper.Map<CategoryDto>(createdCategory);
+                throw new Exception("Failed to create bill.");
             }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("An error occurred while processing into Database", ex);
-            }
+            return _mapper.Map<CategoryDto>(createdCategory);
         }
 
         public async Task<CategoryDto> UpdateCategoryAsync(Guid categoryId, Guid movieId, CategoryDto categoryDto)
         {
-            try
+            if (categoryId == Guid.Empty || movieId == Guid.Empty)
             {
-                var existingCategory = _mapper.Map<Category>(categoryDto);
-                if (existingCategory == null) 
-                    throw new NotFoundException("Category cannot found!");
-                return _mapper.Map<CategoryDto>(await _unitOfWork.CategoryRepository.UpdateAsync(existingCategory));
+                throw new BadRequestException("Category and Movie Id is invalid");
             }
-            catch (Exception ex)
+            var existingCategory = _mapper.Map<Category>(categoryDto);
+            if (existingCategory == null)
             {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
+                throw new NotFoundException("Category cannot found!");
             }
+            return _mapper.Map<CategoryDto>(await _unitOfWork.CategoryRepository.UpdateAsync(existingCategory));
         }
 
         public async Task<bool> DeleteCategoryComposeAsync(Guid categoryId, Guid movieId)
         {
-            try
+            if (categoryId == Guid.Empty || movieId == Guid.Empty)
             {
-                if (await _unitOfWork.BillRepository.GetByIdAsync(categoryId) == null)
-                    throw new NotFoundException("Category cannot found!");
-                return await _unitOfWork.CategoryRepository.DeleteAsync(categoryId);
+                throw new BadRequestException("Category and Movie Id is invalid");
             }
-            catch (Exception ex)
+            if (await _unitOfWork.BillRepository.GetByIdAsync(categoryId) == null)
             {
-                throw new Exception("Couldn't access into database due to systems error.", ex);
-            }
-        }
+                throw new NotFoundException("Category cannot found!");
 
-        
+            }
+            return await _unitOfWork.CategoryRepository.DeleteAsync(categoryId);
+        }
     }
 }

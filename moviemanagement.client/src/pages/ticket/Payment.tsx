@@ -23,10 +23,12 @@ import { useSignalR } from "../../contexts/SignalRContext";
 import { SeatType } from "../../types/seattype.types";
 import SeatCountdown from "../../components/Ticket/SeatCountdown";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 
 const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { userDetails } = useAuth();
   const { connection, isConnected } = useSignalR();
   const [promotions, setPromotions] = useState<any[]>([]);
@@ -48,7 +50,7 @@ const Payment: React.FC = () => {
   } = location.state || {};
 
 
-  const movieTitle = movieData?.movieName || "Phim Mặc Định";
+  const movieTitle = movieData?.movieName || t("payment.movie.default");
   const showDate = selectedDate;
   const showTime = selectedTime;
 
@@ -112,11 +114,11 @@ const Payment: React.FC = () => {
         }));
 
         await connection.invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId);
-        toast.success("Đã hủy đặt chỗ");
+        toast.success(t("toast.success.seat.cancel_booking"));
         navigate(-1);
       } catch (error) {
         console.error("Error releasing seats:", error);
-        toast.error("Lỗi khi hủy đặt chỗ");
+        toast.error(t("toast.error.seat.cancel_booking"));
         // Navigate anyway as fallback
         navigate(-1);
       }
@@ -130,7 +132,7 @@ const Payment: React.FC = () => {
       setIsPromotionsLoading(true);
       try {
         // Adjust the endpoint to match your actual API
-        const response = await api.get('promotions/all');
+        const response = await api.get('promotions');
 
         // Assuming the API returns the data directly or inside a data property
         const promotionsData = response.data.data || response.data || [];
@@ -139,7 +141,7 @@ const Payment: React.FC = () => {
         console.log("Loaded promotions:", promotionsData);
       } catch (error) {
         console.error("Failed to load promotions", error);
-        toast.error("Không thể tải khuyến mãi");
+        toast.error(t("toast.error.promotion.loading"));
       } finally {
         setIsPromotionsLoading(false);
       }
@@ -216,7 +218,7 @@ const Payment: React.FC = () => {
       const response = await api.post(
         `vnpay/createpaymenturl?money=${total}&description=${encodeURIComponent(
           `Payment for movie tickets: ${movieData?.movieName}`
-        )}&userId=6A050BE0-BA0B-4C07-821F-EB8C57FB2BDC`,
+        )}&userId=${userDetails?.userId}`,
         data
       );
 
@@ -247,7 +249,7 @@ const Payment: React.FC = () => {
       window.location.href = response.data;
     } catch (error) {
       console.error(error);
-      toast.error("Đặt vé thất bại!");
+      toast.error(t("toast.error.ticket.booking"));
       return;
     }
   };
@@ -329,7 +331,7 @@ const Payment: React.FC = () => {
                     align="center"
                     sx={{ mb: 1, color: "#fbc02d" }}
                   >
-                    Thời gian giữ ghế còn lại
+                    {t("payment.timer")}
                   </Typography>
                   <SeatCountdown
                     seatId="payment-timer"
@@ -337,7 +339,7 @@ const Payment: React.FC = () => {
                     startTime={lastSelectionTime}
                     resetTrigger={resetCounter}
                     onTimeout={() => {
-                      toast.error("Thời gian giữ ghế đã hết. Vui lòng chọn lại ghế.");
+                      toast.error(t("toast.error.seat.remainder"));
                       navigate(`/ticket/${movieId}`, { replace: true });
                     }}
                   />
@@ -381,7 +383,7 @@ const Payment: React.FC = () => {
                       align="center"
                       sx={{ mb: 1, color: "#fbc02d" }}
                     >
-                      Thời gian giữ ghế còn lại
+                      {t("payment.timer")}
                     </Typography>
                     <SeatCountdown
                       seatId="payment-timer"
@@ -389,7 +391,7 @@ const Payment: React.FC = () => {
                       startTime={lastSelectionTime}
                       resetTrigger={resetCounter}
                       onTimeout={() => {
-                        toast.error("Thời gian giữ ghế đã hết. Vui lòng chọn lại ghế.");
+                        toast.error(t("toast.error.seat.remainder"));
                         navigate(`/ticket/${movieId}`, { replace: true });
                       }}
                     />
@@ -412,7 +414,7 @@ const Payment: React.FC = () => {
                 lineHeight: "1.5",
               }}
             >
-              Thanh Toán Vé
+              {t("payment.ticket.payment")}
             </Typography>
 
             {/* Payment Info and Form */}
@@ -429,7 +431,7 @@ const Payment: React.FC = () => {
                   <Box
                     component="img"
                     src={movieData?.image}
-                    alt={movieData?.movieName || "Movie Poster"}
+                    alt={movieData?.movieName || t("payment.movie.poster")}
                     sx={{
                       width: "100%",
                       borderRadius: 2,
@@ -460,35 +462,35 @@ const Payment: React.FC = () => {
                         gutterBottom
                         sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}
                       >
-                        Thông Tin Phim
+                        {t("payment.movie.description")}
                       </Typography>
                       <Typography
                         variant="body1"
                         gutterBottom
                         sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
                       >
-                        <strong>Tên phim:</strong> {movieTitle}
+                        <strong>{t("payment.movie.name")}</strong> {movieTitle}
                       </Typography>
                       <Typography
                         variant="body1"
                         gutterBottom
                         sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
                       >
-                        <strong>Phòng chiếu:</strong> {roomName}
+                        <strong>{t("payment.movie.room")}</strong> {roomName}
                       </Typography>
                       <Typography
                         variant="body1"
                         gutterBottom
                         sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
                       >
-                        <strong>Ngày chiếu:</strong> {showDate}
+                        <strong>{t("payment.showtime.day")}</strong> {showDate}
                       </Typography>
                       <Typography
                         variant="body1"
                         gutterBottom
                         sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
                       >
-                        <strong>Giờ chiếu:</strong> {showTime}
+                        <strong>{t("payment.showtime.hour")}</strong> {showTime}
                       </Typography>
                     </Grid>
 
@@ -499,21 +501,21 @@ const Payment: React.FC = () => {
                         gutterBottom
                         sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}
                       >
-                        Thông Tin Vé
+                        {t("payment.ticket.infor")}
                       </Typography>
                       <Typography
                         variant="body1"
                         gutterBottom
                         sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
                       >
-                        <strong>Ghế:</strong> {seats.join(", ") || "Chưa chọn ghế"}
+                        <strong>{t("payment.ticket.seat")}</strong> {seats.join(", ") || "Chưa chọn ghế"}
                       </Typography>
                       <Typography
                         variant="body1"
                         gutterBottom
                         sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
                       >
-                        <strong>Giá:</strong>{" "}
+                        <strong>{t("payment.ticket.price")}</strong>{" "}
                         {totalPrice.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
@@ -529,7 +531,7 @@ const Payment: React.FC = () => {
                           mt: 1,
                         }}
                       >
-                        <strong>Tổng cộng:</strong>{" "}
+                        <strong>{t("payment.total_amount")}</strong>{" "}
                         {total.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
@@ -539,7 +541,7 @@ const Payment: React.FC = () => {
                             component="span"
                             sx={{ color: "#4caf50", ml: 1, fontSize: { xs: "1rem", md: "1.1rem" } }}
                           >
-                            (Đã áp dụng giảm giá)
+                            ({t("payment.promotion.used")})
                           </Typography>
                         )}
                       </Typography>
@@ -558,7 +560,7 @@ const Payment: React.FC = () => {
                           gutterBottom
                           sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}
                         >
-                          Khuyến Mãi
+                          {t("payment.promotion.title")}
                         </Typography>
 
                         {isPromotionsLoading ? (
@@ -571,7 +573,7 @@ const Payment: React.FC = () => {
                             color="text.secondary"
                             sx={{ fontStyle: "italic", fontSize: { xs: "1rem", md: "1.1rem" } }}
                           >
-                            Hiện không có khuyến mãi nào có sẵn
+                            {t("payment.promotion.notfound")}
                           </Typography>
                         ) : (
                           <Box
@@ -656,7 +658,7 @@ const Payment: React.FC = () => {
                                             fontSize: { xs: "1rem", md: "1.1rem" },
                                           }}
                                         >
-                                          Giảm {promo.discount}%
+                                          {t("payment.promotion.discount")} {promo.discount}%
                                         </Typography>
                                       </Box>
                                       <Typography
@@ -666,8 +668,8 @@ const Payment: React.FC = () => {
                                           fontSize: { xs: "0.9rem", md: "1rem" },
                                         }}
                                       >
-                                        Có hiệu lực từ{" "}
-                                        {new Date(promo.fromDate).toLocaleDateString("vi-VN")} đến{" "}
+                                        {t("payment.promotion.from")}{" "}
+                                        {new Date(promo.fromDate).toLocaleDateString("vi-VN")} {t("payment.promotion.to")}{" "}
                                         {new Date(promo.toDate).toLocaleDateString("vi-VN")}
                                       </Typography>
                                     </Box>
@@ -689,7 +691,7 @@ const Payment: React.FC = () => {
                               variant="body1"
                               sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}
                             >
-                              <strong>Giá gốc:</strong>{" "}
+                              <strong>{t("payment.origin_price")}</strong>{" "}
                               {totalPrice.toLocaleString("vi-VN", {
                                 style: "currency",
                                 currency: "VND",
@@ -699,7 +701,7 @@ const Payment: React.FC = () => {
                               variant="body1"
                               sx={{ color: "#4caf50", fontSize: { xs: "1.1rem", md: "1.3rem" } }}
                             >
-                              <strong>Giảm giá ({selectedPromotion.discount}%):</strong>{" "}
+                              <strong>{t("payment.promotion.discount")} ({selectedPromotion.discount}%):</strong>{" "}
                               {(totalPrice - discountedTotal).toLocaleString("vi-VN", {
                                 style: "currency",
                                 currency: "VND",
@@ -725,18 +727,18 @@ const Payment: React.FC = () => {
                     gutterBottom
                     sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}
                   >
-                    Thông Tin Khách Hàng
+                    {t("payment.user_infor")}
                   </Typography>
                   <Grid container spacing={2} sx={{ mb: 2 }}>
                     <Grid item xs={12} sm={6}>
                       <TextField
-                        label="Họ tên"
+                        label={t("common.table_header.user.fullname")}
                         variant="outlined"
                         fullWidth
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         error={fullNameError}
-                        helperText={fullNameError ? "Vui lòng nhập họ tên" : ""}
+                        helperText={fullNameError ? t("helperText.error.fullname") : ""}
                         sx={{
                           maxWidth: "400px",
                           input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
@@ -750,13 +752,13 @@ const Payment: React.FC = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
-                        label="Email"
+                        label={t("common.table_header.user.email")}
                         variant="outlined"
                         fullWidth
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         error={emailError}
-                        helperText={emailError ? "Vui lòng nhập email" : ""}
+                        helperText={emailError ? t("helperText.error.email") : ""}
                         sx={{
                           maxWidth: "400px",
                           input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
@@ -770,13 +772,13 @@ const Payment: React.FC = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
-                        label="CMND"
+                        label={t("auth.signup.fields.id_card")}
                         variant="outlined"
                         fullWidth
                         value={idNumber}
                         onChange={(e) => setIdNumber(e.target.value)}
                         error={idNumberError}
-                        helperText={idNumberError ? "Vui lòng nhập CMND" : ""}
+                        helperText={idNumberError ? t("helperText.error.id_number") : ""}
                         sx={{
                           maxWidth: "400px",
                           input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
@@ -790,13 +792,13 @@ const Payment: React.FC = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
-                        label="Số điện thoại"
+                        label={t("common.table_header.user.phone")}
                         variant="outlined"
                         fullWidth
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         error={phoneError}
-                        helperText={phoneError ? "Vui lòng nhập số điện thoại" : ""}
+                        helperText={phoneError ? t("helperText.error.phone") : ""}
                         sx={{
                           maxWidth: "400px",
                           input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
@@ -828,7 +830,7 @@ const Payment: React.FC = () => {
                         }
                       }}
                     >
-                      Quay lại
+                      {t("payment.back")}
                     </Button>
                     <Button
                       variant="contained"
@@ -845,7 +847,7 @@ const Payment: React.FC = () => {
                         },
                       }}
                     >
-                      Xác nhận đặt vé
+                      {t("payment.confirm")}
                     </Button>
                   </Box>
                 </Paper>

@@ -4,16 +4,23 @@ import toast from "react-hot-toast";
 import api from "../../../apis/axios.config";
 import MovieDetail from "../../../components/admin/MovieDetail";
 import Loader from "../../../components/shared/Loading";
+import { useTranslation } from "react-i18next";
 
 export default function UpdateMovie() {
   const { movieId } = useParams<{ movieId: string }>();
   const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
+  const {t} = useTranslation();
 
   const fetchMovie = async () => {
     try {
       console.log("MovieID: ", movieId);
-      const response = await api.get(`/movie/${movieId}`);
+      const response = await api.get(`/movie/${movieId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": "ja",
+        },
+      });
       setMovie(response.data.data);
       console.log("Movie: ", response.data.data);
     } catch (error: any) {
@@ -25,7 +32,7 @@ export default function UpdateMovie() {
     if (movieId) {
       fetchMovie();
     }
-  }, []);
+  }, [movieId, t]);
 
   const handleUpdateMovie = async (updatedMovie: any) => {
     try {

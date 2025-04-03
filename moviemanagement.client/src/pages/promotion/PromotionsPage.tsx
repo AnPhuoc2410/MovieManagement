@@ -32,18 +32,17 @@ const PromotionsPage: React.FC = () => {
 
   // For API - similar to UpComingMoviesPage
   const apiPage = 0;
-  const apiPageSize = 100; // Fetch all promotions at once for client-side pagination
+  const apiPageSize = 100;
 
   useEffect(() => {
     const fetchPromotions = async () => {
       try {
         setLoading(true);
 
-        // Fetch all promotions at once (or a large batch)
-        const response = await api.get(`promotions/page/${apiPage}/pagesize/${apiPageSize}`);
+        const response = await api.get(`promotions/page/${apiPage}/size/${apiPageSize}`);
 
-        if (response.data) {
-          setAllPromotions(response.data);
+        if (response.data.data) {
+          setAllPromotions(response.data.data);
         } else {
           setAllPromotions([]);
         }
@@ -55,9 +54,8 @@ const PromotionsPage: React.FC = () => {
     };
 
     fetchPromotions();
-  }, []); // No dependency on currentPage anymore
+  }, [t]);
 
-  // Client-side pagination like UpComingMoviesPage
   const pageCount = Math.ceil(allPromotions.length / pageSize);
   const indexOfLastPromotion = currentPage * pageSize;
   const indexOfFirstPromotion = indexOfLastPromotion - pageSize;

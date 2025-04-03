@@ -74,11 +74,13 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
 
             decimal totalMoney = 0;
 
+            string ticketIds = string.Empty;
+
             foreach (var id in billRequest.Tickets)
             {
                 var ticket = await _unitOfWork.TicketDetailRepository.GetTicketInfo(id) 
                     ?? throw new NotFoundException("Ticket not found.");
-                request.Description += $" - {id}";
+                ticketIds += $" - {id}";
                 totalMoney += ticket.Seat.SeatType.Price;
             }
 
@@ -95,6 +97,10 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             billRequest.Amount = totalMoney;
             billRequest.TotalTicket = billRequest.Tickets.Count;
 
+            var bill = await _billService.CreateBillAsync(userId, billRequest, request.PaymentId);
+
+            request.Description += $" - {bill.BillId}";
+            request.Description += ticketIds;
 
             var helper = new PaymentHelper();
             helper.AddRequestData("vnp_Version", _version);
@@ -111,7 +117,6 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             helper.AddRequestData("vnp_ReturnUrl", _callbackUrl);
             helper.AddRequestData("vnp_TxnRef", request.PaymentId.ToString());
 
-            var bill = await _billService.CreateBillAsync(userId, billRequest, request.PaymentId);
 
             return helper.GetPaymentUrl(_baseUrl, _hashSecret);
         }
@@ -215,16 +220,27 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
 
         public void HandleSuccessfulPayment(PaymentResult paymentResult)
         {
-            _billService.UpdateBill(paymentResult.PaymentId, BillEnum.BillStatus.Completed);
+            _billService.UpdateBill(GetIndex(paymentResult.Description, 2), BillEnum.BillStatus.Completed);
             //TODO: HERE CALL TICKETSERVICE TO UPDATE TICKET BillID
-            _ticketDetailService.PurchasedTicket(GetTickets(paymentResult.Description), paymentResult.PaymentId);
+            _ticketDetailService.PurchasedTicket
+                (GetTickets(paymentResult.Description, 3), GetIndex(paymentResult.Description, 2), GetIndex(paymentResult.Description, 1));
 
-            _emailService.SendEmailReportBill(paymentResult.PaymentId);
+            //_emailService.SendEmailReportBill(GetIndex(paymentResult.Description, 2));
         }
 
-        private List<Guid> GetTickets(string description)
+        private Guid GetIndex(string description, int atPos)
         {
-            var tickets = description.Split(" - ").Skip(2).ToList();
+            var index = description.Split(" - ").ToList();
+            if (Guid.TryParse(index[atPos], out Guid foundGuid))
+            {
+                return foundGuid;
+            }
+            return Guid.Empty;
+        }
+
+        private List<Guid> GetTickets(string description, int index)
+        {
+            var tickets = description.Split(" - ").Skip(index).ToList();
             List<Guid> ticketIds = new List<Guid>();
             foreach (var ticket in tickets)
             {
@@ -238,7 +254,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
 
         public async void HandleFailurePayment(PaymentResult paymentResult)
         {
-            _billService.UpdateBillAsync(paymentResult.PaymentId, BillEnum.BillStatus.Cancelled);
+            _billService.UpdateBillAsync(GetIndex(paymentResult.Description, 3), BillEnum.BillStatus.Cancelled);
         }
     }
 }

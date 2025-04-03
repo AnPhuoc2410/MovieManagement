@@ -30,8 +30,7 @@ namespace MovieManagement.Server.Controllers
 
 
         [HttpGet]
-        [Route("all")]
-        [ProducesResponseType(typeof(ApiResponse<TicketDetailDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TicketDetailDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -39,7 +38,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetAllTicketDetailAsync()
         {
             var ticket = await _ticketDetailService.GetAllTicketDetailsAsync();
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<TicketDetailDto>>
             {
                 StatusCode = 200,
                 Message = "Get all ticket is success",
@@ -49,8 +48,8 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
-        [ProducesResponseType(typeof(ApiResponse<TicketDetailDto>), StatusCodes.Status200OK)]
+        [HttpGet("page/{page:int}/size/{pageSize:int}")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TicketDetailDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -77,7 +76,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<TicketDetailDto>> GetTicketDetailAsync(Guid id)
         {
             var ticket = await _ticketDetailService.GetTicketDetailByIdAsync(id);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<TicketDetailDto>
             {
                 StatusCode = 200,
                 Message = "Get ticket detail is success",
@@ -87,16 +86,16 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("ticket-details")]
-        [ProducesResponseType(typeof(ApiResponse<TicketDetailDto>), StatusCodes.Status200OK)]
+        [HttpGet("details/bill/{billId:guid}")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<PurchasedTicketResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetTicketDetails(long billId)
+        public async Task<IActionResult> GetTicketDetails(Guid billId)
         {
             var ticketDetails = await _ticketDetailService.GetPurchasedTicketsByBillId(billId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<PurchasedTicketResponse>>
             {
                 StatusCode = 200,
                 Message = "Get ticket detail is success",
@@ -115,7 +114,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<TicketDetailDto>> CreateTicketDetailAsync([FromBody] TicketDetailDto ticketDetail)
         {
             var createdTicketDetail = await _ticketDetailService.CreateTicketDetailAsync(ticketDetail);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<TicketDetailDto>
             {
                 StatusCode = 200,
                 Message = "Create ticket detail is success",
@@ -133,7 +132,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<TicketDetailDto>> UpdateTicketDetailAsync(Guid id, [FromBody] TicketDetailDto ticketDetailDto)
         {
             var UpdateTicketDetail = await _ticketDetailService.UpdateTicketDetailAsync(id, ticketDetailDto);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<TicketDetailDto>
             {
                 StatusCode = 200,
                 Message = "Update ticket detail is success",
@@ -143,7 +142,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [ProducesResponseType(typeof(ApiResponse<TicketDetailDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -151,7 +150,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> DeleteTicketDetailAsync(Guid id)
         {
             var isDeleted = await _ticketDetailService.DeleteTicketDetailAsync(id);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<bool>
             {
                 StatusCode = 200,
                 Message = "Delete ticket detail is success",
@@ -160,8 +159,8 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("GetByShowTimeId/{showTimeId:guid}")]
-        [ProducesResponseType(typeof(ApiResponse<TicketDetailDto>), StatusCodes.Status200OK)]
+        [HttpGet("showtime/{showTimeId:guid}")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TicketDetailResponseModel>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -169,7 +168,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetByShowTimeId(Guid showTimeId)
         {
             var ticket = await _ticketDetailService.GetTicketByShowTimeId(showTimeId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<TicketDetailResponseModel>>
             {
                 StatusCode = 200,
                 Message = "Get ticket detail is success",
@@ -180,7 +179,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPut("Checkout")]
-        [ProducesResponseType(typeof(ApiResponse<TicketDetailDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TicketDetailResponseModel>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -188,7 +187,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> UpdateTicketToPending([FromBody] List<TicketDetailRequest> Tickets)
         {
             var ticket = await _ticketDetailService.UpdateTicketToPending(Tickets);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<TicketDetailResponseModel>>
             {
                 StatusCode = 200,
                 Message = "Update ticket detail is success",
@@ -197,8 +196,8 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpPut("ChangeStatus/{status}")]
-        [ProducesResponseType(typeof(ApiResponse<TicketDetailDto>), StatusCodes.Status200OK)]
+        [HttpPut("status/{status}")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TicketDetailResponseModel>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -206,7 +205,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> ChangeStatusTicketDetailAsync([FromBody] List<TicketDetailRequest> Tickets, TicketStatus status)
         {
             var ticketDetail = await _ticketDetailService.ChangeStatusTicketDetailAsync(Tickets, status);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<TicketDetailResponseModel>>
             {
                 StatusCode = 200,
                 Message = "Change status ticket detail is success",
@@ -215,8 +214,8 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("DeleteRemainingTicket/{showTimeId:guid}")]
-        [ProducesResponseType(typeof(ApiResponse<TicketDetailDto>), StatusCodes.Status200OK)]
+        [HttpDelete("remaining/showtime/{showTimeId:guid}")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -224,7 +223,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> DeleteRemainingTicket(Guid showTimeId)
         {
             var isDeleted = await _ticketDetailService.DeleteRemainingTicket(showTimeId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<bool>
             {
                 StatusCode = 200,
                 Message = "Delete ticket detail is success",

@@ -39,7 +39,7 @@ namespace MovieManagement.Server.Services.EmailService
                 throw new BadRequestException("Bill is not paid!");
 
             // Get user email
-            string userEmail = (_unitOfWork.UserRepository.GetById(userBill.UserId)).Email;
+            string userEmail = (_unitOfWork.UserRepository.GetById((Guid)userBill.UserId)).Email;
             if (userEmail == null)
                 throw new NotFoundException("No user found!");
 
@@ -122,7 +122,7 @@ namespace MovieManagement.Server.Services.EmailService
             await client.DisconnectAsync(true);
             return otpCode.Code;
         }
-        
+
         public async Task<bool> ValidationOtp(string email, string otp)
         {
             try

@@ -1,25 +1,25 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
-  Container,
-  Typography,
-  ToggleButtonGroup,
-  ToggleButton,
   Box,
-  Grid,
-  FormControl,
-  Select,
-  MenuItem,
+  Button,
   Card,
   CardContent,
-  Button,
+  Container,
+  FormControl,
+  Grid,
+  MenuItem,
+  Select,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
-import { format, addDays } from "date-fns";
+import { addDays, format } from "date-fns";
 import { vi as viLocale } from "date-fns/locale";
-import axios from "axios";
-import { ShowTime } from "../../types/showtime.types";
-import { Cinema } from "../../types/cinema.types";
-import { Theater } from "../../types/theater.types";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import api from "../../apis/axios.config";
+import { Cinema } from "../../types/cinema.types";
+import { ShowTime } from "../../types/showtime.types";
+import { Theater } from "../../types/theater.types";
 
 interface ShowTimeCinemaProps {
   movieId: string;
@@ -44,10 +44,12 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
 
   const [selectedDate, setSelectedDate] = useState<string>(todayFormatted);
   const [selectedCity, setSelectedCity] = useState<string>("hcm");
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedShowtime, setSelectedShowtime] = useState<{ time: string, id: string } | null>(null);
   const [cinemas, setCinemas] = useState<Cinema[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { t, i18n } = useTranslation();
+  const lastAvailabilityRef = useRef<boolean | null>(null);
+
 
   const days = useMemo(() => {
     return Array.from({ length: 4 }, (_, i) => {
@@ -55,7 +57,6 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
       const dayName = format(date, "EEEE", {
         locale: i18n.language === "vi" ? viLocale : undefined,
       });
-
       return {
         date,
         formatted: format(date, "dd/MM"),
@@ -69,28 +70,32 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
       if (newDate) {
         setSelectedDate(newDate);
         onSelectDate(newDate);
-        setSelectedTime(null);
+        setSelectedShowtime(null);
       }
     },
     [onSelectDate],
   );
 
+  const getFromCache = (key: string) => {
+    const data = showtimesCache.get(key);
+    return data;
+  };
+
   useEffect(() => {
     onSelectDate(todayFormatted);
-  }, []);
+  }, [onSelectDate, todayFormatted]);
 
   const handleTimeSelect = useCallback(
     (time: string, showTimeId: string) => {
-      setSelectedTime(time);
+      setSelectedShowtime({ time, id: showTimeId });
       onSelectTime(time);
       onRoomSelect(showTimeId);
-
       sessionStorage.setItem("currentShowTimeId", showTimeId);
     },
     [onSelectTime, onRoomSelect],
   );
 
-  // Fetch showtimes with caching
+  // Fetch showtimes with caching and error handling for 404
   useEffect(() => {
     const selectedDay = days.find((day) => day.formatted === selectedDate);
     if (!selectedDay) return;
@@ -102,33 +107,36 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
     // Create a cache key based on movie, date and city
     const cacheKey = `${movieId}_${fromDate}_${selectedCity}`;
 
-    // Use a ref to track if the component is still mounted
+    // Track if the component is still mounted
     let isMounted = true;
 
     const fetchShowtimes = async () => {
-      // Check if we have cached data (including empty results)
-      if (showtimesCache.has(cacheKey)) {
-        const cachedCinemas = showtimesCache.get(cacheKey)!;
+      // Check cache with enhanced logging
+      const cachedData = getFromCache(cacheKey);
+      if (cachedData) {
         if (isMounted) {
-          setCinemas(cachedCinemas);
-          onShowtimeAvailability(cachedCinemas.length > 0);
+          setCinemas(cachedData);
+          setIsLoading(false);
+          onShowtimeAvailability(cachedData.length > 0);
         }
         return;
       }
 
       setIsLoading(true);
       try {
-        const response = await axios.get(
-          `https://localhost:7119/api/showtime/getshowtimebydates?movieId=${movieId}&fromDate=${fromDate}&toDate=${toDate}&location=${selectedCity.toUpperCase()}`,
+        const response = await api.get(
+          `showtime/${movieId}/from/${fromDate}/to/${toDate}/locate/${selectedCity.toUpperCase()}`
         );
-
-        // Return early if component unmounted during API call
         if (!isMounted) return;
 
         const dateData = response.data.data[dateKey];
 
-        if (!dateData || !dateData[selectedCity.toUpperCase()] || dateData[selectedCity.toUpperCase()].length === 0) {
-          // Create an empty array result and cache it
+        if (
+          !dateData ||
+          !dateData[selectedCity.toUpperCase()] ||
+          dateData[selectedCity.toUpperCase()].length === 0
+        ) {
+          // Cache the empty result
           const emptyResult: Cinema[] = [];
           setCinemas(emptyResult);
           showtimesCache.set(cacheKey, emptyResult);
@@ -145,12 +153,15 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
           })),
         }));
 
-        setCinemas(cinemaResults);
-        showtimesCache.set(cacheKey, cinemaResults);
-        onShowtimeAvailability(cinemaResults.length > 0);
-      } catch (error) {
-        console.error("Error fetching showtimes:", error);
-        // Create and cache empty result on error
+        const validCinemas = cinemaResults.filter(cinema =>
+          cinema.name && cinema.times && cinema.times.length > 0
+        );
+
+        // Update state and cache
+        setCinemas(validCinemas);
+        showtimesCache.set(cacheKey, validCinemas);
+        onShowtimeAvailability(validCinemas.length > 0);
+      } catch (error: any) {
         const emptyResult: Cinema[] = [];
         setCinemas(emptyResult);
         showtimesCache.set(cacheKey, emptyResult);
@@ -162,21 +173,26 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
       }
     };
 
-    // Use a longer timeout for debouncing when parameters change
+    // Rest of the effect remains the same
     const timerId = setTimeout(() => {
       fetchShowtimes();
-    }, 300); // Increased from 100ms to 300ms for better debouncing
+    }, 300);
 
-    // Cleanup function
     return () => {
       isMounted = false;
       clearTimeout(timerId);
     };
   }, [selectedCity, selectedDate, days, movieId, onShowtimeAvailability]);
 
-  // Only update parent about availability when cinemas state changes
+  // Update parent about availability whenever cinemas change
   useEffect(() => {
-    onShowtimeAvailability(cinemas.length > 0);
+    const isAvailable = cinemas.length > 0;
+
+    // Only notify parent if availability has changed
+    if (lastAvailabilityRef.current !== isAvailable) {
+      lastAvailabilityRef.current = isAvailable;
+      onShowtimeAvailability(isAvailable);
+    }
   }, [cinemas.length, onShowtimeAvailability]);
 
   return (
@@ -193,7 +209,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
           {t("showtime_cinema.title.showtime_list")}
         </Typography>
 
-        {/* Date Selection - memoized rendering */}
+        {/* Date Selection */}
         <ToggleButtonGroup
           value={selectedDate}
           exclusive
@@ -265,12 +281,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
         </ToggleButtonGroup>
 
         {/* City Selection */}
-        <Grid
-          container
-          alignItems="center"
-          justifyContent="space-between"
-          mb={3}
-        >
+        <Grid container alignItems="center" justifyContent="space-between" mb={3}>
           <Grid item>
             <Typography variant="h4" fontWeight="bold">
               🎬 {t("showtime_cinema.title.theater_list")}
@@ -280,7 +291,10 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
             <FormControl>
               <Select
                 value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value as string)}
+                onChange={(e) => {
+                  setSelectedCity(e.target.value as string);
+                  setSelectedShowtime(null);
+                }}
                 sx={{
                   border: "2px solid yellow",
                   color: "yellow",
@@ -291,24 +305,16 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                   backgroundColor: "transparent",
                 }}
               >
-                <MenuItem value="hcm">
-                  {t("showtime_cinema.location.HCM")}
-                </MenuItem>
-                <MenuItem value="hn">
-                  {t("showtime_cinema.location.HaNoi")}
-                </MenuItem>
-                <MenuItem value="bd">
-                  {t("showtime_cinema.location.BinhDuong")}
-                </MenuItem>
-                <MenuItem value="bp">
-                  {t("showtime_cinema.location.BinhPhuoc")}
-                </MenuItem>
+                <MenuItem value="hcm">{t("showtime_cinema.location.HCM")}</MenuItem>
+                <MenuItem value="hn">{t("showtime_cinema.location.HaNoi")}</MenuItem>
+                <MenuItem value="bd">{t("showtime_cinema.location.BinhDuong")}</MenuItem>
+                <MenuItem value="bp">{t("showtime_cinema.location.BinhPhuoc")}</MenuItem>
               </Select>
             </FormControl>
           </Grid>
         </Grid>
 
-        {/* Cinema List or No Showtime Message - conditionally rendered */}
+        {/* Cinema List or No Showtime Message */}
         {!isLoading && (
           <Box sx={{ borderRadius: "12px" }}>
             {cinemas.length > 0 ? (
@@ -343,11 +349,11 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({
                           variant="contained"
                           sx={{
                             backgroundColor:
-                              selectedTime === showtime.time
+                              selectedShowtime?.id === showtime.showTimeId
                                 ? "yellow"
                                 : "transparent",
                             color:
-                              selectedTime === showtime.time
+                              selectedShowtime?.id === showtime.showTimeId
                                 ? "black"
                                 : "white",
                             border: "1px solid white",

@@ -21,8 +21,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllShowTime")]
-        [ProducesResponseType(typeof(ApiResponse<ShowTimeInfo>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<ShowTimeInfo>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -41,7 +40,6 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpPost]
-        [Route("CreateShowTime")]
         [ProducesResponseType(typeof(ApiResponse<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -68,7 +66,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<ShowTimeDto>> GetShowTime(Guid showTimeId)
         {
             var showTime = await _showTimeService.GetShowtimeByIdAsync(showTimeId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<ShowTimeDto>
             {
                 StatusCode = 200,
                 Message = "Get showtime is success",
@@ -78,7 +76,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpPut("UpdateShowTime/{showTimeId:guid}")]
+        [HttpPut("{showTimeId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<ShowTimeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
@@ -87,7 +85,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> UpdateShowTime(Guid showTimeId, ShowTimeDto showTimeDto)
         {
             var updateShowTime = await _showTimeService.UpdateShowtimeAsync(showTimeId, showTimeDto);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<ShowTimeDto>
             {
                 StatusCode = 200,
                 Message = "Update showtime is success",
@@ -96,8 +94,8 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("Delete/{showTimeId:guid}")]
-        [ProducesResponseType(typeof(ApiResponse<ShowTimeDto>), StatusCodes.Status200OK)]
+        [HttpDelete("{showTimeId:guid}")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -105,7 +103,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> DeleteShowTime(Guid showTimeId)
         {
             var result = await _showTimeService.DeleteShowtimeAsync(showTimeId);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<bool>
             {
                 StatusCode = 200,
                 Message = "Deleted showtime is success",
@@ -114,7 +112,7 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("GetShowTimeByDates")]
+        [HttpGet("{movieId:guid}/from/{fromDate:datetime}/to/{toDate:datetime}/locate/{location}")]
         [ProducesResponseType(typeof(ApiResponse<Dictionary<string, Dictionary<string, List<object>>>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]

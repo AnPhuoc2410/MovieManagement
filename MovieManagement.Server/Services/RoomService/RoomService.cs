@@ -22,27 +22,28 @@ namespace MovieManagement.Server.Services.RoomService
         public async Task<IEnumerable<RoomDto>> GetAllRoomsAsync()
         {
             var rooms = await _unitOfWork.RoomRepository.GetAllAsync();
-            if (rooms == null || !rooms.Any())
+            if(rooms == null)
                 throw new NotFoundException("Rooms not found!");
-
             return _mapper.Map<List<RoomDto>>(rooms);
         }
 
         public async Task<IEnumerable<RoomDto>> GetRoomPageAsync(int page, int pageSize)
         {
+            if(page < 0 || pageSize < 1)
+                throw new BadRequestException("Page and PageSize is invalid");
             var rooms = await _unitOfWork.RoomRepository.GetPageAsync(page, pageSize);
-            if (rooms == null)
+            if(rooms == null)
                 throw new NotFoundException("Rooms not found!");
-
             return _mapper.Map<IEnumerable<RoomDto>>(rooms);
         }
 
         public async Task<RoomDto> GetRoomByIdAsync(Guid roomId)
         {
+            if(roomId == Guid.Empty)
+                throw new BadRequestException("Id cannot be empty!");
             var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
-            if (room == null)
+            if(room == null)
                 throw new NotFoundException("Room not found!");
-
             return _mapper.Map<RoomDto>(room);
         }
 
@@ -66,9 +67,14 @@ namespace MovieManagement.Server.Services.RoomService
 
         public async Task<RoomDto> UpdateRoomAsync(Guid roomId, RoomDto roomDto)
         {
+            if(roomId == Guid.Empty)
+                throw new BadRequestException("RoomId is invalid");
             var existingRoom = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
             if (existingRoom == null)
                 throw new NotFoundException("Room not found!");
+            var info = await _unitOfWork.RoomRepository.GetRoomInfo(roomId);
+            if (info.Seats.Any())
+                throw new BadRequestException("Cannot update room that has seats.");
 
             roomDto.Total = roomDto.Row * roomDto.Column;
             roomDto.RoomId = roomId;
@@ -82,14 +88,21 @@ namespace MovieManagement.Server.Services.RoomService
 
         public async Task<bool> DeleteRoomAsync(Guid roomId)
         {
+            if(roomId == Guid.Empty)
+                throw new BadRequestException("RoomId is invalid");
             var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
             if (room == null)
                 throw new NotFoundException("Room not found!");
+            var info = await _unitOfWork.RoomRepository.GetRoomInfo(roomId);
+            if (info.Seats.Any())
+                throw new BadRequestException("Cannot delete room that has seats.");
             return await _unitOfWork.RoomRepository.DeleteAsync(roomId);
         }
 
         public async Task<RoomResponseModel> GetRoomInfo(Guid roomId)
         {
+            if (roomId == Guid.Empty)
+                throw new BadRequestException("RoomId is invalid");
             var room = await _unitOfWork.RoomRepository.GetRoomInfo(roomId);
             if (room == null)
                 throw new NotFoundException("Room not found!");

@@ -1,12 +1,13 @@
-import { Typography } from "@mui/material";
+import { Typography, Button, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import ManagementTable, {
-  ColumnDef,
-  TableData,
-} from "../../../components/shared/ManagementTable";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import EditIcon from "@mui/icons-material/Edit";
+import { format } from "date-fns";
 
-export interface ShowTime extends TableData {
+export interface ShowTime {
+  id?: string;
   showTimeId: string;
+  movieId?: string;
   roomId: string;
   startTime: string;
   endTime: string;
@@ -24,41 +25,6 @@ const ShowTimeTable: React.FC<{
 }> = ({ showTimes }) => {
   const navigate = useNavigate();
 
-  const columns: ColumnDef<ShowTime>[] = [
-    {
-      field: "showTimeId",
-      headerName: "Mã thời gian chiếu",
-    },
-    {
-      field: "movie",
-      headerName: "Tên phim",
-      renderCell: (item: ShowTime) => item.movie?.movieName || "N/A"
-    },
-    {
-      field: "room",
-      headerName: "Tên phòng chiếu",
-      renderCell: (item: ShowTime) => item.room?.roomName || "N/A"
-    },
-    {
-      field: "startTime",
-      headerName: "Thời gian chiếu",
-      renderCell: (item: ShowTime) => {
-        if (!item.startTime) return "N/A";
-        const date = new Date(item.startTime);
-        return date.toLocaleString('vi-VN');
-      }
-    },
-    {
-      field: "endTime",
-      headerName: "Thời gian kết thúc",
-      renderCell: (item: ShowTime) => {
-        if (!item.endTime) return "N/A";
-        const date = new Date(item.endTime);
-        return date.toLocaleString('vi-VN');
-      }
-    },
-  ];
-
   const handleEditClick = (showTimeId: string) => {
     console.log("Handling click for showTimeId:", showTimeId);
     console.log("Available showTimes:", showTimes);
@@ -70,28 +36,121 @@ const ShowTimeTable: React.FC<{
     }
   };
 
+  // Format date properly for display and sorting
+  const formatDateTime = (dateString: string) => {
+    try {
+      return format(new Date(dateString), 'dd/MM/yyyy HH:mm');
+    } catch (e) {
+      return dateString || "N/A";
+    }
+  };
+
+  // Transform the data for DataGrid to allow proper sorting
+  const rows = showTimes.map(showtime => ({
+    ...showtime,
+    id: showtime.showTimeId,
+    movieName: showtime.movie?.movieName || "N/A",
+    roomName: showtime.room?.roomName || "N/A",
+    formattedStartTime: formatDateTime(showtime.startTime),
+    formattedEndTime: formatDateTime(showtime.endTime)
+  }));
+
+  const columns: GridColDef[] = [
+    {
+      field: "movieName",
+      headerName: "Tên phim",
+      flex: 1,
+      sortable: true,
+    },
+    {
+      field: "roomName",
+      headerName: "Tên phòng chiếu",
+      width: 180,
+      sortable: true,
+    },
+    {
+      field: "formattedStartTime",
+      headerName: "Thời gian chiếu",
+      width: 180,
+      sortable: true,
+    },
+    {
+      field: "formattedEndTime",
+      headerName: "Thời gian kết thúc",
+      width: 180,
+      sortable: true,
+    },
+    {
+      field: "actions",
+      headerName: "Chi tiết",
+      width: 120,
+      sortable: false,
+      renderCell: (params) => (
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<EditIcon />}
+          onClick={() => handleEditClick(params.row.showTimeId)}
+        >
+          Chi tiết
+        </Button>
+      )
+    }
+  ];
+
   return (
     <>
-      <Typography
-        variant="h5"
+      <Box
         sx={{
-          textAlign: "left",
-          flexGrow: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "1rem",
+          padding: "1rem",  
         }}
       >
-        Danh sách thời gian chiếu
-      </Typography>
-
-      <ManagementTable
-        data={showTimes}
-        columns={columns}
-        onEdit={handleEditClick}
-        actionColumn={{
-          align: "center",
-          headerName: "Chi tiết thời gian chiếu",
-          width: "120px",
-        }}
-      />
+        <Typography
+          variant="h5"
+          sx={{
+            textAlign: "left",
+            flexGrow: 1,
+          }}
+        >
+          Danh sách thời gian chiếu
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{
+            flexShrink: 0, // Prevent button from shrinking
+          }}
+          onClick={() => {
+            navigate("/admin/ql-thoi-gian-chieu/them-thoi-gian-chieu");
+          }}
+        >
+          Thêm thời gian chiếu
+        </Button>
+      </Box>
+      <Box sx={{ height: 500, width: "100%" }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pagination
+          pageSizeOptions={[5, 10, 25, 50]}
+          initialState={{
+            pagination: {
+              paginationModel: { pageSize: 10, page: 0 },
+            },
+            sorting: {
+              sortModel: [{ field: 'formattedStartTime', sort: 'desc' }],
+            },
+          }}
+          getRowId={(row) => row.id}
+          density="standard"
+          disableRowSelectionOnClick
+          autoHeight
+        />
+      </Box>
     </>
   );
 };

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Resources;
 using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.PromotionService;
 
@@ -20,8 +22,8 @@ namespace MovieManagement.Server.Controllers
             _promotionService = promotionService;
         }
 
-        [HttpGet("all")]
-        [ProducesResponseType(typeof(ApiResponse<PromotionDto>), StatusCodes.Status200OK)]
+        [HttpGet]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<PromotionDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -29,7 +31,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetAllPromotionsAsync()
         {
             var promotions = await _promotionService.GetAllPromotionsAsync();
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<PromotionDto>>
             {
                 StatusCode = 200,
                 Message = "Get all promotions is success",
@@ -39,8 +41,8 @@ namespace MovieManagement.Server.Controllers
             return Ok(response);
         }
 
-        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
-        [ProducesResponseType(typeof(ApiResponse<PromotionDto>), StatusCodes.Status200OK)]
+        [HttpGet("page/{page:int}/size/{pageSize:int}")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<PromotionDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -48,7 +50,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> GetPagePromotionAsync(int page, int pageSize)
         {
             var promotions = await _promotionService.GetPromotionPageAsync(page, pageSize);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<IEnumerable<PromotionDto>>
             {
                 StatusCode = 200,
                 Message = "Get promotions is success",
@@ -67,7 +69,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<PromotionDto>> GetPromotionByIdAsync(Guid id)
         {
             var promotion = await _promotionService.GetPromotionByIdAsync(id);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<PromotionDto>
             {
                 StatusCode = 200,
                 Message = "Get promotion is success",
@@ -86,7 +88,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<PromotionDto>> CreatePromotionAsync([FromBody] PromotionDto promotionDto)
         {
             var newPromotion = await _promotionService.CreatePromotionAsync(promotionDto);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<PromotionDto>
             {
                 StatusCode = 200,
                 Message = "Create promotion is success",
@@ -104,7 +106,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<ActionResult<PromotionDto>> UpdatePromotionAsync(Guid id, [FromBody] PromotionDto promotionDto)
         {
             var updatedPromotion = await _promotionService.UpdatePromotionAsync(id, promotionDto);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<PromotionDto>
             {
                 StatusCode = 200,
                 Message = "Update promotion is success",
@@ -114,7 +116,7 @@ namespace MovieManagement.Server.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [ProducesResponseType(typeof(ApiResponse<PromotionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
@@ -122,7 +124,7 @@ namespace MovieManagement.Server.Controllers
         public async Task<IActionResult> DeletePromotionAsync(Guid id)
         {
             var isDeleted = await _promotionService.DeletePromotionAsync(id);
-            var response = new ApiResponse<object>
+            var response = new ApiResponse<bool>
             {
                 StatusCode = 200,
                 Message = "Delete promotion is success",
@@ -132,3 +134,4 @@ namespace MovieManagement.Server.Controllers
         }
     }
 }
+
