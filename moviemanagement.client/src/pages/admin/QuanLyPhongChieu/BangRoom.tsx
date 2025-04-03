@@ -19,9 +19,10 @@ import {
   MenuItem,
   SelectChangeEvent,
   CircularProgress,
-  Alert
+  Alert,
+  TextField
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Room as RoomType } from "../../../types/room.types";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import EditIcon from "@mui/icons-material/Edit";
@@ -29,10 +30,12 @@ import TheaterComedyIcon from "@mui/icons-material/TheaterComedy";
 import ChairIcon from '@mui/icons-material/Chair';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import TheatersIcon from '@mui/icons-material/Theaters';
 import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import api from "../../../apis/axios.config";
 
 export interface Room {
@@ -51,25 +54,53 @@ interface RoomTableProps {
   rooms: Room[];
   onEdit: (id: string) => void;
   rowHeight?: number;
+  onRefreshData?: () => void;
 }
 
-const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
+const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit, onRefreshData }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryClient = useQueryClient();
   const [openDialog, setOpenDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openTheaterDialog, setOpenTheaterDialog] = useState(false);
   const [selectedRoomId, setSelectedRoomId] = useState("");
   const [selectedSeatTypeId, setSelectedSeatTypeId] = useState("");
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [creatingTheater, setCreatingTheater] = useState(false);
   const [createSuccess, setCreateSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [createTheaterSuccess, setCreateTheaterSuccess] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [createTheaterError, setCreateTheaterError] = useState<string | null>(null);
+  const [theaterName, setTheaterName] = useState("");
+  const [theaterLocation, setTheaterLocation] = useState("HCM");
+  const [theaterAddress, setTheaterAddress] = useState("");
+  const [theaterImage, setTheaterImage] = useState("");
 
   // Function to navigate to create room page
   const handleCreateRoomClick = () => {
     navigate('/admin/ql-phong-chieu/them-phong-chieu');
   };
+
+  // Check if we returned from creating a new room
+  useEffect(() => {
+    // Check location state for indications that we need to refresh
+    if (location.state && location.state.refresh) {
+      // Invalidate and refetch the rooms data
+      queryClient.invalidateQueries('rooms');
+      
+      // Call parent component's refresh function if available
+      if (onRefreshData) {
+        onRefreshData();
+      }
+      
+      // Clear the state to prevent repeated refreshes
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, queryClient, navigate, onRefreshData]);
 
   // Fetch seat types
   const fetchSeatTypes = async () => {
@@ -143,9 +174,13 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
         // Refresh the data after a short delay
         setTimeout(() => {
           handleCloseDialog();
-          // Refresh the page to show updated data
-          window.location.reload();
-        }, 2000);
+          // Invalidate and refetch the rooms data
+          queryClient.invalidateQueries('rooms');
+          // Call parent component's refresh function if available
+          if (onRefreshData) {
+            onRefreshData();
+          }
+        }, 1500);
       } else {
         setCreateError(response.data.message || "Tạo ghế không thành công");
         toast.error(`Lỗi: ${response.data.message}`);
@@ -211,9 +246,13 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
         // Refresh the data after a short delay
         setTimeout(() => {
           handleCloseDeleteDialog();
-          // Refresh the page to show updated data
-          window.location.reload();
-        }, 2000);
+          // Invalidate and refetch the rooms data
+          queryClient.invalidateQueries('rooms');
+          // Call parent component's refresh function if available
+          if (onRefreshData) {
+            onRefreshData();
+          }
+        }, 1500);
       } else {
         setDeleteError(response.data.message || "Xóa ghế không thành công");
         toast.error(`Lỗi: ${response.data.message}`);
@@ -227,6 +266,76 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
     }
   };
 
+  const handleCreateTheaterClick = () => {
+    setOpenTheaterDialog(true);
+  };
+
+  const handleCloseTheaterDialog = () => {
+    setOpenTheaterDialog(false);
+    setCreateTheaterSuccess(false);
+    setCreateTheaterError(null);
+    // Reset theater form
+    setTheaterName("");
+    setTheaterLocation("HCM");
+    setTheaterAddress("");
+    setTheaterImage("");
+  };
+
+  const handleLocationChange = (event: SelectChangeEvent) => {
+    setTheaterLocation(event.target.value);
+  };
+
+  const handleCreateTheater = async () => {
+    if (!theaterName || !theaterLocation || !theaterAddress || !theaterImage) {
+      toast.error("Vui lòng điền đầy đủ thông tin");
+      return;
+    }
+
+    setCreatingTheater(true);
+    setCreateTheaterSuccess(false);
+    setCreateTheaterError(null);
+
+    try {
+      // Call the API to create movie theater
+      const response = await api.post(
+        `movietheater`,
+        {
+          name: theaterName,
+          location: theaterLocation,
+          address: theaterAddress,
+          image: theaterImage,
+          isDeleted: false
+        },
+        {
+          headers: {
+            "accept": "text/plain",
+            "Content-Type": "application/json-patch+json"
+          }
+        }
+      );
+
+      if (response.data.isSuccess) {
+        setCreateTheaterSuccess(true);
+        toast.success("Đã tạo rạp chiếu phim thành công!");
+        // Refresh the data after a short delay
+        setTimeout(() => {
+          handleCloseTheaterDialog();
+          // Invalidate and refetch any related data
+          queryClient.invalidateQueries('theaters');
+        }, 1500);
+      } else {
+        setCreateTheaterError(response.data.message || "Tạo rạp chiếu phim không thành công");
+        toast.error(`Lỗi: ${response.data.message}`);
+      }
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "Đã xảy ra lỗi khi tạo rạp chiếu phim";
+      setCreateTheaterError(errorMsg);
+      toast.error(`Lỗi: ${errorMsg}`);
+    } finally {
+      setCreatingTheater(false);
+    }
+  };
+
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
@@ -236,14 +345,24 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
             Danh sách phòng chiếu
           </Typography>
         </Box>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          startIcon={<AddIcon />}
-          onClick={handleCreateRoomClick}
-        >
-          Tạo phòng chiếu mới
-        </Button>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button 
+            variant="outlined" 
+            color="secondary" 
+            startIcon={<TheatersIcon />}
+            onClick={handleCreateTheaterClick}
+          >
+            Tạo rạp chiếu phim
+          </Button>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            startIcon={<AddIcon />}
+            onClick={handleCreateRoomClick}
+          >
+            Tạo phòng chiếu mới
+          </Button>
+        </Box>
       </Box>
 
       <Paper elevation={0} sx={{ borderRadius: 2, bgcolor: '#f8f9fa', p: 3 }}>
@@ -521,6 +640,87 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit }) => {
             startIcon={deleting ? <CircularProgress size={20} color="inherit" /> : <DeleteIcon />}
           >
             {deleting ? 'Đang xóa...' : 'Xác nhận xóa'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog for creating movie theater */}
+      <Dialog
+        open={openTheaterDialog}
+        onClose={handleCloseTheaterDialog}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle sx={{ bgcolor: 'secondary.main', color: 'white', pb: 2 }}>
+          <TheatersIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+          Tạo rạp chiếu phim mới
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3, pb: 2 }}>
+          <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary' }}>
+            Vui lòng nhập thông tin cho rạp chiếu phim mới
+          </Typography>
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              fullWidth
+              label="Tên rạp chiếu phim"
+              value={theaterName}
+              onChange={(e) => setTheaterName(e.target.value)}
+              required
+            />
+
+            <FormControl fullWidth required>
+              <InputLabel>Địa điểm</InputLabel>
+              <Select
+                value={theaterLocation}
+                onChange={handleLocationChange}
+                label="Địa điểm"
+              >
+                <MenuItem value="HCM">HCM</MenuItem>
+                <MenuItem value="BD">BD</MenuItem>
+                <MenuItem value="Củ Chi">Củ Chi</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              fullWidth
+              label="Địa chỉ chi tiết"
+              value={theaterAddress}
+              onChange={(e) => setTheaterAddress(e.target.value)}
+              required
+              multiline
+              rows={2}
+            />
+          </Box>
+
+          {createTheaterSuccess && (
+            <Alert severity="success" sx={{ mt: 2, mb: 1 }}>
+              Tạo rạp chiếu phim thành công!
+            </Alert>
+          )}
+
+          {createTheaterError && (
+            <Alert severity="error" sx={{ mt: 2, mb: 1 }}>
+              {createTheaterError}
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button
+            onClick={handleCloseTheaterDialog}
+            disabled={creatingTheater}
+            variant="outlined"
+          >
+            Hủy
+          </Button>
+          <Button
+            onClick={handleCreateTheater}
+            variant="contained"
+            color="secondary"
+            disabled={creatingTheater || !theaterName || !theaterLocation || !theaterAddress || !theaterImage}
+            startIcon={creatingTheater ? <CircularProgress size={20} /> : <TheatersIcon />}
+          >
+            {creatingTheater ? 'Đang tạo...' : 'Tạo rạp chiếu phim'}
           </Button>
         </DialogActions>
       </Dialog>

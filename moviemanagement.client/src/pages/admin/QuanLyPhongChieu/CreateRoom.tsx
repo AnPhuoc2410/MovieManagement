@@ -22,6 +22,7 @@ import axios from 'axios';
 import AddIcon from '@mui/icons-material/Add';
 import TheaterComedyIcon from '@mui/icons-material/TheaterComedy';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from 'react-query';
 import api from '../../../apis/axios.config';
 
 interface MovieTheater {
@@ -31,6 +32,7 @@ interface MovieTheater {
 
 const CreateRoom: React.FC = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [roomName, setRoomName] = useState('');
   const [rows, setRows] = useState<number>(5);
   const [columns, setColumns] = useState<number>(7);
@@ -106,6 +108,10 @@ const CreateRoom: React.FC = () => {
           severity: 'success'
         });
         setIsDialogOpen(false);
+        
+        // Invalidate the rooms data cache so it will refresh on return
+        queryClient.invalidateQueries('PhongChieuData');
+        
         // Navigate back to the room list after successful creation
         setTimeout(() => {
           navigate('/admin/ql-phong-chieu');

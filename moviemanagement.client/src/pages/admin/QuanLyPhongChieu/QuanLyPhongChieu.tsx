@@ -1,7 +1,7 @@
 import type {} from "@mui/x-charts/themeAugmentation";
 import type {} from "@mui/x-data-grid-pro/themeAugmentation";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { Routes, Route, useLocation } from "react-router-dom";
 import ManagementPageLayout from "../../../layouts/ManagementLayout";
 import RoomTable, { Room } from "./BangRoom";
@@ -12,6 +12,7 @@ import api from "../../../apis/axios.config";
 
 const QuanLyPhongChieu: React.FC = () => {
   const location = useLocation();
+  const queryClient = useQueryClient();
   const isDetailPage = location.pathname.split('/').length > 3;
   
   // Only fetch data on the main page, not on detail pages
@@ -42,9 +43,17 @@ const QuanLyPhongChieu: React.FC = () => {
     data: danhSachPhongChieu = [],
     isLoading,
     error,
+    refetch
   } = useQuery<Room[]>("PhongChieuData", fetchRooms, {
     enabled: shouldFetchData,
   });
+  
+  // Function to refresh the data
+  const handleRefreshData = () => {
+    if (shouldFetchData) {
+      refetch();
+    }
+  };
 
   if (isLoading && shouldFetchData) return <Loader />;
   if (error && shouldFetchData) return <div>Failed to fetch data</div>;
@@ -65,11 +74,12 @@ const QuanLyPhongChieu: React.FC = () => {
                 console.log("Found room:", room);
               }}
               rowHeight={70}
+              onRefreshData={handleRefreshData}
             />
           } 
         />
         <Route path="/:roomId" element={<ChiTietPhongChieu />} />
-        <Route path="/create" element={<CreateRoom />} />
+        <Route path="/them-phong-chieu" element={<CreateRoom />} />
       </Routes>
     </ManagementPageLayout>
   );
