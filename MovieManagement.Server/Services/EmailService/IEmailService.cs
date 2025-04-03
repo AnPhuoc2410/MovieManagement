@@ -6,9 +6,6 @@ namespace MovieManagement.Server.Services.EmailService
 {
     public interface IEmailService
     {
-        public Task<bool> SendOtpEmail(string email);
-        public Task<bool> ValidationOtp(string email, string password, string otp);
-        public bool SendEmailReportBill(Guid billId);
         Task<String> SendOtpEmail(string email);
         Task<bool> ValidationOtp(string email, string otp);
         bool SendEmailReportBill(long billId);

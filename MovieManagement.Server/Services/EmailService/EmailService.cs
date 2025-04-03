@@ -28,17 +28,19 @@ namespace MovieManagement.Server.Services.EmailService
             _qRCodeGenerator = qRCodeGenerator;
             _mapper = mapper;
         }
-        public bool SendEmailReportBill(Guid billId)
+        public bool SendEmailReportBill(long billId)
         {
             //Get user bill
-            var userBill = _unitOfWork.BillRepository.GetById(billId) ??
+            var userBill = _unitOfWork.BillRepository.GetById(billId);
+            if (userBill == null)
                 throw new NotFoundException("No bills found!");
 
             if (userBill.Status != BillEnum.BillStatus.Completed)
                 throw new BadRequestException("Bill is not paid!");
 
             // Get user email
-            string userEmail = (_unitOfWork.UserRepository.GetById(userBill.UserId.Value)).Email ??
+            string userEmail = (_unitOfWork.UserRepository.GetById((Guid)userBill.UserId)).Email;
+            if (userEmail == null)
                 throw new NotFoundException("No user found!");
 
             // Create email
@@ -51,7 +53,7 @@ namespace MovieManagement.Server.Services.EmailService
             string body = _convertFile.GenerateHtmlFromBillReport(_mapper.Map<BillReportRequest>(userBill));
 
             // Create QR code Stream
-            byte[] qrCode = _qRCodeGenerator.GenerateQRCode(userBill.PaymentId.ToString());
+            byte[] qrCode = _qRCodeGenerator.GenerateQRCode(userBill.BillId.ToString());
             var qrBase64 = _qRCodeGenerator.QRCodeImageToBase64(qrCode);
             string qrCodeHtml = $"<img src='cid:qrcode' alt='QR Code' style='width: 100px; height: 100px;' />";
 
@@ -120,7 +122,7 @@ namespace MovieManagement.Server.Services.EmailService
             await client.DisconnectAsync(true);
             return otpCode.Code;
         }
-        
+
         public async Task<bool> ValidationOtp(string email, string otp)
         {
             try
@@ -130,17 +132,17 @@ namespace MovieManagement.Server.Services.EmailService
                 if (user == null)
                     throw new NotFoundException("User cannot found!");
 
-            //Checking validation user
-            var otpRecord = await _unitOfWork.OtpCodeRepository.GetOtpCode(email, otp);
-            if (otpRecord == null)
-                throw new NotFoundException("User's OTP code is invalid");
-            if (otpRecord.IsUsed == 1)
-                throw new Exception("This OTP is used!");
-            if (otpRecord.ExpiredTime < DateTime.UtcNow)
-                throw new Exception("This OTP is expired!");
+                //Checking validation user
+                var otpRecord = await _unitOfWork.OtpCodeRepository.GetOtpCode(email, otp);
+                if (otpRecord == null)
+                    throw new NotFoundException("User's OTP code is invalid");
+                if (otpRecord.IsUsed == 1)
+                    throw new Exception("This OTP is used!");
+                if (otpRecord.ExpiredTime < DateTime.UtcNow)
+                    throw new Exception("This OTP is expired!");
 
-            //Xac nhan da su dung OTP
-            otpRecord.IsUsed = 1;
+                //Xac nhan da su dung OTP
+                otpRecord.IsUsed = 1;
 
                 // //Create HashPassword
                 // var passwordHasher = new PasswordHasher<User>();
