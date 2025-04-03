@@ -286,7 +286,7 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit, onRefreshData }) =
   };
 
   const handleCreateTheater = async () => {
-    if (!theaterName || !theaterLocation || !theaterAddress || !theaterImage) {
+    if (!theaterName || !theaterLocation || !theaterAddress) {
       toast.error("Vui lòng điền đầy đủ thông tin");
       return;
     }
@@ -717,7 +717,7 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit, onRefreshData }) =
             onClick={handleCreateTheater}
             variant="contained"
             color="secondary"
-            disabled={creatingTheater || !theaterName || !theaterLocation || !theaterAddress || !theaterImage}
+            disabled={creatingTheater || !theaterName || !theaterLocation || !theaterAddress}
             startIcon={creatingTheater ? <CircularProgress size={20} /> : <TheatersIcon />}
           >
             {creatingTheater ? 'Đang tạo...' : 'Tạo rạp chiếu phim'}
