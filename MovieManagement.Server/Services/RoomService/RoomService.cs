@@ -72,6 +72,9 @@ namespace MovieManagement.Server.Services.RoomService
             var existingRoom = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
             if (existingRoom == null)
                 throw new NotFoundException("Room not found!");
+            var info = await _unitOfWork.RoomRepository.GetRoomInfo(roomId);
+            if (info.Seats.Any())
+                throw new BadRequestException("Cannot update room that has seats.");
 
             roomDto.Total = roomDto.Row * roomDto.Column;
             roomDto.RoomId = roomId;
@@ -90,6 +93,9 @@ namespace MovieManagement.Server.Services.RoomService
             var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
             if (room == null)
                 throw new NotFoundException("Room not found!");
+            var info = await _unitOfWork.RoomRepository.GetRoomInfo(roomId);
+            if (info.Seats.Any())
+                throw new BadRequestException("Cannot delete room that has seats.");
             return await _unitOfWork.RoomRepository.DeleteAsync(roomId);
         }
 

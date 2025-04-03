@@ -225,7 +225,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             _ticketDetailService.PurchasedTicket
                 (GetTickets(paymentResult.Description, 3), GetIndex(paymentResult.Description, 2), GetIndex(paymentResult.Description, 1));
 
-            _emailService.SendEmailReportBill(GetIndex(paymentResult.Description, 2));
+            //_emailService.SendEmailReportBill(GetIndex(paymentResult.Description, 2));
         }
 
         private Guid GetIndex(string description, int atPos)

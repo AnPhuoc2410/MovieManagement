@@ -109,10 +109,63 @@ namespace MovieManagement.Server.Services.TicketDetailServices
                 ticketDetails.Add(current);
             }
 
-            var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
-            if (checker != Tickets.Count())
-                throw new DbUpdateException("Fail to update ticket detail.");
-            return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
+            //var isBeside = await CheckBeside(ticketDetails);
+            //if(isBeside == false)
+            //{
+            //    throw new BadRequestException("Seats are not beside each other in the same row.");
+            //}
+            //else
+            //{
+                var checker = await _unitOfWork.TicketDetailRepository.SaveAsync();
+                return _mapper.Map<IEnumerable<TicketDetailResponseModel>>(ticketDetails);
+            //}
+        }
+
+        private async Task<bool> CheckBeside(List<TicketDetail> ticketDetails)
+        {
+            if (ticketDetails == null || !ticketDetails.Any())
+            {
+                throw new ArgumentException("ticketDetails list is null or empty.");
+            }
+
+            var showTimeId = ticketDetails.First().ShowTimeId;
+
+            var ticketPos = ticketDetails
+                .Where(t => t != null && t.Seat != null)
+                .Select(t => new TicketDetail
+                {
+                    Status = t.Status,
+                    Seat = new Seat
+                    {
+                        AtRow = t.Seat.AtRow,
+                        AtColumn = t.Seat.AtColumn,
+                        SeatType = t.Seat.SeatType
+                    }
+                }).ToList();
+
+            var ticket = await _unitOfWork.TicketDetailRepository.GetTicketByShowTimeId(showTimeId);
+
+            var seats = ticket
+                .Where(t => t.Seat != null)
+                .Select(t => new Seat
+                {
+                    AtRow = t.Seat.AtRow,
+                    AtColumn = t.Seat.AtColumn,
+                    SeatType = t.Seat.SeatType
+                }).ToList();
+
+            foreach (var seat in seats)
+            {
+                var selectedSeatsInRow = ticketPos.Where(t => t.Seat.AtRow == seat.AtRow).OrderBy(t => t.Seat.AtColumn).ToList();
+                for (int i = 0; i < selectedSeatsInRow.Count - 1; i++)
+                {
+                    if (selectedSeatsInRow[i + 1].Seat.AtColumn != selectedSeatsInRow[i].Seat.AtColumn + 1)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public async Task<IEnumerable<TicketDetailResponseModel>> ChangeStatusTicketDetailAsync(List<TicketDetailRequest> ticketRequests, TicketStatus status)
@@ -149,31 +202,31 @@ namespace MovieManagement.Server.Services.TicketDetailServices
             return await _unitOfWork.TicketDetailRepository.SaveAsync() == ticketDetails.Count();
         }
 
-        public async Task<bool> PurchasedTicket(List<Guid> list, Guid billId, Guid userId)
+        public bool PurchasedTicket(List<Guid> list, Guid billId, Guid userId)
         {
             foreach (var t in list)
             {
                 var ticketDetail = _unitOfWork.TicketDetailRepository.GetById(t);
                 if (ticketDetail == null)
                     throw new NotFoundException("Ticket detail not found!");
-                if (ticketDetail.Status != TicketStatus.Created)
+                if (ticketDetail.Status != TicketStatus.Pending)
                     throw new BadRequestException("Ticket is not pending.");
                 ticketDetail.Status = TicketStatus.Paid;
                 ticketDetail.BillId = billId;
                 _unitOfWork.TicketDetailRepository.PrepareUpdate(ticketDetail);
             }
 
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) ??
+            var user = _unitOfWork.UserRepository.GetById(userId) ??
                 throw new NotFoundException("User not found!");
 
-            var bill = await _unitOfWork.BillRepository.GetByIdAsync(billId) ??
+            var bill = _unitOfWork.BillRepository.GetById(billId) ??
                 throw new NotFoundException("Bill not found!");
 
             user.Point += bill.Point;
 
             _unitOfWork.UserRepository.PrepareUpdate(user);
 
-            var checker = await _unitOfWork.CompleteAsync();
+            var checker = _unitOfWork.Complete();
 
             //Check this line later cause im being lazy
             return checker > 0;

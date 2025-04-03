@@ -107,6 +107,13 @@ namespace MovieManagement.Server.Extensions
             CreateMap<ShowTime, ShowTimeInfo>();
 
             CreateMap<UserDto.UserRequest, User>();
+
+            CreateMap<Bill, BillTransaction>();
+
+            CreateMap<TicketDetail, TicketTransaction>();
+
+            CreateMap<ShowTime, ShowTimeInfo>();
+
         }
     }
 }

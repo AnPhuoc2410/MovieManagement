@@ -71,6 +71,9 @@ namespace MovieManagement.Server.Repositories
         {
             return await _context.TicketDetails
                 .Include(td => td.ShowTime)
+                    .ThenInclude(st => st.Room)
+                        .Include(td => td.Seat)
+                            .ThenInclude(s => s.SeatType)
                 .FirstOrDefaultAsync(td => td.TicketId == id && td.Version == version);
         }
 
