@@ -176,7 +176,7 @@ namespace MovieManagement.Server.Services.UserService
         }
 
 
-        public async Task<bool> ExchangeTickets(Guid userId, BillRequest billRequest)
+        public async Task<bool> MemberBuytickets(Guid userId, BillRequest billRequest)
         {
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) 
@@ -223,7 +223,10 @@ namespace MovieManagement.Server.Services.UserService
                     purchasedTicket.BillId = moneyBill.BillId;
                     moneyBill.TotalTicket++;
                     moneyBill.Point += exchangePoint / 10;
-                    user.Point += exchangePoint / 10;
+                    if (user.Role == Role.Employee || user.Role == Role.Admin)
+                        user.Point += exchangePoint / 100;
+                    else
+                        user.Point += exchangePoint / 10;
                 }
 
                 _unitOfWork.TicketDetailRepository.PrepareUpdate(purchasedTicket);
@@ -239,6 +242,44 @@ namespace MovieManagement.Server.Services.UserService
             var checker = await _unitOfWork.CompleteAsync();
 
             return checker > 0;
+
+        }
+
+        public async Task<bool> GuestBuyTickets(BillRequest billRequest)
+        {
+            var bill = new Bill
+            {
+                BillId = Guid.NewGuid(),
+                UserId = new Guid(),
+                PaymentId = null,
+                Status = BillStatus.Completed,
+                CreatedDate = DateTime.Now
+            };
+            foreach (var ticket in billRequest.Tickets)
+            {
+                var purchasedTicket = await _unitOfWork.TicketDetailRepository.GetTicketInfo(ticket)
+                    ?? throw new NotFoundException("Ticket not found!");
+                purchasedTicket.Status = TicketStatus.Paid;
+                purchasedTicket.BillId = bill.BillId;
+                bill.Amount += purchasedTicket.Seat.SeatType.Price;
+                bill.TotalTicket++;
+                _unitOfWork.TicketDetailRepository.PrepareUpdate(purchasedTicket);
+            }
+            if (bill.TotalTicket > 0)
+                _unitOfWork.BillRepository.PrepareCreate(bill);
+            var checker = await _unitOfWork.CompleteAsync();
+            return checker > 0;
+        }
+
+
+        public async Task<IEnumerable<BillTransaction>> GetTransactionByUserId(Guid userId)
+        {
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId)
+                    ?? throw new NotFoundException("User not found!");
+
+            var transactions = _mapper.Map<IEnumerable<BillTransaction>>(await _unitOfWork.BillRepository.GetTransactionHistoryByUserId(userId));
+
+            return transactions;
 
         }
 

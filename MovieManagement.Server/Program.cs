@@ -1,3 +1,4 @@
+
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Security.Claims;
@@ -82,7 +83,7 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("LaazyConnection"))
             );
 
             // Đăng ký UnitOfWork
@@ -124,7 +125,8 @@ namespace MovieManagement.Server
                             "https://localhost:3000",
                             "http://localhost:3000",
                             "https://localhost:7119",
-                            "https://eigaa.vercel.app")
+                            "https://eigaa.vercel.app",
+                            "https://eigacinemaapi.azurewebsites.net")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials());
@@ -180,7 +182,8 @@ namespace MovieManagement.Server
             // builder.Services.AddAuthorization();
 
             // ADD SignalR
-            builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]);
+            //builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]);
+            builder.Services.AddSignalR();
 
             // Register Hangfire
             builder.Services.AddHangfire(config => config.UseMemoryStorage());

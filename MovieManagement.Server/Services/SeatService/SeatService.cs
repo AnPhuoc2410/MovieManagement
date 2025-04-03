@@ -88,25 +88,24 @@ namespace MovieManagement.Server.Services.SeatService
         {
             if(roomId == Guid.Empty || SeatTypeId == Guid.Empty)
                 throw new BadRequestException("Id cannot be empty!");
-            bool isCompleted = false;
+
             var room = await _unitOfWork.RoomRepository.GetByIdAsync(roomId);
 
             if (room == null)
-            {
                 throw new ArgumentException("Room not found", nameof(roomId));
-            }
 
             var seatType = await _unitOfWork.SeatTypeRepository.GetByIdAsync(SeatTypeId);
+
             if (seatType == null)
-            {
                 throw new ArgumentException("SeatType not found", nameof(SeatTypeId));
-            }
 
             var seats = await _unitOfWork.SeatRepository.GetByRoomIdAsync(roomId);
+
             if (seats.Any())
-            {
                 throw new ArgumentException("Seats already created", nameof(roomId));
-            }
+
+            if (room.Column % seatType.SeatSize != 0)
+                throw new ArgumentException("Seat size must be divisible by Column. Please select another option.", nameof(seatType.SeatSize));
 
             for (int i = 0; i < room.Row; i++)
             {
@@ -198,6 +197,8 @@ namespace MovieManagement.Server.Services.SeatService
             {
                 throw new ArgumentException("Seats not created", nameof(roomId));
             }
+            if (room.Column % seatType.SeatSize != 0)
+                throw new ArgumentException("Seat size must be divisible by Column. Please adjust room's size.", nameof(seatType.SeatSize));
             for (int i = 0; i < room.Column; i++)
             {
                 var newSeat = new Seat
@@ -234,23 +235,29 @@ namespace MovieManagement.Server.Services.SeatService
             {
                 throw new ArgumentException("Seats not created", nameof(roomId));
             }
+
+
             for (int i = 0; i < room.Row; i++)
             {
-                var newSeat = new Seat
+                for (int j = 1; j <= seatType.SeatSize; j++)
                 {
-                    AtRow = NumberToLetter(i).ToString(),
-                    AtColumn = room.Column + 1,
-                    RoomId = roomId,
-                    SeatTypeId = seatTypeId,
-                    IsActive = true,
-                    SeatId = Guid.NewGuid()
-                };
-                _unitOfWork.SeatRepository.PrepareCreate(newSeat);
+                    var newSeat = new Seat
+                    {
+                        AtRow = NumberToLetter(i).ToString(),
+                        AtColumn = room.Column + j,
+                        RoomId = roomId,
+                        SeatTypeId = seatTypeId,
+                        IsActive = true,
+                        SeatId = Guid.NewGuid()
+                    };
+                    _unitOfWork.SeatRepository.PrepareCreate(newSeat);
+                }
             }
-            room.Column += 1;
+            room.Column += seatType.SeatSize.Value;
             room.Total = room.Row * room.Column;
-            await _unitOfWork.RoomRepository.UpdateAsync(room);
-            return await _unitOfWork.SeatRepository.SaveAsync() > 0;
+
+            _unitOfWork.RoomRepository.PrepareUpdate(room);
+            return await _unitOfWork.CompleteAsync() > 0;
         }
 
         public async Task<bool> DeleteByRoomId(Guid roomId)

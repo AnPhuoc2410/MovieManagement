@@ -14,6 +14,7 @@ const handleBefore = (
   const token = getCookie("accessToken");
   if (token) {
     config.headers.set("Authorization", `Bearer ${token}`);
+    // config.headers.set("Accept-Language", "ja");
   }
   const language = getLanguageHeader(localStorage.getItem("language") || "vi");
   config.headers.set("Accept-Language", language);

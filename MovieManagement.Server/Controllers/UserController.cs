@@ -218,10 +218,15 @@ namespace MovieManagement.Server.Controllers
             return NoContent();
         }
 
-        [HttpPost("Test")]
-        public async Task<IActionResult> Test(Guid userId, BillRequest billRequest)
+        [HttpPost("tickets/member")]
+        [Authorize(Roles = "Employee")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> ExchangeTicket(Guid userId, BillRequest billRequest)
         {
-            await _userService.ExchangeTickets(userId, billRequest);
+            await _userService.MemberBuytickets(userId, billRequest);
             return Ok(new ApiResponse<object>
             {
                 StatusCode = 200,
@@ -229,6 +234,40 @@ namespace MovieManagement.Server.Controllers
                 IsSuccess = true
             });
         }
+
+        [HttpPost("tickets/guest")]
+        [Authorize(Roles = "Employee")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> ExchangeTicketGuest(BillRequest billRequest)
+        {
+            await _userService.GuestBuyTickets(billRequest);
+            return Ok(new ApiResponse<object>
+            {
+                StatusCode = 200,
+                Message = "Exchange ticket successfully",
+                IsSuccess = true
+            });
+        }
+
+        [HttpGet("transaction")]
+        [Authorize(Roles = "Admin,Employee,Member")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<BillTransaction>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> TransactionHistory(Guid userId)
+        {
+            var transactions = await _userService.GetTransactionByUserId(userId);
+            return Ok(new ApiResponse<IEnumerable<BillTransaction>>
+            {
+                StatusCode = 200,
+                Message = "Get transaction history successfully",
+                IsSuccess = true,
+                Data = transactions
+            });
+        }
+
 
     }
 }

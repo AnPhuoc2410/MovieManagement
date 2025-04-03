@@ -101,7 +101,7 @@ namespace MovieManagement.Server.Services.SeatTypeService
 
             existingSeatType.TypeName = seatType.TypeName;
             existingSeatType.Price = seatType.Price;
-            existingSeatType.IsActive = seatType.IsActive;
+            existingSeatType.IsActive = seatType.IsActive.Value;
 
             var updatedSeatType = await _unitOfWork.SeatTypeRepository.UpdateAsync(existingSeatType);
             if (updatedSeatType == null)
