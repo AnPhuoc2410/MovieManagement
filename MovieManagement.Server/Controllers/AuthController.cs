@@ -34,7 +34,8 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
         public IActionResult Signup([FromBody] AuthDto.RegisterRequest registerDto)
         {
             var newUser = _authenticateService.Register(registerDto);
@@ -53,8 +54,10 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ApiResponse<AuthDto.LoginResponse>>> Login([FromBody] AuthDto.LoginRequest loginDto)
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ApiResponse<AuthDto.LoginResponse>>> Login(
+            [FromBody] AuthDto.LoginRequest loginDto)
         {
             var result = await _authenticateService.Login(loginDto);
             return Ok(new ApiResponse<AuthDto.LoginResponse>
@@ -65,57 +68,80 @@ namespace MovieManagement.Server.Controllers
                 Data = result
             });
         }
-
+        
+        /// <summary>
+        /// Send OTP Code to registered email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         [AllowAnonymous]
-        [HttpPost("send-opt")]
+        [HttpPatch("send-otp")]
         [ProducesResponseType(typeof(ApiResponse<OtpCodeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SendOtp([FromBody] SendOtpRequest request)
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> SendOtp([FromQuery] string email)
         {
-            bool otp = await _emailService.SendOtpEmail(request.Email);
-            var response = new ApiResponse<IEnumerable<OtpCodeDto>>
+            String otp = await _emailService.SendOtpEmail(email);
+            var response = new ApiResponse<String>
             {
                 StatusCode = 200,
                 Message = "The OTP code was sended",
-                IsSuccess = otp
-            };
-            return Ok(response);
-        }
-
-        [AllowAnonymous]
-        [HttpPost("verify/reset-password")]
-        [ProducesResponseType(typeof(ApiResponse<OtpCodeDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest request)
-        {
-            bool isValid = await _emailService.ValidationOtp(request.Email, request.NewPassword, request.Code);
-            var response = new ApiResponse<IEnumerable<OtpCodeDto>>
-            {
-                StatusCode = 200,
-                Message = "Reset password is success",
+                Data = otp,
                 IsSuccess = true
             };
             return Ok(response);
         }
 
-        [Authorize(Policy = "Member")]
-        [Authorize(Policy = "Employee")]
-        [Authorize(Policy = "Admin")]
-        [HttpPatch("reset-password")]
+        /// <summary>
+        /// Check if the OTP code is valid for the email
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPatch("otp/verify")]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest request)
+        {
+            bool isValid =
+                await _emailService.ValidationOtp(request.Email,request.Code);
+            var response = new ApiResponse<bool>
+            {
+                StatusCode = 200,
+                Message = "Reset password is success",
+                Data = isValid,
+                IsSuccess = true
+            };
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Update user password
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        // [Authorize(Policy = "Member")]
+        // [Authorize(Policy = "Employee")]
+        // [Authorize(Policy = "Admin")]
+        [AllowAnonymous]
+        [HttpPatch("update-password")]
         [ProducesResponseType(typeof(ApiResponse<ResetPasswordRequest>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ResetUserPassword([FromBody] ResetPasswordRequest request)
         {
-            await _userService.ChangeUserPasswordByUserId(request.UserId, request.CurrentPassword, request.NewPassword);
+            await _userService.ChangeUserPasswordByEmail(request.Email, request.CurrentPassword,
+                request.NewPassword);
             return Ok(new ApiResponse<IEnumerable<ResetPasswordRequest>>
             {
                 StatusCode = 200,
@@ -143,7 +169,8 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>),
+            StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ExtractToken([FromBody] TokenDto.TokenRequest tokenRequest)
         {
             var userData = await _authenticateService.ExtractTokenAsync(tokenRequest.AccessToken);

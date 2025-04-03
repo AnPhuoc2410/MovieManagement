@@ -154,6 +154,7 @@
           "confirm_required": "パスワードの確認を入力してください"
         },
         "toast": {
+          "email_not_found": "メールアドレスが見つかりません",
           "email_sent": "確認メールを送信しました！",
           "email_failed": "確認メールの送信に失敗しました",
           "reset_success": "パスワードの再設定が完了しました！",

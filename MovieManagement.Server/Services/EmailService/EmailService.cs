@@ -91,10 +91,9 @@ namespace MovieManagement.Server.Services.EmailService
             client.Disconnect(true);
             return true;
         }
-        public async Task<bool> SendOtpEmail(string userEmail)
+
+        public async Task<String> SendOtpEmail(string userEmail)
         {
-            if (string.IsNullOrEmpty(userEmail))
-                throw new BadRequestException("Email is blank!");
             //Checking user existing
             bool isExist = await _unitOfWork.UserRepository.IsExistingEmailAsync(userEmail);
             if (!isExist)
@@ -107,8 +106,6 @@ namespace MovieManagement.Server.Services.EmailService
             message.Subject = "Gửi mã xác thực OTP";
 
             var otpCode = await _unitOfWork.OtpCodeRepository.CreateOtpCode(userEmail);
-            if (otpCode == null)
-                throw new Exception("Cannot create OTP code!");
 
             message.Body = new TextPart("plain")
             {
@@ -121,14 +118,17 @@ namespace MovieManagement.Server.Services.EmailService
             await client.AuthenticateAsync(_configuration["Account:AppEmail"], _configuration["Account:AppPassword"]);
             await client.SendAsync(message);
             await client.DisconnectAsync(true);
-            return true;
+            return otpCode.Code;
         }
-        public async Task<bool> ValidationOtp(string email, string password, string otp)
+        
+        public async Task<bool> ValidationOtp(string email, string otp)
         {
-            //Checking user is existing by email
-            var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
-            if (user == null)
-                throw new NotFoundException("User cannot found!");
+            try
+            {
+                //Checking user is existing by email
+                var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
+                if (user == null)
+                    throw new NotFoundException("User cannot found!");
 
             //Checking validation user
             var otpRecord = await _unitOfWork.OtpCodeRepository.GetOtpCode(email, otp);
@@ -142,23 +142,28 @@ namespace MovieManagement.Server.Services.EmailService
             //Xac nhan da su dung OTP
             otpRecord.IsUsed = 1;
 
-            //Create HashPassword
-            var passwordHasher = new PasswordHasher<User>();
-
-            //Verify password
-            //Xac thuc mat khau co trong database khong -> tranh viec Hashpassword 2 lan
-            var verificationResult = passwordHasher.VerifyHashedPassword(user, user.Password, password);
-
-            //Hash new password
-            password = passwordHasher.HashPassword(user, password);
-
-            //Checking change password
-            if (!await _unitOfWork.UserRepository.ChangeUserPasswordByEmailAsync(email, password))
-                throw new Exception("Password cannot change!");
-
-            await _unitOfWork.OtpCodeRepository.UpdateAsync(otpRecord);
-            await _unitOfWork.CompleteAsync();
-            return true;
+                // //Create HashPassword
+                // var passwordHasher = new PasswordHasher<User>();
+                //
+                // //Verify password
+                // //Xac thuc mat khau co trong database khong -> tranh viec Hashpassword 2 lan
+                // var verificationResult = passwordHasher.VerifyHashedPassword(user, user.Password, password);
+                //
+                // //Hash new password
+                // var hashedPassword = passwordHasher.HashPassword(user, password);
+                //
+                // //Checking change password
+                // if (!await _unitOfWork.UserRepository.ResetUserPasswordByEmailAsync(email, password, hashedPassword))
+                //     throw new Exception("Password cannot change!");
+                //
+                // await _unitOfWork.OtpCodeRepository.UpdateAsync(otpRecord);
+                // await _unitOfWork.CompleteAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot send email because this error: " + ex.Message);
+            }
         }
     }
 }

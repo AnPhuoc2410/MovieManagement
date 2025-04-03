@@ -155,6 +155,7 @@
           "confirm_required": "Please confirm your password"
         },
         "toast": {
+          "email_not_found": "Email not found",
           "email_sent": "Verification email sent!",
           "email_failed": "Failed to send verification email",
           "reset_success": "Password reset successfully!",

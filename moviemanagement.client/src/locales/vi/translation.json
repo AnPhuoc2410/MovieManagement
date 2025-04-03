@@ -154,6 +154,7 @@
           "confirm_required": "Vui lòng xác nhận mật khẩu"
         },
         "toast": {
+          "email_not_found": "Email không tồn tại",
           "email_sent": "Đã gửi email xác nhận!",
           "email_failed": "Không thể gửi email xác nhận",
           "reset_success": "Đặt lại mật khẩu thành công!",

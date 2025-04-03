@@ -54,3 +54,11 @@ export type ExtractTokenResponse = {
   isSuccess: boolean;
   data: UserResponse;
 };
+
+export type OtpResponse = ApiResponse<string>;
+
+export type UpdatePasswordReqBody = {
+  email: string;
+  newPassword: string;
+  currentPassword?: string;
+};
