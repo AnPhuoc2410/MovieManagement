@@ -8,6 +8,6 @@ namespace MovieManagement.Server.Services.EmailService
     {
         Task<String> SendOtpEmail(string email);
         Task<bool> ValidationOtp(string email, string otp);
-        bool SendEmailReportBill(long billId);
+        bool SendEmailReportBill(Guid billId);
     }
 }

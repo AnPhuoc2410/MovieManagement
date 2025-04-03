@@ -28,7 +28,7 @@ namespace MovieManagement.Server.Services.EmailService
             _qRCodeGenerator = qRCodeGenerator;
             _mapper = mapper;
         }
-        public bool SendEmailReportBill(long billId)
+        public bool SendEmailReportBill(Guid billId)
         {
             //Get user bill
             var userBill = _unitOfWork.BillRepository.GetById(billId);
@@ -38,8 +38,11 @@ namespace MovieManagement.Server.Services.EmailService
             if (userBill.Status != BillEnum.BillStatus.Completed)
                 throw new BadRequestException("Bill is not paid!");
 
+            if (!userBill.UserId.HasValue)
+                throw new NotFoundException("No user found!");
+
             // Get user email
-            string userEmail = (_unitOfWork.UserRepository.GetById((Guid)userBill.UserId)).Email;
+            string userEmail = (_unitOfWork.UserRepository.GetById(userBill.UserId.Value)).Email;
             if (userEmail == null)
                 throw new NotFoundException("No user found!");
 
