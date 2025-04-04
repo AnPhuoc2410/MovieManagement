@@ -25,6 +25,8 @@ export default tseslint.config(
       ],
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
+      "import/newline-after-import": ["error", { count: 1 }],
+      "import/max-dependencies": ["warn", { max: 10, ignoreTypeImports: true }],
     },
   },
 );

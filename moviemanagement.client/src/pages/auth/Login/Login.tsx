@@ -12,16 +12,17 @@ import {
   Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
-import { createRef, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import * as yup from "yup";
+import { Link as RouterLink } from "react-router-dom";
 import { login } from "../../../apis/auth.apis";
 import { useAuth } from "../../../contexts/AuthContext";
-import ReCAPTCHA from "react-google-recaptcha";
 import { ENV } from "../../../env/env.config";
-import { Link as RouterLink } from "react-router-dom";
+import { loginValidationSchema } from "../../../utils/validation.utils";
+import { textFieldStyle } from "./Login.style";
 // import { GoogleLogin } from "@react-oauth/google";
 
 export const Login = () => {
@@ -35,27 +36,6 @@ export const Login = () => {
   const { t } = useTranslation();
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
-
-  const validationSchema = yup.object({
-    email: yup
-      .string()
-      .transform((value) => value.trim())
-      .required(t("auth.login.validation.email_required")),
-    password: yup
-      .string()
-      .transform((value) => value.trim())
-      .test(
-        "is-valid-password",
-        t("auth.login.validation.password_length"),
-        (value, context) => {
-          if (context.parent.email === "admin" && value === "admin") {
-            return true;
-          }
-          return value !== undefined && value.length >= 8;
-        },
-      )
-      .required(t("auth.login.validation.password_required")),
-  });
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -83,13 +63,10 @@ export const Login = () => {
 
   const formik = useFormik({
     initialValues: {
-      email:
-        localStorage.getItem("rememberMe") === "true"
-          ? localStorage.getItem("lastLoginEmail") || ""
-          : "",
+      email: localStorage.getItem("rememberMe") === "true" ? localStorage.getItem("lastLoginEmail") || "" : "",
       password: "",
     },
-    validationSchema: validationSchema,
+    validationSchema: loginValidationSchema(t),
     onSubmit: async (values) => {
       // Trim the values before submitting
       const trimmedValues = {
@@ -128,14 +105,16 @@ export const Login = () => {
             expires: tokenData.expires,
           });
 
-          toast.success(
-            t("auth.login.welcome_message", { name: userDetails?.fullName }),
-          );
+          toast.success(t("auth.login.welcome_message", { name: userDetails?.fullName }));
 
-          // Navigate based on extracted role
-          setTimeout(() => {
-            navigate("/");
-          }, 1000);
+          // After login, get the stored redirect path from localStorage
+          const redirectTo = localStorage.getItem("redirectTo") || "/";
+
+          // Clear the redirect path from localStorage
+          localStorage.removeItem("redirectTo");
+
+          // Redirect to the page they were trying to visit
+          navigate(redirectTo, { replace: true });
         } else {
           toast.error("Wrong email or password");
 
@@ -155,42 +134,10 @@ export const Login = () => {
     },
   });
 
-  const textFieldStyle = {
-    mb: 3,
-    "& .MuiOutlinedInput-root": {
-      height: "50px", // Consistent height
-      "&.Mui-focused fieldset": {
-        borderColor: "#e6c300",
-      },
-    },
-    "& .MuiInputLabel-root": {
-      color: "#666",
-      fontSize: "0.95rem",
-      transform: "translate(14px, 16px) scale(1)",
-      "&.Mui-focused": {
-        color: "#000",
-        transform: "translate(14px, -9px) scale(0.75)",
-      },
-      "&.MuiInputLabel-shrink": {
-        transform: "translate(14px, -9px) scale(0.75)",
-      },
-    },
-    "& .MuiInputBase-input": {
-      padding: "14px",
-    },
-    "& .MuiFormHelperText-root": {
-      marginLeft: "3px",
-      marginTop: "3px",
-    },
-  };
-
   return (
     <form onSubmit={formik.handleSubmit}>
       <Box sx={{ mb: 4 }}>
-        <Typography
-          variant="h6"
-          sx={{ mb: 1, fontWeight: 600, color: "#1a1a1a" }}
-        >
+        <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: "#1a1a1a" }}>
           {t("auth.login.welcome")}
         </Typography>
         <Typography variant="body2" sx={{ color: "#666" }}>
@@ -247,11 +194,7 @@ export const Login = () => {
                   },
                 }}
               >
-                {showPassword ? (
-                  <VisibilityOff sx={{ color: "#666" }} />
-                ) : (
-                  <Visibility sx={{ color: "#666" }} />
-                )}
+                {showPassword ? <VisibilityOff sx={{ color: "#666" }} /> : <Visibility sx={{ color: "#666" }} />}
               </IconButton>
             </InputAdornment>
           ),
@@ -309,18 +252,9 @@ export const Login = () => {
       </Box>
 
       <Box sx={{ mb: 3 }}>
-        <ReCAPTCHA
-          ref={recaptchaRef}
-          sitekey={ENV.RECAPTCHA_V2_SITE_KEY}
-          onChange={handleCaptchaChange}
-          theme="light"
-          size="normal"
-        />
+        <ReCAPTCHA ref={recaptchaRef} sitekey={ENV.RECAPTCHA_V2_SITE_KEY} onChange={handleCaptchaChange} theme="light" size="normal" />
         {!captchaToken && (
-          <Typography
-            variant="caption"
-            sx={{ color: "#666", mt: 1, display: "block" }}
-          >
+          <Typography variant="caption" sx={{ color: "#666", mt: 1, display: "block" }}>
             {t("auth.login.please_complete_captcha")}
           </Typography>
         )}
@@ -352,11 +286,7 @@ export const Login = () => {
           },
         }}
       >
-        {loading
-          ? t("auth.login.processing")
-          : !captchaToken
-            ? t("auth.login.complete_captcha_to_continue")
-            : t("auth.login.login_button")}
+        {loading ? t("auth.login.processing") : !captchaToken ? t("auth.login.complete_captcha_to_continue") : t("auth.login.login_button")}
       </Button>
 
       {/*<Divider sx={{ my: 1.5 }} />*/}

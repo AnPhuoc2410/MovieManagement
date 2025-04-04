@@ -1,123 +1,13 @@
-import {
-  Assignment,
-  Badge,
-  Cake,
-  Email,
-  Home,
-  Lock,
-  Person,
-  Phone,
-  Visibility,
-  VisibilityOff,
-} from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  IconButton,
-  InputAdornment,
-  Link,
-  Radio,
-  RadioGroup,
-  Step,
-  StepLabel,
-  Stepper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Assignment, Badge, Cake, Email, Home, Lock, Person, Phone, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Box, Button, FormControl, FormControlLabel, FormLabel, IconButton, InputAdornment, Link, Radio, RadioGroup, Step, StepLabel, Stepper, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import * as yup from "yup";
 import { signup } from "../../../apis/auth.apis";
-import AuthForm from "../AuthForm";
-
-const textFieldStyle = {
-  mb: 3,
-  "& .MuiOutlinedInput-root": {
-    "&.Mui-focused fieldset": {
-      borderColor: "#e6c300",
-    },
-    "&.Mui-error fieldset": {
-      borderColor: "#ff9800",
-    },
-  },
-  "& .MuiInputLabel-root": {
-    color: "#666",
-    "&.Mui-focused": {
-      color: "#000",
-    },
-    "&.Mui-error": {
-      color: "#ff9800",
-    },
-  },
-  "& .MuiFormHelperText-root": {
-    "&.Mui-error": {
-      color: "#ff9800",
-    },
-  },
-};
-
-const iconStyle = {
-  color: "#666",
-};
-
-const stepperStyle = {
-  mb: 4,
-  "& .MuiStepLabel-root .Mui-completed": {
-    color: "#e6c300",
-  },
-  "& .MuiStepLabel-root .Mui-active": {
-    color: "#e6c300",
-  },
-  "& .MuiStepLabel-label": {
-    color: "#666",
-    "&.Mui-active": {
-      color: "#000",
-    },
-    "&.Mui-completed": {
-      color: "#000",
-    },
-  },
-};
-
-const buttonStyle = {
-  primary: {
-    backgroundColor: "#e6c300",
-    color: "black",
-    py: 1.5,
-    px: 4,
-    borderRadius: 1.5,
-    textTransform: "none",
-    fontSize: "1rem",
-    fontWeight: 500,
-    boxShadow: 2,
-    "&:hover": {
-      backgroundColor: "#ccad00",
-      boxShadow: 4,
-    },
-    "&:disabled": {
-      backgroundColor: "#e0e0e0",
-      color: "#9e9e9e",
-    },
-  },
-  secondary: {
-    borderColor: "#e6c300",
-    color: "black",
-    "&:hover": {
-      borderColor: "#ccad00",
-      backgroundColor: "rgba(230, 195, 0, 0.1)",
-    },
-    "&:disabled": {
-      borderColor: "#e0e0e0",
-      color: "#9e9e9e",
-    },
-  },
-};
+import { signUpValidationSchema } from "../../../utils/validation.utils";
+import { buttonStyle, iconStyle, stepperStyle, textFieldStyle } from "./Signup.style";
 
 export const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -126,39 +16,7 @@ export const Signup = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const steps = [
-    t("auth.signup.steps.account"),
-    t("auth.signup.steps.personal"),
-    t("auth.signup.steps.contact"),
-  ];
-
-  const validationSchema = yup.object({
-    userName: yup
-      .string()
-      .required(t("auth.login.validation.username_required")),
-    password: yup
-      .string()
-      .min(8, t("auth.login.validation.password_length"))
-      .required(t("auth.login.validation.password_required")),
-    fullName: yup
-      .string()
-      .required(t("auth.signup.validation.fullname_required")),
-    birthDate: yup
-      .date()
-      .required(t("auth.signup.validation.birthdate_required")),
-    gender: yup.string().required(t("auth.signup.validation.gender_required")),
-    idCard: yup.string().required(t("auth.signup.validation.id_card_required")),
-    email: yup
-      .string()
-      .email(t("auth.signup.validation.email.invalid"))
-      .required(t("auth.signup.validation.email.required")),
-    address: yup
-      .string()
-      .required(t("auth.signup.validation.address_required")),
-    phoneNumber: yup
-      .string()
-      .required(t("auth.signup.validation.phone_required")),
-  });
+  const steps = [t("auth.signup.steps.account"), t("auth.signup.steps.personal"), t("auth.signup.steps.contact")];
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -184,7 +42,7 @@ export const Signup = () => {
       address: "",
       phoneNumber: "",
     },
-    validationSchema: validationSchema,
+    validationSchema: signUpValidationSchema(t),
     onSubmit: async (values) => {
       setLoading(true);
       const toastId = toast.loading("Đang xác thực người dùng...");
@@ -228,23 +86,9 @@ export const Signup = () => {
   };
 
   const isStepTwoComplete = () => {
-    const hasErrors = Boolean(
-      formik.errors.fullName ||
-        formik.errors.birthDate ||
-        formik.errors.gender ||
-        formik.errors.idCard,
-    );
-    const isTouched =
-      formik.touched.fullName ||
-      formik.touched.birthDate ||
-      formik.touched.gender ||
-      formik.touched.idCard;
-    const hasValues = Boolean(
-      formik.values.fullName &&
-        formik.values.birthDate &&
-        formik.values.gender &&
-        formik.values.idCard,
-    );
+    const hasErrors = Boolean(formik.errors.fullName || formik.errors.birthDate || formik.errors.gender || formik.errors.idCard);
+    const isTouched = formik.touched.fullName || formik.touched.birthDate || formik.touched.gender || formik.touched.idCard;
+    const hasValues = Boolean(formik.values.fullName && formik.values.birthDate && formik.values.gender && formik.values.idCard);
     return hasValues && (!isTouched || !hasErrors);
   };
 
@@ -302,11 +146,7 @@ export const Signup = () => {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton onClick={handleClickShowPassword} edge="end">
-                      {showPassword ? (
-                        <VisibilityOff sx={iconStyle} />
-                      ) : (
-                        <Visibility sx={iconStyle} />
-                      )}
+                      {showPassword ? <VisibilityOff sx={iconStyle} /> : <Visibility sx={iconStyle} />}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -346,9 +186,7 @@ export const Signup = () => {
               value={formik.values.birthDate}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={
-                formik.touched.birthDate && Boolean(formik.errors.birthDate)
-              }
+              error={formik.touched.birthDate && Boolean(formik.errors.birthDate)}
               helperText={formik.touched.birthDate && formik.errors.birthDate}
               sx={textFieldStyle}
               InputProps={{
@@ -361,22 +199,9 @@ export const Signup = () => {
             />
             <FormControl component="fieldset" sx={textFieldStyle}>
               <FormLabel>{t("auth.signup.fields.gender")}</FormLabel>
-              <RadioGroup
-                row
-                name="gender"
-                value={formik.values.gender}
-                onChange={formik.handleChange}
-              >
-                <FormControlLabel
-                  value="male"
-                  control={<Radio />}
-                  label={t("auth.signup.fields.male")}
-                />
-                <FormControlLabel
-                  value="female"
-                  control={<Radio />}
-                  label={t("auth.signup.fields.female")}
-                />
+              <RadioGroup row name="gender" value={formik.values.gender} onChange={formik.handleChange}>
+                <FormControlLabel value="male" control={<Radio />} label={t("auth.signup.fields.male")} />
+                <FormControlLabel value="female" control={<Radio />} label={t("auth.signup.fields.female")} />
               </RadioGroup>
             </FormControl>
             <TextField
@@ -449,12 +274,8 @@ export const Signup = () => {
               value={formik.values.phoneNumber}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={
-                formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)
-              }
-              helperText={
-                formik.touched.phoneNumber && formik.errors.phoneNumber
-              }
+              error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
+              helperText={formik.touched.phoneNumber && formik.errors.phoneNumber}
               sx={textFieldStyle}
               InputProps={{
                 startAdornment: (
@@ -468,39 +289,16 @@ export const Signup = () => {
         )}
 
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-          <Button
-            variant="outlined"
-            onClick={handleBack}
-            disabled={activeStep === 0}
-            sx={buttonStyle.secondary}
-          >
+          <Button variant="outlined" onClick={handleBack} disabled={activeStep === 0} sx={buttonStyle.secondary}>
             {t("auth.signup.buttons.back")}
           </Button>
 
           {activeStep === steps.length - 1 ? (
-            <Button
-              variant="contained"
-              type="submit"
-              disabled={loading}
-              sx={buttonStyle.primary}
-            >
-              {loading
-                ? t("auth.signup.buttons.processing")
-                : t("auth.signup.buttons.signup")}
+            <Button variant="contained" type="submit" disabled={loading} sx={buttonStyle.primary}>
+              {loading ? t("auth.signup.buttons.processing") : t("auth.signup.buttons.signup")}
             </Button>
           ) : (
-            <Button
-              variant="contained"
-              onClick={handleNext}
-              disabled={
-                activeStep === 0
-                  ? !isStepOneComplete()
-                  : activeStep === 1
-                    ? !isStepTwoComplete()
-                    : false
-              }
-              sx={buttonStyle.primary}
-            >
+            <Button variant="contained" onClick={handleNext} disabled={activeStep === 0 ? !isStepOneComplete() : activeStep === 1 ? !isStepTwoComplete() : false} sx={buttonStyle.primary}>
               {t("auth.signup.buttons.next")}
             </Button>
           )}

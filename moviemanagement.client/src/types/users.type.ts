@@ -1,4 +1,5 @@
-import { UserTicketHistory, UserTicketType } from "./ticketdetail.types";
+import { ShowTime } from "./showtime.types";
+import { TicketDetail, UserTicketHistory, UserTicketType } from "./ticketdetail.types";
 
 export type UserBase = {
   userId: string;
@@ -18,10 +19,7 @@ export type UserBase = {
   point: number;
 };
 
-export type AddEmployee = Omit<
-  UserBase,
-  "role" | "userId" | "point" | "status" | "joinDate"
-> & {
+export type AddEmployee = Omit<UserBase, "role" | "userId" | "point" | "status" | "joinDate"> & {
   confirmPassword: string;
 };
 
@@ -42,23 +40,56 @@ export interface UserResponse {
   point: number;
 }
 
-export type UserProfile = Pick<
-  UserResponse,
-  | "birthDate"
-  | "gender"
-  | "idCard"
-  | "fullName"
-  | "email"
-  | "phoneNumber"
-  | "address"
-  | "point"
-  | "userName"
-  | "avatar"
-> & {
+export type UserProfile = Pick<UserResponse, "birthDate" | "gender" | "idCard" | "fullName" | "email" | "phoneNumber" | "address" | "point" | "userName" | "avatar"> & {
   ticket?: {
     history?: UserTicketHistory[];
     data?: UserTicketType[];
   };
+};
+
+export type UserTransactionHistory = {
+  billId: string;
+  paymentId: number | null;
+  createdDate: string;
+  point: number;
+  minusPoint: number;
+  totalTicket: number;
+  amount: number;
+  userId: string;
+  promotionId: string;
+  status: number;
+  ticketDetails: {
+    ticketId: string;
+    billId: string;
+    seatId: string;
+    showTimeId: string;
+    status: number;
+    showTime: {
+      showTimeId: string;
+      movieId: string;
+      roomId: string;
+      startTime: string;
+      endTime: string;
+      movie: {
+        movieId: string;
+        movieName: string;
+        image: string;
+        postDate: string;
+        fromDate: string;
+        toDate: string;
+        actors: string;
+        director: string;
+        rating: string;
+        duration: number;
+        version: string;
+        trailer: string;
+        content: string;
+        userId: string; //not need
+        categories: [];
+      };
+      room: string | null;
+    };
+  }[];
 };
 
 export type UpdatePasswordDTO = {

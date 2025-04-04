@@ -1,9 +1,13 @@
+import { Promotion } from "./promotion.types";
+import { TicketDetail } from "./ticketdetail.types";
 import { UserBase } from "./users.type";
 
 export type Bill = {
   billId: string; // Guid in C#
   createdDate: Date; // DateTime in C#
+  paymentId: string | null;
   point: number; // decimal in C#
+  minusPoint: number; // decimal in C#
   totalTicket: number; // int in C#
   amount: number; // decimal in C#
   userId: string; // Guid in C#

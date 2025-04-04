@@ -24,6 +24,7 @@ export type UserTicketType = {
 };
 
 export type UserTicketHistory = {
+  id: string;
   dateCreate: string;
   movieName: string;
   plusPoint: number;
