@@ -34,16 +34,14 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
       console.log("Seat marked as pending:", seatId);
       const currentUserId = userDetails?.userId;
       if (userId !== currentUserId) {
-        setSeats((prev) =>
-          prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
-        );
+        setSeats((prev) => prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket)));
 
         // Also remove this seat from our selection if we had it selected
         setSelectedSeats((prev) => {
-          const selectedSeat = prev.find(seat => seat.id === seatId);
+          const selectedSeat = prev.find((seat) => seat.id === seatId);
           if (selectedSeat) {
             toast.error(`Ghế ${selectedSeat.name} đã được người khác chọn.`);
-            return prev.filter(seat => seat.id !== seatId);
+            return prev.filter((seat) => seat.id !== seatId);
           }
           return prev;
         });
@@ -51,30 +49,22 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     };
 
     const handleSeatBought = (seatId: string) => {
-      setSeats((prev) =>
-        prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 2 } : ticket))
-      );
+      setSeats((prev) => prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 2 } : ticket)));
     };
 
     const handleSeatSelected = (seatId: string, userId: string) => {
       const currentUserId = userDetails?.userId;
       if (userId !== currentUserId) {
-        setSeats((prev) =>
-          prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
-        );
+        setSeats((prev) => prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket)));
       }
     };
 
     const handleSeatAvailable = (seatId: string) => {
       console.log("Received SeatAvailable event for:", seatId);
 
-      setSeats((prev) =>
-        prev.map((ticket) =>
-          ticket.seatId === seatId ? { ...ticket, status: 0 } : ticket
-        )
-      );
+      setSeats((prev) => prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 0 } : ticket)));
       // Remove auto-released seats from the current selection using ticketId
-      setSelectedSeats((prev) => prev.filter(seat => seat.id !== seatId));
+      setSelectedSeats((prev) => prev.filter((seat) => seat.id !== seatId));
     };
 
     connection.on("SeatPending", handleSeatPending);
@@ -102,7 +92,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
         try {
           await connection.invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId);
           setSelectedSeats([]); // Clear locally stored selections
-          toast('Các ghế đã được hủy do bạn quay lại.', {
+          toast("Các ghế đã được hủy do bạn quay lại.", {
             position: "top-center",
           });
         } catch (error) {
@@ -113,7 +103,6 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
 
     releaseSeatsOnReturn();
   }, [connection]);
-
 
   // Fetch ticket data by effectiveShowTimeId.
   useEffect(() => {
@@ -166,12 +155,12 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
 
       // Prepare the updated seats selection based on the user's action
       let updatedSeats: SelectedSeat[] = [...selectedSeats]; // Start with current selection
-      const existingSeatIndex = selectedSeats.findIndex(s => s.ticketId === ticket.ticketId);
+      const existingSeatIndex = selectedSeats.findIndex((s) => s.ticketId === ticket.ticketId);
 
       if (existingSeatIndex !== -1) {
         if (selectedSeats[existingSeatIndex].id === ticket.seatId) {
           // User is deselecting this seat
-          updatedSeats = updatedSeats.filter(s => s.ticketId !== ticket.ticketId);
+          updatedSeats = updatedSeats.filter((s) => s.ticketId !== ticket.ticketId);
         } else {
           // User is changing from one seat to another with the same ticketId
           updatedSeats[existingSeatIndex] = seatInfo;
@@ -182,9 +171,9 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
       }
 
       // Create ticket requests from the updated selection
-      const ticketRequests = updatedSeats.map(seat => ({
+      const ticketRequests = updatedSeats.map((seat) => ({
         TicketId: seat.ticketId,
-        Version: seat.version
+        Version: seat.version,
       }));
 
       console.log("Selecting seat:", seatName, ticketRequests, effectiveShowTimeId, userId);
@@ -201,9 +190,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
             return prevSeats.filter((s) => s.ticketId !== ticket.ticketId);
           } else {
             toast.success(`Đổi ghế từ ${existingSeat.name} sang ${seatName}`);
-            return prevSeats.map((s) =>
-              s.ticketId === ticket.ticketId ? seatInfo : s
-            );
+            return prevSeats.map((s) => (s.ticketId === ticket.ticketId ? seatInfo : s));
           }
         } else {
           toast.success(`Chọn ghế ${seatName}`);
@@ -225,34 +212,34 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
         p: 3,
         borderRadius: 2,
         backgroundColor: theme.palette.background.paper,
-        color: theme.palette.text.primary
+        color: theme.palette.text.primary,
       }}
     >
       {/* Seat Legend */}
       <Box
         sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
           gap: 2,
           mb: 4,
           pb: 2,
-          borderBottom: `1px solid ${alpha(theme.palette.divider, 0.7)}`
+          borderBottom: `1px solid ${alpha(theme.palette.divider, 0.7)}`,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <EventSeatIcon sx={{ color: theme.palette.info.main }} />
           <Typography variant="body2">Ghế VIP</Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <EventSeatIcon sx={{ color: theme.palette.success.main }} />
           <Typography variant="body2">Ghế đang chọn</Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <EventSeatIcon sx={{ color: theme.palette.error.main }} />
           <Typography variant="body2">Ghế đã bán</Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <EventSeatIcon sx={{ color: theme.palette.warning.main }} />
           <Typography variant="body2">Ghế đã chọn</Typography>
         </Box>
@@ -265,10 +252,10 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
             margin: "0 auto",
             width: "80%",
             height: "10px",
-            background: `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.6)} 0%, rgba(0,0,0,0) 100%)`,
+            backgroundColor: "#121212",
             borderRadius: "50% 50% 0 0",
             padding: "20px 0",
-            position: "relative"
+            position: "relative",
           }}
         />
         <Typography variant="h6" sx={{ mt: 1, color: theme.palette.text.secondary, fontWeight: 500 }}>
@@ -280,15 +267,17 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", p: 2 }}>
         <Box sx={{ maxWidth: 600, display: "flex", flexDirection: "column", gap: 2 }}>
           {Object.entries(
-            seats.reduce((acc, ticket) => {
-              if (!acc[ticket.seat.atRow]) acc[ticket.seat.atRow] = [];
-              acc[ticket.seat.atRow].push(ticket);
-              return acc;
-            }, {} as Record<string, TicketDetail[]>)
+            seats.reduce(
+              (acc, ticket) => {
+                if (!acc[ticket.seat.atRow]) acc[ticket.seat.atRow] = [];
+                acc[ticket.seat.atRow].push(ticket);
+                return acc;
+              },
+              {} as Record<string, TicketDetail[]>,
+            ),
           ).map(([row, rowSeats]) => (
             <Box key={row} sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
               {rowSeats.map((ticket) => {
-
                 if (!ticket.seat.isActive) {
                   return (
                     <Box
@@ -320,7 +309,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
                         align="center"
                         sx={{
                           color: "rgba(255, 255, 255, 0.5)",
-                          fontSize: "0.7rem"
+                          fontSize: "0.7rem",
                         }}
                       >
                         {ticket.seat.atRow}
@@ -330,9 +319,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
                   );
                 }
 
-                const isSelectedByMe = selectedSeats.some(
-                  (s) => s.id === ticket.seatId && s.isMine
-                );
+                const isSelectedByMe = selectedSeats.some((s) => s.id === ticket.seatId && s.isMine);
                 const isPending = ticket.status === 1;
                 const isBought = ticket.status === 2;
                 const isVip = ticket.seat.seatType.typeName === "VIP";
@@ -394,11 +381,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
                   >
                     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                       <EventSeatIcon sx={{ color: iconColor }} />
-                      <Typography
-                        variant="body2"
-                        align="center"
-                        sx={{ color: textColor }}
-                      >
+                      <Typography variant="body2" align="center" sx={{ color: textColor }}>
                         {ticket.seat.atRow}
                         {ticket.seat.atColumn}
                       </Typography>

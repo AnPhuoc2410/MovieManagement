@@ -1,16 +1,14 @@
-import { Box, Button, Container, Typography, Paper } from "@mui/material";
-import React, { useState, useEffect, useCallback } from "react";
+import { Box, Button, Container, Paper, Typography } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import SeatCinema from "../../components/Ticket/SeatCinema";
-import StepTracker from "../../components/Ticket/StepTracker";
 import SeatCountdown from "../../components/Ticket/SeatCountdown";
-import Footer from "../../components/home/Footer";
-import Header from "../../components/home/Header";
-import toast from "react-hot-toast";
-import { useSignalR } from "../../contexts/SignalRContext";
+import StepTracker from "../../components/Ticket/StepTracker";
 import { useAuth } from "../../contexts/AuthContext";
-import { useTranslation } from "react-i18next";
-
+import { useSignalR } from "../../contexts/SignalRContext";
+import ShowTimeLayout from "../../layouts/ShowTimeLayout/ShowTimeLayout";
 
 const MovieSeat: React.FC = () => {
   const location = useLocation();
@@ -18,11 +16,10 @@ const MovieSeat: React.FC = () => {
   const { t } = useTranslation();
   const { connection, isConnected } = useSignalR();
   const { userDetails } = useAuth();
-  const { movieId, selectedTime, selectedDate, tickets, movieData } = location.state ||
-  {
+  const { movieId, selectedTime, selectedDate, tickets, movieData } = location.state || {
     movieId: "",
     selectedTime: "Not selected",
-    selectedDate: new Date().toISOString().split('T')[0],
+    selectedDate: new Date().toISOString().split("T")[0],
     tickets: [],
     movieData: {},
   };
@@ -31,9 +28,7 @@ const MovieSeat: React.FC = () => {
   const currentShowTimeId = sessionStorage.getItem("currentShowTimeId") || "";
 
   // State to store selected seats
-  const [selectedSeats, setSelectedSeats] = useState<
-    { id: string; name: string; version: string; ticketId: string; isMine?: boolean; selectedAt?: number; roomName?: string }[]
-  >([]);
+  const [selectedSeats, setSelectedSeats] = useState<{ id: string; name: string; version: string; ticketId: string; isMine?: boolean; selectedAt?: number; roomName?: string }[]>([]);
 
   // Single timestamp for all seat selections
   const [lastSelectionTime, setLastSelectionTime] = useState<number | null>(null);
@@ -47,27 +42,20 @@ const MovieSeat: React.FC = () => {
   }, []);
 
   // Updated handler to update the timestamp whenever a seat is selected.
-  const handleSetSelectedSeats = useCallback(
-    (updater: React.SetStateAction<any[]>) => {
-      setSelectedSeats((prevSeats) => {
-        const newSeats =
-          typeof updater === "function" ? updater(prevSeats) : updater;
-        if (newSeats.length !== prevSeats.length) {
-          // Whenever seats are added or removed, reset the countdown
-          setLastSelectionTime(Date.now());
-          setResetCounter(prev => prev + 1);
-        }
-        return newSeats;
-      });
-    },
-    []
-  );
+  const handleSetSelectedSeats = useCallback((updater: React.SetStateAction<any[]>) => {
+    setSelectedSeats((prevSeats) => {
+      const newSeats = typeof updater === "function" ? updater(prevSeats) : updater;
+      if (newSeats.length !== prevSeats.length) {
+        // Whenever seats are added or removed, reset the countdown
+        setLastSelectionTime(Date.now());
+        setResetCounter((prev) => prev + 1);
+      }
+      return newSeats;
+    });
+  }, []);
 
   // Calculate the total number of seats that should be selected based on ticket quantities
-  const maxSeats = (tickets || []).reduce(
-    (acc: number, ticket: any) => acc + (ticket.quantity || 0),
-    0
-  );
+  const maxSeats = (tickets || []).reduce((acc: number, ticket: any) => acc + (ticket.quantity || 0), 0);
 
   // Also update lastSelectionTime if there are no seats
   useEffect(() => {
@@ -90,15 +78,14 @@ const MovieSeat: React.FC = () => {
     try {
       const userId = userDetails?.userId;
       // Check seat availability from the current state in SeatCinema
-      const unavailableSeats = selectedSeats.filter(seat => {
+      const unavailableSeats = selectedSeats.filter((seat) => {
         // Find this seat in the SeatCinema component's state
         const seatElement = document.querySelector(`[data-seat-id="${seat.id}"]`);
-        return seatElement?.getAttribute('data-status') === '1' ||
-          seatElement?.getAttribute('data-status') === '2';
+        return seatElement?.getAttribute("data-status") === "1" || seatElement?.getAttribute("data-status") === "2";
       });
 
       if (unavailableSeats.length > 0) {
-        const seatNames = unavailableSeats.map(seat => seat.name).join(', ');
+        const seatNames = unavailableSeats.map((seat) => seat.name).join(", ");
         toast.error(`${seatNames} ${t("toast.error.seat.someone_selected")}`);
         return;
       }
@@ -137,30 +124,7 @@ const MovieSeat: React.FC = () => {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        background: `linear-gradient(to bottom,
-          rgba(11, 13, 26, 0.95) 0%,
-          rgba(11, 13, 26, 0.85) 100%
-        )`,
-        position: "relative",
-        "&::before": {
-          content: '""',
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: `radial-gradient(circle at 20% 30%, rgba(78, 46, 131, 0.4) 0%, rgba(78, 46, 131, 0) 50%),
-                      radial-gradient(circle at 75% 15%, rgba(33, 64, 154, 0.4) 0%, rgba(33, 64, 154, 0) 50%),
-                      linear-gradient(135deg, #0B0D1A 0%, #1A1E3C 50%, #3A1155 100%)`,
-          zIndex: -1,
-        },
-      }}
-    >
-      <Header />
-
+    <ShowTimeLayout>
       <Container
         maxWidth="xl"
         sx={{
@@ -196,7 +160,7 @@ const MovieSeat: React.FC = () => {
                 elevation={3}
                 sx={{
                   p: 3,
-                  backgroundColor: "rgba(27, 38, 53, 0.7)",
+                  backgroundColor: "#121212",
                   color: "white",
                   borderRadius: 2,
                 }}
@@ -211,13 +175,7 @@ const MovieSeat: React.FC = () => {
                     alignItems: "center",
                   }}
                 >
-                  <SeatCountdown
-                    seatId="all-seats"
-                    seatName={`${selectedSeats.length} ghế`}
-                    startTime={lastSelectionTime!}
-                    resetTrigger={resetCounter}
-                    onTimeout={handleSeatsTimeout}
-                  />
+                  <SeatCountdown seatId="all-seats" seatName={`${selectedSeats.length} ghế`} startTime={lastSelectionTime!} resetTrigger={resetCounter} onTimeout={handleSeatsTimeout} />
                 </Box>
               </Paper>
             )}
@@ -228,10 +186,6 @@ const MovieSeat: React.FC = () => {
           <Box
             sx={{
               flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              gap: { xs: 2, sm: 3, md: 4 },
-              pb: 4,
             }}
           >
             {/* Show StepTracker on mobile */}
@@ -241,14 +195,7 @@ const MovieSeat: React.FC = () => {
 
             {/* Seat selection section */}
             <Box sx={{ mt: 2 }}>
-              <Typography
-                variant="h4"
-                fontWeight="bold"
-                gutterBottom
-                align="center"
-                fontFamily={"JetBrains Mono"}
-                sx={{ textTransform: "uppercase", mb: 4 }}
-              >
+              <Typography variant="h4" fontWeight="bold" gutterBottom align="center" fontFamily={"JetBrains Mono"} sx={{ textTransform: "uppercase", mb: 4 }}>
                 {t("seat_cinema.screening")}
               </Typography>
 
@@ -259,7 +206,7 @@ const MovieSeat: React.FC = () => {
                     elevation={3}
                     sx={{
                       p: 2,
-                      backgroundColor: "rgba(27, 38, 53, 0.7)",
+                      backgroundColor: "#121212",
                       color: "white",
                       borderRadius: 2,
                     }}
@@ -274,13 +221,7 @@ const MovieSeat: React.FC = () => {
                         alignItems: "center",
                       }}
                     >
-                      <SeatCountdown
-                        seatId="all-seats-mobile"
-                        seatName={`${selectedSeats.length} ghế`}
-                        startTime={lastSelectionTime!}
-                        resetTrigger={resetCounter}
-                        onTimeout={handleSeatsTimeout}
-                      />
+                      <SeatCountdown seatId="all-seats-mobile" seatName={`${selectedSeats.length} ghế`} startTime={lastSelectionTime!} resetTrigger={resetCounter} onTimeout={handleSeatsTimeout} />
                     </Box>
                   </Paper>
                 </Box>
@@ -288,19 +229,14 @@ const MovieSeat: React.FC = () => {
 
               <Box
                 sx={{
-                  backgroundColor: "rgba(11, 13, 26, 0.6)",
+                  backgroundColor: "#121212",
                   borderRadius: 2,
                   p: 3,
                   mb: 4,
                   boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.25)",
                 }}
               >
-                <SeatCinema
-                  showTimeId={currentShowTimeId}
-                  selectedSeats={selectedSeats}
-                  setSelectedSeats={handleSetSelectedSeats}
-                  groupConnected={isConnected}
-                />
+                <SeatCinema showTimeId={currentShowTimeId} selectedSeats={selectedSeats} setSelectedSeats={handleSetSelectedSeats} groupConnected={isConnected} />
 
                 <Typography
                   variant="body2"
@@ -333,8 +269,7 @@ const MovieSeat: React.FC = () => {
           </Box>
         </Box>
       </Container>
-      <Footer />
-    </Box>
+    </ShowTimeLayout>
   );
 };
 

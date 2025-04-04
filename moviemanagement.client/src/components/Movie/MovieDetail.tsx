@@ -1,13 +1,5 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import {
-  Box,
-  Button,
-  Chip,
-  Container,
-  Grid,
-  Modal,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Chip, Container, Grid, Modal, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -70,8 +62,15 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
 
   if (loading) return <Loader />;
   return (
-    <Box sx={{ backgroundColor: "#0B0D1A", minHeight: "50vh", color: "white" }}>
-      <Container maxWidth="lg" sx={{ mt: 13, color: "white" }}>
+    <Box
+      sx={{
+        backgroundColor: "#121212",
+        minHeight: "50vh",
+        color: "white",
+        borderRadius: 2,
+      }}
+    >
+      <Container maxWidth="lg" sx={{ p: 4, color: "white" }}>
         <Grid container spacing={4} sx={{ alignItems: "stretch" }}>
           {/* Movie Poster */}
           <Grid item xs={12} md={4}>
@@ -90,29 +89,15 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
           </Grid>
 
           {/* Movie Info */}
-          <Grid
-            item
-            xs={12}
-            md={8}
-            sx={{ display: "flex", flexDirection: "column" }}
-          >
-            <Typography
-              variant="h4"
-              fontWeight="bold"
-              mb={2}
-              fontFamily={"JetBrains Mono"}
-            >
+          <Grid item xs={12} md={8} sx={{ display: "flex", flexDirection: "column" }}>
+            <Typography variant="h4" fontWeight="bold" mb={2} fontFamily={"JetBrains Mono"}>
               {movie?.movieName}
             </Typography>
 
             <Box sx={{ mb: 3, fontWeight: "bold" }}>
               <Chip label={movie?.rating} color="error" sx={{ mb: 1, mr: 1 }} />
 
-              <Chip
-                icon={<AccessTimeIcon />}
-                label={`${movie?.duration}'`}
-                sx={{ mr: 1, mb: 1, color: "white" }}
-              />
+              <Chip icon={<AccessTimeIcon />} label={`${movie?.duration}'`} sx={{ mr: 1, mb: 1, color: "white" }} />
               {/* <Chip
                 icon={<LocationOnIcon />}
                 label={movie.country}
@@ -124,9 +109,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
                 sx={{ mr: 1, mb: 1, color: "white" }}
               /> */}
               <Chip
-                label={movie?.categories
-                  .map((category) => category.name)
-                  .join(", ")}
+                label={movie?.categories.map((category) => category.name).join(", ")}
                 sx={{
                   mr: 1,
                   mb: 1,
@@ -136,12 +119,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
               />
             </Box>
 
-            <Typography
-              variant="h6"
-              fontWeight="bold"
-              mb={2}
-              fontFamily={"JetBrains Mono"}
-            >
+            <Typography variant="h6" fontWeight="bold" mb={2} fontFamily={"JetBrains Mono"}>
               {t("movie_detail.description")}
             </Typography>
 
@@ -149,32 +127,16 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
               <Typography mb={1} variant="body1" fontFamily={"JetBrains Mono"}>
                 <strong>{t("movie_detail.director")}</strong> {movie?.director}
               </Typography>
-              <Typography
-                mb={1}
-                variant="body1"
-                sx={{ textAlign: "left" }}
-                fontFamily={"JetBrains Mono"}
-              >
+              <Typography mb={1} variant="body1" sx={{ textAlign: "left" }} fontFamily={"JetBrains Mono"}>
                 <strong>{t("movie_detail.actors")}</strong> {movie?.actors}
               </Typography>
               <Typography mb={1} variant="body1" fontFamily={"JetBrains Mono"}>
                 <strong>{t("movie_detail.release_date")}</strong> {formatDate(movie?.fromDate)}
               </Typography>
-              <Typography
-                variant="h6"
-                fontWeight="bold"
-                mb={2}
-                mt={4}
-                fontFamily={"JetBrains Mono"}
-              >
+              <Typography variant="h6" fontWeight="bold" mb={2} mt={4} fontFamily={"JetBrains Mono"}>
                 {t("movie_detail.content")}
               </Typography>
-              <Typography
-                paragraph
-                variant="body1"
-                sx={{ textAlign: "justify" }}
-                fontFamily={"JetBrains Mono"}
-              >
+              <Typography paragraph variant="body1" sx={{ textAlign: "justify" }} fontFamily={"JetBrains Mono"}>
                 {movie?.content}
               </Typography>
             </Box>
@@ -182,9 +144,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
               <Button
                 variant="outlined"
                 size="large"
-                onClick={() =>
-                  movie?.trailer && handleOpenTrailer(movie.trailer)
-                }
+                onClick={() => movie?.trailer && handleOpenTrailer(movie.trailer)}
                 sx={{
                   color: "white",
                   borderColor: "#e67e22",
@@ -196,8 +156,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
                     content: '""',
                     position: "absolute",
                     inset: 0,
-                    background:
-                      "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                    background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
                     transform: "translateX(-100%)",
                     transition: "transform 0.5s ease-in-out",
                     zIndex: 0,
@@ -228,8 +187,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
                     content: '""',
                     position: "absolute",
                     inset: 0,
-                    background:
-                      "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                    background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
                     transform: "translateX(-100%)",
                     transition: "transform 0.5s ease-in-out",
                     zIndex: 0,

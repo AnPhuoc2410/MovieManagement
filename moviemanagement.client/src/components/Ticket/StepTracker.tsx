@@ -1,11 +1,4 @@
-import {
-  Cancel,
-  CancelOutlined,
-  CheckCircleOutline as CheckCircleIcon,
-  EventSeatOutlined as EventSeatIcon,
-  MovieOutlined as MovieIcon,
-  PaymentOutlined as PaymentIcon,
-} from "@mui/icons-material";
+import { Cancel, CancelOutlined, CheckCircleOutline as CheckCircleIcon, EventSeatOutlined as EventSeatIcon, MovieOutlined as MovieIcon, PaymentOutlined as PaymentIcon } from "@mui/icons-material";
 import { Box, Step, StepLabel, Stepper } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -15,10 +8,7 @@ interface StepTrackerProps {
   paymentStatus?: "success" | "failure";
 }
 
-const StepTracker: React.FC<StepTrackerProps> = ({
-  currentStep,
-  paymentStatus,
-}) => {
+const StepTracker: React.FC<StepTrackerProps> = ({ currentStep, paymentStatus }) => {
   const { t } = useTranslation();
   const steps = [
     { label: t("step_tracker.select_show_time"), icon: <MovieIcon /> },
@@ -26,10 +16,7 @@ const StepTracker: React.FC<StepTrackerProps> = ({
     { label: t("step_tracker.payment"), icon: <PaymentIcon /> },
   ];
 
-  const finalStep =
-    paymentStatus === "failure"
-      ? { label: t("step_tracker.failed"), icon: <CancelOutlined  /> }
-      : { label: t("step_tracker.success"), icon: <CheckCircleIcon /> };
+  const finalStep = paymentStatus === "failure" ? { label: t("step_tracker.failed"), icon: <CancelOutlined /> } : { label: t("step_tracker.success"), icon: <CheckCircleIcon /> };
 
   return (
     <Box
@@ -37,8 +24,8 @@ const StepTracker: React.FC<StepTrackerProps> = ({
         backgroundColor: "rgba(18, 18, 18, 0.8)",
         backdropFilter: "blur(8px)",
         borderRadius: "12px",
-        mt: 10,
-        padding: 3,
+        padding: { xs: 2, sm: 3, md: 4 },
+        width: { xs: "60%", md: "100%" },
         height: "fit-content",
         position: "relative",
         transition: "all 0.3s ease",
@@ -87,7 +74,7 @@ const StepTracker: React.FC<StepTrackerProps> = ({
               StepIconComponent={() => (
                 <Box
                   sx={{
-                    color: index < currentStep ? (index == 3 && paymentStatus == "failure") ? "red" : "#834bff" : "gray",
+                    color: index < currentStep ? (index == 3 && paymentStatus == "failure" ? "red" : "#834bff") : "gray",
                     display: "flex",
                     alignItems: "center",
                     transition: "color 0.3s ease",
