@@ -36,11 +36,13 @@ import { format, parseISO } from "date-fns";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
-import { updateUserPartial } from "../../../apis/user.apis";
+import { fetchBillByUserId, updateUserPartial } from "../../../apis/user.apis";
 import InputComponent from "../../../components/common/InputComponent";
 import { useAuth } from "../../../contexts/AuthContext";
 import UserDetailLayout from "../../../layouts/UserDetailLayout/UserDetailLayout";
 import { UserProfile } from "../../../types/users.type";
+import { useQuery } from "react-query";
+import Loader from "../../../components/shared/Loading";
 
 export default function UserDetail() {
   const { userId } = useParams();
@@ -64,6 +66,16 @@ export default function UserDetail() {
 
   const [profile, setProfile] = useState<UserProfile>({} as UserProfile);
 
+  const {
+    data: bill,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["bill"],
+    queryFn: () => fetchBillByUserId("e0c6ccb9-83e3-4f51-9655-31223e09203b"),
+    // enabled: !!userId,
+  });
+
   useEffect(() => {
     if (userDetails && userId === userDetails.userId) {
       setProfile({
@@ -76,6 +88,9 @@ export default function UserDetail() {
       });
     }
   }, [userDetails, userId]);
+
+  if (isLoading) return <Loader />;
+  if (error) console.log("Error fetching bill:", error);
 
   interface ShowPasswordState {
     old: boolean;
@@ -444,13 +459,16 @@ export default function UserDetail() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {profile.ticket?.history &&
-                        profile.ticket.history.map((item, index) => (
+                      {bill &&
+                        bill.map((item, index) => (
                           <TableRow key={index}>
                             <TableCell>{index + 1}</TableCell>
-                            <TableCell>{item.dateCreate}</TableCell>
-                            <TableCell>{item.movieName}</TableCell>
-                            <TableCell>{item.plusPoint}</TableCell>
+                            <TableCell>{item.createdDate}</TableCell>
+                            <TableCell>
+                              {/* Extract movie name from first ticket's showTime */}
+                              {item.ticketDetails?.[0]?.showTime?.movie?.movieName || "N/A"}
+                            </TableCell>
+                            <TableCell>{item.point}</TableCell> {/* Changed from plusPoint to point based on type */}
                             <TableCell>{item.minusPoint}</TableCell>
                           </TableRow>
                         ))}
@@ -476,25 +494,27 @@ export default function UserDetail() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {profile.ticket?.data &&
-                        profile.ticket.data.map((ticket, index) => (
-                          <TableRow key={ticket.id}>
-                            <TableCell>{index + 1}</TableCell>
-                            <TableCell>{ticket.movieName}</TableCell>
-                            <TableCell>{ticket.dateStart}</TableCell>
-                            <TableCell>{ticket.dateEnd}</TableCell>
-                            <TableCell>{ticket.time}</TableCell>
-                            <TableCell>{ticket.room}</TableCell>
-                            <TableCell>{ticket.price}</TableCell>
-                            <TableCell
-                              sx={{
-                                color: ticket.status === "Đã nhận vé" ? "green" : "blue",
-                              }}
-                            >
-                              {ticket.status}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                      {bill &&
+                        bill.flatMap((transaction, billIndex) =>
+                          transaction.ticketDetails.map((ticket, ticketIndex) => (
+                            <TableRow key={`${transaction.billId}-${ticket.ticketId}`}>
+                              <TableCell>{billIndex + ticketIndex + 1}</TableCell>
+                              <TableCell>{ticket.showTime?.movie?.movieName || "N/A"}</TableCell>
+                              <TableCell>{transaction.createdDate}</TableCell>
+                              <TableCell>{ticket.showTime?.startTime?.split("T")[0] || "N/A"}</TableCell>
+                              <TableCell>{ticket.showTime?.startTime ? new Date(ticket.showTime.startTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "N/A"}</TableCell>
+                              <TableCell>{ticket.showTime?.room || "N/A"}</TableCell>
+                              <TableCell>{(transaction.amount / transaction.totalTicket).toFixed(0)}</TableCell>
+                              <TableCell
+                                sx={{
+                                  color: ticket.status === 1 ? "green" : "blue",
+                                }}
+                              >
+                                {ticket.status === 1 ? "Đã nhận vé" : "Chưa nhận vé"}
+                              </TableCell>
+                            </TableRow>
+                          )),
+                        )}
                     </TableBody>
                   </Table>
                 </Box>

@@ -1,5 +1,6 @@
+import axios from "axios";
 import { SignupRequest } from "../types/auth.types";
-import { UserResponse } from "../types/users.type";
+import { UserResponse, UserTransactionHistory } from "../types/users.type";
 import { ApiResponse } from "./api.config";
 import api from "./axios.config";
 
@@ -9,12 +10,8 @@ export enum Role {
   Admin = "Admin",
 }
 
-export const fetchUserByRole = async (
-  role: Role,
-): Promise<ApiResponse<UserResponse[]>> => {
-  const response = await api.get<ApiResponse<UserResponse[]>>(
-    `/users/role/${role}`,
-  );
+export const fetchUserByRole = async (role: Role): Promise<ApiResponse<UserResponse[]>> => {
+  const response = await api.get<ApiResponse<UserResponse[]>>(`/users/role/${role}`);
 
   console.log(`Fetched ${role} users:`, response.data);
 
@@ -26,20 +23,17 @@ export const doInActiveUser = async (id: string) => {
   return response.status === 204 ? true : false;
 };
 
-export const updateUserPartial = async (
-  id: string,
-  data: Partial<UserResponse>,
-) => {
-  const response = await api.patch<ApiResponse<UserResponse>>(
-    `/users/${id}`,
-    data,
-  );
+export const updateUserPartial = async (id: string, data: Partial<UserResponse>) => {
+  const response = await api.patch<ApiResponse<UserResponse>>(`/users/${id}`, data);
   return response.status === 200 ? true : false;
 };
 
 export const fetchUserDetail = async (id: string) => {
-  const response = await api.get<ApiResponse<UserResponse>>(
-    `/users/detail/${id}`,
-  );
+  const response = await api.get<ApiResponse<UserResponse>>(`/users/detail/${id}`);
   return response.data;
+};
+
+export const fetchBillByUserId = async (id: string) => {
+  const response = await axios.get<ApiResponse<UserTransactionHistory[]>>(`/api/mock/bill?id=${id}`);
+  return response.data.data;
 };

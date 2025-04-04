@@ -12,9 +12,7 @@ import { Role, UserRole } from "./types/roles.type";
 // Lazy load components
 const Home = lazy(() => import("./pages/Home/Home"));
 const AuthForm = lazy(() => import("./pages/auth/AuthForm"));
-const ForgotPassword = lazy(
-  () => import("./pages/auth/ForgotPassword/ForgotPassword"),
-);
+const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword/ForgotPassword"));
 
 // Admin Pages
 const AdminPages = {
@@ -36,29 +34,17 @@ const AdminPages = {
     Add: lazy(() => import("./pages/admin/QuanLyPhim/AddMovie")),
   },
   Room: {
-    Management: lazy(
-      () => import("./pages/admin/QuanLyPhongChieu/QuanLyPhongChieu"),
-    ),
-    Detail: lazy(
-      () => import("./pages/admin/QuanLyPhongChieu/ChiTietPhongChieu"),
-    ),
-    CreateRoom: lazy(
-      () => import("./pages/admin/QuanLyPhongChieu/CreateRoom"),
-    ),
+    Management: lazy(() => import("./pages/admin/QuanLyPhongChieu/QuanLyPhongChieu")),
+    Detail: lazy(() => import("./pages/admin/QuanLyPhongChieu/ChiTietPhongChieu")),
+    CreateRoom: lazy(() => import("./pages/admin/QuanLyPhongChieu/CreateRoom")),
   },
   ShowTime: {
-    Management: lazy(
-      () => import("./pages/admin/QuanLyThoiGianChieu/QuanLiThoiGianChieu"),
-    ),
-    Detail: lazy(
-      () => import("./pages/admin/QuanLyThoiGianChieu/ChiTietThoiGianChieu"),
-    ),
+    Management: lazy(() => import("./pages/admin/QuanLyThoiGianChieu/QuanLiThoiGianChieu")),
+    Detail: lazy(() => import("./pages/admin/QuanLyThoiGianChieu/ChiTietThoiGianChieu")),
     Add: lazy(() => import("./pages/admin/QuanLyThoiGianChieu/ThemThoiGianChieu")),
   },
   Member: {
-    Management: lazy(
-      () => import("./pages/admin/QuanLyThanhVien/QuanLiThanhVien"),
-    ),
+    Management: lazy(() => import("./pages/admin/QuanLyThanhVien/QuanLiThanhVien")),
     Edit: lazy(() => import("./pages/admin/QuanLyThanhVien/ChinhSuaThanhVien")),
   },
 };
@@ -113,6 +99,7 @@ export default function useRouteElements() {
       ],
     },
     // Protected Client Routes
+    {},
     {
       children: [
         {
@@ -144,11 +131,10 @@ export default function useRouteElements() {
             { path: ":movieId", element: <ClientPages.Ticket.Booking /> },
             {
               path: "movie-seat",
-              element: <ProtectedRoute redirectPath="/ticket/movie-seat"/>,
-              children: [
-                { path: "", element: <ClientPages.Ticket.Seat /> }
-              ]
-            }, { path: "payment", element: <ClientPages.Ticket.Payment /> },
+              element: <ProtectedRoute redirectPath="/ticket/movie-seat" />,
+              children: [{ path: "", element: <ClientPages.Ticket.Seat /> }],
+            },
+            { path: "payment", element: <ClientPages.Ticket.Payment /> },
             {
               path: "confirmation",
               element: <ClientPages.Ticket.Confirmation />,
@@ -243,9 +229,7 @@ export default function useRouteElements() {
       children: [
         {
           path: "/users",
-          children: [
-            { path: "profile/:userId", element: <ClientPages.User.Profile /> },
-          ],
+          children: [{ path: "profile/:userId", element: <ClientPages.User.Profile /> }],
         },
       ],
     },

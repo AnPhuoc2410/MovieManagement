@@ -63,10 +63,7 @@ export const Login = () => {
 
   const formik = useFormik({
     initialValues: {
-      email:
-        localStorage.getItem("rememberMe") === "true"
-          ? localStorage.getItem("lastLoginEmail") || ""
-          : "",
+      email: localStorage.getItem("rememberMe") === "true" ? localStorage.getItem("lastLoginEmail") || "" : "",
       password: "",
     },
     validationSchema: loginValidationSchema(t),
@@ -108,14 +105,16 @@ export const Login = () => {
             expires: tokenData.expires,
           });
 
-          toast.success(
-            t("auth.login.welcome_message", { name: userDetails?.fullName }),
-          );
+          toast.success(t("auth.login.welcome_message", { name: userDetails?.fullName }));
 
-          // Navigate based on extracted role
-          setTimeout(() => {
-            navigate("/");
-          }, 1000);
+          // After login, get the stored redirect path from localStorage
+          const redirectTo = localStorage.getItem("redirectTo") || "/";
+
+          // Clear the redirect path from localStorage
+          localStorage.removeItem("redirectTo");
+
+          // Redirect to the page they were trying to visit
+          navigate(redirectTo, { replace: true });
         } else {
           toast.error("Wrong email or password");
 
@@ -138,10 +137,7 @@ export const Login = () => {
   return (
     <form onSubmit={formik.handleSubmit}>
       <Box sx={{ mb: 4 }}>
-        <Typography
-          variant="h6"
-          sx={{ mb: 1, fontWeight: 600, color: "#1a1a1a" }}
-        >
+        <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: "#1a1a1a" }}>
           {t("auth.login.welcome")}
         </Typography>
         <Typography variant="body2" sx={{ color: "#666" }}>
@@ -198,11 +194,7 @@ export const Login = () => {
                   },
                 }}
               >
-                {showPassword ? (
-                  <VisibilityOff sx={{ color: "#666" }} />
-                ) : (
-                  <Visibility sx={{ color: "#666" }} />
-                )}
+                {showPassword ? <VisibilityOff sx={{ color: "#666" }} /> : <Visibility sx={{ color: "#666" }} />}
               </IconButton>
             </InputAdornment>
           ),
@@ -260,18 +252,9 @@ export const Login = () => {
       </Box>
 
       <Box sx={{ mb: 3 }}>
-        <ReCAPTCHA
-          ref={recaptchaRef}
-          sitekey={ENV.RECAPTCHA_V2_SITE_KEY}
-          onChange={handleCaptchaChange}
-          theme="light"
-          size="normal"
-        />
+        <ReCAPTCHA ref={recaptchaRef} sitekey={ENV.RECAPTCHA_V2_SITE_KEY} onChange={handleCaptchaChange} theme="light" size="normal" />
         {!captchaToken && (
-          <Typography
-            variant="caption"
-            sx={{ color: "#666", mt: 1, display: "block" }}
-          >
+          <Typography variant="caption" sx={{ color: "#666", mt: 1, display: "block" }}>
             {t("auth.login.please_complete_captcha")}
           </Typography>
         )}
@@ -303,11 +286,7 @@ export const Login = () => {
           },
         }}
       >
-        {loading
-          ? t("auth.login.processing")
-          : !captchaToken
-            ? t("auth.login.complete_captcha_to_continue")
-            : t("auth.login.login_button")}
+        {loading ? t("auth.login.processing") : !captchaToken ? t("auth.login.complete_captcha_to_continue") : t("auth.login.login_button")}
       </Button>
 
       {/*<Divider sx={{ my: 1.5 }} />*/}

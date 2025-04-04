@@ -14,16 +14,14 @@ export const ProtectedRoute: React.FC<Props> = ({
   const { isAuthenticated, userDetails } = useAuth();
   const location = useLocation();
 
-  // If not authenticated, redirect to login
+  // If not authenticated, store the attempted location in localStorage
   if (!isAuthenticated) {
+    localStorage.setItem("redirectTo", location.pathname); // Store the attempted location
     return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
   // Check if user's role is in the allowed roles
-  const hasAccess =
-    userDetails?.role !== undefined
-      ? allowedRoles.includes(userDetails.role as Role)
-      : false;
+  const hasAccess = userDetails?.role !== undefined ? allowedRoles.includes(userDetails.role as Role) : false;
 
   // If user doesn't have access, redirect
   if (!hasAccess) {
@@ -44,6 +42,7 @@ export const RejectedRoute = () => {
     // If ALREADY authenticated, redirect to:
     // 1. The page user was trying to access before login (if exists)
     // 2. Home page (if no previous location)
-    <Navigate to={location.state?.from ?? "/"} replace />
+    // <Navigate to={location.state?.from ?? "/"} replace />
+    <Navigate to={localStorage.getItem("redirectTo") || "/"} replace />
   );
 };
