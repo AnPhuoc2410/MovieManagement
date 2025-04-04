@@ -7,6 +7,7 @@ import api from "../../apis/axios.config";
 import { Cinema } from "../../types/cinema.types";
 import { ShowTime } from "../../types/showtime.types";
 import { Theater } from "../../types/theater.types";
+import Loader from "../shared/Loading";
 
 interface ShowTimeCinemaProps {
   movieId: string;
@@ -168,7 +169,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({ movieId, onRoomSelect, 
   }, [cinemas.length, onShowtimeAvailability]);
 
   return (
-    <Container maxWidth="lg">
+    <>
       <Typography variant="h4" fontWeight="bold" textAlign="center" fontFamily="JetBrains Mono" mb={2} sx={{ letterSpacing: "1px", textTransform: "uppercase" }}>
         {t("showtime_cinema.title.showtime_list")}
       </Typography>
@@ -194,7 +195,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({ movieId, onRoomSelect, 
                   backgroundColor: "yellow",
                 },
                 "&:hover": {
-                  backgroundColor: "transparent",
+                  backgroundColor: "#121212",
                 },
                 borderRadius: "12px",
                 px: 3,
@@ -234,7 +235,7 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({ movieId, onRoomSelect, 
       </ToggleButtonGroup>
 
       {/* City Selection */}
-      <Grid container alignItems="center" justifyContent="space-between" mb={3}>
+      <Grid container alignItems="center" justifyContent="space-between" sx={{ mr: 2 }}>
         <Grid item>
           <Typography variant="h4" fontWeight="bold">
             🎬 {t("showtime_cinema.title.theater_list")}
@@ -252,10 +253,12 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({ movieId, onRoomSelect, 
                 border: "2px solid yellow",
                 color: "yellow",
                 fontWeight: "bold",
-                fontSize: "15px",
+                fontSize: "1rem",
                 borderRadius: "10px",
+                textTransform: "uppercase",
+                textAlign: "center",
                 px: 3,
-                backgroundColor: "transparent",
+                backgroundColor: "#121212",
               }}
             >
               <MenuItem value="hcm">{t("showtime_cinema.location.HCM")}</MenuItem>
@@ -268,8 +271,8 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({ movieId, onRoomSelect, 
       </Grid>
 
       {/* Cinema List or No Showtime Message */}
-      {!isLoading && (
-        <Box sx={{ borderRadius: "12px" }}>
+      {!isLoading ? (
+        <Box sx={{ borderRadius: 2 }}>
           {cinemas.length > 0 ? (
             cinemas.map((cinema, index) => (
               <Card
@@ -283,11 +286,14 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({ movieId, onRoomSelect, 
                 }}
               >
                 <CardContent>
-                  <Typography variant="h6" fontWeight="bold" color="yellow" mb={1} fontFamily="JetBrains Mono">
-                    {cinema.name}
+                  <Typography variant="h5" fontWeight="bold" color="yellow" mb={1} fontFamily="JetBrains Mono">
+                    {"Rạp: " + cinema.name}
                   </Typography>
-                  <Typography variant="body2" mb={2}>
-                    {cinema.address}
+                  <Typography variant="body2" mb={1}>
+                    {"Địa chỉ: " + cinema.address}
+                  </Typography>
+                  <Typography variant="h6" mb={1}>
+                    Khung giờ chiếu
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                     {cinema.times.map((showtime, idx) => (
@@ -319,8 +325,10 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({ movieId, onRoomSelect, 
             </Typography>
           )}
         </Box>
+      ) : (
+        <Loader />
       )}
-    </Container>
+    </>
   );
 };
 

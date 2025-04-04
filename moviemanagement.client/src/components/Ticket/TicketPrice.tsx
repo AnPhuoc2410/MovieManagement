@@ -10,6 +10,7 @@ import { Pagination } from "swiper/modules";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface TicketPriceProps {
   onNext?: (selectedSeats: SeatType[]) => void;
@@ -34,6 +35,8 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
     locale: "vi-VN",
     currency: "VND",
   });
+  const [canGoNext, setCanGoNext] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const currentLang = i18n.language;
@@ -84,12 +87,18 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
     });
   };
 
+  useEffect(() => {
+    const hasSelectedSeats = seatTypes.some((seat) => seat.quantity > 0);
+    setCanGoNext(hasSelectedSeats);
+  }, [seatTypes]);
+
   const handleNext = () => {
     const selectedSeats = seatTypes.filter((seat) => seat.quantity > 0);
-    if (selectedSeats.length === 0) {
-      toast.error("Vui lòng chọn ít nhất một vé.");
-      return;
-    }
+
+    console.log(`Selected Seats: ${JSON.stringify(selectedSeats, null, 2)}`);
+
+    if (!isAuthenticated) localStorage.setItem("selectedSeats", JSON.stringify(selectedSeats));
+
     if (onNext) onNext(selectedSeats);
   };
 
@@ -102,6 +111,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
         textAlign: "center",
         display: "flex",
         flexDirection: "column",
+        bderRadius: 2,
       }}
     >
       <Typography
@@ -114,6 +124,21 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
         }}
       >
         {t("ticket_price.ticket_selection")}
+      </Typography>
+
+      <Typography
+        variant="body2"
+        sx={{
+          mb: { xs: 2, sm: 3, md: 4 },
+          fontSize: { xs: "0.875rem", sm: "1rem" },
+          color: "red",
+          minHeight: "24px", // Giữ chỗ cho text
+          opacity: canGoNext ? 0 : 1,
+          visibility: canGoNext ? "hidden" : "visible",
+          transition: "opacity 0.3s ease, visibility 0.3s ease",
+        }}
+      >
+        *Xin vui lòng chọn ít nhất một loại ghế để tiếp tục.
       </Typography>
 
       <Box
@@ -298,15 +323,20 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
       </Box>
       {/* Next Button */}
       {onNext && (
-        <Box sx={{ mt: { xs: 3, sm: 4 } }}>
+        <Box sx={{ textAlign: "center", minHeight: "48px", mt: 3 }}>
           <Button
             variant="contained"
+            disabled={!canGoNext}
             sx={{
+              opacity: canGoNext ? 1 : 0,
+              pointerEvents: canGoNext ? "auto" : "none", // Ngăn click khi ẩn
+              transition: "opacity 0.3s ease-in-out",
+              margin: "0 auto",
               backgroundColor: "#FFC107",
               color: "black",
               fontWeight: "bold",
               px: { xs: 3, sm: 4 },
-              py: { xs: 1, sm: 1.5 },
+              py: { xs: 1, sm: 1.5, md: 2, lg: 3 },
               "&:hover": { backgroundColor: "#FFA000" },
               fontSize: { xs: "0.875rem", sm: "1rem" },
             }}

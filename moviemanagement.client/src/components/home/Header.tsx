@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
 import LanguageSelector from "../common/LanguageSelector";
 import { useAuth } from "../../contexts/AuthContext";
+import Clock from "../Clock";
 
 interface HeaderProps {
   isTransparent?: boolean;
@@ -330,6 +331,8 @@ const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
                 </MenuItem>
               )}
             </Menu>
+
+            <Clock />
 
             {isAuthenticated ? (
               <>
