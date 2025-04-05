@@ -88,7 +88,7 @@ namespace MovieManagement.Server.Controllers
             var response = new ApiResponse<String>
             {
                 StatusCode = 200,
-                Message = "The OTP code was sended",
+                Message = "The OTP code was sent",
                 Data = otp,
                 IsSuccess = true
             };
