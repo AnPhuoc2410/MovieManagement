@@ -22,23 +22,26 @@ interface TicketPriceProps {
   onNext?: (selectedSeats: SeatType[]) => void;
 }
 
-const currencyFormatMap: Record<string, { locale: string, currency: string }> = {
-  en: { locale: 'en-US', currency: 'USD' },
-  jp: { locale: 'ja-JP', currency: 'JPY' },
-  vi: { locale: 'vi-VN', currency: 'VND' }
+const currencyFormatMap: Record<string, { locale: string; currency: string }> =
+{
+  en: { locale: "en-US", currency: "USD" },
+  jp: { locale: "ja-JP", currency: "JPY" },
+  vi: { locale: "vi-VN", currency: "VND" },
 };
 
 const exchangeRates = {
   VND: 1,
   USD: 0.000039,
-  JPY: 0.0058
+  JPY: 0.0058,
 };
 
 const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
   const [seatTypes, setSeatTypes] = useState<SeatType[]>([]);
   const { t, i18n } = useTranslation();
-  const [currencyFormat, setCurrencyFormat] = useState({ locale: 'vi-VN', currency: 'VND' });
-
+  const [currencyFormat, setCurrencyFormat] = useState({
+    locale: "vi-VN",
+    currency: "VND",
+  });
 
   useEffect(() => {
     const currentLang = i18n.language;
@@ -49,15 +52,14 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
   useEffect(() => {
     const fetchSeatTypes = async () => {
       try {
-        const response = await api.get(`seattype/all`);
-        const seatData = response.data.map((seat: SeatType) => ({
+        const response = await api.get(`seattype`);
+        const seatData = response.data.data.map((seat: SeatType) => ({
           ...seat,
           quantity: 0,
         }));
         setSeatTypes(seatData);
       } catch (error) {
         console.error("Error fetching seat types:", error);
-        toast.error(t("errors.fetch_seats_failed"));
       }
     };
 
@@ -67,8 +69,10 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
   const increment = (id: string) => {
     setSeatTypes((prevSeats) =>
       prevSeats.map((seat) =>
-        seat.seatTypeId === id ? { ...seat, quantity: seat.quantity + 1 } : seat
-      )
+        seat.seatTypeId === id
+          ? { ...seat, quantity: seat.quantity + 1 }
+          : seat,
+      ),
     );
   };
 
@@ -77,14 +81,16 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
       prevSeats.map((seat) =>
         seat.seatTypeId === id && seat.quantity > 0
           ? { ...seat, quantity: seat.quantity - 1 }
-          : seat
-      )
+          : seat,
+      ),
     );
   };
 
   const convertPrice = (priceInVND: number, targetCurrency: string) => {
-    if (targetCurrency === 'VND') return priceInVND;
-    return priceInVND * exchangeRates[targetCurrency as keyof typeof exchangeRates];
+    if (targetCurrency === "VND") return priceInVND;
+    return (
+      priceInVND * exchangeRates[targetCurrency as keyof typeof exchangeRates]
+    );
   };
 
   const formatPrice = (price: number) => {
@@ -92,7 +98,10 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
     const convertedPrice = convertPrice(price, currencyFormat.currency);
 
     // For JPY, round to whole number as yen doesn't use decimals
-    const adjustedPrice = currencyFormat.currency === 'JPY' ? Math.round(convertedPrice) : convertedPrice;
+    const adjustedPrice =
+      currencyFormat.currency === "JPY"
+        ? Math.round(convertedPrice)
+        : convertedPrice;
 
     return adjustedPrice.toLocaleString(currencyFormat.locale, {
       style: "currency",
@@ -167,7 +176,7 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
               >
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    {t("seat")} {seat.typeName}
+                    {seat.typeName}
                   </Typography>
 
                   <Typography

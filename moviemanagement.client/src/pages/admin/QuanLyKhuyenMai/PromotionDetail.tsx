@@ -15,16 +15,8 @@ import dayjs from "dayjs";
 import { ENV } from "../../../env/env.config";
 import AppTheme from "../../../shared-theme/AppTheme";
 import toast from "react-hot-toast";
-
-interface Promotion {
-  promotionId: string;
-  promotionName: string;
-  discount: number;
-  fromDate: string;
-  toDate: string;
-  content: string;
-  image?: string;
-}
+import { Promotion } from "../../../types/promotion.types";
+import api from "../../../apis/axios.config";
 
 export default function PromotionDetail() {
   const location = useLocation();
@@ -42,8 +34,8 @@ export default function PromotionDetail() {
       promotionId: "",
       promotionName: "",
       discount: 0,
-      fromDate: "",
-      toDate: "",
+      fromDate: new Date(),
+      toDate: new Date(),
       content: "",
       image: "",
     },
@@ -79,8 +71,8 @@ export default function PromotionDetail() {
         toDate: dayjs(data.toDate).toISOString(),
       };
 
-      await axios.put(
-        `https://localhost:7119/api/promotions/${data.promotionId}`,
+      await api.put(
+        `promotions/${data.promotionId}`,
         payload,
         {
           headers: {

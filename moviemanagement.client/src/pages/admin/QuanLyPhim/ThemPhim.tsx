@@ -18,9 +18,9 @@ import { useEffect, useRef, useState } from "react";
 import { getCategoryList } from "../../../apis/mock.apis";
 import { Category } from "../../../types/category.types";
 
-import type {} from "@mui/x-charts/themeAugmentation";
-import type {} from "@mui/x-data-grid-pro/themeAugmentation";
-import type {} from "@mui/x-date-pickers/themeAugmentation";
+import type { } from "@mui/x-charts/themeAugmentation";
+import type { } from "@mui/x-data-grid-pro/themeAugmentation";
+import type { } from "@mui/x-date-pickers/themeAugmentation";
 import * as React from "react";
 
 import CssBaseline from "@mui/material/CssBaseline";
@@ -30,6 +30,9 @@ import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
 import AppTheme from "../../../shared-theme/AppTheme";
+import { useTranslation } from "react-i18next";
+import api from "../../../apis/axios.config";
+import toast from "react-hot-toast";
 
 // Components
 const ThemPhim: React.FC = ({
@@ -41,6 +44,7 @@ const ThemPhim: React.FC = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const { t } = useTranslation();
 
   const handleUpload = () => {
     console.log("Upload");
@@ -59,18 +63,19 @@ const ThemPhim: React.FC = ({
     });
   };
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await getCategoryList();
-        setCategories(response);
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-      }
-    };
+  const fetchCategories = async () => {
+    try {
+      const response = await api.get("category");
+      console.log(response.data.data);
+      setCategories(response.data.data);
+    } catch (error: any) {
+      toast.error("Lỗi khi tải thể loại: " + error.message);
+    }
+  };
 
+  useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [t]);
 
   return (
     <AppTheme disableCustomTheme={disableCustomTheme}>

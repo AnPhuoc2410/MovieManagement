@@ -19,6 +19,8 @@ namespace MovieManagement.Server.Models.DTOs
 
         public class RegisterRequest
         {
+            public string? Avatar { get; set; }
+            
             [Required(ErrorMessage = "Username is required")]
             [StringLength(50, ErrorMessage = "Username cannot be longer than 50 characters")]
             public string UserName { get; set; }
@@ -54,6 +56,11 @@ namespace MovieManagement.Server.Models.DTOs
             [Phone(ErrorMessage = "Invalid phone number")]
             [StringLength(15, ErrorMessage = "Phone number cannot be longer than 15 characters")]
             public string PhoneNumber { get; set; }
+        }
+        
+        public class FindExistingUser
+        {
+            public string Email { get; set; }
         }
 
     }

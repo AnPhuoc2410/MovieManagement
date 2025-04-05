@@ -7,4 +7,5 @@ export type Seat = {
   isActive: boolean;
   status: number;
   seatType: SeatType;
+  roomName: string;
 };

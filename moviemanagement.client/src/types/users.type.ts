@@ -1,21 +1,26 @@
-import { Role } from "./roles.type";
-import { UserTicketHistory, UserTicketType } from "./ticketdetail.types";
+import { ShowTime } from "./showtime.types";
+import { TicketDetail, UserTicketHistory, UserTicketType } from "./ticketdetail.types";
 
 export type UserBase = {
-  MaThanhVien: string;
-  TaiKhoan: string;
-  MatKhau: string;
-  NgayThamGia: Date;
-  AnhDaiDien: string;
-  HoTen: string;
-  NgaySinh: string;
-  GioiTinh: number;
-  CMND: string;
-  Email: string;
-  SoDienThoai: string;
-  DiaChi: string;
-  DiemTichLuy: number;
-  TrangThai: number;
+  userId: string;
+  userName: string;
+  password: string;
+  avatar: string | null;
+  joinDate: string;
+  fullName: string;
+  birthDate: string | null;
+  gender: number;
+  idCard: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  status: number | 1;
+  role: number;
+  point: number;
+};
+
+export type AddEmployee = Omit<UserBase, "role" | "userId" | "point" | "status" | "joinDate"> & {
+  confirmPassword: string;
 };
 
 export interface UserResponse {
@@ -24,7 +29,7 @@ export interface UserResponse {
   avatar: string;
   joinDate: string;
   fullName: string;
-  birthDate: string;
+  birthDate: string | null;
   gender: number;
   idCard: string;
   email: string;
@@ -35,86 +40,69 @@ export interface UserResponse {
   point: number;
 }
 
-export type UserProfile = Pick<
-  UserResponse,
-  | "birthDate"
-  | "gender"
-  | "idCard"
-  | "fullName"
-  | "email"
-  | "phoneNumber"
-  | "address"
-  | "point"
-> & {
+export type UserProfile = Pick<UserResponse, "birthDate" | "gender" | "idCard" | "fullName" | "email" | "phoneNumber" | "address" | "point" | "userName" | "avatar"> & {
   ticket?: {
     history?: UserTicketHistory[];
     data?: UserTicketType[];
   };
 };
 
-export type LoginDTO = {
-  email: string;
-  password: string;
-  rememberMe?: boolean;
+export type UserTransactionHistory = {
+  billId: string;
+  paymentId: number | null;
+  createdDate: string;
+  point: number;
+  minusPoint: number;
+  totalTicket: number;
+  amount: number;
+  userId: string;
+  promotionId: string;
+  status: number;
+  ticketDetails: {
+    ticketId: string;
+    billId: string;
+    seatId: string;
+    showTimeId: string;
+    status: number;
+    showTime: {
+      showTimeId: string;
+      movieId: string;
+      roomId: string;
+      startTime: string;
+      endTime: string;
+      movie: {
+        movieId: string;
+        movieName: string;
+        image: string;
+        postDate: string;
+        fromDate: string;
+        toDate: string;
+        actors: string;
+        director: string;
+        rating: string;
+        duration: number;
+        version: string;
+        trailer: string;
+        content: string;
+        userId: string; //not need
+        categories: [];
+      };
+      room: string | null;
+    };
+  }[];
 };
-
-export type UserLoginResponse = {
-  tokenType: string;
-  id: number;
-  username: string;
-  roles: Role[];
-  message: string;
-  token: string;
-  status: UserStatus;
-  refresh_token: string;
-};
-
-export type UserRegisterResponse = {
-  message: string;
-  single_data: Omit<UserBase, "password">;
-};
-
-export type UserRegisterBase = {
-  first_name: string;
-  last_name: string;
-  email: string;
-  password: string;
-  address?: string;
-  date_of_birth?: string;
-  google_account_id?: number;
-};
-
-export type UserRegisterDTO = UserRegisterBase & {
-  confirm_password: string; // Unique field for UserRegisterDTO
-  status: string;
-  role_id: number;
-  receiveEmailNotifications?: boolean;
-  acceptPolicy?: boolean;
-};
-
-export type StaffRegisterDTO = Omit<UserRegisterBase, "password"> & {
-  password: string;
-  phone_number: string;
-  is_active?: boolean | number;
-  is_subscription?: boolean | number;
-  avatar_url?: string;
-};
-
-export type Breeder = UserBase & {
-  koi_count: number;
-};
-export type Member = UserBase & {
-  order_count: number;
-};
-export type Staff = UserBase & {
-  auction_count: number;
-};
-
-export type UserDetailsResponse = UserBase;
-
-export type UserStatus = "UNVERIFIED" | "VERIFIED" | "BANNED";
 
 export type UpdatePasswordDTO = {
   email: string;
   new_password: string;
+};
+
+export type UserInfo = {
+  userId: string;
+  userName: string;
+  email: string;
+  phoneNumber: string;
+  point: number;
+  avatarUrl?: string;
+  idCard: string;
 };

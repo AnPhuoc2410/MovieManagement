@@ -1,7 +1,5 @@
-import React from "react";
 import { Box } from "@mui/material";
 import NavigateButton from "../NavigateButton";
-import { ROUTING_PATH } from "../../constants/endPoints";
 
 const NotFound = () => {
   return (
@@ -27,7 +25,7 @@ const NotFound = () => {
             homepage.
           </p>
           <NavigateButton
-            to={ROUTING_PATH.ROOT}
+            to={"/"}
             className="rounded px-8 py-3 font-semibold dark:bg-violet-600 dark:text-gray-50"
           />
         </div>

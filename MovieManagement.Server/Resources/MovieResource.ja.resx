@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Chúa Tể Của Những Chiếc Nhẫn: Cuộc Chiến Của Rohirrim" xml:space="preserve">
+    <value>ロード・オブ・ザ・リング：ローハンの戦い</value>
+  </data>
+  <data name="Kung Fu Panda 4" xml:space="preserve">
+    <value>カンフー・パンダ4</value>
+  </data>
+  <data name="Belle: Rồng Và Công Chúa Tàn Nhang" xml:space="preserve">
+    <value>竜とそばかすの姫</value>
+  </data>
+  <data name="Cuộc phiêu lưu mới bắt đầu với Luffy và thủy thủ đoàn khi siêu sao nhạc pop bí ẩn Uta tiết lộ danh tính của cô và khởi động kế hoạch lầm lạc vì hòa bình thế giới." xml:space="preserve">
+    <value>謎の歌姫ウタがその素性を明かし、世界平和のための誤った計画を実行に移す時、ルフィと麦わらの一味の新たな冒険が始まる。</value>
+  </data>
+  <data name="Khi những chiến công huyền thoại khiến chín mạng sống của cậu chỉ còn một, Mèo Đi Hia lên đường tìm Ngôi Sao Ước kỳ ​​diệu trong cuộc phiêu lưu táo bạo nhất từ ​​trước đến nay." xml:space="preserve">
+    <value>伝説的な偉業によって九つの命を一つ失った長ぐつをはいたネコは、これまでで最も大胆な冒険で、魔法の願いの星を探しに出かける。</value>
+  </data>
+  <data name="Đến từ Studio Ghibli và đạo diễn Miyazaki Hayao, bộ phim là câu chuyện về hành trình kỳ diệu của cậu thiếu niên Mahito trong một thế giới hoàn toàn mới lạ. Trải qua nỗi đau mất mẹ cùng mối quan hệ chẳng mấy vui vẻ với gia đình cũng như bạn học, Mahito dần cô lập bản thân... cho đến khi cậu gặp một chú chim diệc biết nói kỳ lạ. Mahito cùng chim diệc bước vào một tòa tháp bí ẩn, nơi một thế giới thần kỳ mở ra, đưa cậu gặp gỡ những người mình yêu thương... trong một nhân dạng hoàn toàn khác." xml:space="preserve">
+    <value>スタジオジブリの宮崎駿監督によるこの映画は、全く新しい世界での少年眞人の魔法のような旅を描いています。母親を亡くした悲しみと、家族や同級生との不和を経験し、眞人は徐々に孤立していきます…奇妙な言葉を話すアオサギに出会うまでは。眞人とアオサギは謎の塔に入り、そこで魔法の世界が開かれ、彼は愛する人々…全く異なる姿で…と出会います。</value>
+  </data>
+  <data name="Lấy bối cảnh 261 năm trước các sự kiện xảy ra trong Chúa tể những chiếc nhẫn: Hai tòa tháp, Cuộc chiến của Rohirrim là câu chuyện xoay quanh Helm Hammerhand, vị vua huyền thoại của Rohan, người phải đứng lên chống lại đoàn quân của Dunlendings." xml:space="preserve">
+    <value>ロード・オブ・ザ・リング：二つの塔の261年前を舞台にした「ローハンの戦い」は、ローハンの伝説的な王、ヘルム・ハンマーハンドが、ドゥンランド人の軍勢に立ち向かわなければならない物語です。</value>
+  </data>
+  <data name="Bộ phim kể về Mitsuha – nữ sinh trung học sống ở một thị trấn nhỏ của vùng Itomori. Luôn chán chường với cuộc sống tẻ nhạt ở vùng thôn quê, Mitsuha ao ước kiếp sau được làm một anh chàng đẹp trai sống ở thủ đô Tokyo sôi động. Trong khi đó ở Tokyo, anh chàng Taki rất hài lòng với cuộc sống và công việc làm thêm ở một nhà hàng Italy sau giờ học. Tuy vậy, hằng đêm cậu vẫn mơ thấy mình trong cơ thể một cô gái thôn quê. Đến một hôm khi sự kiện nghìn năm có một là Sao Chổi tiến gần tới Trái đất, Taki và Mitsuha bỗng bị hoán đổi cơ thể. Cứ cách một ngày, Taki lại trở thành Mitsuha khám phá cuộc sống vùng quê và ngược lại, Mitsuha làm anh chàng nam sinh Tokyo háo hức với cuộc sống nơi đô thị ồn ào. Cứ thế, câu chuyện của Mitsuha và Taki diễn ra dẫn dắt khán giả đến những tình huống đặc biệt, dù cả hai chưa bao giờ gặp mặt hay thậm chí là biết tên của nhau." xml:space="preserve">
+    <value>物語は、糸守という小さな町の女子高生、三葉を中心に展開する。田舎の退屈な生活にいつも不満を抱いている三葉は、来世では東京の賑やかな首都に住むハンサムな男の子になりたいと願っている。一方、東京に住む瀧は、放課後のイタリアンレストランでのアルバイトと自分の生活に満足している。しかし、毎晩、田舎の女の子の体の中にいる夢を見る。ある日、千年ぶりの彗星が地球に接近した時、瀧と三葉は突然体が入れ替わってしまう。一日おきに、瀧は三葉になって田舎の生活を探検し、逆に、三葉は東京の男子高校生を都会の喧騒とした生活にワクワクさせる。こうして、三葉と瀧の物語は、二人が一度も会ったことも、お互いの名前さえ知らなかったとしても、観客を特別な状況へと導いていく。</value>
+  </data>
+  <data name="Bộ phim dựa trên cuốn tiểu thuyết giả tưởng cùng tên, lấy bối cảnh nước Nhật từ những năm 1918 tới khi Thế chiến II kết thúc, với nhân vật chính là Horikoshi Jiro, một kỹ sư chế tạo máy bay của Mitsubishi. Bộ phim là hành trình theo đuổi giấc mơ từ thuở bé của Jiro, khi anh mang trong mình khao khát cháy bỏng được chinh phục bầu trời. Khi điều kiện sức khoẻ không cho phép Jiro được làm phi công, anh quyết định trở thành một kỹ sư hàng không." xml:space="preserve">
+    <value>同名のファンタジー小説を原作としたこの映画は、1918年から第二次世界大戦終結までの日本を舞台に、三菱の航空機設計技師である堀越二郎を主人公に描いています。この映画は、空を征服したいという燃えるような願望を抱き、幼い頃からの夢を追いかける二郎の旅を描いています。健康状態がパイロットになることを許さなかったとき、彼は航空エンジニアになることを決意しました。</value>
+  </data>
+  <data name="One Piece Film: Red" xml:space="preserve">
+    <value>ONE PIECE FILM: RED</value>
+  </data>
+  <data name="Vùng Đất Linh Hồn" xml:space="preserve">
+    <value>千と千尋の神隠し</value>
+  </data>
+  <data name="Thiếu Niên Và Chim Diệc" xml:space="preserve">
+    <value>君たちはどう生きるか</value>
+  </data>
+  <data name="Loài Mèo Trả Ơn" xml:space="preserve">
+    <value>猫の恩返し</value>
+  </data>
+  <data name="Your Name" xml:space="preserve">
+    <value>君の名は。</value>
+  </data>
+  <data name="The Wind Rises - Gió Nổi" xml:space="preserve">
+    <value>風立ちぬ</value>
+  </data>
+  <data name="Trên đường chuyển đến ngôi nhà mới, Chihiro và bố mẹ tình cờ đi qua một đường hầm bí ẩn. Ở phía bên kia đường hầm, họ tìm thấy một ngọn đồi rộng lớn dẫn lối đến một thị trấn kỳ lạ. Nhưng đây không phải là nơi con người nên đặt chân đến. Khi bố mẹ Chihiro ăn những món ăn không được phép ăn ở trên quầy, họ bị nguyền rủa và biến thành heo. Chỉ còn lại một mình, Chihiro buộc phải tuân theo hai điều kiện để sinh tồn trong thị trấn bí ẩn này: làm việc cho mụ phù thủy Yubaba và từ bỏ tên của mình. Mất tên cũng có nghĩa là mất liên kết với thế giới con người, nhưng Chihiro không từ bỏ hy vọng. Dưới cái tên Sen, cô bắt đầu làm việc tại một nhà tắm, nơi cô được Haku, Lin, Kamaji và những người khác giúp đỡ, từng bước đối mặt với những thử thách và lấy lại sức mạnh để tiếp tục sống." xml:space="preserve">
+    <value>新しい家への引っ越しの途中、千尋と両親は偶然、不思議なトンネルを通り抜ける。トンネルの向こう側には、奇妙な町へと続く広大な丘があった。しかし、ここは人間が足を踏み入れてはならない場所だった。千尋の両親が店先にあった禁断の食べ物を食べると、呪われて豚に変えられてしまう。一人残された千尋は、この不思議な町で生き残るために二つの条件に従わなければならなかった。それは、魔女湯婆婆の下で働くことと、自分の名前を捨てることだった。名前を失うことは、人間の世界とのつながりを失うことも意味したが、千尋は希望を捨てなかった。千という名前で、彼女は湯屋で働き始め、そこでハク、リン、釜爺らに助けられ、一歩ずつ困難に立ち向かい、生き続けるための力を取り戻していく。</value>
+  </data>
+  <data name="Yoshioka Haru là một nữ sinh trung học bình thường, nhưng mọi thứ thay đổi hoàn toàn khi cô cứu một chú mèo khỏi bị xe tông. Chú mèo đó lại là Lune, hoàng tử của Vương quốc Mèo. Để cảm ơn cô, Vua Mèo quyết định mời Haru đến vương quốc của họ. Sau khi Haru nghe theo lời dẫn dắt của một giọng nói bí ẩn, cô đã gặp mèo mập Muta để tìm đến Văn phòng Mèo, nơi cô gặp Baron – quý ông mèo thanh lịch và bức tượng đá sống biết bay - Toto. Cuối cùng, Haru bị cuốn đến Vương quốc Mèo và suýt phải kết hôn với Lune theo kế hoạch của Vua Mèo. Nhưng với sự giúp đỡ của Baron và những người bạn, cô đã thoát khỏi âm mưu và tạo ra một trận náo loạn khó quên tại vương quốc này." xml:space="preserve">
+    <value>吉岡ハルは普通の女子高生だったが、猫が車に轢かれそうになるのを助けたことで全てが変わる。その猫はなんと猫の国の王子、ルーンだったのだ。感謝の印に、猫王はハルを猫の国に招待する。謎の声に導かれたハルは、太った猫ムタに出会い、猫の事務所を探し出し、そこでエレガントな猫の男爵バロンと、空飛ぶ生きた石像トトに出会う。最終的に、ハルは猫の国に連れて行かれ、猫王の計画通りルーンと結婚させられそうになる。しかし、バロンと友人たちの助けを借りて、彼女は陰謀から逃れ、この王国で忘れられない大騒動を引き起こす。</value>
+  </data>
+  <data name="Suzu là một cô bé 17 tuổi sống cùng cha tại phần ngoại ô hẻo lánh ở tỉnh Kochi. Cô thích ca hát nhưng phải tạm gác lại niềm đam mê sau khi người mẹ qua đời, cũng vì thế mà mối quan hệ giữa cha cô và cô càng xa cách. Khi Suzu trở nên tách biệt với thế giới xung quanh và chỉ còn âm nhạc là mục đích sống duy nhất của cô, cô đã được mời đến một thế giới ảo mang tên 'U' với 5 tỷ người dùng. Tại nơi đây, Suzu đã bắt đầu cuộc sống mới dưới thân phận 'Belle' và mang tiếng hát đến toàn thế giới. Cho đến khi một sinh vật huyền bí xuất hiện và làm đảo lộn cuộc sống của cô..." xml:space="preserve">
+    <value>すずは高知県の寂れた郊外で父親と二人暮らしの17歳の少女。歌うことが好きだったが、母親の死後、その情熱を諦めざるを得なくなり、それがきっかけで父親との関係もぎくしゃくしてしまう。すずが周囲の世界から孤立し、音楽だけが生きる目的となった時、50億人のユーザーがいる仮想世界「U」に招待される。そこで、すずは「Belle」として新たな人生を歩み始め、その歌声を世界中に届ける。謎の生き物が現れ、彼女の人生を大きく変えるまでは…</value>
+  </data>
+  <data name="Mèo Đi Hia: Điều Ước Cuối Cùng" xml:space="preserve">
+    <value>長ぐつをはいたネコと9つの命</value>
+  </data>
+</root>

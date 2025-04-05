@@ -15,6 +15,7 @@ const Ticket: React.FC = () => {
   const navigate = useNavigate();
   const { movieId } = useParams();
   const { t } = useTranslation();
+  const [movieData, setMovieData] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [showTimeId, setShowTimeId] = useState<string>("");
@@ -37,15 +38,22 @@ const Ticket: React.FC = () => {
     setShowTicketPrice(available);
   }, []);
 
+  const handleMovieLoad = useCallback((movie: any) => {
+    setMovieData(movie);
+  }, []);
+
   const handleTicketSelection = useCallback(
     (tickets: SeatType[]) => {
       if (!selectedTime) {
-        toast.error("Vui lòng chọn suất chiếu!");
+        toast.error(t("toast.error.showtime.selection"));
         return;
       }
-      const totalTickets = tickets.reduce((sum, t) => sum + (t.quantity || 0), 0);
+      const totalTickets = tickets.reduce(
+        (sum, t) => sum + (t.quantity || 0),
+        0,
+      );
       if (totalTickets === 0) {
-        toast.error("Vui lòng chọn ít nhất 1 vé!");
+        toast.error(t("toast.error.ticket.selection"));
         return;
       }
       navigate("/ticket/movie-seat", {
@@ -55,10 +63,11 @@ const Ticket: React.FC = () => {
           selectedDate,
           selectedTime,
           tickets,
+          movieData,
         },
       });
     },
-    [movieId, navigate, showTimeId, selectedDate, selectedTime]
+    [movieId, navigate, showTimeId, selectedDate, selectedTime, movieData],
   );
 
   if (!movieId) {
@@ -88,7 +97,7 @@ const Ticket: React.FC = () => {
             borderRadius: 2,
           }}
         >
-          Phim không tồn tại.
+          {t("translation.footer.movies.not_existing")}
         </Typography>
       </Box>
     );
@@ -168,7 +177,7 @@ const Ticket: React.FC = () => {
             </Box>
 
             {/* Movie details */}
-            <MovieDetail />
+            <MovieDetail onMovieLoad={handleMovieLoad} />
 
             {/* ShowTimeCinema component for picking date, time, and room */}
             <ShowTimeCinema

@@ -1,5 +1,9 @@
 import { Outlet } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import SideMenu from "../components/mui/SideMenu";
+import AppNavbar from "../components/mui/AppNavbar";
 
 const adminTheme = createTheme({
   palette: {
@@ -31,7 +35,25 @@ const adminTheme = createTheme({
 export default function AdminTheme() {
   return (
     <ThemeProvider theme={adminTheme}>
-      <Outlet />
+      <CssBaseline enableColorScheme />
+      <Box sx={{ display: "flex", height: "100vh" }}>
+        <SideMenu />
+        <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+          <AppNavbar />
+          <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              backgroundColor: "background.default",
+              overflowY: "auto",
+              px: 3,
+              py: 2,
+            }}
+          >
+            <Outlet />
+          </Box>
+        </Box>
+      </Box>
     </ThemeProvider>
   );
 }

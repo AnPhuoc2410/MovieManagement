@@ -36,6 +36,15 @@ namespace MovieManagement.Server.Exceptions
         {
         }
     }
+
+    public class ForbiddenException : ApiException
+    {
+        public ForbiddenException(string message)
+            : base(message, HttpStatusCode.Forbidden)
+        {
+        }
+    }
+
     public class BusinessException : Exception
     {
         public BusinessException(string message) : base(message) { }

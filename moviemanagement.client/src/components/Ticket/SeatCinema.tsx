@@ -5,65 +5,156 @@ import toast from "react-hot-toast";
 import api from "../../apis/axios.config";
 import { TicketDetail } from "../../types/ticketdetail.types";
 import { SelectedSeat } from "../../types/selectedseat.types";
+import { useSignalR } from "../../contexts/SignalRContext";
+import Loader from "../shared/Loading";
+import { useAuth } from "../../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
+import { SeatType } from "../../types/seattype.types";
+
 
 interface SeatProps {
   showTimeId: string;
-  selectedSeats: { id: string; name: string; version: string; ticketId: string; isMine?: boolean }[];
-  setSelectedSeats: React.Dispatch<
-    React.SetStateAction<{ id: string; name: string; version: string; ticketId: string; isMine?: boolean }[]>
-  >;
-  connection: any; // Use HubConnection | null if desired.
+  selectedSeats: SelectedSeat[];
+  setSelectedSeats: React.Dispatch<React.SetStateAction<SelectedSeat[]>>;
+  groupConnected: boolean;
+  seatTypeName: SeatType[];
+    selectedSeatType?: string; // Add this new prop
 }
 
-const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelectedSeats, connection }) => {
+const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelectedSeats, groupConnected, selectedSeatType }) => {
+  const { t } = useTranslation();
+  const { connection } = useSignalR();
+  const { userDetails } = useAuth();
   const [seats, setSeats] = useState<TicketDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Listen for backend status updates (pending and bought) via SignalR.
-  useEffect(() => {
-    if (!connection) return;
+  // Determine the effective showTimeId: use the prop if provided, otherwise fallback to sessionStorage.
+  const effectiveShowTimeId = showTimeId || sessionStorage.getItem("currentShowTimeId") || "";
 
-    connection.on("SeatPending", (seatId: string) => {
-      setSeats((prev) =>
-        prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
-      );
-    });
-    connection.on("SeatBought", (seatId: string) => {
+  // Listen for backend status updates (pending, bought, etc.) via SignalR.
+  useEffect(() => {
+    if (!connection || !groupConnected) return;
+
+    const handleSeatPending = (seatId: string, userId: string) => {
+      console.log("Seat marked as pending:", seatId);
+      const currentUserId = userDetails?.userId;
+      if (userId !== currentUserId) {
+        setSeats((prev) =>
+          prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
+        );
+
+        // Also remove this seat from our selection if we had it selected
+        setSelectedSeats((prev) => {
+          const selectedSeat = prev.find(seat => seat.id === seatId);
+          if (selectedSeat) {
+            toast.error(`${selectedSeat.name} ${t("toast.error.seat.someone_selected")}`);
+            return prev.filter(seat => seat.id !== seatId);
+          }
+          return prev;
+        });
+      }
+    };
+
+    const handleSeatBought = (seatId: string) => {
       setSeats((prev) =>
         prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 2 } : ticket))
       );
-    });
+    };
+
+    const handleSeatSelected = (seatId: string, userId: string) => {
+      const currentUserId = userDetails?.userId;
+      if (userId !== currentUserId) {
+        setSeats((prev) =>
+          prev.map((ticket) => (ticket.seatId === seatId ? { ...ticket, status: 1 } : ticket))
+        );
+      }
+    };
+
+    const handleSeatAvailable = (seatId: string) => {
+      console.log("Received SeatAvailable event for:", seatId);
+
+      setSeats((prev) =>
+        prev.map((ticket) =>
+          ticket.seatId === seatId ? { ...ticket, status: 0 } : ticket
+        )
+      );
+      // Remove auto-released seats from the current selection using ticketId
+      setSelectedSeats((prev) => prev.filter(seat => seat.id !== seatId));
+    };
+
+
+    connection.on("SeatPending", handleSeatPending);
+    connection.on("SeatBought", handleSeatBought);
+    connection.on("SeatSelected", handleSeatSelected);
+    connection.on("SeatAvailable", handleSeatAvailable);
 
     return () => {
-      connection.off("SeatPending");
-      connection.off("SeatBought");
+      connection.off("SeatPending", handleSeatPending);
+      connection.off("SeatBought", handleSeatBought);
+      connection.off("SeatSelected", handleSeatSelected);
+      connection.off("SeatAvailable", handleSeatAvailable);
     };
+  }, [connection, groupConnected, setSelectedSeats]);
+
+  useEffect(() => {
+    const releaseSeatsOnReturn = async () => {
+      if (connection && selectedSeats.length > 0) {
+        const userId = userDetails?.userId;
+        const ticketRequests = selectedSeats.map((seat) => ({
+          TicketId: seat.ticketId,
+          Version: seat.version,
+        }));
+
+        try {
+          await connection.invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId);
+          setSelectedSeats([]); // Clear locally stored selections
+          toast(t("toast.error.seat.cancel_booking_bc_back"), {
+            position: "top-center",
+          });
+        } catch (error) {
+          console.error("Error releasing seats on return:", error);
+        }
+      }
+    };
+
+    releaseSeatsOnReturn();
   }, [connection]);
 
-  // Fetch ticket data by showTimeId.
+
+  // Fetch ticket data by effectiveShowTimeId.
   useEffect(() => {
     const fetchSeats = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`ticketdetail/getbyroomid/${showTimeId}`);
+        const response = await api.get(`ticketdetail/showtime/${effectiveShowTimeId}`);
         if (response.data?.data) {
           setSeats(response.data.data);
+console.log(`Fetched seats: ${JSON.stringify(response.data.data, null, 2)}` );
+
         } else {
-          toast.error("Không tìm thấy thông tin ghế.");
+          toast.error(t("toast.error.seat.infor"));
         }
       } catch (error) {
-        toast.error("Lỗi khi tải danh sách ghế.");
+        toast.error(t("toast.error.seat.loading_list"));
       } finally {
         setLoading(false);
       }
     };
-    fetchSeats();
-  }, [showTimeId]);
+    if (effectiveShowTimeId) {
+      fetchSeats();
+    }
+  }, [effectiveShowTimeId]);
 
-  // Handle seat click event (select/deselect locally).
-  const handleSeatClick = (ticket: TicketDetail) => {
+  const handleSeatClick = async (ticket: TicketDetail) => {
     if (!connection) {
-      toast.error("Mất kết nối đến server!");
+      toast.error(t("toast.error.server.connection"));
+      return;
+    }
+
+    // Don't allow selecting seats that are already pending or bought
+    if (ticket.status === 1 || ticket.status === 2) {
+      const statusText = ticket.status === 1 ? t("toast.error.seat.selecting") : t("toast.error.seat.bought");
+      toast.error(`${ticket.seat.atRow}${ticket.seat.atColumn} ${statusText} ${t("toast.error.seat.by_someone")}`);
       return;
     }
 
@@ -73,27 +164,67 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
       name: seatName,
       version: ticket.version,
       ticketId: ticket.ticketId,
+      roomName: ticket.seat.roomName,
       isMine: true,
+      selectedAt: Date.now(),
     };
 
-    setSelectedSeats((prevSeats) => {
-      const existingSeat = prevSeats.find((s) => s.ticketId === ticket.ticketId);
-      if (existingSeat) {
-        if (existingSeat.id === ticket.seatId) {
-          toast.success(`Bỏ chọn ghế ${seatName}`);
-          return prevSeats.filter((s) => s.ticketId !== ticket.ticketId);
+    try {
+      const userId = userDetails?.userId;
+
+      // Prepare the updated seats selection based on the user's action
+      let updatedSeats: SelectedSeat[] = [...selectedSeats]; // Start with current selection
+      const existingSeatIndex = selectedSeats.findIndex(s => s.ticketId === ticket.ticketId);
+
+      if (existingSeatIndex !== -1) {
+        if (selectedSeats[existingSeatIndex].id === ticket.seatId) {
+          // User is deselecting this seat
+          updatedSeats = updatedSeats.filter(s => s.ticketId !== ticket.ticketId);
         } else {
-          toast.success(`Đổi ghế từ ${existingSeat.name} sang ${seatName}`);
-          return prevSeats.map((s) =>
-            s.ticketId === ticket.ticketId ? seatInfo : s
-          );
+          // User is changing from one seat to another with the same ticketId
+          updatedSeats[existingSeatIndex] = seatInfo;
         }
       } else {
-        toast.success(`Chọn ghế ${seatName}`);
-        return [...prevSeats, seatInfo];
+        // User is selecting a new seat
+        updatedSeats.push(seatInfo);
       }
-    });
+
+      // Create ticket requests from the updated selection
+      const ticketRequests = updatedSeats.map(seat => ({
+        TicketId: seat.ticketId,
+        Version: seat.version
+      }));
+
+      console.log("Selecting seat:", seatName, ticketRequests, effectiveShowTimeId, userId);
+
+      // Send the COMPLETE updated selection to server
+      await connection.invoke("SelectSeat", ticketRequests, effectiveShowTimeId, userId);
+
+      // Update local state if server operation succeeded
+      setSelectedSeats((prevSeats) => {
+        const existingSeat = prevSeats.find((s) => s.ticketId === ticket.ticketId);
+        if (existingSeat) {
+          if (existingSeat.id === ticket.seatId) {
+            toast.error(`${t("toast.error.seat.cancel_select")} ${seatName}`);
+            return prevSeats.filter((s) => s.ticketId !== ticket.ticketId);
+          } else {
+            toast.success(`${t("toast.success.seat.change_from")} ${existingSeat.name} ${t("toast.success.seat.change_to")} ${seatName}`);
+            return prevSeats.map((s) =>
+              s.ticketId === ticket.ticketId ? seatInfo : s
+            );
+          }
+        } else {
+          toast.success(`${t("toast.success.seat.select")} ${seatName}`);
+          return [...prevSeats, seatInfo];
+        }
+      });
+    } catch (error) {
+      toast.error(t("toast.error.seat.cannot_selected"));
+      console.error("Error selecting seat:", error);
+    }
   };
+
+  if (loading) return <Loader />;
 
   return (
     <Box sx={{ backgroundColor: "#0B0D1A", color: "white", pb: 4, position: "relative" }}>
@@ -109,7 +240,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           }}
         />
         <Typography variant="h6" sx={{ mt: -2, color: "white" }}>
-          Màn hình
+          {t("movie_seat.selection")}
         </Typography>
       </Box>
 
@@ -125,12 +256,14 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
           ).map(([row, rowSeats]) => (
             <Box key={row} sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
               {rowSeats.map((ticket) => {
+
                 const isSelectedByMe = selectedSeats.some(
                   (s) => s.id === ticket.seatId && s.isMine
                 );
                 const isPending = ticket.status === 1;
                 const isBought = ticket.status === 2;
                 const isVip = ticket.seat.seatType.typeName === "VIP";
+                const isCouple = ticket.seat.seatType.typeName === "Couple";
 
                 let iconColor = "white";
                 let backgroundColor = "transparent";
@@ -146,11 +279,25 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
                 } else if (isVip) {
                   iconColor = "blue";
                   backgroundColor = "rgba(0, 0, 255, 0.2)";
-                } else if (isPending) {
+                }
+                else if (isCouple) {
+                  iconColor = "purple";
+                  backgroundColor = "rgba(128, 0, 128, 0.2)";
+                }
+                else if (isPending) {
                   iconColor = "yellow";
                   backgroundColor = "rgba(255, 255, 0, 0.2)";
                   disabled = true;
                 }
+
+                // Add seat type restriction
+if (selectedSeatType && ticket.seat.seatType.typeName !== selectedSeatType) {
+
+  
+
+  disabled = true;
+  backgroundColor = "rgba(100, 100, 100, 0.2)"; // Grayed out appearance
+}
 
                 return (
                   <Button
@@ -158,6 +305,8 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
                     variant="outlined"
                     disabled={disabled}
                     onClick={() => handleSeatClick(ticket)}
+                    data-seat-id={ticket.seatId}
+                    data-status={ticket.status}
                     sx={{
                       minWidth: "50px",
                       minHeight: "50px",
@@ -166,10 +315,10 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
                       p: 0.5,
                       fontSize: "0.7rem",
                       "&:hover": {
-                        backgroundColor: isSelectedByMe
-                          ? "rgba(0, 255, 0, 0.4)"
-                          : "rgba(255,255,255,0.2)",
-                      },
+  backgroundColor: isSelectedByMe
+    ? "rgba(0, 255, 0, 0.4)"
+    : !disabled ? "rgba(255,255,255,0.2)" : backgroundColor,
+},
                       "&.Mui-disabled": {
                         backgroundColor,
                         color: "white",

@@ -5,6 +5,7 @@ import {
   CardMedia,
   Container,
   Grid,
+  Pagination,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
@@ -17,28 +18,33 @@ import ScrollToTop from "../../components/common/ScrollToTop";
 import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import Loader from "../../components/shared/Loading";
+import Aurora from "../../components/shared/Aurora";
+import ScrollFloat from "../../components/shared/ScrollFloat";
 import { Promotion } from "../../types/promotion.types";
 
 const PromotionsPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [allPromotions, setAllPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [page, setPage] = useState<number>(1);
-  const pageSize = 5;
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 5; // items per page for display
+
+  // For API - similar to UpComingMoviesPage
+  const apiPage = 0;
+  const apiPageSize = 100;
 
   useEffect(() => {
     const fetchPromotions = async () => {
       try {
         setLoading(true);
-        const response = await api.get(
-          `promotions/page/${page}/pageSize/${pageSize}`,
-        );
-        if (response.data.length === 0 && page > 0) {
-          toast.error("Không còn trang tiếp theo");
-          setPage(page - 1);
+
+        const response = await api.get(`promotions/page/${apiPage}/size/${apiPageSize}`);
+
+        if (response.data.data) {
+          setAllPromotions(response.data.data);
         } else {
-          setPromotions(response.data);
+          setAllPromotions([]);
         }
       } catch (error) {
         console.error("Lỗi Lấy Data promotions:", error);
@@ -48,7 +54,17 @@ const PromotionsPage: React.FC = () => {
     };
 
     fetchPromotions();
-  }, [page]);
+  }, [t]);
+
+  const pageCount = Math.ceil(allPromotions.length / pageSize);
+  const indexOfLastPromotion = currentPage * pageSize;
+  const indexOfFirstPromotion = indexOfLastPromotion - pageSize;
+  const currentPromotions = allPromotions.slice(indexOfFirstPromotion, indexOfLastPromotion);
+
+  const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   if (loading) return <Loader />;
 
@@ -75,8 +91,7 @@ const PromotionsPage: React.FC = () => {
         },
       }}
     >
-      {/* Aurora Effect */}
-      {/* <Box
+      <Box
         sx={{
           position: "fixed",
           top: 0,
@@ -94,7 +109,7 @@ const PromotionsPage: React.FC = () => {
           amplitude={2.5}
           speed={1.0}
         />
-      </Box> */}
+      </Box>
 
       <Header />
 
@@ -108,32 +123,30 @@ const PromotionsPage: React.FC = () => {
           zIndex: 1,
         }}
       >
-        <Typography
-          variant="h3"
-          sx={{
-            textAlign: "center",
-            mt: 6,
-            mb: 6,
-            fontWeight: "bold",
-            color: "white",
-            position: "relative",
-            "&::after": {
-              content: '""',
-              position: "absolute",
-              bottom: -16,
-              left: "50%",
-              transform: "translateX(-50%)",
-              width: "60px",
-              height: "3px",
-              background: "linear-gradient(90deg, #834bff 0%, #FF3232 100%)",
-              borderRadius: "2px",
-            },
-          }}
-        >
-          {t("promotions")}
-        </Typography>
+        <Box sx={{ textAlign: "center", mb: { xs: 4, sm: 5, md: 6 } }}>
+          <ScrollFloat
+            animationDuration={1}
+            ease="back.inOut(2)"
+            scrollStart="center bottom+=50%"
+            scrollEnd="bottom bottom-=40%"
+            stagger={0.08}
+          >
+            <Typography
+              variant="h3"
+              fontWeight="bold"
+              sx={{
+                color: "white",
+                mb: 4,
+                textTransform: "uppercase",
+                fontSize: { xs: "1.75rem", sm: "2.25rem", md: "2.5rem" },
+              }}
+            >
+              {t("promotions")}
+            </Typography>
+          </ScrollFloat>
+        </Box>
 
-        {promotions.length === 0 ? (
+        {currentPromotions.length === 0 ? (
           <Box
             sx={{
               textAlign: "center",
@@ -151,7 +164,7 @@ const PromotionsPage: React.FC = () => {
           </Box>
         ) : (
           <Grid container spacing={4}>
-            {promotions.map((promotion, index) => (
+            {currentPromotions.map((promotion, index) => (
               <Grid
                 container
                 item
@@ -163,13 +176,9 @@ const PromotionsPage: React.FC = () => {
                   mb: 4,
                   p: 2,
                   borderRadius: 2,
-                  background: "rgba(255, 255, 255, 0.03)",
+                  background: "rgba(28, 28, 28, 0.6)",
                   backdropFilter: "blur(10px)",
                   transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                  "&:hover": {
-                    transform: "translateY(-5px)",
-                    boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
-                  },
                 }}
               >
                 {/* Image Section */}
@@ -181,16 +190,16 @@ const PromotionsPage: React.FC = () => {
                 >
                   <CardMedia
                     component="img"
-                    image={promotion.image || "/images/default-promotion.jpg"} // Fallback image
+                    image={promotion.image || "/images/default-promotion.jpg"}
                     alt={promotion.promotionName}
                     sx={{
-                      height: 300,
+                      height: { xs: "280px", sm: "350px", md: "420px" }, // Match movie poster size
                       width: "100%",
                       borderRadius: 2,
                       boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                      transition: "transform 0.3s ease",
+                      transition: "transform 0.5s ease",
                       objectFit: "contain",
-                      "&:hover": { transform: "scale(1.02)" },
+                      "&:hover": { transform: "scale(1.05)" }, // Match movie poster hover
                     }}
                   />
                 </Grid>
@@ -246,19 +255,16 @@ const PromotionsPage: React.FC = () => {
                           navigate(`/promotions/${promotion.promotionId}`)
                         }
                         sx={{
-                          background:
-                            "linear-gradient(90deg, #834bff 0%, #FF3232 100%)",
-                          color: "white",
+                          backgroundColor: "yellow", // Match movie card button
+                          color: "black",
+                          fontWeight: "bold",
                           px: 4,
                           py: 1,
                           borderRadius: "25px",
-                          transition:
-                            "transform 0.3s ease, box-shadow 0.3s ease",
+                          transition: "transform 0.3s ease, background-color 0.3s ease",
                           "&:hover": {
-                            background:
-                              "linear-gradient(90deg, #834bff 0%, #FF3232 100%)",
-                            transform: "translateY(-2px)",
-                            boxShadow: "0 5px 15px rgba(131, 75, 255, 0.4)",
+                            backgroundColor: "#FFD700", // Match movie card button hover
+                            transform: "scale(1.05)",
                           },
                         }}
                       >
@@ -272,48 +278,33 @@ const PromotionsPage: React.FC = () => {
           </Grid>
         )}
 
-        {/* Pagination Controls */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            mt: 6,
-            gap: 2,
-          }}
-        >
-          <Button
-            variant="contained"
-            disabled={page === 0}
-            onClick={() => setPage((prev) => Math.max(0, prev - 1))}
-            sx={{
-              background: "rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(10px)",
-              color: "white",
-              "&:hover": {
-                background: "rgba(255, 255, 255, 0.2)",
-              },
-              "&.Mui-disabled": {
-                background: "rgba(255, 255, 255, 0.05)",
-                color: "rgba(255, 255, 255, 0.3)",
-              },
-            }}
-          >
-            Trang Trước
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setPage((prev) => prev + 1)}
-            sx={{
-              background: "linear-gradient(90deg, #834bff 0%, #FF3232 100%)",
-              color: "white",
-              "&:hover": {
-                background: "linear-gradient(90deg, #9b69ff 0%, #ff4747 100%)",
-              },
-            }}
-          >
-            Trang Tiếp Theo
-          </Button>
-        </Box>
+        {/* Pagination Controls - Similar to UpComingMoviesPage */}
+        {pageCount > 1 && (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <Pagination
+              count={pageCount}
+              color="primary"
+              page={currentPage}
+              onChange={handleChangePage}
+              sx={{
+                "& .MuiPaginationItem-root": {
+                  color: "white",
+                  fontSize: "1.1rem",
+                  mx: 0.5,
+                },
+                "& .Mui-selected": {
+                  backgroundColor: "rgba(255, 255, 255, 0.2) !important",
+                },
+                "& .MuiPaginationItem-page": {
+                  background: "rgba(255, 255, 255, 0.1)",
+                  "&:hover": {
+                    background: "rgba(255, 255, 255, 0.2)",
+                  },
+                },
+              }}
+            />
+          </Box>
+        )}
       </Container>
 
       <ScrollToTop />

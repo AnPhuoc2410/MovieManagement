@@ -1,8 +1,13 @@
+
 using System.Reflection;
+using System.Runtime.Loader;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ClaimRequest.API.Middlewares;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -10,13 +15,21 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Localization;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Extensions;
+using MovieManagement.Server.Extensions.ConvertFile;
 using MovieManagement.Server.Extensions.SignalR;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.Enums;
+using MovieManagement.Server.Services;
 using MovieManagement.Server.Services.JwtService;
+using MovieManagement.Server.Services.QRService;
 using Newtonsoft.Json;
+using System.Globalization;
+using Microsoft.Extensions.Options;
 
 namespace MovieManagement.Server
 {
@@ -26,8 +39,10 @@ namespace MovieManagement.Server
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Add System Service UnitOfWork.
+            builder.Services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
+            // Add services to the container.
             builder.Services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
@@ -38,7 +53,7 @@ namespace MovieManagement.Server
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
-            //Đăng ký JWT Authentication
+            // Đăng ký JWT Authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -57,9 +72,9 @@ namespace MovieManagement.Server
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("Member", policy => policy.RequireClaim("Role", "0"));
-                options.AddPolicy("Employee", policy => policy.RequireClaim("Role", "1"));
-                options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "2"));
+                options.AddPolicy("Member", policy => policy.RequireClaim(ClaimTypes.Role, UserEnum.Role.Member.ToString()));
+                options.AddPolicy("Employee", policy => policy.RequireClaim(ClaimTypes.Role, UserEnum.Role.Employee.ToString()));
+                options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimTypes.Role, UserEnum.Role.Admin.ToString()));
             });
 
             // Đăng ký JwtService
@@ -68,11 +83,27 @@ namespace MovieManagement.Server
             // Đăng ký DbContext
             // su dung SQL Server option
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("PhuocConnection"))
+                options.UseSqlServer(builder.Configuration.GetConnectionString("LaazyConnection"))
             );
 
             // Đăng ký UnitOfWork
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            builder.Services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en"),
+                    new CultureInfo("vi"),
+                    new CultureInfo("ja"),
+                };
+
+                options.DefaultRequestCulture = new RequestCulture("en");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
 
             // Đăng Ký GenericRepository, Repository và Service
             builder.Services.AddAllDependencies("Repository", "Service", "UnitOfWork");
@@ -80,8 +111,7 @@ namespace MovieManagement.Server
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                options.JsonSerializerOptions.DefaultIgnoreCondition =
-                    JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
@@ -95,7 +125,8 @@ namespace MovieManagement.Server
                             "https://localhost:3000",
                             "http://localhost:3000",
                             "https://localhost:7119",
-                            "https://eigaa.vercel.app")
+                            "https://eigaa.vercel.app",
+                            "https://eigacinemaapi.azurewebsites.net")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials());
@@ -147,46 +178,41 @@ namespace MovieManagement.Server
             // Register the password hasher
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
-            //Enable role based and policy based authorization
-            builder.Services.AddAuthorization();
+            // Enable role based and policy based authorization
+            // builder.Services.AddAuthorization();
 
-            //ADD SignalR
+            // ADD SignalR
+            //builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]);
             builder.Services.AddSignalR();
 
+            // Register Hangfire
+            builder.Services.AddHangfire(config => config.UseMemoryStorage());
+            builder.Services.AddHangfireServer();
+
             // Đăng ký VnPayService
-            builder.Services.AddSingleton<IVnPayService, VnPayService>();
+            builder.Services.AddScoped<IVnPayService, VnPayService>();
+
+            // Đăng ký ConvertFile
+            builder.Services.AddScoped<IConvertFileService, ConvertFileService>();
+
+            // Đăng ký QR Code
+            builder.Services.AddScoped<IQRCodeService, QRCodeService>();
 
             builder.Services.Configure<RouteOptions>(options =>
             {
                 options.LowercaseUrls = true; // Forces lowercase routes
             });
-            builder.Services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme =
-                        JwtBearerDefaults.AuthenticationScheme; // Added missing assignment
-                })
-                .AddCookie()
-                .AddGoogle(options =>
-                {
-                    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-                    options.ClientSecret =
-                        builder.Configuration["Authentication:Google:ClientSecret"];
-                    options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
-                    options.SaveTokens = true;
-                });
+
+            // Add SystemService running in the background.
+            builder.Services.AddHostedService<SystemService>();
 
             var app = builder.Build();
 
+            var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+            app.UseRequestLocalization(localizationOptions);
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-
-            // Check khi nao Migration se duoc apply
-            //if (builder.Configuration.GetValue<bool>("ApplyMigrations", false))
-            //{
-            //    app.ApplyMigrations();
-            //}
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -205,14 +231,15 @@ namespace MovieManagement.Server
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseRouting();
             app.MapControllers();
             app.UseCors("AllowReactApp");
-            //Enable Websocket support
-            app.MapHub<SeatSelectionHub>("/seatSelectionHub");
+            // Enable Websocket support
+            app.MapHub<SeatHub>("/seatHub");
 
             app.MapFallbackToFile("/index.html");
             app.UseHttpsRedirection();

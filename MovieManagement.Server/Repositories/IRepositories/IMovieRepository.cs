@@ -1,5 +1,6 @@
 ﻿using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
+using MovieManagement.Server.Models.ResponseModel;
 
 namespace MovieManagement.Server.Repositories.IRepositories
 {
@@ -16,8 +17,13 @@ namespace MovieManagement.Server.Repositories.IRepositories
         Task<Movie> GetMovieById(Guid movieId);
         Task<List<Movie>> GetMoviesNowShowing(int page, int pageSize);
         Task<List<Movie>> GetMoviesUpComing(int page, int pageSize);
-        Task<List<Movie>> GetMoviesByNameRelative(string name, int page, int pageSize);
+        Task<List<Movie>> GetMoviesByNameRelativePage(string name, int page, int pageSize);
         Task<List<Movie>> GetMoviesByCategory(Guid categoryId, int page, int pageSize);
         Task<Movie> SetMovieDeleted(Guid movieId);
+        Task<List<Movie>> GetMoviesByNameRelative(string searchValue);
+        Task<List<Movie>> GetAllAsyncDeletedFalse();
+
+        Task<List<TopMovieResponse.MovieRevenue>> GetTopMovieRevenue();
+        Task<TopMovieResponse.MovieDaily> GetTopMovieDailyRevenue(DateTime time);
     }
 }

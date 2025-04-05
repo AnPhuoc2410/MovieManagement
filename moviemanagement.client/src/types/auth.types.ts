@@ -38,7 +38,7 @@ export type SignupRequest = {
   password: string;
   fullName: string;
   birthDate: string;
-  gender: string;
+  gender: string | number;
   idCard: string;
   email: string;
   address: string;
@@ -53,4 +53,12 @@ export type ExtractTokenResponse = {
   reason: string | null;
   isSuccess: boolean;
   data: UserResponse;
+};
+
+export type OtpResponse = ApiResponse<string>;
+
+export type UpdatePasswordReqBody = {
+  email: string;
+  newPassword: string;
+  currentPassword?: string;
 };

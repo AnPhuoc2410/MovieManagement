@@ -8,6 +8,7 @@
     "see_more": "もっと見る",
     "now_showing": "上映中",
     "upcoming": "近日公開",
+    "search_result": "検索結果",
     "promotions": "プロモーション",
     "list_promotions": "もっと見るプロモーション",
     "quick_booking": "クイック予約",
@@ -22,6 +23,7 @@
     "select_theater4": "Kien Giang 劇場 (Rach Soi)",
     "select_theater5": "Lam Dong 劇場 (Duc Trong)",
     "select_theater6": "Da Lat 劇場 (Da Lat City)",
+    "no_search_result": "該当する映画が見つかりませんでした。",
     "footer": {
       "slogan": "幸せに、スターに",
       "book_ticket": "チケット予約",
@@ -38,7 +40,8 @@
         "title": "映画",
         "now_showing": "上映中",
         "coming_soon": "近日公開",
-        "special_screening": "特別上映"
+        "special_screening": "特別上映",
+        "not_existing": "映画が存在しません"
       },
       "theaters": {
         "title": "劇場一覧",
@@ -78,7 +81,14 @@
           "password_required": "パスワードを入力してください",
           "password_length": "パスワードは8文字以上である必要があります"
         },
-        "remember_me": "ログイン情報を保存"
+        "remember_me": "ログイン情報を保存",
+        "logging_in": "ログイン中...",
+        "captcha_required": "キャプチャ認証を完了してください",
+        "wrong_credentials": "ユーザー名またはパスワードが正しくありません",
+        "unexpected_error": "予期せぬエラーが発生しました",
+        "welcome_message": "お帰りなさい、{{name}}さん",
+        "please_complete_captcha": "キャプチャ認証を完了してください",
+        "complete_captcha_to_continue": "続行するにはキャプチャ認証を完了してください"
       },
       "signup": {
         "title": "新規登録",
@@ -106,6 +116,18 @@
           "signup": "登録",
           "processing": "処理中..."
         },
+        "validation": {
+          "fullname_required": "氏名を入力してください",
+          "birthdate_required": "生年月日を入力してください",
+          "gender_required": "性別を選択してください",
+          "id_card_required": "身分証明書を入力してください",
+          "email": {
+            "required": "メールアドレスを入力してください",
+            "invalid": "メールアドレスが無効です"
+          },
+          "address_required": "住所を入力してください",
+          "phone_required": "電話番号を入力してください"
+        },
         "have_account": "すでにアカウントをお持ちの方",
         "login_link": "ログインする"
       },
@@ -114,6 +136,30 @@
         "description": "ログアウトしますか？",
         "cancel": "キャンセル",
         "confirm": "確認"
+      },
+      "forgot_password": {
+        "title": "パスワードをお忘れの方",
+        "reset_title": "パスワードの再設定",
+        "email_label": "メールアドレス",
+        "new_password": "新しいパスワード",
+        "confirm_password": "パスワードの確認",
+        "send_link": "リセットリンクを送信",
+        "reset_button": "パスワードを再設定",
+        "validation": {
+          "email_required": "メールアドレスを入力してください",
+          "email_invalid": "メールアドレスの形式が正しくありません",
+          "password_required": "パスワードを入力してください",
+          "password_length": "パスワードは8文字以上である必要があります",
+          "passwords_match": "パスワードが一致しません",
+          "confirm_required": "パスワードの確認を入力してください"
+        },
+        "toast": {
+          "email_not_found": "メールアドレスが見つかりません",
+          "email_sent": "確認メールを送信しました！",
+          "email_failed": "確認メールの送信に失敗しました",
+          "reset_success": "パスワードの再設定が完了しました！",
+          "reset_failed": "パスワードの再設定に失敗しました"
+        }
       }
     },
     "user": {
@@ -129,7 +175,10 @@
         "history": "履歴",
         "change_password": "パスワード変更",
         "admin_panel": "管理者パネル",
-        "admin": "管理者"
+        "admin": "管理者",
+        "employee": "従業員",
+        "update_success": "プロフィールが正常に更新されました！",
+        "update_failed": "プロフィールの更新に失敗しました"
       },
       "field": {
         "full_name": "氏名",
@@ -137,6 +186,7 @@
         "male": "男性",
         "female": "女性",
         "email": "メールアドレス",
+        "username": "ユーザー名",
         "id_card": "身分証明書",
         "phone": "電話番号",
         "address": "住所"
@@ -165,16 +215,18 @@
       }
     },
     "showtime_cinema": {
-      "title":{
-        "showtime_list" : "上映時間と劇場",
-        "now_day" : "今日",
-        "theater_list" : "劇場一覧",
-        "no_showtime" : "上映時間がありません"
+      "title": {
+        "showtime_list": "上映時間と劇場",
+        "now_day": "今日",
+        "theater_list": "劇場一覧",
+        "no_showtime": "上映時間がありません"
       },
       "location": {
         "HaNoi": "ハノイ",
         "HCM": "ホーチミン",
-        "DaNang": "ダナン"
+        "DaNang": "ダナン",
+        "BinhDuong": "ビンズオン",
+        "BinhPhuoc": "ビンフオック"
       },
       "notification": {
         "loading_showtime": "上映時間を読み込んでいます...",
@@ -201,13 +253,158 @@
       "payment": "支払い",
       "success": "成功"
     },
+    "payment": {
+      "timer": "残りの座席保持時間",
+      "total_amount": "合計：",
+      "origin_price": "元の価格：",
+      "user_infor": "お客様情報",
+      "confirm": "チケットを確認",
+      "back": "戻る",
+      "promotion": {
+        "title": "プロモーション",
+        "discount": "割引",
+        "used": "割引が適用されました",
+        "notfound": "現在利用可能なプロモーションはありません",
+        "from": "有効期間開始",
+        "to": "終了"
+      },
+      "ticket": {
+        "payment": "チケット支払い",
+        "infor": "チケット情報",
+        "price": "価格：",
+        "seat": "座席："
+      },
+      "movie": {
+        "default": "デフォルトの映画",
+        "poster": "映画のポスター",
+        "name": "映画名：",
+        "description": "映画情報",
+        "room": "上映ルーム："
+      },
+      "showtime": {
+        "day": "上映日：",
+        "hour": "上映時間："
+      }
+    },
+    "movie_seat": {
+      "timer": "座席保持の残り時間",
+      "selection": "座席を選択",
+      "continue": "続ける"
+    },
+    "movie_detail": {
+      "description": "説明",
+      "director": "監督:",
+      "actors": "出演者:",
+      "release_date": "公開日:",
+      "content": "映画内容",
+      "trailer": "予告編を見る",
+      "book_now": "今すぐ予約"
+    },
+    "seat_cinema": {
+      "screening": "スクリーン"
+    },
     "common": {
       "button": {
         "action": {
           "update": "更新",
           "cancel": "キャンセル"
         }
+      },
+      "table_header": {
+        "user": {
+          "username": "ユーザー名",
+          "fullname": "氏名",
+          "email": "メール",
+          "phone": "電話番号",
+          "id_card": "身分証明書",
+          "status": "ステータス",
+          "join_date": "参加日",
+          "address": "住所",
+          "points": "ボーナスポイント",
+          "gender": "性別"
+        },
+        "actions": "アクション"
+      },
+      "stats": {
+        "total_members": "総メンバー数",
+        "total_employees": "総従業員数",
+        "active_members": "アクティブメンバー",
+        "inactive_members": "非アクティブメンバー",
+        "total_points": "合計ポイント",
+        "new_members_in30days": "過去30日間の新規メンバー",
+        "male_members": "男性メンバー",
+        "female_members": "女性メンバー"
       }
+    },
+    "toast": {
+      "employee": {
+        "deleteSuccess": "メンバーの削除に成功しました",
+        "deleteFailed": "メンバーの削除に失敗しました"
+      },
+      "success": {
+        "seat": {
+          "change_from": "座席を ",
+          "change_to": " に変更",
+          "select": "座席を選択 ",
+          "cancel_booking": "予約がキャンセルされました"
+        },
+        "change_direct": {
+          "payment": "支払いページに移動中..."
+        }
+      },
+      "error": {
+        "server": {
+          "connection": "サーバーへの接続が失われました！"
+        },
+        "seat": {
+          "cancel_select": "選択解除した座席: ",
+          "by_someone": "他の人によって",
+          "selecting": "選択中",
+          "bought": "購入済み",
+          "loading_list": "座席リストの読み込みエラー。",
+          "infor": "座席情報が見つかりません",
+          "cancel_booking": "予約キャンセルエラー",
+          "remainder": "座席の保持時間が切れました。再度座席を選択してください。",
+          "max_selection": "正しい座席数を選択してください: ",
+          "someone_selected": "他の人に選択されました。別の座席を選択してください。",
+          "cannot_selected": "予約エラー！この座席は他の人に選択された可能性があります。",
+          "cancel_booking_bc_back": "戻ったため、座席はキャンセルされました。"
+        },
+        "promotion": {
+          "loading": "プロモーションを読み込めません"
+        },
+        "ticket": {
+          "booking": "チケットの予約に失敗しました！",
+          "selection": "少なくとも1枚のチケットを選択してください！"
+        },
+        "showtime": {
+          "selection": "上映時間を選択してください！"
+        }
+      }
+    },
+    "menu": {
+      "home": "ホーム",
+      "memberManagement": "会員管理",
+      "employeeManagement": "従業員管理",
+      "ticketSales": "チケット販売",
+      "ticketBooking": "チケット予約",
+      "screeningRooms": "スクリーニングルーム",
+      "movieManagement": "映画管理",
+      "promotions": "プロモーション",
+      "settings": "設定",
+      "feedback": "フィードバック",
+      "aboutUs": "私たちについて"
+    },
+    "breadcrumbs": {
+      "home": "ホーム",
+      "dashboard": "ダッシュボード",
+      "promotions": "プロモーション",
+      "movies": "映画",
+      "screeningRooms": "スクリーニングルーム",
+      "ticketBooking": "チケット予約",
+      "ticketSales": "チケット販売",
+      "employees": "従業員",
+      "members": "メンバー"
     }
   }
 }

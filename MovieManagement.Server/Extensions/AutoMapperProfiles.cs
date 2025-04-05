@@ -17,11 +17,10 @@ namespace MovieManagement.Server.Extensions
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()));
             
             CreateMap<UserDto.UpdateRequest, User>()
-                .ForMember(dest => dest.Bills, opt => opt.Ignore())  // Ignore fields that shouldn't be updated
-                .ForMember(dest => dest.UserId, opt => opt.Ignore());
-            
-            //List User Response For Admin  
-            CreateMap<User, UserResponse>();
+                .ForMember(dest => dest.Bills, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.Ignore())
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
             CreateMap<UserResponse, User>()
                 .ForMember(dest => dest.Password, opt => opt.Ignore())
                 .ForMember(dest => dest.JoinDate, opt => opt.Ignore())
@@ -35,7 +34,10 @@ namespace MovieManagement.Server.Extensions
                 .ForMember(dest => dest.Password, opt => opt.Ignore())
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()));
             //User DTO <=> User Respone
-            CreateMap<User, UserDto.UserResponse>();
+            CreateMap<User, UserDto.UserResponse>()
+                .ForMember(dest => dest.JoinDate, opt => opt.MapFrom(src => src.JoinDate.ToString("yyyy-MM-ddTHH:mm:ssZ")))
+                .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate.ToString("yyyy-MM-ddTHH:mm:ssZ")));
+
             CreateMap<UserDto.UserResponse, User>();
 
             //User DTO <=> Register Request
@@ -55,7 +57,13 @@ namespace MovieManagement.Server.Extensions
 
             CreateMap<Bill, BillDto>();
             CreateMap<BillDto, Bill>();
+
             CreateMap<BillRequest, Bill>();
+
+            CreateMap<Bill, BillRequest>();
+
+            //Bill Report for user
+            CreateMap<Bill, BillReportRequest>();
 
             CreateMap<SeatType, SeatTypeDto>();
             CreateMap<SeatTypeDto, SeatType>();
@@ -68,6 +76,9 @@ namespace MovieManagement.Server.Extensions
 
             CreateMap<Movie, MovieDto>();
             CreateMap<MovieDto, Movie>();
+
+            CreateMap<MovieTheater, MovieTheaterDto>();
+            CreateMap<MovieTheaterDto, MovieTheater>();
 
             CreateMap<Movie, MoviePreview>();
             CreateMap<MoviePreview, Movie>();
@@ -93,10 +104,16 @@ namespace MovieManagement.Server.Extensions
             CreateMap<TicketDetail, TicketDetailResponseModel>();
             //CreateMap<TicketDetailResponseModel, TicketDetail>();
 
-
-
+            CreateMap<ShowTime, ShowTimeInfo>();
 
             CreateMap<UserDto.UserRequest, User>();
+
+            CreateMap<Bill, BillTransaction>();
+
+            CreateMap<TicketDetail, TicketTransaction>();
+
+            CreateMap<ShowTime, ShowTimeInfo>();
+
         }
     }
 }

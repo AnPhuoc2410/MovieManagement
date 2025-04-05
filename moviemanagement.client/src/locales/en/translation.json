@@ -8,6 +8,7 @@
     "see_more": "See More",
     "now_showing": "NOW SHOWING",
     "upcoming": "UPCOMING",
+    "search_result": "SEARCH RESULTS",
     "promotions": "PROMOTIONS",
     "list_promotions": "See more Promotions",
     "quick_booking": "Quick Booking",
@@ -22,6 +23,7 @@
     "select_theater4": "Kien Giang Theater (Rach Soi)",
     "select_theater5": "Lam Dong Theater (Duc Trong)",
     "select_theater6": "Da Lat Theater (Da Lat City)",
+    "no_search_result": "No movies found. Please try again!",
     "oops": "OOPS!",
     "footer": {
       "slogan": "BE HAPPY, BE A STAR",
@@ -39,7 +41,8 @@
         "title": "MOVIES",
         "now_showing": "Now Showing",
         "coming_soon": "Coming Soon",
-        "special_screening": "Special Screening"
+        "special_screening": "Special Screening",
+        "not_existing": "Phim không tồn tại"
       },
       "theaters": {
         "title": "OUR THEATERS",
@@ -79,7 +82,14 @@
           "password_required": "Password is required",
           "password_length": "Password must be at least 8 characters"
         },
-        "remember_me": "Remember me"
+        "remember_me": "Remember me",
+        "logging_in": "Logging in...",
+        "captcha_required": "Please complete the captcha verification",
+        "wrong_credentials": "Incorrect username or password",
+        "unexpected_error": "An unexpected error occurred",
+        "welcome_message": "Welcome back, {{name}}",
+        "please_complete_captcha": "Please complete the captcha verification",
+        "complete_captcha_to_continue": "Please complete the captcha verification to continue"
       },
       "signup": {
         "title": "Sign Up",
@@ -107,6 +117,18 @@
           "signup": "Sign Up",
           "processing": "Processing..."
         },
+        "validation": {
+          "fullname_required": "Full Name is required",
+          "birthdate_required": "Date of Birth is required",
+          "gender_required": "Gender is required",
+          "id_card_required": "ID Card is required",
+          "email": {
+            "required": "Email is required",
+            "invalid": "Email is invalid"
+          },
+          "address_required": "Address is required",
+          "phone_required": "Phone Number is required"
+        },
         "have_account": "Already have an account?",
         "login_link": "Login now"
       },
@@ -115,6 +137,30 @@
         "description": "Are you sure you want to logout?",
         "cancel": "Cancel",
         "confirm": "Confirm"
+      },
+      "forgot_password": {
+        "title": "Forgot Password",
+        "reset_title": "Reset Password",
+        "email_label": "Email",
+        "new_password": "New Password",
+        "confirm_password": "Confirm Password",
+        "send_link": "Send Reset Link",
+        "reset_button": "Reset Password",
+        "validation": {
+          "email_required": "Email is required",
+          "email_invalid": "Invalid email format",
+          "password_required": "Password is required",
+          "password_length": "Password must be at least 8 characters",
+          "passwords_match": "Passwords must match",
+          "confirm_required": "Please confirm your password"
+        },
+        "toast": {
+          "email_not_found": "Email not found",
+          "email_sent": "Verification email sent!",
+          "email_failed": "Failed to send verification email",
+          "reset_success": "Password reset successfully!",
+          "reset_failed": "Failed to reset password"
+        }
       }
     },
     "user": {
@@ -130,7 +176,10 @@
         "history": "History",
         "change_password": "Change Password",
         "admin_panel": "Admin Panel",
-        "admin": "Admin"
+        "admin": "Admin",
+        "employee": "Employee",
+        "update_success": "Profile updated successfully!",
+        "update_failed": "Failed to update profile"
       },
       "field": {
         "full_name": "Full Name",
@@ -138,6 +187,7 @@
         "male": "Male",
         "female": "Female",
         "email": "Email",
+        "username": "Username",
         "id_card": "ID Card",
         "phone": "Phone Number",
         "address": "Address"
@@ -166,16 +216,18 @@
       }
     },
     "showtime_cinema": {
-      "title":{
-        "showtime_list" : "Showtime a Theaters",
-        "now_day" : "Now Day",
-        "theater_list" : "Theater list",
-        "no_showtime" : "No showtime"
+      "title": {
+        "showtime_list": "Showtime a Theaters",
+        "now_day": "Now Day",
+        "theater_list": "Theater list",
+        "no_showtime": "No showtime"
       },
       "location": {
         "HaNoi": "Ha Noi",
         "HCM": "Ho Chi Minh City",
-        "DaNang": "Da Nang"
+        "DaNang": "Da Nang",
+        "BinhDuong": "Binh Duong",
+        "BinhPhuoc": "Binh Phuoc"
       },
       "notification": {
         "loading_showtime": "Loading Showtime",
@@ -200,7 +252,58 @@
       "select_show_time": "Select showtimes",
       "select_seat": "Select seat",
       "payment": "Payment",
-      "success": "Success"
+      "success": "Success",
+      "failed": "Payment cancel"
+    },
+    "payment": {
+      "timer": "Remaining seat holding time",
+      "total_amount": "Total:",
+      "origin_price": "Original price:",
+      "user_infor": "Customer Information",
+      "confirm": "Confirm booking",
+      "back": "Back",
+      "promotion": {
+        "title": "Promotion",
+        "discount": "Discount",
+        "used": "Discount applied",
+        "notfound": "No promotions available at the moment",
+        "from": "Valid from",
+        "to": "to"
+      },
+      "ticket": {
+        "payment": "Ticket Payment",
+        "infor": "Ticket Information",
+        "price": "Price:",
+        "seat": "Seat:"
+      },
+      "movie": {
+        "default": "Default Movie",
+        "poster": "Movie poster",
+        "name": "Movie Name:",
+        "description": "Movie Information",
+        "room": "Screening Room:"
+      },
+      "showtime": {
+        "day": "Show Date:",
+        "hour": "Show Time:"
+      }
+    },
+    "movie_seat": {
+      "timer": "Remaining seat holding time",
+      "selection": "Select seat",
+      "continue": "Continue"
+    },
+    "movie_detail": {
+      "description": "DESCRIPTION",
+      "director": "Director:",
+      "actors": "Actors:",
+      "release_date": "Release Date:",
+      "content": "MOVIE CONTENT",
+      "trailer": "WATCH TRAILER",
+      "book_now": "BOOK NOW"
+    },
+    "seat_cinema": {
+      "screening": "SCREEN"
     },
     "common": {
       "button": {
@@ -208,7 +311,102 @@
           "update": "Update",
           "cancel": "Cancel"
         }
+      },
+      "table_header": {
+        "user": {
+          "username": "Username",
+          "fullname": "Full Name",
+          "email": "Email",
+          "phone": "Phone Number",
+          "id_card": "ID Card",
+          "status": "Status",
+          "address": "Address",
+          "join_date": "Join Date",
+          "points": "Points",
+          "gender": "Gender"
+        },
+        "actions": "Actions"
+      },
+      "stats": {
+        "total_members": "Total Members",
+        "total_employees": "Total Employees",
+        "active_members": "Active Members",
+        "inactive_members": "Inactive Members",
+        "total_points": "Total Points",
+        "new_members_in30days": "New Members In 30 Days",
+        "male_members": "Male Members",
+        "female_members": "Female Members"
       }
+    },
+    "toast": {
+      "employee": {
+        "deleteSuccess": "Employee deleted successfully",
+        "deleteFailed": "Employee deletion failed"
+      },
+      "success": {
+        "seat": {
+          "change_from": "Change seat from ",
+          "change_to": " to seat ",
+          "select": "Select seat ",
+          "cancel_booking": "Booking canceled"
+        },
+        "change_direct": {
+          "payment": "Redirecting to payment page..."
+        }
+      },
+      "error": {
+        "server": {
+          "connection": "Lost connection to server!"
+        },
+        "seat": {
+          "cancel_select": "Unselected seat: ",
+          "by_someone": "by someone else",
+          "selecting": "is being selected",
+          "bought": "has been purchased",
+          "loading_list": "Error loading seat list.",
+          "infor": "Seat information not found",
+          "cancel_booking": "Error canceling booking",
+          "remainder": "Seat holding time has expired. Please select a seat again.",
+          "max_selection": "Please select exactly: ",
+          "someone_selected": "has already been selected by someone else. Please choose another seat.",
+          "cannot_selected": "Error booking seat! The seat may have been selected by someone else.",
+          "cancel_booking_bc_back": "Seats have been canceled because you went back."
+        },
+        "promotion": {
+          "loading": "Unable to load promotions"
+        },
+        "ticket": {
+          "booking": "Ticket booking failed!",
+          "selection": "Please select at least one ticket!"
+        },
+        "showtime": {
+          "selection": "Please select a showtime!"
+        }
+      }
+    },
+    "menu": {
+      "home": "Home",
+      "memberManagement": "Member Management",
+      "employeeManagement": "Employee Management",
+      "ticketSales": "Ticket Sales",
+      "ticketBooking": "Ticket Booking",
+      "screeningRooms": "Screening Rooms",
+      "movieManagement": "Movie Management",
+      "promotions": "Promotions",
+      "settings": "Settings",
+      "feedback": "Feedback",
+      "aboutUs": "About Us"
+    },
+    "breadcrumbs": {
+      "home": "Home",
+      "dashboard": "Dashboard",
+      "promotions": "Promotions",
+      "movies": "Movies",
+      "screeningRooms": "Screening Rooms",
+      "ticketBooking": "Ticket Booking",
+      "ticketSales": "Ticket Sales",
+      "employees": "Employees",
+      "members": "Members"
     }
   }
 }

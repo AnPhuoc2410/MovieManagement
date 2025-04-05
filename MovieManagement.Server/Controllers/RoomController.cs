@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
@@ -21,120 +22,42 @@ namespace MovieManagement.Server.Controllers
         }
 
 
-        [HttpGet("all")]
-        [ProducesResponseType(typeof(ApiResponse<RoomDto>), StatusCodes.Status200OK)]
+        [HttpGet]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<RoomDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllRoomAsync()
         {
-            try
+            var rooms = await _roomService.GetAllRoomsAsync();
+            var response = new ApiResponse<IEnumerable<RoomDto>>
             {
-                var rooms = await _roomService.GetAllRoomsAsync();
-                if (rooms == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Room not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(rooms);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while retrieving rooms",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Get all rooms is success",
+                IsSuccess = true,
+                Data = rooms
+            };
+            return Ok(response);
         }
 
-        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
-        [ProducesResponseType(typeof(ApiResponse<RoomDto>), StatusCodes.Status200OK)]
+        [HttpGet("page/{page:int}/size/{pageSize:int}")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<RoomDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetRoomPageAsync(int page, int pageSize)
         {
-            try
+            var rooms = await _roomService.GetRoomPageAsync(page, pageSize);
+            var response = new ApiResponse<IEnumerable<RoomDto>>
             {
-                var rooms = await _roomService.GetRoomPageAsync(page, pageSize);
-                if (rooms == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Room not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(rooms);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while retrieving room pages",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Get rooms is success",
+                IsSuccess = true,
+                Data = rooms
+            };
+            return Ok(response);
         }
 
         [HttpGet]
@@ -146,54 +69,15 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<RoomDto>> GetRoomByIdAsync(Guid roomId)
         {
-            try
+            var room = await _roomService.GetRoomByIdAsync(roomId);
+            var response = new ApiResponse<RoomDto>
             {
-                var room = await _roomService.GetRoomByIdAsync(roomId);
-                if (room == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Room not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(room);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while retrieving room",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Get room is success",
+                IsSuccess = true,
+                Data = room
+            };
+            return Ok(response);
         }
 
         [HttpPost]
@@ -202,56 +86,16 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<RoomDto>> CreateRoomAsync([FromBody] RoomDto roomDto)
+        public async Task<ActionResult<RoomDto>> CreateRoomAsync([FromBody] RoomDto roomDto, Guid MovieTheaterId)
         {
-            try
+            var newRoom = await _roomService.CreateRoomAsync(roomDto, MovieTheaterId);
+            var response = new ApiResponse<RoomDto>
             {
-                var newRoom = await _roomService.CreateRoomAsync(roomDto);
-                if (newRoom == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Room not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(newRoom);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while creating room",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Create room is success",
+                IsSuccess = true,
+            };
+            return Ok(response);
         }
 
         [HttpPut]
@@ -263,118 +107,41 @@ namespace MovieManagement.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<RoomDto>> UpdateRoomAsync(Guid roomId, [FromBody] RoomDto roomDto)
         {
-            try
+            var updatedRoom = await _roomService.UpdateRoomAsync(roomId, roomDto);
+            var response = new ApiResponse<RoomDto>
             {
-                var updatedRoom = await _roomService.UpdateRoomAsync(roomId, roomDto);
-                if (updatedRoom == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Room not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(updatedRoom);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while updating room",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Update room is success",
+                IsSuccess = true,
+            };
+            return Ok(response);
         }
 
         [HttpDelete]
         [Route("{roomId:guid}")]
-        [ProducesResponseType(typeof(ApiResponse<RoomDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteRoomAsync(Guid roomId)
         {
-            try
+            var isDeleted = await _roomService.DeleteRoomAsync(roomId);
+            var response = new ApiResponse<bool>
             {
-                var isDeleted = await _roomService.DeleteRoomAsync(roomId);
-                if (!isDeleted)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "Room not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-                return Ok(isDeleted);
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while deleting room",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Delete room is success",
+                IsSuccess = true,
+            };
+            return Ok(response);
         }
 
         [HttpGet]
-        [Route("GetRoomInfo/{roomId:guid}")]
+        [Route("{roomId:guid}/info")]
         [ProducesResponseType(typeof(ApiResponse<RoomResponseModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         /// <summary>
         /// Retrieves room information by room ID.
@@ -383,41 +150,15 @@ namespace MovieManagement.Server.Controllers
         /// <returns>An IActionResult containing the room information.</returns>
         public async Task<IActionResult> GetRoomInfo(Guid roomId)
         {
-            try
+            var data = await _roomService.GetRoomInfo(roomId);
+            var response = new ApiResponse<RoomResponseModel>
             {
-                var data = await _roomService.GetRoomInfo(roomId);
-                var response = new ApiResponse<RoomResponseModel>
-                {
-                    StatusCode = 200,
-                    Message = "Room info retrieved successfully",
-                    IsSuccess = true,
-                    Data = data
-                };
-                return Ok(response);
-            }
-            catch (NotFoundException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 404,
-                    Message = "Room not found",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return NotFound(response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while retrieving room info",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "Get room info is success",
+                IsSuccess = true,
+                Data = data
+            };
+            return Ok(response);
         }
-
     }
 }

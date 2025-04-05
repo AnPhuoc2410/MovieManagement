@@ -14,6 +14,7 @@ import {
 import { Delete, Edit } from "@mui/icons-material";
 import { UserResponse } from "../../types/users.type";
 import Loader from "./Loading";
+import { useTranslation } from "react-i18next";
 
 // Base interface for table data with string id
 export interface TableData {
@@ -21,6 +22,7 @@ export interface TableData {
   MaNhanVien?: string;
   movieId?: string;
   roomId?: string;
+  showTimeId?: string;
   [key: string]: any;
 }
 
@@ -28,6 +30,7 @@ export interface TableData {
 export interface ColumnDef<T extends TableData> {
   field: keyof T;
   headerName: string;
+  translationKey?: string; // Add this for translation
   align?: "left" | "center" | "right";
   width?: string | number;
   renderCell?: (item: T) => React.ReactNode;
@@ -41,48 +44,56 @@ interface ManagementTableProps<T extends TableData> {
   onDelete?: (id: string) => void;
   showActions?: boolean;
   isLoading?: boolean;
+  rowHeight?: number; // Add this new prop for row height
   actionColumn?: {
     align?: "left" | "center" | "right";
     width?: string | number;
     headerName?: string;
+    translationKey?: string;
     backgroundColor?: string;
   };
 }
 
-// Default user columns that can be reused
+// Default user columns that can be reused - now with translation keys
 export const defaultUserColumns: ColumnDef<UserResponse>[] = [
-  {
-    field: "avatar",
-    headerName: "Avatar",
-    align: "center",
-    width: "80px",
-    renderCell: (item) => (
-      <Avatar src={item.avatar || "/default-avatar.png"} alt={item.fullName} />
-    ),
-  },
   {
     field: "userName",
     headerName: "Username",
+    translationKey: "common.table_header.user.username",
     align: "left",
+    width: "200px",
+    renderCell: (item) => (
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <Avatar
+          src={item.avatar || "/default-avatar.png"}
+          alt={item.fullName}
+        />
+        <span>{item.userName}</span>
+      </div>
+    ),
   },
   {
     field: "fullName",
     headerName: "Full Name",
+    translationKey: "common.table_header.user.fullname",
     align: "left",
   },
   {
     field: "email",
     headerName: "Email",
+    translationKey: "common.table_header.user.email",
     align: "left",
   },
   {
     field: "phoneNumber",
     headerName: "Phone",
+    translationKey: "common.table_header.user.phone",
     align: "left",
   },
   {
     field: "status",
     headerName: "Status",
+    translationKey: "common.table_header.user.status",
     align: "center",
     renderCell: (item) => (
       <Chip
@@ -109,12 +120,19 @@ function ManagementTable<T extends TableData>({
   onDelete,
   showActions = true,
   isLoading = false,
+  rowHeight = 53, // Default row height (MUI default is ~53px)
   actionColumn = {
     align: "center",
     headerName: "Actions",
+    translationKey: "common.table_header.actions", // Add default translation key
     width: "120px",
   },
 }: ManagementTableProps<T>) {
+  // Import translation hook here so it's available inside the component
+  // Note: This import should be at the top level in actual implementation
+  // but is shown here within the component for demonstration
+  const { t } = useTranslation();
+
   if (isLoading) return <Loader />;
 
   const renderHeaderCells = () => {
@@ -124,10 +142,11 @@ function ManagementTable<T extends TableData>({
         align={column.align}
         style={{ width: column.width }}
         sx={{
-          fontWeight: "bold", // Optional: make the text bold
+          fontWeight: "bold",
         }}
       >
-        {column.headerName}
+        {/* Use translation if available, otherwise use headerName */}
+        {column.translationKey ? t(column.translationKey) : column.headerName}
       </TableCell>
     ));
 
@@ -141,7 +160,10 @@ function ManagementTable<T extends TableData>({
             fontWeight: "bold",
           }}
         >
-          {actionColumn.headerName}
+          {/* Use translation if available, otherwise use headerName */}
+          {actionColumn.translationKey
+            ? t(actionColumn.translationKey)
+            : actionColumn.headerName}
         </TableCell>,
       );
     }
@@ -162,7 +184,8 @@ function ManagementTable<T extends TableData>({
           color="primary"
           onClick={() =>
             onEdit(
-              item.userId ||
+              item.showTimeId ||
+                item.userId ||
                 item.roomId ||
                 item.MaNhanVien ||
                 item.movieId ||
@@ -178,7 +201,8 @@ function ManagementTable<T extends TableData>({
           color="secondary"
           onClick={() =>
             onDelete(
-              item.userId ||
+              item.showTimeId ||
+                item.userId ||
                 item.roomId ||
                 item.MaNhanVien ||
                 item.movieId ||
@@ -210,7 +234,9 @@ function ManagementTable<T extends TableData>({
     <TableContainer component={Paper}>
       <Table>
         <TableHead>
-          <TableRow>{renderHeaderCells()}</TableRow>
+          <TableRow>
+            {renderHeaderCells()}
+          </TableRow>
         </TableHead>
         <TableBody>
           {data.map((item) => (
@@ -218,6 +244,12 @@ function ManagementTable<T extends TableData>({
               key={
                 item.userId || item.roomId || item.MaNhanVien || item.movieId
               }
+              sx={{ 
+                height: `${rowHeight}px`,
+                '& .MuiTableCell-root': {
+                  padding: rowHeight < 53 ? '8px 16px' : undefined // Adjust padding for smaller rows
+                }
+              }}
             >
               {renderRowCells(item)}
             </TableRow>

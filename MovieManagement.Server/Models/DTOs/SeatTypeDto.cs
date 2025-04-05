@@ -9,7 +9,9 @@
 
         public decimal Price { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; } = true;
+
+        public int? SeatSize { get; set; } = 1;
 
 
     }

@@ -1,35 +1,39 @@
-import { AccountCircleOutlined, FastfoodOutlined } from "@mui/icons-material";
+import { AccountCircleOutlined, AdminPanelSettings, FastfoodOutlined } from "@mui/icons-material";
 import LocalActivityOutlinedIcon from "@mui/icons-material/LocalActivityOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PersonIcon from "@mui/icons-material/Person";
-import {
-  AppBar,
-  Box,
-  Button,
-  Container,
-  IconButton,
-  TextField,
-  Toolbar,
-  Typography,
-  Menu,
-  MenuItem,
-  Avatar,
-  Divider,
-} from "@mui/material";
+import { AppBar, Box, Button, Container, IconButton, TextField, Toolbar, Typography, Menu, MenuItem, Avatar, Divider } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import LanguageSelector from "../common/LanguageSelector";
 import { useAuth } from "../../contexts/AuthContext";
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  isTransparent?: boolean;
+}
+
+const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
   const { isAuthenticated, authLogout, userDetails } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation(); // Access current location
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+
+  const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = React.useState<HTMLElement | null>(null);
+  const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
+
+  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>): void => {
+    setMobileMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleMobileMenuClose = () => {
+    setMobileMenuAnchorEl(null);
+  };
 
   // Profile dropdown menu state
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -45,6 +49,19 @@ const Header: React.FC = () => {
 
   const handleLogout = async () => {
     await authLogout();
+  };
+
+  useEffect(() => {
+    // Retrieve searchValue from URL query parameters
+    const params = new URLSearchParams(location.search);
+    const keyword = params.get("keyword") || "";
+    setSearchValue(decodeURIComponent(keyword));
+  }, [location.search]);
+
+  const handleSearch = () => {
+    if (searchValue.trim()) {
+      navigate(`/search?keyword=${encodeURIComponent(searchValue)}`);
+    }
   };
 
   useEffect(() => {
@@ -67,7 +84,7 @@ const Header: React.FC = () => {
     <AppBar
       position="fixed"
       sx={{
-        backgroundColor: scrolled ? "rgba(0, 0, 0, 0.8)" : "transparent",
+        backgroundColor: scrolled ? "rgba(0, 0, 0, 0.8)" : isTransparent ? "transparent" : "#000",
         backdropFilter: scrolled ? "blur(8px)" : "none",
         boxShadow: scrolled ? 2 : "none",
         transition: "all 0.3s ease-in-out",
@@ -140,8 +157,7 @@ const Header: React.FC = () => {
                   content: '""',
                   position: "absolute",
                   inset: 0,
-                  background:
-                    "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                  background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
                   transform: "translateX(-100%)",
                   transition: "transform 0.5s ease-in-out",
                   zIndex: 0,
@@ -181,8 +197,7 @@ const Header: React.FC = () => {
                   content: '""',
                   position: "absolute",
                   inset: 0,
-                  background:
-                    "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                  background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
                   transform: "translateX(-100%)",
                   transition: "transform 0.5s ease-in-out",
                   zIndex: 0,
@@ -221,6 +236,13 @@ const Header: React.FC = () => {
                 variant="outlined"
                 size="small"
                 placeholder={t("search")}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
                 sx={{
                   backgroundColor: "white",
                   width: { md: "200px", lg: "300px" },
@@ -235,7 +257,7 @@ const Header: React.FC = () => {
                 }}
                 InputProps={{
                   endAdornment: (
-                    <IconButton size="small">
+                    <IconButton size="small" onClick={handleSearch}>
                       <SearchIcon />
                     </IconButton>
                   ),
@@ -243,17 +265,72 @@ const Header: React.FC = () => {
               />
             </Box>
 
-            {/* Mobile Menu Icon */}
+            {/* Hamburger menu for mobile - always visible on small screens */}
             <IconButton
+              color="inherit"
               sx={{
                 display: { xs: "flex", md: "none" },
-                color: "white",
+                cursor: "pointer",
               }}
+              onClick={handleMobileMenuOpen}
             >
               <MenuIcon />
             </IconButton>
 
-            {/* Conditional Login Button or Profile Dropdown */}
+            {/* Mobile menu */}
+            <Menu
+              anchorEl={mobileMenuAnchorEl}
+              id="mobile-menu"
+              open={isMobileMenuOpen}
+              onClose={handleMobileMenuClose}
+              onClick={handleMobileMenuClose}
+              PaperProps={{
+                elevation: 0,
+                sx: {
+                  overflow: "visible",
+                  filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                  mt: 1.5,
+                },
+              }}
+              transformOrigin={{ horizontal: "right", vertical: "top" }}
+              anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            >
+              {isAuthenticated ? (
+                <>
+                  <MenuItem onClick={() => navigate(`/users/profile/${userDetails?.userId}`)}>
+                    <PersonIcon fontSize="small" sx={{ mr: 2 }} />
+                    {t("user.profile.my_profile")}
+                  </MenuItem>
+                  {userDetails?.role === 2 && (
+                    <MenuItem onClick={() => navigate("/admin/thong-ke")}>
+                      <AdminPanelSettings fontSize="small" sx={{ mr: 2 }} />
+                      {t("user.profile.admin_panel")}
+                    </MenuItem>
+                  )}
+                  <MenuItem>
+                    <SettingsIcon fontSize="small" sx={{ mr: 2 }} />
+                    {t("user.profile.settings")}
+                  </MenuItem>
+                  {userDetails?.role === 0 && (
+                    <MenuItem onClick={() => navigate(`/users/profile/${userDetails?.userId}`)}>
+                      <LocalActivityOutlinedIcon fontSize="small" sx={{ mr: 2 }} />
+                      {t("user.profile.my_bookings")}
+                    </MenuItem>
+                  )}
+                  <Divider />
+                  <MenuItem onClick={handleLogout}>
+                    <LogoutIcon fontSize="small" sx={{ mr: 2 }} />
+                    {t("user.profile.logout")}
+                  </MenuItem>
+                </>
+              ) : (
+                <MenuItem onClick={() => navigate("/auth/login")}>
+                  <AccountCircleOutlined fontSize="small" sx={{ mr: 2 }} />
+                  {t("login")}
+                </MenuItem>
+              )}
+            </Menu>
+
             {isAuthenticated ? (
               <>
                 <Box
@@ -271,9 +348,9 @@ const Header: React.FC = () => {
                       height: 32,
                       bgcolor: "#834bff",
                     }}
-                  >
-                    <PersonIcon fontSize="small" />
-                  </Avatar>
+                    src={userDetails?.avatar || "https://images.dog.ceo/breeds/pembroke/n02113023_1258.jpg"}
+                    alt={userDetails?.fullName}
+                  />
                   <Typography>{t("user.profile.my_account")}</Typography>
                 </Box>
 
@@ -312,17 +389,13 @@ const Header: React.FC = () => {
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
-                  <MenuItem
-                    onClick={() =>
-                      navigate(`/users/profile/${userDetails?.userId}`)
-                    }
-                  >
+                  <MenuItem onClick={() => navigate(`/users/profile/${userDetails?.userId}`)}>
                     <PersonIcon fontSize="small" sx={{ mr: 2 }} />
                     {t("user.profile.my_profile")}
                   </MenuItem>
                   {userDetails?.role === 2 && (
                     <MenuItem onClick={() => navigate("/admin/thong-ke")}>
-                      <PersonIcon fontSize="small" sx={{ mr: 2 }} />
+                      <AdminPanelSettings fontSize="small" sx={{ mr: 2 }} />
                       {t("user.profile.admin_panel")}
                     </MenuItem>
                   )}
@@ -330,17 +403,12 @@ const Header: React.FC = () => {
                     <SettingsIcon fontSize="small" sx={{ mr: 2 }} />
                     {t("user.profile.settings")}
                   </MenuItem>
-                  <MenuItem
-                    onClick={() =>
-                      navigate(`/users/profile/${userDetails?.userId}`)
-                    }
-                  >
-                    <LocalActivityOutlinedIcon
-                      fontSize="small"
-                      sx={{ mr: 2 }}
-                    />
-                    {t("user.profile.my_bookings")}
-                  </MenuItem>
+                  {userDetails?.role === 0 && (
+                    <MenuItem onClick={() => navigate(`/users/profile/${userDetails?.userId}`)}>
+                      <LocalActivityOutlinedIcon fontSize="small" sx={{ mr: 2 }} />
+                      {t("user.profile.my_bookings")}
+                    </MenuItem>
+                  )}
                   <Divider />
                   <MenuItem onClick={handleLogout}>
                     <LogoutIcon fontSize="small" sx={{ mr: 2 }} />

@@ -35,6 +35,9 @@ namespace MovieManagement.Server.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<long?>("PaymentId")
+                        .HasColumnType("bigint");
+
                     b.Property<decimal>("Point")
                         .HasColumnType("numeric(10,2)");
 
@@ -47,7 +50,7 @@ namespace MovieManagement.Server.Migrations
                     b.Property<int>("TotalTicket")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("BillId");
@@ -75,6 +78,83 @@ namespace MovieManagement.Server.Migrations
                     b.HasKey("CategoryId");
 
                     b.ToTable("CATEGORY", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = new Guid("39e40710-526e-410e-a289-799c1fec6f4a"),
+                            Name = "Hoạt hình"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("ec04e01f-819b-4b31-9579-6c6145e40259"),
+                            Name = "Viễn tưởng"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("f9a231c0-ee23-4da7-a2af-ccc1e6d157c3"),
+                            Name = "Kinh dị"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("b22388df-5b39-46ca-9f9d-e4ea8fad4b8d"),
+                            Name = "Hài hước"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("a5020ccc-9fe3-44be-9566-2555e55e2650"),
+                            Name = "Tình cảm"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("960db96c-aa61-4c01-8fcc-18712822bfa6"),
+                            Name = "Lãng mạn"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("3b13909a-2951-4f95-bfee-b0acdf42bef8"),
+                            Name = "Thần thoại"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("e3e6b9e2-c563-488c-b49f-e1627811680e"),
+                            Name = "Hành động"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("a6950db6-9e15-4903-8eaa-24e73054b7ef"),
+                            Name = "Phiêu Lưu"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("b6eee7b7-90a6-4475-a12c-1e4d9391cc82"),
+                            Name = "Gia đình"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("98530c05-e7f1-463a-8afd-c3f3e67a9761"),
+                            Name = "Võ thuật"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("82d9083b-13b1-4e0e-b97a-56f0625662fa"),
+                            Name = "Chiến tranh"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("2cac9abd-b041-4bc6-9ada-322929d5667f"),
+                            Name = "Kiếm hiệp"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("a2b36369-e576-4163-a551-1fe7fe63e99a"),
+                            Name = "Tâm lý"
+                        },
+                        new
+                        {
+                            CategoryId = new Guid("55451114-6fdc-4470-ae4c-c8bc92605688"),
+                            Name = "Âm nhạc"
+                        });
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Movie", b =>
@@ -121,7 +201,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Rating")
                         .IsRequired()
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("ToDate")
                         .HasColumnType("datetime2");
@@ -133,8 +213,9 @@ namespace MovieManagement.Server.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("MovieId");
 
@@ -154,6 +235,48 @@ namespace MovieManagement.Server.Migrations
                     b.HasIndex("MovieId");
 
                     b.ToTable("MOVIECATEGORY", (string)null);
+                });
+
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.MovieTheater", b =>
+                {
+                    b.Property<Guid>("MovieTheaterId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("MovieTheaterId");
+
+                    b.ToTable("MOVIE_THEATER", (string)null);
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.OtpCode", b =>
@@ -220,11 +343,14 @@ namespace MovieManagement.Server.Migrations
                 {
                     b.Property<Guid>("RoomId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(2)
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<int>("Column")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("MovieTheaterId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("RoomName")
                         .IsRequired()
@@ -237,6 +363,8 @@ namespace MovieManagement.Server.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("RoomId");
+
+                    b.HasIndex("MovieTheaterId");
 
                     b.ToTable("ROOM", (string)null);
                 });
@@ -289,6 +417,9 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("SeatSize")
+                        .HasColumnType("int");
 
                     b.Property<string>("TypeName")
                         .IsRequired()
@@ -375,7 +506,7 @@ namespace MovieManagement.Server.Migrations
 
                     b.Property<string>("Avatar")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("NVARCHAR(MAX)");
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
@@ -426,17 +557,13 @@ namespace MovieManagement.Server.Migrations
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Bill", b =>
                 {
-                    b.HasOne("MovieManagement.Server.Models.Entities.Promotion", "Promotion")
+                    b.HasOne("MovieManagement.Server.Models.Entities.Promotion", null)
                         .WithMany("Bills")
                         .HasForeignKey("PromotionId");
 
                     b.HasOne("MovieManagement.Server.Models.Entities.User", "User")
                         .WithMany("Bills")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Promotion");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -458,6 +585,17 @@ namespace MovieManagement.Server.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.Room", b =>
+                {
+                    b.HasOne("MovieManagement.Server.Models.Entities.MovieTheater", "MovieTheater")
+                        .WithMany("Rooms")
+                        .HasForeignKey("MovieTheaterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MovieTheater");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Seat", b =>
@@ -538,6 +676,11 @@ namespace MovieManagement.Server.Migrations
                     b.Navigation("MovieCategories");
 
                     b.Navigation("Showtimes");
+                });
+
+            modelBuilder.Entity("MovieManagement.Server.Models.Entities.MovieTheater", b =>
+                {
+                    b.Navigation("Rooms");
                 });
 
             modelBuilder.Entity("MovieManagement.Server.Models.Entities.Promotion", b =>
