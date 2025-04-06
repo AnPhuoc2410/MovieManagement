@@ -54,7 +54,7 @@ const MovieSlider = ({
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={20}
-        slidesPerView={1} // Default for small screens
+        slidesPerView={1}
         breakpoints={{
           480: { slidesPerView: 2 },
           768: { slidesPerView: 3 },
@@ -63,10 +63,9 @@ const MovieSlider = ({
         navigation
         pagination={{ clickable: true }}
         autoplay={{ delay: 3000 }}
-        loop
+        loop={movies.length > 4}
         style={{ width: "100%", paddingBottom: "20px" }}
       >
-
         {movies.map((movie, index) => (
           <SwiperSlide key={index}>
             <Box className="movie-card">
@@ -102,8 +101,12 @@ const MovieSlider = ({
                     icon={<CalendarTodayIcon />}
                     label={
                       <Box className="date-content">
-                        <span className="month">{format(parseISO(movie.postDate), "MMM")}</span>
-                        <span className="full-date">{format(parseISO(movie.postDate), "dd, yyyy")}</span>
+                        <span className="month">
+                          {format(parseISO(movie.postDate), "MMM")}
+                        </span>
+                        <span className="full-date">
+                          {format(parseISO(movie.postDate), "dd, yyyy")}
+                        </span>
                       </Box>
                     }
                     className="publish-date-tag"
@@ -135,7 +138,7 @@ const MovieSlider = ({
                   WebkitLineClamp: 2,
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
-                  textOverflow: "ellipsis"
+                  textOverflow: "ellipsis",
                 }}
               >
                 {movie.movieName}
@@ -180,7 +183,8 @@ const MovieSlider = ({
                     color: "black",
                     fontWeight: "bold",
                     width: "120px",
-                    transition: "transform 0.3s ease, background-color 0.3s ease",
+                    transition:
+                      "transform 0.3s ease, background-color 0.3s ease",
                     "&:hover": {
                       backgroundColor: "#FFD700",
                       transform: "scale(1.1)",
@@ -190,7 +194,6 @@ const MovieSlider = ({
                 >
                   {t("book_ticket")}
                 </Button>
-
               </Box>
             </Box>
           </SwiperSlide>
@@ -248,7 +251,7 @@ const ListMovies: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get(
-        `movie/getmoviesnowshowing/page/${page}/pagesize/${pageSize}`,
+        `movie/showing/page/${page}/size/${pageSize}`,
       );
       console.log("Now showing movies:", response.data);
       setNowShowingMovies(response.data);
@@ -263,10 +266,10 @@ const ListMovies: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get(
-        `movie/getmoviesupcoming/page/${page}/pagesize/${pageSize}`,
+        `movie/coming-soon/page/${page}/size/${pageSize}`,
       );
       console.log("Upcoming movies:", response.data);
-      setUpcomingMovies(response.data);
+      setUpcomingMovies(response.data.data);
     } catch (error) {
       console.error("Error fetching upcoming movies:", error);
     } finally {
@@ -275,9 +278,16 @@ const ListMovies: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchNowShowingMovies();
-    fetchUpcomingMovies();
-  }, []);
+    const fetchAllMovies = async () => {
+      setLoading(true);
+      await Promise.all([
+        fetchNowShowingMovies(),
+        fetchUpcomingMovies()
+      ]);
+    };
+
+    fetchAllMovies();
+  }, [t]);
 
   const handleOpenTrailer = (url: string) => {
     let embedUrl = url.replace("youtu.be", "youtube.com/embed");

@@ -22,9 +22,9 @@ import Loader from "../../../components/shared/Loading";
 import { Category } from "../../../types/category.types";
 import { Movie } from "../../../types/movie.types";
 
-import type {} from "@mui/x-charts/themeAugmentation";
-import type {} from "@mui/x-data-grid-pro/themeAugmentation";
-import type {} from "@mui/x-date-pickers/themeAugmentation";
+import type { } from "@mui/x-charts/themeAugmentation";
+import type { } from "@mui/x-data-grid-pro/themeAugmentation";
+import type { } from "@mui/x-date-pickers/themeAugmentation";
 import * as React from "react";
 
 import CssBaseline from "@mui/material/CssBaseline";
@@ -34,6 +34,7 @@ import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
 import AppTheme from "../../../shared-theme/AppTheme";
+import { t } from "i18next";
 
 // Components
 const ChinhSuaPhim: React.FC = ({
@@ -142,7 +143,7 @@ const ChinhSuaPhim: React.FC = ({
                       textOverflow: "ellipsis", // Thêm dấu "..." nếu text vượt quá
                     }}
                     margin="normal"
-                    label="Hình ảnh"
+                    label={t("admin.movie_management.detail.image")}
                     variant="standard"
                     value={imageUrl || ""}
                     multiline={true} // Cho phép nhiều dòng
@@ -195,7 +196,7 @@ const ChinhSuaPhim: React.FC = ({
                         sx={{ mt: 1 }}
                         onClick={() => setImageUrl(null)}
                       >
-                        Xóa hình
+                        {t("admin.movie_management.remove_image",)}
                       </Button>
                     </Box>
                   )}
@@ -203,13 +204,13 @@ const ChinhSuaPhim: React.FC = ({
 
                 {/* Other form fields */}
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1">Tên phim</Typography>
+                  <Typography variant="subtitle1">{t("admin.movie_management.detail.name")}</Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
 
                 {/* More fields */}
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1">Từ ngày</Typography>
+                  <Typography variant="subtitle1">{t("admin.movie_management.detail.from_day")}</Typography>
                   <TextField
                     fullWidth
                     variant="outlined"
@@ -218,7 +219,7 @@ const ChinhSuaPhim: React.FC = ({
                   />
                 </Box>
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1">Đến ngày</Typography>
+                  <Typography variant="subtitle1">{t("admin.movie_management.detail.to_day")}</Typography>
                   <TextField
                     fullWidth
                     variant="outlined"
@@ -227,7 +228,7 @@ const ChinhSuaPhim: React.FC = ({
                   />
                 </Box>
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1">Diễn viên</Typography>
+                  <Typography variant="subtitle1">{t("admin.movie_management.detail.actor")}</Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
                 <Box sx={{ mt: 2 }}>
@@ -235,11 +236,11 @@ const ChinhSuaPhim: React.FC = ({
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1">Đạo diễn</Typography>
+                  <Typography variant="subtitle1">{t("admin.movie_management.detail.director")}</Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1">Thời lượng</Typography>
+                  <Typography variant="subtitle1">{t("admin.movie_management.detail.duration")}</Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
 
@@ -256,7 +257,7 @@ const ChinhSuaPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Phiên bản
+                    {t("admin.movie_management.detail.version")}
                   </Typography>
                   <RadioGroup row>
                     <FormControlLabel
@@ -273,14 +274,14 @@ const ChinhSuaPhim: React.FC = ({
                 </Box>
 
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1">Trailer</Typography>
+                  <Typography variant="subtitle1">{t("admin.movie_management.detail.trailer")}</Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
 
                 <Box sx={{ mt: 3 }}>
                   <FormControl component="fieldset" variant="standard">
                     <FormLabel component="legend">
-                      <Typography variant="subtitle1">Thể Loại</Typography>
+                      <Typography variant="subtitle1">{t("admin.movie_management.detail.category")}</Typography>
                     </FormLabel>
                     <FormGroup
                       sx={{
@@ -311,7 +312,7 @@ const ChinhSuaPhim: React.FC = ({
                         ))
                       ) : (
                         <Typography color="text.secondary">
-                          Loading categories...
+                          {t("admin.movie_management.loading_categories")}
                         </Typography>
                       )}
                     </FormGroup>
@@ -320,26 +321,26 @@ const ChinhSuaPhim: React.FC = ({
 
                 {/* More fields continued */}
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1">Phòng chiếu</Typography>
+                  <Typography variant="subtitle1">{t("admin.movie_management.show_room")}</Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
 
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1">Lịch chiếu</Typography>
+                  <Typography variant="subtitle1">{t("admin.movie_management.show_time")}</Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                   <Button sx={{ mt: 2 }} variant="contained">
                     {" "}
-                    Thêm giờ chiếu
+                    {t("admin.movie_management.add_show_time")}
                   </Button>
                 </Box>
 
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1">Nội dung</Typography>
+                  <Typography variant="subtitle1">{t("admin.movie_management.detail.content")}</Typography>
                   <TextField fullWidth variant="outlined" multiline rows={4} />
                 </Box>
 
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1">Mã NV</Typography>
+                  <Typography variant="subtitle1">{t("admin.movie_management.employee_id")}</Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
 
@@ -353,7 +354,7 @@ const ChinhSuaPhim: React.FC = ({
                       console.log("Selected categories:", selectedCategories)
                     }
                   >
-                    Lưu thông tin
+                    {t("admin.movie_management.save")}
                   </Button>
                 </Box>
               </Container>

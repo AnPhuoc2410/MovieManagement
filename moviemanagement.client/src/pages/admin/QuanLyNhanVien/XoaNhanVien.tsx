@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { UserResponse } from "../../../types/users.type";
+import { t } from "i18next";
 
 interface XoaNhanVienProps {
   isDialogOpen: boolean;
@@ -25,17 +26,16 @@ const XoaNhanVien = ({
 
   return (
     <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-      <DialogTitle>Xác nhận xóa nhân viên</DialogTitle>
+      <DialogTitle>{t("admin.employee_managemet.delete.title")}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Bạn có chắc chắn muốn xóa nhân viên {employeeData.fullName}? Hành động
-          này không thể hoàn tác.
+          {t("admin.employee_managemet.delete.make_sure")} {employeeData.fullName}? {t("admin.employee_managemet.delete.cannot_change")}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCloseDialog}>Hủy</Button>
+        <Button onClick={handleCloseDialog}>{t("admin.employee_managemet.cancel")}</Button>
         <Button onClick={handleConfirmDelete} color="error" variant="contained">
-          Xóa
+          {t("admin.employee_managemet.delete.confirm")}
         </Button>
       </DialogActions>
     </Dialog>

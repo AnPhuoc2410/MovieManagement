@@ -16,11 +16,15 @@ import QuickBookingComponent from "../../components/home/QuickBookingComponent";
 import Aurora from "../../components/shared/Aurora";
 import { bannerslider } from "../../data/movieBanner.data";
 import { styles } from "./style";
+import ChatBot from "react-chatbotify";
+import MyChatBot from "../../components/chatbot";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Homepage: React.FC = () => {
   const { t } = useTranslation();
   const [openModal, setOpenModal] = useState(true);
   const [randomBanner, setRandomBanner] = useState("");
+  const { isAuthenticated } = useAuth();
 
   // Pick a random banner only once when the component mounts
   useEffect(() => {
@@ -36,27 +40,29 @@ const Homepage: React.FC = () => {
   return (
     <Box sx={styles.pageWrapper}>
       {/* Pop-up Modal */}
-      <Modal
-        open={openModal}
-        onClose={handleCloseModal}
-        aria-labelledby="movie-preview-modal"
-        aria-describedby="movie-banner-preview"
-        sx={styles.modal}
-      >
-        <Box sx={styles.modalBox}>
-          <IconButton onClick={handleCloseModal} sx={styles.closeButton}>
-            <CloseIcon />
-          </IconButton>
-          {randomBanner && (
-            <img
-              src={randomBanner}
-              alt="Movie Banner"
-              loading="lazy"
-              style={styles.bannerImage as React.CSSProperties}
-            />
-          )}
-        </Box>
-      </Modal>
+      {!isAuthenticated && (
+        <Modal
+          open={openModal}
+          onClose={handleCloseModal}
+          aria-labelledby="movie-preview-modal"
+          aria-describedby="movie-banner-preview"
+          sx={styles.modal}
+        >
+          <Box sx={styles.modalBox}>
+            <IconButton onClick={handleCloseModal} sx={styles.closeButton}>
+              <CloseIcon />
+            </IconButton>
+            {randomBanner && (
+              <img
+                src={randomBanner}
+                alt="Movie Banner"
+                loading="lazy"
+                style={styles.bannerImage as React.CSSProperties}
+              />
+            )}
+          </Box>
+        </Modal>
+      )}
 
       {/* Aurora effect */}
       <Box sx={styles.auroraWrapper}>
@@ -86,6 +92,7 @@ const Homepage: React.FC = () => {
 
       {/* Footer */}
       <ScrollToTop />
+      <MyChatBot />
       <Footer />
     </Box>
   );

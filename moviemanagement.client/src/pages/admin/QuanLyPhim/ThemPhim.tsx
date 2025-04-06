@@ -18,9 +18,9 @@ import { useEffect, useRef, useState } from "react";
 import { getCategoryList } from "../../../apis/mock.apis";
 import { Category } from "../../../types/category.types";
 
-import type {} from "@mui/x-charts/themeAugmentation";
-import type {} from "@mui/x-data-grid-pro/themeAugmentation";
-import type {} from "@mui/x-date-pickers/themeAugmentation";
+import type { } from "@mui/x-charts/themeAugmentation";
+import type { } from "@mui/x-data-grid-pro/themeAugmentation";
+import type { } from "@mui/x-date-pickers/themeAugmentation";
 import * as React from "react";
 
 import CssBaseline from "@mui/material/CssBaseline";
@@ -30,6 +30,10 @@ import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
 import AppTheme from "../../../shared-theme/AppTheme";
+import { useTranslation } from "react-i18next";
+import api from "../../../apis/axios.config";
+import toast from "react-hot-toast";
+import { t } from "i18next";
 
 // Components
 const ThemPhim: React.FC = ({
@@ -41,6 +45,7 @@ const ThemPhim: React.FC = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const { t } = useTranslation();
 
   const handleUpload = () => {
     console.log("Upload");
@@ -59,18 +64,19 @@ const ThemPhim: React.FC = ({
     });
   };
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await getCategoryList();
-        setCategories(response);
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-      }
-    };
+  const fetchCategories = async () => {
+    try {
+      const response = await api.get("category");
+      console.log(response.data.data);
+      setCategories(response.data.data);
+    } catch (error: any) {
+      toast.error("Lỗi khi tải thể loại: " + error.message);
+    }
+  };
 
+  useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [t]);
 
   return (
     <AppTheme disableCustomTheme={disableCustomTheme}>
@@ -100,7 +106,7 @@ const ThemPhim: React.FC = ({
                   py: 3,
                 }}
               >
-                <Typography variant="h3">Thêm phim</Typography>
+                <Typography variant="h3">{t("admin.movie_management.add")}</Typography>
                 <Box
                   sx={{
                     display: "flex",
@@ -110,7 +116,7 @@ const ThemPhim: React.FC = ({
                   <TextField
                     fullWidth
                     margin="normal"
-                    label="Hình ảnh"
+                    label={t("admin.movie_management.detail.image")}
                     variant="standard"
                     value={imageUrl || ""}
                     InputProps={{
@@ -160,7 +166,7 @@ const ThemPhim: React.FC = ({
                         sx={{ mt: 1 }}
                         onClick={() => setImageUrl(null)}
                       >
-                        Xóa hình
+                        {t("admin.movie_management.remove_image")}
                       </Button>
                     </Box>
                   )}
@@ -180,7 +186,7 @@ const ThemPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Tên phim
+                    {t("admin.movie_management.detail.name")}
                   </Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
@@ -199,7 +205,7 @@ const ThemPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Từ ngày
+                    {t("admin.movie_management.detail.from_day")}
                   </Typography>
                   <TextField
                     fullWidth
@@ -222,7 +228,7 @@ const ThemPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Đến ngày
+                    {t("admin.movie_management.detail.to_day")}
                   </Typography>
                   <TextField
                     fullWidth
@@ -244,7 +250,7 @@ const ThemPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Diễn viên
+                    {t("admin.movie_management.detail.actor")}
                   </Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
@@ -278,7 +284,7 @@ const ThemPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Đạo diễn
+                    {t("admin.movie_management.detail.director")}
                   </Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
@@ -295,7 +301,7 @@ const ThemPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Thời lượng
+                    {t("admin.movie_management.detail.duration")}
                   </Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
@@ -313,7 +319,7 @@ const ThemPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Phiên bản
+                    {t("admin.movie_management.detail.version")}
                   </Typography>
                   <RadioGroup row>
                     <FormControlLabel
@@ -342,7 +348,7 @@ const ThemPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Trailer
+                    {t("admin.movie_management.detail.trailer")}
                   </Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
@@ -381,7 +387,7 @@ const ThemPhim: React.FC = ({
                         ))
                       ) : (
                         <Typography color="text.secondary">
-                          Loading categories...
+                          {t("admin.movie_management.loading_categories")}
                         </Typography>
                       )}
                     </FormGroup>
@@ -402,7 +408,7 @@ const ThemPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Phòng chiếu
+                    {t("admin.movie_management.show_room")}
                   </Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
@@ -420,7 +426,7 @@ const ThemPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Lịch chiếu
+                    {t("admin.movie_management.show_time")}
                   </Typography>
                   <TextField
                     sx={{
@@ -429,7 +435,7 @@ const ThemPhim: React.FC = ({
                     variant="outlined"
                     size="small"
                   />
-                  <Button variant="contained"> Thêm giờ chiếu</Button>
+                  <Button variant="contained">{t("admin.movie_management.add_show_time")}</Button>
                 </Box>
 
                 <Box
@@ -445,7 +451,7 @@ const ThemPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Nội dung
+                    {t("admin.movie_management.detail.content")}
                   </Typography>
                   <TextField fullWidth variant="outlined" multiline rows={4} />
                 </Box>
@@ -463,7 +469,7 @@ const ThemPhim: React.FC = ({
                     variant="subtitle1"
                     sx={{ minWidth: 100, textAlign: "right", paddingRight: 2 }}
                   >
-                    Mã NV
+                    {t("admin.movie_management.employee_id")}
                   </Typography>
                   <TextField fullWidth variant="outlined" size="small" />
                 </Box>
@@ -478,7 +484,7 @@ const ThemPhim: React.FC = ({
                       console.log("Selected categories:", selectedCategories)
                     }
                   >
-                    Submit
+                    {t("admin.movie_management.submit")}
                   </Button>
                 </Box>
               </Container>

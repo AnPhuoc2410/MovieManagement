@@ -1,11 +1,4 @@
-import {
-  Cancel,
-  CancelOutlined,
-  CheckCircleOutline as CheckCircleIcon,
-  EventSeatOutlined as EventSeatIcon,
-  MovieOutlined as MovieIcon,
-  PaymentOutlined as PaymentIcon,
-} from "@mui/icons-material";
+import { Cancel, CancelOutlined, CheckCircleOutline as CheckCircleIcon, EventSeatOutlined as EventSeatIcon, MovieOutlined as MovieIcon, PaymentOutlined as PaymentIcon } from "@mui/icons-material";
 import { Box, Step, StepLabel, Stepper } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -15,31 +8,30 @@ interface StepTrackerProps {
   paymentStatus?: "success" | "failure";
 }
 
-const StepTracker: React.FC<StepTrackerProps> = ({
-  currentStep,
-  paymentStatus,
-}) => {
-
+const StepTracker: React.FC<StepTrackerProps> = ({ currentStep, paymentStatus }) => {
   const { t } = useTranslation();
   const steps = [
     { label: t("step_tracker.select_show_time"), icon: <MovieIcon /> },
     { label: t("step_tracker.select_seat"), icon: <EventSeatIcon /> },
     { label: t("step_tracker.payment"), icon: <PaymentIcon /> },
-    paymentStatus === "success"
-      ? { label: t("step_tracker.success"), icon: <CheckCircleIcon /> }
-      : { label: "Hủy Thanh Toán", icon: <CancelOutlined sx={{ color: 'red' }} /> },
   ];
+
+  const finalStep = paymentStatus === "failure" ? { label: t("step_tracker.failed"), icon: <CancelOutlined /> } : { label: t("step_tracker.success"), icon: <CheckCircleIcon /> };
 
   return (
     <Box
       sx={{
+        position: "absolute",
+        right: 0,
+        top: 0, // hoặc bottom nếu bạn muốn nó dưới
         backgroundColor: "rgba(18, 18, 18, 0.8)",
         backdropFilter: "blur(8px)",
         borderRadius: "12px",
-        mt: 10,
-        padding: 3,
+        display: { xs: "none", md: "block" },
+        padding: { xs: 1, sm: 2, md: 3 },
+        mt: { xs: 2, sm: 3, md: 4 },
+        width: { xs: "60%", md: "70%" },
         height: "fit-content",
-        position: "relative",
         transition: "all 0.3s ease",
         border: "1px solid rgba(255, 255, 255, 0.1)",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
@@ -80,13 +72,13 @@ const StepTracker: React.FC<StepTrackerProps> = ({
           },
         }}
       >
-        {[...steps].map((step, index) => (
+        {[...steps, finalStep].map((step, index) => (
           <Step key={index}>
             <StepLabel
               StepIconComponent={() => (
                 <Box
                   sx={{
-                    color: index < currentStep ? "#834bff" : "gray",
+                    color: index < currentStep ? (index == 3 && paymentStatus == "failure" ? "red" : "#834bff") : "gray",
                     display: "flex",
                     alignItems: "center",
                     transition: "color 0.3s ease",

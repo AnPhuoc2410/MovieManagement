@@ -10,13 +10,14 @@ import AppNavbar from "../../components/mui/AppNavbar";
 import Header from "../../components/mui/Header";
 import SideMenu from "../../components/mui/SideMenu";
 import AppTheme from "../../shared-theme/AppTheme";
+import { memo } from "react";
 
-interface ManagementPageLayoutProps {
+interface Props {
   children: React.ReactNode;
   disableCustomTheme?: boolean;
 }
 
-const ManagementPageLayout: React.FC<ManagementPageLayoutProps> = ({
+const ManagementPageLayoutInner: React.FC<Props> = ({
   children,
   disableCustomTheme = false,
 }) => {
@@ -50,5 +51,7 @@ const ManagementPageLayout: React.FC<ManagementPageLayoutProps> = ({
     </AppTheme>
   );
 };
+
+const ManagementPageLayout = memo(ManagementPageLayoutInner);
 
 export default ManagementPageLayout;

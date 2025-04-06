@@ -8,6 +8,7 @@
     "see_more": "Xem Thêm",
     "now_showing": "PHIM ĐANG CHIẾU",
     "upcoming": "PHIM SẮP CHIẾU",
+    "search_result": "KẾT QUẢ TÌM KIẾM",
     "promotions": "KHUYẾN MÃI",
     "list_promotions": "TẤT CẢ ƯU ĐÃI",
     "quick_booking": "ĐẶT VÉ NHANH",
@@ -22,6 +23,7 @@
     "select_theater4": "Cinestar Kiên Giang (Rạch Sỏi)",
     "select_theater5": "Cinestar Lâm Đồng (Đức Trọng)",
     "select_theater6": "Cinestar Đà Lạt (TP.Đà Lạt)",
+    "no_search_result": "Không tìm thấy phim nào phù hợp.",
     "footer": {
       "slogan": "HẠNH PHÚC, TỎA SÁNG",
       "book_ticket": "ĐẶT VÉ",
@@ -38,7 +40,8 @@
         "title": "PHIM",
         "now_showing": "Phim đang chiếu",
         "coming_soon": "Phim sắp chiếu",
-        "special_screening": "Suất chiếu đặc biệt"
+        "special_screening": "Suất chiếu đặc biệt",
+        "not_existing": "Movie does not exist"
       },
       "theaters": {
         "title": "HỆ THỐNG RẠP",
@@ -78,7 +81,14 @@
           "password_required": "Mật khẩu không được để trống",
           "password_length": "Mật khẩu phải có ít nhất 8 ký tự"
         },
-        "remember_me": "Ghi nhớ đăng nhập"
+        "remember_me": "Ghi nhớ đăng nhập",
+        "logging_in": "Đang đăng nhập...",
+        "captcha_required": "Vui lòng xác thực captcha",
+        "unexpected_error": "Đã xảy ra lỗi không mong muốn",
+        "wrong_credentials": "Tài khoản hoặc mật khẩu không chính xác",
+        "welcome_message": "Xin chào, {{name}}",
+        "please_complete_captcha": "Vui lòng xác thực captcha",
+        "complete_captcha_to_continue": "Vui lòng xác thực captcha để tiếp tục"
       },
       "signup": {
         "title": "Đăng ký tài khoản",
@@ -106,6 +116,18 @@
           "signup": "Đăng ký",
           "processing": "Đang xử lý..."
         },
+        "validation": {
+          "fullname_required": "Họ và tên không được để trống",
+          "birthdate_required": "Ngày sinh không được để trống",
+          "gender_required": "Giới tính không được để trống",
+          "id_card_required": "CMND không được để trống",
+          "email": {
+            "required": "Email không được để trống",
+            "invalid": "Email không hợp lệ"
+          },
+          "address_required": "Địa chỉ không được để trống",
+          "phone_required": "Số điện thoại không được để trống"
+        },
         "have_account": "Đã có tài khoản?",
         "login_link": "Đăng nhập ngay"
       },
@@ -114,12 +136,36 @@
         "description": "Bạn có chắc chắn muốn đăng xuất?",
         "cancel": "Hủy",
         "confirm": "Xác nhận"
+      },
+      "forgot_password": {
+        "title": "Quên Mật Khẩu",
+        "reset_title": "Đặt Lại Mật Khẩu",
+        "email_label": "Email",
+        "new_password": "Mật khẩu mới",
+        "confirm_password": "Xác nhận mật khẩu",
+        "send_link": "Gửi Link Đặt Lại",
+        "reset_button": "Đặt Lại Mật Khẩu",
+        "validation": {
+          "email_required": "Vui lòng nhập email",
+          "email_invalid": "Email không hợp lệ",
+          "password_required": "Vui lòng nhập mật khẩu",
+          "password_length": "Mật khẩu phải có ít nhất 8 ký tự",
+          "passwords_match": "Mật khẩu không khớp",
+          "confirm_required": "Vui lòng xác nhận mật khẩu"
+        },
+        "toast": {
+          "email_not_found": "Email không tồn tại",
+          "email_sent": "Đã gửi email xác nhận!",
+          "email_failed": "Không thể gửi email xác nhận",
+          "reset_success": "Đặt lại mật khẩu thành công!",
+          "reset_failed": "Đặt lại mật khẩu thất bại"
+        }
       }
     },
     "user": {
       "profile": {
         "my_account": "Tài khoản của tôi",
-        "my_profile": "Hồ sơ của tôi",
+        "my_profile": "Hồ sơ",
         "settings": "Cài đặt",
         "my_bookings": "Vé của tôi",
         "logout": "Đăng xuất",
@@ -129,7 +175,10 @@
         "history": "Lịch sử",
         "change_password": "Đổi mật khẩu",
         "admin_panel": "Quản lí hệ thống",
-        "admin": "Quản trị viên"
+        "admin": "Quản trị viên",
+        "employee": "Nhân viên",
+        "update_success": "Cập nhật thông tin thành công!",
+        "update_failed": "Cập nhật thông tin thất bại"
       },
       "field": {
         "full_name": "Họ và tên",
@@ -137,6 +186,7 @@
         "male": "Nam",
         "female": "Nữ",
         "email": "Email",
+        "username": "Tài khoản",
         "id_card": "Số CMND",
         "phone": "Số điện thoại",
         "address": "Địa chỉ"
@@ -165,16 +215,20 @@
       }
     },
     "showtime_cinema": {
-      "title":{
-        "showtime_list" : "Lịch chiếu và Rạp",
-        "now_day" : "Hôm nay",
-        "theater_list" : "Danh sách rạp",
-        "no_showtime" : "Không có lịch chiếu"
+      "title": {
+        "showtime_list": "Lịch chiếu",
+        "now_day": "Hôm nay",
+        "theater_list": "Danh sách rạp",
+        "no_showtime": "Hiện chưa có lịch chiếu",
+        "login_required": "Đăng nhập để xem giá vé",
+        "please_login_to_continue": "Vui lòng đăng nhập để tiếp tục"
       },
       "location": {
         "HaNoi": "Hà Nội",
         "HCM": "Hồ Chí Minh",
-        "DaNang": "Đà Nẵng"
+        "DaNang": "Đà Nẵng",
+        "BinhDuong": "Bình Dương",
+        "BinhPhuoc": "Bình Phước"
       },
       "notification": {
         "loading_showtime": "Đang tải danh sách lịch chiếu...",
@@ -199,7 +253,94 @@
       "select_show_time": "Chọn lịch chiếu",
       "select_seat": "Chọn ghế",
       "payment": "Thanh toán",
-      "success": "Thành công"
+      "success": "Thành công",
+      "failed": "Hủy thanh toán"
+    },
+    "payment": {
+      "timer": "Thời gian giữ ghế còn lại",
+      "total_amount": "Tổng cộng:",
+      "origin_price": "Giá gốc:",
+      "user_infor": "Thông Tin Khách Hàng",
+      "confirm": "Xác nhận đặt vé",
+      "back": "Quay lại",
+      "promotion": {
+        "title": "Khuyến Mãi",
+        "discount": "Giảm giá",
+        "used": "Đã áp dụng giảm giá",
+        "notfound": "Hiện không có khuyến mãi nào có sẵn",
+        "from": "Có hiệu lực từ",
+        "to": "đến"
+      },
+      "ticket": {
+        "payment": "Thanh Toán Vé",
+        "infor": "Thông Tin Vé",
+        "price": "Giá:",
+        "seat": "Ghế:"
+      },
+      "movie": {
+        "default": "Phim Mặc Định",
+        "poster": "Poster phim",
+        "name": "Tên phim:",
+        "description": "Thông Tin Phim",
+        "room": "Phòng chiếu:"
+      },
+      "showtime": {
+        "day": "Ngày chiếu:",
+        "hour": "Giờ chiếu:"
+      }
+    },
+    "movie_seat": {
+      "timer": "Thời gian giữ ghế còn lại:",
+      "selection": "Chọn ghế:",
+      "continue": "Tiếp tục thanh toán"
+    },
+    "movie_detail": {
+      "description": "MÔ TẢ",
+      "director": "Đạo diễn:",
+      "actors": "Diễn viên:",
+      "release_date": "Khởi chiếu:",
+      "content": "NỘI DUNG PHIM",
+      "trailer": "XEM TRAILER",
+      "book_now": "ĐẶT VÉ NGAY",
+      "more_detail": "Chi Tiết Phim",
+      "add_new": "Thêm Phim Mới",
+      "update": "Cập Nhật",
+      "back": "Quay lại",
+      "label": {
+        "name": "Tên phim",
+        "showtime": "Ngày khởi chiếu",
+        "end_day": "Ngày kết thúc",
+        "actor": "Diễn viên",
+        "trailer": "Link trailer",
+        "category": "Thể loại",
+        "content": "Nội dung",
+        "duration": "Thời lượng",
+        "director": "Đạo diễn"
+      },
+      "input_label": {
+        "age_class": "Phân loại độ tuổi",
+        "version": "Phiên bản",
+        "minute": "phút"
+      },
+      "required": {
+        "name": "Tên phim không được bỏ trống",
+        "showtime_selection": "Vui lòng chọn ngày khởi chiếu",
+        "end_day": "Vui lòng chọn ngày kết thúc",
+        "age_group": "Chọn phân loại độ tuổi",
+        "version": "Chọn phiên bản",
+        "director": "Đạo diễn không được để trống",
+        "image": "Vui lòng cập nhật ảnh",
+        "actor": "Diễn viên không được để trống",
+        "trailer": "Trailer không được để trống",
+        "category": "Vui lòng chọn ít nhất 1 thể loại",
+        "content": "Nội dung không được để trống"
+      },
+      "message": {
+        "duration": "Thời lượng không được để trống"
+      }
+    },
+    "seat_cinema": {
+      "screening": "Màn hình"
     },
     "common": {
       "button": {
@@ -207,7 +348,409 @@
           "update": "Cập nhật",
           "cancel": "Hủy"
         }
+      },
+      "table_header": {
+        "user": {
+          "username": "Tài khoản",
+          "fullname": "Họ và tên",
+          "email": "Email",
+          "phone": "Số điện thoại",
+          "status": "Trạng thái",
+          "join_date": "Ngày tham gia",
+          "address": "Địa chỉ",
+          "points": "Điểm thưởng"
+        },
+        "actions": "Hành động"
       }
+    },
+    "toast": {
+      "employee": {
+        "deleteSuccess": "Xóa thành viên thành công",
+        "deleteFailed": "Xóa thành viên thất bại"
+      },
+      "success": {
+        "seat": {
+          "change_from": "Đổi ghế từ ",
+          "change_to": "sang ghế ",
+          "select": "Chọn ghế ",
+          "cancel_booking": "Đã hủy đặt chỗ",
+          "booking": "Ghế đã được đặt thành công!"
+        },
+        "change_direct": {
+          "payment": "Chuyển đến trang thanh toán..."
+        },
+        "user": {
+          "answer": "kết quả được tìm thấy"
+        },
+        "payment": {
+          "success": "Thanh toán thành công!"
+        },
+        "promotion": {
+          "update": "Cập nhật khuyết mãi thành công"
+        },
+        "employee": {
+          "create": "Tạo nhân viên mới thành công"
+        },
+        "movie": {
+          "add": "Thêm phim mới thành công",
+          "update": "Cập nhật phim thành công",
+          "create": "Tạo phim thành công",
+          "delete": "Đã xóa phim"
+        }
+      },
+      "error": {
+        "server": {
+          "connection": "Mất kết nối đến server!"
+        },
+        "category": {
+          "loading": "Không thể tải được thể loại"
+        },
+        "movie": {
+          "loading": "Không thể tải danh sách phim đang chiếu",
+          "add": "Lỗi khi thêm phim mới",
+          "delete": "Lỗi khi xóa phim",
+          "loading_infor": "Lỗi khi tải thông tin phim",
+          "update": "Lỗi khi cập nhật phim"
+        },
+        "seat": {
+          "cancel_select": "Bỏ chọn ghế: ",
+          "by_someone": "bởi người khác",
+          "selecting": "đang được chọn",
+          "bought": "đã được mua",
+          "loading_list": "Lỗi khi tải danh sách ghế.",
+          "infor": "Không tìm thấy thông tin ghế",
+          "cancel_booking": "Lỗi khi hủy đặt chỗ",
+          "remainder": "Thời gian giữ ghế đã hết. Vui lòng chọn lại ghế.",
+          "max_selection": "Vui lòng chọn đúng số ghế: ",
+          "someone_selected": "đã được người khác chọn. Vui lòng chọn ghế khác.",
+          "cannot_selected": "Không thể chọn ghế này. Có thể ghế đã được người khác chọn.",
+          "cancel_booking_bc_back": "Các ghế đã được hủy do bạn quay lại.",
+          "update_status": "Không thể cập nhật trạng thái ghế: ",
+          "booking": "Lỗi khi hủy đặt chỗ"
+        },
+        "promotion": {
+          "loading": "Không thể tải khuyến mãi",
+          "update": "Lỗi khi cập nhật khuyến mãi"
+        },
+        "ticket": {
+          "booking": "Đặt vé thất bại!",
+          "selection": "Vui lòng chọn ít nhất 1 vé!"
+        },
+        "showtime": {
+          "selection": "Vui lòng chọn khung giờ chiếu!"
+        },
+        "user": {
+          "validate": "Vui lòng nhập CMND hoặc số điện thoại",
+          "cannot_find_member": "Không tìm thấy thành viên nào",
+          "cannot_find": "Lỗi khi tìm kiếm người dùng"
+        },
+        "payment": {
+          "error": "Lỗi khi thanh toán"
+        },
+        "employee": {
+          "create": "Có lỗi xảy ra khi tạo nhân viên mới"
+        }
+      }
+    },
+    "helperText": {
+      "error": {
+        "fullname": "Vui lòng nhập họ tên",
+        "email": "Vui lòng nhập email",
+        "id_number": "Vui lòng nhập chứng minh nhân dân",
+        "phone": "Vui lòng nhập số điện thoại"
+      }
+    },
+    "alert": {
+      "ticket_management": {
+        "add_success": "Vé mới đã được thêm thành công!",
+        "description": "Khách hàng không phải thành viên sẽ không tích lũy điểm từ giao dịch này"
+      }
+    },
+    "admin": {
+      "ticket_management": {
+        "add": "Thêm vé mới",
+        "movie_name": "Tên phim",
+        "customer": "Người mua",
+        "showtime": {
+          "day": "Ngày chiếu: ",
+          "hour": "Giờ chiếu: "
+        },
+        "price": "Giá vé",
+        "room": "Phòng chiếu",
+        "type_ticket": "Loại vé",
+        "connecting": "Đang kết nối đến máy chủ...",
+        "booking_success": "Đặt vé thành công!",
+        "booking_faild": "Đặt vé thất bại!",
+        "save_to_system": "Vé đã được lưu vào hệ thống.",
+        "error": "Đã xảy ra lỗi khi xử lý đặt vé. Vui lòng thử lại.",
+        "current_point": "Điểm hiện tại:",
+        "payment_method": "Phương thức thanh toán",
+        "payment_detail": "Chi tiết thanh toán",
+        "ticket_bought": "Vé đã mua: ",
+        "amount": "Tổng thanh toán: ",
+        "back": "Quay lại bán vé",
+        "come_to_dashboard": "Về Dashboard",
+        "select_max": "Vui lòng chọn đúng số ghế: ",
+        "for_showtime": "cho suất chiếu",
+        "come_back": "Quay lại",
+        "continue": "Tiếp tục",
+        "payment": "Thanh Toán Vé",
+        "not_selection_ticket": "Chưa chọn ghế",
+        "after_payment": "Sau giao dịch: ",
+        "payment_by_point": "Chọn vé thanh toán bằng điểm: ",
+        "not_use_point": "Bỏ chọn",
+        "use_point": "Dùng điểm",
+        "total_point": {
+          "use": "Tổng điểm sử dụng: ",
+          "after": "Điểm còn lại sau giao dịch: "
+        },
+        "payment_infor": "Thông Tin Thanh Toán",
+        "payment_by_cash": "Còn lại thanh toán bằng tiền mặt: ",
+        "not_existing": "Phim không tồn tại"
+      },
+      "booking_management": {
+        "no_infor_seat": "Không có thông tin ghế",
+        "no_price": "Không có thông tin giá",
+        "employee_infor": "Thông tin thành viên",
+        "employee_id": "Mã thành viên",
+        "employee_point": "Điểm thành viên",
+        "change_ticket": "Đổi vé",
+        "change_ticket_id": "Mã đặt vé",
+        "movie": "Phim",
+        "showtime": "Xuất chiếu",
+        "get_ticket": "Nhận vé",
+        "get_ticket_infor": "Thông tin nhận vé",
+        "change_point": "Điểm đổi vé"
+      },
+      "promotion_management": {
+        "update": "Cập Nhật Khuyến Mãi",
+        "create": "Tạo khuyến Mãi",
+        "back": "Trở lại",
+        "required": {
+          "title": "Tiêu đề yêu cầu",
+          "discount": "Nhập giảm giá",
+          "start_time": "Nhập thời gian bắt đầu",
+          "end_time": "Nhập thời gian kết thúc",
+          "content": "Nhập chi tiết"
+        },
+        "label": {
+          "title": "Tiêu đề",
+          "discount": "Giảm giá (%)",
+          "start_time": "Bắt đầu",
+          "end_time": "Kết thúc"
+        },
+        "message": {
+          "max_promote": "Giảm giá không vượt quá 100%",
+          "min_promote:": "Giảm giá ít nhất 1%"
+        },
+        "validate": {
+          "showtime": "Thời gian kết thúc phải sau thời gian bắt đầu",
+          "content": "Chi tiết không được để trống"
+        }
+      },
+      "employee_managemet": {
+        "edit": "Chỉnh sửa thông tin nhân viên",
+        "remove_image": "Xóa hình",
+        "detail": {
+          "account": "Tài khoản",
+          "fullname": "Họ và tên",
+          "birthday": "Ngày sinh",
+          "gender": "Giới tính",
+          "email": "Email",
+          "id_card": "CMND/CCCD",
+          "phone": "Điện thoại",
+          "address": "Địa chỉ",
+          "image": "Hình ảnh (URL)",
+          "password": "Mật khẩu",
+          "password_confirm": "Nhập lại mật khẩu"
+        },
+        "come_back": "Quay lại",
+        "save": "Lưu thay đổi",
+        "cancel": "Hủy",
+        "validation": {
+          "min_username": "Tài khoản phải có ít nhất 5 ký tự",
+          "max_username": "Tài khoải không được vượt quá 20 ký tự.",
+          "required_username": "Vui lòng nhập tài khoản",
+          "min_password": "Mật khẩu phải có ít nhất 8 ký tự",
+          "match_password": "Mật khẩu phải chứa ít nhất một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt.",
+          "required_password": "Vui lòng nhập mật khẩu",
+          "confirm_required": "Vui lòng xác nhận mật khẩu",
+          "confirm_match": "Mật khẩu không khớp",
+          "required_fullname": "Vui lòng nhập họ tên",
+          "birthdate_valid": "Ngày sinh không hợp lệ",
+          "birthdate_required": "Vui lòng nhập ngày sinh",
+          "gender_required": "Vui lòng chọn giới tính",
+          "id_card_required": "Vui lòng nhập CMND/CCCD",
+          "id_card_valid": "CMND/CCCD không hợp lệ",
+          "email_required": "Vui lòng nhập email",
+          "email_invalid": "Email không hợp lệ",
+          "phone_required": "Vui lòng nhập số điện thoại",
+          "phone_invalid": "Số điện thoại không hợp lệ",
+          "address_required": "Vui lòng nhập địa chỉ"
+        },
+        "delete": {
+          "title": "Xác nhận xóa nhân viên",
+          "make_sure": "Bạn có chắc chắn muốn xóa nhân viên ",
+          "cannot_change": "Hành động này không thể hoàn tác.",
+          "confirm": "Xóa"
+        }
+      },
+      "movie_management": {
+        "column": {
+          "movie_id": "Mã phim",
+          "movie_name": "Tên phim",
+          "showtime": "Ngày khởi chiếu",
+          "director": "Hãng phim",
+          "duration": "Thời lượng",
+          "version": "Phiên bản",
+          "action": "Hành động"
+        },
+        "update": "Sửa thông tin phim",
+        "add": "Thêm phim mới",
+        "detail": {
+          "image": "Hình ảnh",
+          "name": "Tên phim",
+          "from_day": "Từ ngày",
+          "to_day": "Đến ngày",
+          "actor": "Diễn viên",
+          "director": "Đạo diễn",
+          "duration": "Thời lượng",
+          "version": "Phiên bản",
+          "category": "Thể loại",
+          "trailer": "Trailer",
+          "content": "Nội dung",
+          "postdate": "Ngày Đăng",
+          "showtime": "Ngày chiếu",
+          "end_day": "Ngày kết thúc",
+          "function": "Chức năng"
+        },
+        "remove_image": "Xóa hình ảnh",
+        "loading_categories": "Đang tải danh sách thể loại...",
+        "show_room": "Phòng chiếu",
+        "show_time": "Lịch chiếu",
+        "add_show_time": "Thêm giờ chiếu",
+        "employee_id": "Mã nhân viên",
+        "save": "Lưu thông tin",
+        "confirm": "Xác nhận",
+        "confirm_delete": "Bạn có chắc muốn xóa phim này không?",
+        "submit": "Gửi"
+      },
+      "member_management": {
+        "title": "Chỉnh sửa thông tin thành viên",
+        "image": "Hình ảnh",
+        "remove_image": "Xóa hình ảnh"
+      },
+      "showtime_management": {
+        "name": "Tên phòng chiếu",
+        "start_time": "Thời gian chiếu",
+        "end_time": "Thời gian kết thúc",
+        "showtime_list": "Danh sách thời gian chiếu",
+        "add_new": "Thêm thời gian chiếu",
+        "loading": "Đang xử lý...",
+        "detail": {
+          "title": "Chi tiết thời gian chiếu"
+        },
+        "come_back": "Quay lại",
+        "showtime_id": "Mã lịch chiếu",
+        "movie_not_selection": "Chưa chọn phim",
+        "movie_selection": "Chọn phim",
+        "room_selection": "Chọn phòng",
+        "room": "Phòng chiếu",
+        "no_room": "Không có phòng",
+        "save": "Lưu thay đổi",
+        "edit": "Chỉnh sửa",
+        "close": "Đóng",
+        "cancel": "Hủy",
+        "cannot_loading": "Không thể tải dữ liệu lịch chiếu. Bạn vẫn có thể tạo mới lịch chiếu.",
+        "not_found": "Không có dữ liệu lịch chiếu. Vui lòng tạo mới lịch chiếu."
+      },
+      "room_management": {
+        "room_list": "Danh sách phòng chiếu",
+        "create": "Tạo phòng chiếu mới",
+        "seat": "ghế",
+        "detail": "Xem chi tiết",
+        "create_seat": "Tạo ghế",
+        "add_seat": "Tạo thêm ghế",
+        "delete_all_seat": "Xóa tất cả ghế",
+        "create_seat_for_room": "Tạo ghế cho phòng",
+        "add_seat_for_room": "Tạo thêm ghế cho phòng",
+        "select_seattype_created": "Chọn loại ghế để tạo cho phòng chiếu. Tất cả ghế trong phòng sẽ được tạo với loại ghế này.",
+        "select_seattype_add": "Tạo thêm ghế cho phòng chiếu hiện có. Ghế mới sẽ được thêm vào với loại ghế được chọn.",
+        "seattype": "Loại ghế",
+        "selected": "Đã chọn",
+        "created_success": "Tạo ghế thành công!",
+        "cancel": "Hủy",
+        "confirm_delete": "Bạn có chắc chắn muốn xóa tất cả ghế trong phòng này? Hành động này không thể hoàn tác.",
+        "warming": "Lưu ý:",
+        "warming_delete": "Việc xóa tất cả ghế sẽ ảnh hưởng đến các lịch chiếu nếu có. Hãy chắc chắn rằng phòng này không còn được sử dụng cho bất kỳ lịch chiếu nào.",
+        "delete_success": "Xóa ghế thành công!",
+        "delete_loading": "Đang xóa...",
+        "delete_confirm": "Xác nhận xóa",
+        "room_id_not_found": "Không tìm thấy mã phòng chiếu",
+        "room_infor_not_found": "Không tìm thấy thông tin phòng chiếu",
+        "come_back_list_room": "Quay lại danh sách phòng",
+        "room_id": "Mã phòng:",
+        "row_number": "Số hàng ghế",
+        "column_number": "Số cột",
+        "seat_total": "Tổng số ghế",
+        "update_seattype": "Cập nhật loại ghế",
+        "not_found_seat": "Phòng hiện không có ghế nào",
+        "back_to_list_seat_created": "Trở về trang danh sách phòng để tạo ghế",
+        "row_select": "Chọn hàng",
+        "column_select": "Chọn cột",
+        "select_update_row": "Chọn hàng để cập nhật:",
+        "select_update_column": "Chọn cột để cập nhật:",
+        "add_new_row": "Thêm cột mới",
+        "add_new_column": "Thêm hàng mới",
+        "tutorial_create_seat": "Vui lòng trở về trang danh sách phòng và nhấn vào nút \"Tạo ghế\" để tạo ghế cho phòng chiếu này.",
+        "existed": "Có sẵn",
+        "not_available": "Không khả dụng",
+        "sold": "Đã bán",
+        "booking": "Đã đặt",
+        "unknow": "Không xác định",
+        "disabled": "Đã vô hiệu hóa",
+        "actived": "Đã kích hoạt",
+        "vacant_position": "Vị trí trống",
+        "click_to_select": "Nhấp vào vị trí trống để tạo ghế mới với loại ghế đã chọn",
+        "status": "Trạng thái",
+        "update_seat": "Cập nhật ghế",
+        "delete_seat": "Xóa ghế",
+        "surely_delete": "Bạn có chắc chắn muốn xóa ghế ",
+        "cannot_return": "Hành động này không thể hoàn tác.",
+        "you_sure": "Bạn có chắc chắn muốn",
+        "disable": "Vô hiệu hóa",
+        "active": "Kích hoạt",
+        "room_edit": "Chỉnh sửa thông tin phòng",
+        "success_room_update": "Cập nhật thông tin phòng thành công!",
+        "update_process": "Đang cập nhật...",
+        "update": "Cập nhật",
+        "warming_disable": "Việc vô hiệu hóa ghế sẽ không cho phép đặt vé cho các ghế này trong các lịch chiếu.",
+        "warming_active": "Việc kích hoạt ghế sẽ cho phép đặt vé cho các ghế này trong các lịch chiếu."
+      }
+    },
+    "menu": {
+      "home": "Trang chủ",
+      "memberManagement": "Quản lý Thành viên",
+      "employeeManagement": "Quản lý Nhân viên",
+      "ticketSales": "Quản lý Bán vé",
+      "ticketBooking": "Quản lý Đặt vé",
+      "screeningRooms": "Quản lý Phòng chiếu",
+      "movieManagement": "Quản lý Phim",
+      "promotions": "Quản lý Khuyến mãi",
+      "settings": "Cài đặt",
+      "feedback": "Góp ý",
+      "aboutUs": "Về chúng tôi"
+    },
+    "breadcrumbs": {
+      "home": "Trang chủ",
+      "dashboard": "Thống kê",
+      "promotions": "Khuyến mãi",
+      "movies": "Phim",
+      "screeningRooms": "Phòng chiếu",
+      "ticketBooking": "Đặt vé",
+      "ticketSales": "Bán vé",
+      "employees": "Nhân viên",
+      "members": "Thành viên"
     }
   }
 }

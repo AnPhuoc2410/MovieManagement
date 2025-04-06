@@ -8,6 +8,7 @@
     "see_more": "See More",
     "now_showing": "NOW SHOWING",
     "upcoming": "UPCOMING",
+    "search_result": "SEARCH RESULTS",
     "promotions": "PROMOTIONS",
     "list_promotions": "See more Promotions",
     "quick_booking": "Quick Booking",
@@ -22,6 +23,7 @@
     "select_theater4": "Kien Giang Theater (Rach Soi)",
     "select_theater5": "Lam Dong Theater (Duc Trong)",
     "select_theater6": "Da Lat Theater (Da Lat City)",
+    "no_search_result": "No movies found. Please try again!",
     "oops": "OOPS!",
     "footer": {
       "slogan": "BE HAPPY, BE A STAR",
@@ -39,7 +41,8 @@
         "title": "MOVIES",
         "now_showing": "Now Showing",
         "coming_soon": "Coming Soon",
-        "special_screening": "Special Screening"
+        "special_screening": "Special Screening",
+        "not_existing": "Phim không tồn tại"
       },
       "theaters": {
         "title": "OUR THEATERS",
@@ -79,7 +82,14 @@
           "password_required": "Password is required",
           "password_length": "Password must be at least 8 characters"
         },
-        "remember_me": "Remember me"
+        "remember_me": "Remember me",
+        "logging_in": "Logging in...",
+        "captcha_required": "Please complete the captcha verification",
+        "wrong_credentials": "Incorrect username or password",
+        "unexpected_error": "An unexpected error occurred",
+        "welcome_message": "Welcome back, {{name}}",
+        "please_complete_captcha": "Please complete the captcha verification",
+        "complete_captcha_to_continue": "Please complete the captcha verification to continue"
       },
       "signup": {
         "title": "Sign Up",
@@ -107,6 +117,18 @@
           "signup": "Sign Up",
           "processing": "Processing..."
         },
+        "validation": {
+          "fullname_required": "Full Name is required",
+          "birthdate_required": "Date of Birth is required",
+          "gender_required": "Gender is required",
+          "id_card_required": "ID Card is required",
+          "email": {
+            "required": "Email is required",
+            "invalid": "Email is invalid"
+          },
+          "address_required": "Address is required",
+          "phone_required": "Phone Number is required"
+        },
         "have_account": "Already have an account?",
         "login_link": "Login now"
       },
@@ -115,6 +137,30 @@
         "description": "Are you sure you want to logout?",
         "cancel": "Cancel",
         "confirm": "Confirm"
+      },
+      "forgot_password": {
+        "title": "Forgot Password",
+        "reset_title": "Reset Password",
+        "email_label": "Email",
+        "new_password": "New Password",
+        "confirm_password": "Confirm Password",
+        "send_link": "Send Reset Link",
+        "reset_button": "Reset Password",
+        "validation": {
+          "email_required": "Email is required",
+          "email_invalid": "Invalid email format",
+          "password_required": "Password is required",
+          "password_length": "Password must be at least 8 characters",
+          "passwords_match": "Passwords must match",
+          "confirm_required": "Please confirm your password"
+        },
+        "toast": {
+          "email_not_found": "Email not found",
+          "email_sent": "Verification email sent!",
+          "email_failed": "Failed to send verification email",
+          "reset_success": "Password reset successfully!",
+          "reset_failed": "Failed to reset password"
+        }
       }
     },
     "user": {
@@ -130,7 +176,10 @@
         "history": "History",
         "change_password": "Change Password",
         "admin_panel": "Admin Panel",
-        "admin": "Admin"
+        "admin": "Admin",
+        "employee": "Employee",
+        "update_success": "Profile updated successfully!",
+        "update_failed": "Failed to update profile"
       },
       "field": {
         "full_name": "Full Name",
@@ -138,6 +187,7 @@
         "male": "Male",
         "female": "Female",
         "email": "Email",
+        "username": "Username",
         "id_card": "ID Card",
         "phone": "Phone Number",
         "address": "Address"
@@ -166,16 +216,20 @@
       }
     },
     "showtime_cinema": {
-      "title":{
-        "showtime_list" : "Showtime a Theaters",
-        "now_day" : "Now Day",
-        "theater_list" : "Theater list",
-        "no_showtime" : "No showtime"
+      "title": {
+        "showtime_list": "Showtime",
+        "now_day": "Now Day",
+        "theater_list": "Theater list",
+        "no_showtime": "No showtime",
+        "login_required": "Login Required",
+        "please_login_to_continue": "Please login to continue"
       },
       "location": {
         "HaNoi": "Ha Noi",
         "HCM": "Ho Chi Minh City",
-        "DaNang": "Da Nang"
+        "DaNang": "Da Nang",
+        "BinhDuong": "Binh Duong",
+        "BinhPhuoc": "Binh Phuoc"
       },
       "notification": {
         "loading_showtime": "Loading Showtime",
@@ -200,7 +254,94 @@
       "select_show_time": "Select showtimes",
       "select_seat": "Select seat",
       "payment": "Payment",
-      "success": "Success"
+      "success": "Success",
+      "failed": "Payment cancel"
+    },
+    "payment": {
+      "timer": "Remaining seat holding time",
+      "total_amount": "Total:",
+      "origin_price": "Original price:",
+      "user_infor": "Customer Information",
+      "confirm": "Confirm booking",
+      "back": "Back",
+      "promotion": {
+        "title": "Promotion",
+        "discount": "Discount",
+        "used": "Discount applied",
+        "notfound": "No promotions available at the moment",
+        "from": "Valid from",
+        "to": "to"
+      },
+      "ticket": {
+        "payment": "Ticket Payment",
+        "infor": "Ticket Information",
+        "price": "Price:",
+        "seat": "Seat:"
+      },
+      "movie": {
+        "default": "Default Movie",
+        "poster": "Movie poster",
+        "name": "Movie Name:",
+        "description": "Movie Information",
+        "room": "Screening Room:"
+      },
+      "showtime": {
+        "day": "Show Date:",
+        "hour": "Show Time:"
+      }
+    },
+    "movie_seat": {
+      "timer": "Remaining seat holding time",
+      "selection": "Select seat",
+      "continue": "Continue"
+    },
+    "movie_detail": {
+      "description": "DESCRIPTION",
+      "director": "Director:",
+      "actors": "Actors:",
+      "release_date": "Release Date:",
+      "content": "MOVIE CONTENT",
+      "trailer": "WATCH TRAILER",
+      "book_now": "BOOK NOW",
+      "more_detail": "Movie Details",
+      "add_new": "Add New Movie",
+      "update": "Update",
+      "back": "Back",
+      "label": {
+        "name": "Movie Title",
+        "showtime": "Release Date",
+        "end_day": "End Date",
+        "actor": "Actors",
+        "trailer": "Trailer Link",
+        "category": "Category",
+        "content": "Content",
+        "duration": "Duration",
+        "director": "Director"
+      },
+      "input_label": {
+        "age_class": "Age Classification",
+        "version": "Version",
+        "minute": "minutes"
+      },
+      "required": {
+        "name": "Movie title cannot be empty",
+        "showtime_selection": "Please select a release date",
+        "end_day": "Please select an end date",
+        "age_group": "Please select an age classification",
+        "version": "Please select a version",
+        "director": "Director cannot be empty",
+        "image": "Please upload an image",
+        "actor": "Actors cannot be empty",
+        "trailer": "Trailer cannot be empty",
+        "category": "Please select at least one category",
+        "content": "Content cannot be empty"
+      },
+      "message": {
+        "duration": "Duration cannot be empty"
+      }
+    },
+    "seat_cinema": {
+      "screening": "SCREEN"
     },
     "common": {
       "button": {
@@ -208,7 +349,354 @@
           "update": "Update",
           "cancel": "Cancel"
         }
+      },
+      "table_header": {
+        "user": {
+          "username": "Username",
+          "fullname": "Full Name",
+          "email": "Email",
+          "phone": "Phone Number",
+          "id_card": "ID Card",
+          "status": "Status",
+          "address": "Address",
+          "join_date": "Join Date",
+          "points": "Points",
+          "gender": "Gender"
+        },
+        "actions": "Actions"
+      },
+      "stats": {
+        "total_members": "Total Members",
+        "total_employees": "Total Employees",
+        "active_members": "Active Members",
+        "inactive_members": "Inactive Members",
+        "total_points": "Total Points",
+        "new_members_in30days": "New Members In 30 Days",
+        "male_members": "Male Members",
+        "female_members": "Female Members"
+      }
+    },
+    "toast": {
+      "employee": {
+        "deleteSuccess": "Successfully deleted the member",
+        "deleteFailed": "Failed to delete the member"
+      },
+      "success": {
+        "seat": {
+          "change_from": "Changed seat from ",
+          "change_to": " to seat ",
+          "select": "Selected seat ",
+          "cancel_booking": "Booking canceled",
+          "booking": "Seat successfully booked!"
+        },
+        "change_direct": {
+          "payment": "Redirecting to payment page..."
+        },
+        "user": {
+          "answer": "Result found"
+        },
+        "payment": {
+          "success": "Payment successful!"
+        },
+        "promotion": {
+          "update": "Promotion updated successfully"
+        },
+        "employee": {
+          "create": "Successfully created a new employee"
+        },
+        "movie": {
+          "add": "New movie added successfully",
+          "update": "Movie updated successfully",
+          "create": "Movie created successfully",
+          "delete": "Movie deleted"
+        }
+      },
+      "error": {
+        "server": {
+          "connection": "Lost connection to the server!"
+        },
+        "category": {
+          "loading": "Unable to load categories"
+        },
+        "movie": {
+          "loading": "Unable to load the list of currently showing movies"
+        },
+        "seat": {
+          "cancel_select": "Deselected seat: ",
+          "by_someone": "by someone else",
+          "selecting": "is being selected",
+          "bought": "has been purchased",
+          "loading_list": "Error loading seat list.",
+          "infor": "Seat information not found",
+          "cancel_booking": "Error canceling booking",
+          "remainder": "Seat hold time has expired. Please select a seat again.",
+          "max_selection": "Please select the correct number of seats: ",
+          "someone_selected": "has already been selected by someone else. Please choose another seat.",
+          "cannot_selected": "This seat cannot be selected. It may have already been chosen by someone else.",
+          "cancel_booking_bc_back": "Seats have been canceled because you went back.",
+          "update_status": "Unable to update seat status: ",
+          "booking": "Error canceling booking"
+        },
+        "promotion": {
+          "loading": "Unable to load promotions",
+          "update": "Error updating promotion"
+        },
+        "ticket": {
+          "booking": "Ticket booking failed!",
+          "selection": "Please select at least one ticket!"
+        },
+        "showtime": {
+          "selection": "Please select a showtime!"
+        },
+        "user": {
+          "validate": "Please enter ID or phone number",
+          "cannot_find_member": "No member found",
+          "cannot_find": "Error searching for user"
+        },
+        "payment": {
+          "error": "Payment error"
+        },
+        "employee": {
+          "create": "An error occurred while creating a new employee"
+        }
+      }
+    },
+    "helperText": {
+      "error": {
+        "fullname": "Please enter your full name",
+        "email": "Please enter your email",
+        "id_number": "Please enter your ID number",
+        "phone": "Please enter your phone number"
+      }
+    },
+    "alert": {
+      "ticket_management": {
+        "add_success": "New ticket added successfully!",
+        "description": "Non-member customers will not accumulate points from this transaction"
+      }
+    },
+    "admin": {
+      "ticket_management": {
+        "add": "Add new ticket",
+        "movie_name": "Movie name",
+        "customer": "Customer",
+        "showtime": {
+          "day": "Show date: ",
+          "hour": "Show time: "
+        },
+        "price": "Ticket price",
+        "room": "Screening room",
+        "type_ticket": "Ticket type",
+        "connecting": "Connecting to server...",
+        "booking_success": "Ticket booking successful!",
+        "booking_faild": "Ticket booking failed!",
+        "save_to_system": "Ticket has been saved in the system.",
+        "error": "An error occurred while processing the booking. Please try again.",
+        "current_point": "Current points:",
+        "payment_method": "Payment method",
+        "payment_detail": "Payment details",
+        "ticket_bought": "Tickets purchased: ",
+        "amount": "Total payment: ",
+        "back": "Back to ticket sales",
+        "come_to_dashboard": "Go to Dashboard",
+        "select_max": "Please select the correct number of seats: ",
+        "for_showtime": "for showtime",
+        "come_back": "Go back",
+        "continue": "Continue",
+        "payment": "Ticket Payment",
+        "not_selection_ticket": "No seat selected",
+        "after_payment": "After transaction: ",
+        "payment_by_point": "Select ticket payment using points: ",
+        "not_use_point": "Deselect",
+        "use_point": "Use points",
+        "total_point": {
+          "use": "Total points used: ",
+          "after": "Remaining points after transaction: "
+        },
+        "payment_infor": "Payment Information",
+        "payment_by_cash": "Remaining amount to be paid by cash: ",
+        "not_existing": "Movie does not exist"
+      },
+      "booking_management": {
+        "no_infor_seat": "No seat information",
+        "no_price": "No price information",
+        "employee_infor": "Member information",
+        "employee_id": "Member ID",
+        "employee_point": "Member points",
+        "change_ticket": "Change ticket",
+        "change_ticket_id": "Booking ID",
+        "movie": "Movie",
+        "showtime": "Showtime",
+        "get_ticket": "Receive ticket",
+        "get_ticket_infor": "Ticket receiving information",
+        "change_point": "Point exchange for ticket"
+      },
+      "promotion_management": {
+        "update": "Update Promotion",
+        "create": "Create Promotion",
+        "back": "Go Back",
+        "required": {
+          "title": "Title is required",
+          "discount": "Enter discount",
+          "start_time": "Enter start time",
+          "end_time": "Enter end time",
+          "content": "Enter details"
+        },
+        "label": {
+          "title": "Title",
+          "discount": "Discount (%)",
+          "start_time": "Start",
+          "end_time": "End"
+        },
+        "message": {
+          "max_promote": "Discount cannot exceed 100%",
+          "min_promote": "Discount must be at least 1%"
+        },
+        "validate": {
+          "showtime": "End time must be after start time",
+          "content": "Details cannot be empty"
+        }
+      },
+      "employee_management": {
+        "edit": "Edit employee information",
+        "remove_image": "Remove image",
+        "detail": {
+          "account": "Account",
+          "fullname": "Full name",
+          "birthday": "Date of birth",
+          "gender": "Gender",
+          "email": "Email",
+          "id_card": "ID Card",
+          "phone": "Phone",
+          "address": "Address",
+          "image": "Image (URL)",
+          "password": "Password",
+          "password_confirm": "Confirm password"
+        },
+        "come_back": "Go back",
+        "save": "Save changes",
+        "cancel": "Cancel",
+        "validation": {
+          "min_username": "The account must have at least 5 characters",
+          "max_username": "The account cannot exceed 20 characters.",
+          "required_username": "Please enter an account",
+          "min_password": "The password must have at least 8 characters",
+          "match_password": "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+          "required_password": "Please enter a password",
+          "confirm_required": "Please confirm the password",
+          "confirm_match": "Passwords do not match",
+          "required_fullname": "Please enter a full name",
+          "birthdate_valid": "Invalid date of birth",
+          "birthdate_required": "Please enter the date of birth",
+          "gender_required": "Please select gender",
+          "id_card_required": "Please enter an ID Card",
+          "id_card_valid": "Invalid ID Card",
+          "email_required": "Please enter an email",
+          "email_invalid": "Invalid email",
+          "phone_required": "Please enter a phone number",
+          "phone_invalid": "Invalid phone number",
+          "address_required": "Please enter an address"
+        },
+        "delete": {
+          "title": "Confirm employee deletion",
+          "make_sure": "Are you sure you want to delete the employee ",
+          "cannot_change": "This action cannot be undone.",
+          "confirm": "Delete"
+        }
+      },
+      "movie_management": {
+        "column": {
+          "movie_id": "Movie ID",
+          "movie_name": "Movie Name",
+          "showtime": "Release Date",
+          "director": "Film Studio",
+          "duration": "Duration",
+          "version": "Version",
+          "action": "Action"
+        },
+        "update": "Edit movie information",
+        "add": "Add new movie",
+        "detail": {
+          "image": "Image",
+          "name": "Movie Name",
+          "from_day": "From Date",
+          "to_day": "To Date",
+          "actor": "Actors",
+          "director": "Director",
+          "duration": "Duration",
+          "version": "Version",
+          "category": "Category",
+          "trailer": "Trailer",
+          "content": "Content",
+          "postdate": "Post Date",
+          "showtime": "Showtime",
+          "end_day": "End Date",
+          "function": "Function"
+        },
+        "remove_image": "Remove image",
+        "loading_categories": "Loading category list...",
+        "show_room": "Screening Room",
+        "show_time": "Showtime Schedule",
+        "add_show_time": "Add Showtime",
+        "employee_id": "Employee ID",
+        "save": "Save information",
+        "confirm": "Confirm",
+        "confirm_delete": "Are you sure you want to delete this movie?",
+        "submit": "Submit"
+      },
+      "member_management": {
+        "title": "Edit Member Information",
+        "image": "Image",
+        "remove_image": "Remove Image"
+      },
+      "showtime_management": {
+        "name": "Showroom Name",
+        "start_time": "Start Time",
+        "end_time": "End Time",
+        "showtime_list": "Showtime List",
+        "add_new": "Add Showtime",
+        "loading": "Processing...",
+        "detail": {
+          "title": "Showtime Details"
+        },
+        "come_back": "Go Back",
+        "showtime_id": "Showtime ID",
+        "movie_not_selection": "No Movie Selected",
+        "movie_selection": "Select Movie",
+        "room_selection": "Select Room",
+        "room": "Showroom",
+        "no_room": "No Room Available",
+        "save": "Save Changes",
+        "edit": "Edit",
+        "close": "Close",
+        "cancel": "Cancel",
+        "cannot_loading": "Unable to load showtime data. You can still create a new showtime.",
+        "not_found": "No showtime data found. Please create a new showtime."
       }
     }
+  },
+  "menu": {
+    "home": "Home",
+    "memberManagement": "Member Management",
+    "employeeManagement": "Employee Management",
+    "ticketSales": "Ticket Sales",
+    "ticketBooking": "Ticket Booking",
+    "screeningRooms": "Screening Rooms",
+    "movieManagement": "Movie Management",
+    "promotions": "Promotions",
+    "settings": "Settings",
+    "feedback": "Feedback",
+    "aboutUs": "About Us"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "promotions": "Promotions",
+    "movies": "Movies",
+    "screeningRooms": "Screening Rooms",
+    "ticketBooking": "Ticket Booking",
+    "ticketSales": "Ticket Sales",
+    "employees": "Employees",
+    "members": "Members"
   }
 }

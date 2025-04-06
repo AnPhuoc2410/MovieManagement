@@ -3,14 +3,18 @@ import {
   LoginRequest,
   LoginResponse,
   LogoutResponse,
+  OtpResponse,
   SignupRequest,
   SignupResponse,
+  UpdatePasswordReqBody,
 } from "../types/auth.types";
 import { UserResponse } from "../types/users.type";
 import { ApiResponse } from "./api.config";
 import api from "./axios.config";
 
-export const login = async (user: LoginRequest): Promise<LoginResponse> => {
+export const login = async (
+  user: LoginRequest,
+): Promise<LoginResponse | null> => {
   try {
     const response = await api.post("/auth/login", {
       email: user.email,
@@ -19,7 +23,8 @@ export const login = async (user: LoginRequest): Promise<LoginResponse> => {
     return response.data;
   } catch (error) {
     console.log(`Login error: ${error}`);
-    throw error;
+    // throw error;
+    return null;
   }
 };
 
@@ -71,4 +76,23 @@ export const doExtractUserFromToken = async (
     accessToken: token,
   });
   return res.data;
+};
+
+export const doSendOTPToExistUser = async (
+  email: string,
+): Promise<string | null> => {
+  const response = await api.patch(`/auth/send-otp?email=${email}`);
+  try {
+    if (response.status !== 200) throw new Error(response.data.message);
+
+    return response.data.data;
+  } catch (error) {
+    console.log(`Find email error: ${error}`);
+    return null;
+  }
+};
+
+export const doUpdatePassword = async (data: UpdatePasswordReqBody) => {
+  const response = await api.patch("/auth/update-password", data);
+  return response.status === 200;
 };

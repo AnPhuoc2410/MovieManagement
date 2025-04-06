@@ -11,6 +11,7 @@ import i18n from "./i18n";
 import { AuthProvider } from "./contexts/AuthContext.tsx";
 import "./index.scss";
 import { worker } from "./mocks/browser";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,7 +28,7 @@ async function enableMocking() {
     process.env.NODE_ENV === "production"
   ) {
     return worker.start({
-      onUnhandledRequest: "bypass", // Don't warn about unhandled requests
+      onUnhandledRequest: "bypass",
     });
   }
 }
@@ -37,9 +38,11 @@ enableMocking().then(() => {
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <I18nextProvider i18n={i18n}>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
+          <GoogleOAuthProvider clientId="57725428107-3ppj4bcq83ls8b7jlojbka02glmhn4ed.apps.googleusercontent.com">
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </GoogleOAuthProvider>
         </I18nextProvider>
       </QueryClientProvider>
     </BrowserRouter>,

@@ -15,16 +15,9 @@ import dayjs from "dayjs";
 import { ENV } from "../../../env/env.config";
 import AppTheme from "../../../shared-theme/AppTheme";
 import toast from "react-hot-toast";
-
-interface Promotion {
-  promotionId: string;
-  promotionName: string;
-  discount: number;
-  fromDate: string;
-  toDate: string;
-  content: string;
-  image?: string;
-}
+import { Promotion } from "../../../types/promotion.types";
+import api from "../../../apis/axios.config";
+import { t } from "i18next";
 
 export default function PromotionDetail() {
   const location = useLocation();
@@ -42,8 +35,8 @@ export default function PromotionDetail() {
       promotionId: "",
       promotionName: "",
       discount: 0,
-      fromDate: "",
-      toDate: "",
+      fromDate: new Date(),
+      toDate: new Date(),
       content: "",
       image: "",
     },
@@ -79,8 +72,8 @@ export default function PromotionDetail() {
         toDate: dayjs(data.toDate).toISOString(),
       };
 
-      await axios.put(
-        `https://localhost:7119/api/promotions/${data.promotionId}`,
+      await api.put(
+        `promotions/${data.promotionId}`,
         payload,
         {
           headers: {
@@ -88,12 +81,12 @@ export default function PromotionDetail() {
           },
         },
       );
-      toast.success("Cập nhật khuyến mãi thành công", { removeDelay: 3000 });
+      toast.success(t("toast.success.promotion.update"), { removeDelay: 3000 });
       setTimeout(() => {
         navigate("/admin/khuyen-mai");
       }, 3000);
     } catch (error) {
-      toast.error(`Lỗi khi cập nhật khuyến mãi: ${error}`);
+      toast.error(`${t("toast.error.promotion.update")} ${error}`);
     }
   };
 
@@ -119,17 +112,17 @@ export default function PromotionDetail() {
             })}
           >
             <Stack spacing={2}>
-              <h1>{promotion ? "Cập Nhật Khuyến Mãi" : "Tạo Khuyến Mãi"}</h1>
+              <h1>{promotion ? t("admin.promotion_management.update") : t("admin.promotion_management.create")}</h1>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Controller
                   name="promotionName"
                   control={control}
-                  rules={{ required: "Tiêu đề yêu cầu" }}
+                  rules={{ required: t("admin.promotion_management.required.title") }}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
                       {...field}
                       fullWidth
-                      label="Tiêu đề"
+                      label={t("admin.promotion_management.label.title")}
                       margin="dense"
                       variant="outlined"
                       InputLabelProps={{ shrink: true }}
@@ -142,18 +135,18 @@ export default function PromotionDetail() {
                   name="discount"
                   control={control}
                   rules={{
-                    required: "Nhập giảm giá",
-                    min: { value: 1, message: "Giảm giá ít nhất 1%" },
+                    required: t("admin.promotion_management.required.discount"),
+                    min: { value: 1, message: t("admin.promotion_management.message.min_promote") },
                     max: {
                       value: 100,
-                      message: "Giảm giá không vượt quá 100%",
+                      message: t("admin.promotion_management.message.max_promote"),
                     },
                   }}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
                       {...field}
                       fullWidth
-                      label="Giảm giá (%)"
+                      label={t("admin.promotion_management.label.discount")}
                       type="number"
                       margin="dense"
                       error={!!error}
@@ -164,12 +157,12 @@ export default function PromotionDetail() {
                 <Controller
                   name="fromDate"
                   control={control}
-                  rules={{ required: "Nhập thời gian bắt đầu" }}
+                  rules={{ required: t("admin.promotion_management.required.start_time") }}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
                       {...field}
                       fullWidth
-                      label="Bắt đầu"
+                      label={t("admin.promotion_management.label.start_time")}
                       type="date"
                       margin="dense"
                       InputLabelProps={{ shrink: true }}
@@ -189,11 +182,11 @@ export default function PromotionDetail() {
                   name="toDate"
                   control={control}
                   rules={{
-                    required: "Nhập thời gian kết thúc",
+                    required: t("admin.promotion_management.required.end_time"),
                     validate: (value) => {
                       const start = watch("fromDate");
                       if (new Date(value) < new Date(start)) {
-                        return "Thời gian kết thúc phải sau thời gian bắt đầu";
+                        return t("admin.promotion_management.validate.showtime");
                       }
                       return true;
                     },
@@ -202,7 +195,7 @@ export default function PromotionDetail() {
                     <TextField
                       {...field}
                       fullWidth
-                      label="Kết thúc"
+                      label={t("admin.promotion_management.label.end_time")}
                       type="date"
                       margin="dense"
                       InputLabelProps={{ shrink: true }}
@@ -222,13 +215,13 @@ export default function PromotionDetail() {
                   control={control}
                   defaultValue=""
                   rules={{
-                    required: "Nhập chi tiết",
+                    required: t("admin.promotion_management.required.content"),
                     validate: (value) => {
                       const strippedValue = value
                         .replace(/<p><br><\/p>/g, "")
                         .trim();
                       return (
-                        strippedValue !== "" || "Chi tiết không được để trống"
+                        strippedValue !== "" || t("admin.promotion_management.validate.content")
                       );
                     },
                   }}
@@ -257,12 +250,12 @@ export default function PromotionDetail() {
                   )}
                 </Box>
                 <Button type="submit" variant="contained">
-                  Cập Nhật Khuyến Mãi
+                  {t("admin.promotion_management.update")}
                 </Button>
               </form>
             </Stack>
             <Button onClick={() => navigate("/admin/khuyen-mai")}>
-              Trở lại
+              {t("admin.promotion_management.back")}
             </Button>
           </Box>
         </Box>

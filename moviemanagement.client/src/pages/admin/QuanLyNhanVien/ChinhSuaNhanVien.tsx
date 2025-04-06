@@ -12,39 +12,30 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
-import { useParams } from "react-router";
-import { fetchNhanVienDetail } from "../../../apis/mock.apis";
-import { Employee } from "./BangNhanVien";
-
-import type {} from "@mui/x-charts/themeAugmentation";
-import type {} from "@mui/x-data-grid-pro/themeAugmentation";
-import type {} from "@mui/x-date-pickers/themeAugmentation";
-import * as React from "react";
-
-import CssBaseline from "@mui/material/CssBaseline";
-import Stack from "@mui/material/Stack";
-import { alpha } from "@mui/material/styles";
-import AppNavbar from "../../../components/mui/AppNavbar";
-import Header from "../../../components/mui/Header";
-import SideMenu from "../../../components/mui/SideMenu";
-import AppTheme from "../../../shared-theme/AppTheme";
+import { useNavigate, useParams } from "react-router";
+import { fetchUserDetail } from "../../../apis/user.apis";
 import Loader from "../../../components/shared/Loading";
+import ManagementPageLayout from "../../../layouts/ManagementLayout";
+import { t } from "i18next";
 
 // Components
-const ChinhSuaNhanVien: React.FC = ({
-  disableCustomTheme = false,
-}: {
-  disableCustomTheme?: boolean;
-}) => {
+const ChinhSuaNhanVien: React.FC = () => {
   const { id } = useParams();
-
+  const navigate = useNavigate();
   const {
     data: employeeData = null,
     isLoading,
     error,
-  } = useQuery<Employee>("EmployeeData", () =>
-    fetchNhanVienDetail(id as string),
-  );
+  } = useQuery({
+    queryKey: ["employeeDetail", id],
+    queryFn: async () => {
+      const response = await fetchUserDetail(id as string);
+      if (!response.isSuccess || !response.data) {
+        throw new Error(response.message || "Failed to fetch employee data");
+      }
+      return response.data;
+    },
+  });
 
   // Track both the original URL and a preview URL (for newly uploaded files)
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -53,10 +44,16 @@ const ChinhSuaNhanVien: React.FC = ({
 
   // Set the initial image URL when component mounts or employeeData changes
   useEffect(() => {
-    if (employeeData && employeeData.HinhAnh) {
-      setImageUrl(employeeData.HinhAnh);
+    if (employeeData && employeeData.avatar) {
+      setImageUrl(employeeData.avatar);
     }
   }, [employeeData]);
+
+  useEffect(() => {
+    if (imageUrl) {
+      console.log("Image URL updated:", imageUrl);
+    }
+  }, [imageUrl]);
 
   if (isLoading) return <Loader />;
   if (error) return <div>Failed to fetch data</div>;
@@ -73,6 +70,10 @@ const ChinhSuaNhanVien: React.FC = ({
       setImageFile(file);
     }
     e.target.value = "";
+  };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImageUrl(e.target.value); // Update the image URL as the user types
   };
 
   const handleRemoveImage = () => {
@@ -93,210 +94,175 @@ const ChinhSuaNhanVien: React.FC = ({
     // navigate(-1);
   };
 
-  const handleCancel = () => {
-    console.log("Canceling changes");
-    // Navigate back to previous page
-    // navigate(-1);
-  };
-
   return (
-    <AppTheme disableCustomTheme={disableCustomTheme}>
-      <CssBaseline enableColorScheme />
-      <Box sx={{ display: "flex", height: "100vh" }}>
-        <SideMenu />
+    <ManagementPageLayout>
+      <Container maxWidth="md">
+        <Box sx={{ py: 4 }}>
+          <Typography variant="h4" component="h1" sx={{ mb: 4 }}>
+            {t("admin.employee_management.edit")}
+          </Typography>
 
-        <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-          <AppNavbar />
+          <Box sx={{ mb: 2 }}>
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Hình ảnh"
+              variant="standard"
+              value={imageUrl || ""}
+              onChange={handleUrlChange}
+              InputProps={{
+                endAdornment: (
+                  <IconButton component="label">
+                    <FileUploadOutlined />
+                    <input
+                      ref={fileInputRef}
+                      style={{ display: "none" }}
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={handleUpload}
+                      name="[licenseFile]"
+                    />
+                  </IconButton>
+                ),
+              }}
+            />
+
+            {/* Image Preview */}
+            {imageUrl && (
+              <Box
+                sx={{
+                  mt: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <Box
+                  component="img"
+                  src={imageUrl}
+                  alt="Preview"
+                  sx={{
+                    maxWidth: "100%",
+                    maxHeight: "200px",
+                    objectFit: "contain",
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    mt: 1,
+                  }}
+                />
+                <Button
+                  size="small"
+                  color="error"
+                  onClick={handleRemoveImage}
+                  sx={{ mt: 1 }}
+                >
+                  {t("admin.employee_management.remove_image")}
+                </Button>
+              </Box>
+            )}
+          </Box>
+
+          <TextField
+            label={t("admin.employee_managemet.detail.account")}
+            variant="standard"
+            fullWidth
+            margin="normal"
+            defaultValue={employeeData.userName}
+          />
+          <TextField
+            label={t("admin.employee_managemet.detail.fullname")}
+            variant="standard"
+            fullWidth
+            margin="normal"
+            defaultValue={employeeData.fullName}
+          />
+          <TextField
+            label={t("admin.employee_managemet.detail.birthday")}
+            variant="standard"
+            fullWidth
+            margin="normal"
+            type="date"
+            defaultValue={employeeData.birthDate}
+            InputLabelProps={{
+              style: { top: "-1.5rem" },
+            }}
+          />
+          <Box
+            sx={{
+              display: "flex",
+              gap: "2rem",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              my: 2,
+            }}
+          >
+            <Typography>{t("admin.employee_managemet.detail.gender")}</Typography>
+            <RadioGroup
+              defaultValue={employeeData.gender || "Male"}
+              sx={{ display: "flex", gap: 10, flexDirection: "row" }}
+            >
+              <FormControlLabel value="Male" control={<Radio />} label="Nam" />
+              <FormControlLabel value="Female" control={<Radio />} label="Nữ" />
+            </RadioGroup>
+          </Box>
+          <TextField
+            label={t("admin.employee_managemet.detail.email")}
+            variant="standard"
+            fullWidth
+            margin="normal"
+            defaultValue={employeeData.email}
+          />
+          <TextField
+            label={t("admin.employee_managemet.detail.id_card")}
+            variant="standard"
+            fullWidth
+            margin="normal"
+            defaultValue={employeeData.idCard}
+          />
+          <TextField
+            label={t("admin.employee_managemet.detail.phone")}
+            variant="standard"
+            fullWidth
+            margin="normal"
+            defaultValue={employeeData.phoneNumber}
+          />
+          <TextField
+            label={t("admin.employee_managemet.detail.address")}
+            variant="standard"
+            fullWidth
+            margin="normal"
+            defaultValue={employeeData.address}
+          />
 
           <Box
-            component="main"
-            sx={(theme) => ({
-              flexGrow: 1,
-              backgroundColor: alpha(theme.palette.background.default, 1),
-              overflowY: "auto",
-              px: 3,
-              py: 2,
-            })}
+            sx={{
+              mt: 4,
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 2,
+            }}
           >
-            <Stack spacing={2} alignItems="center">
-              <Header />
-              <Container maxWidth="md">
-                <Box sx={{ py: 4 }}>
-                  <Typography variant="h4" component="h1" sx={{ mb: 4 }}>
-                    Chỉnh sửa thông tin nhân viên
-                  </Typography>
-
-                  <Box sx={{ mb: 2 }}>
-                    <TextField
-                      fullWidth
-                      margin="normal"
-                      label="Hình ảnh"
-                      variant="standard"
-                      value={imageUrl || ""}
-                      InputProps={{
-                        readOnly: true,
-                        endAdornment: (
-                          <IconButton component="label">
-                            <FileUploadOutlined />
-                            <input
-                              ref={fileInputRef}
-                              style={{ display: "none" }}
-                              type="file"
-                              accept="image/*"
-                              hidden
-                              onChange={handleUpload}
-                              name="[licenseFile]"
-                            />
-                          </IconButton>
-                        ),
-                      }}
-                    />
-
-                    {/* Image Preview */}
-                    {imageUrl && (
-                      <Box
-                        sx={{
-                          mt: 2,
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Box
-                          component="img"
-                          src={imageUrl}
-                          alt="Preview"
-                          sx={{
-                            maxWidth: "100%",
-                            maxHeight: "200px",
-                            objectFit: "contain",
-                            border: "1px solid #ddd",
-                            borderRadius: "4px",
-                            mt: 1,
-                          }}
-                        />
-                        <Button
-                          size="small"
-                          color="error"
-                          onClick={handleRemoveImage}
-                          sx={{ mt: 1 }}
-                        >
-                          Xóa hình
-                        </Button>
-                      </Box>
-                    )}
-                  </Box>
-
-                  <TextField
-                    label="Tài khoản"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    defaultValue={employeeData.TaiKhoan}
-                  />
-                  <TextField
-                    label="Họ tên"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    defaultValue={employeeData.TenNhanVien}
-                  />
-                  <TextField
-                    label="Ngày sinh"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    type="date"
-                    defaultValue={employeeData.NgaySinh}
-                    InputLabelProps={{
-                      style: { top: "-1.5rem" },
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      display: "flex",
-                      gap: "2rem",
-                      alignItems: "center",
-                      justifyContent: "flex-start",
-                      my: 2,
-                    }}
-                  >
-                    <Typography>Giới tính</Typography>
-                    <RadioGroup
-                      defaultValue={employeeData.GioiTinh || "Male"}
-                      sx={{ display: "flex", gap: 10, flexDirection: "row" }}
-                    >
-                      <FormControlLabel
-                        value="Male"
-                        control={<Radio />}
-                        label="Nam"
-                      />
-                      <FormControlLabel
-                        value="Female"
-                        control={<Radio />}
-                        label="Nữ"
-                      />
-                    </RadioGroup>
-                  </Box>
-                  <TextField
-                    label="Email"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    defaultValue={employeeData.Email}
-                  />
-                  <TextField
-                    label="Số CMND"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    defaultValue={employeeData.SoCMND}
-                  />
-                  <TextField
-                    label="Số điện thoại"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    defaultValue={employeeData.SoDienThoai}
-                  />
-                  <TextField
-                    label="Địa chỉ"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    defaultValue={employeeData.DiaChi}
-                  />
-
-                  <Box
-                    sx={{
-                      mt: 4,
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      gap: 2,
-                    }}
-                  >
-                    <Button
-                      onClick={handleCancel}
-                      color="error"
-                      variant="contained"
-                    >
-                      Hủy
-                    </Button>
-                    <Button
-                      onClick={handleSaveChanges}
-                      color="primary"
-                      variant="contained"
-                    >
-                      Lưu thay đổi
-                    </Button>
-                  </Box>
-                </Box>
-              </Container>
-            </Stack>
+            <Button
+              onClick={() => {
+                navigate(-1);
+              }}
+              color="error"
+              variant="contained"
+            >
+              {t("admin.employee_managemet.detail.come_back")}
+            </Button>
+            <Button
+              onClick={handleSaveChanges}
+              color="primary"
+              variant="contained"
+            >
+              {t("admin.employee_managemet.detail.save")}
+            </Button>
           </Box>
         </Box>
-      </Box>
-    </AppTheme>
+      </Container>
+    </ManagementPageLayout>
   );
 };
 

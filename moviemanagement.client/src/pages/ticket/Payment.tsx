@@ -1,52 +1,158 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  TextField,
-  Button,
-  Grid,
-  Paper,
-} from "@mui/material";
+import React, { useState, useEffect, useCallback } from "react";
+import { Box, Container, Typography, TextField, Button, Grid, Paper, FormControlLabel, RadioGroup, CircularProgress, Radio, Checkbox } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import StepTracker from "../../components/Ticket/StepTracker";
 import Footer from "../../components/home/Footer";
 import Header from "../../components/home/Header";
 import toast from "react-hot-toast";
-import { ca } from "date-fns/locale";
-import axios from "axios";
 import api from "../../apis/axios.config";
+import { useSignalR } from "../../contexts/SignalRContext";
+import SeatCountdown from "../../components/Ticket/SeatCountdown";
+import { useAuth } from "../../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
+import { PaymentState } from "../../types/payment.types";
 
 const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { userDetails } = useAuth();
+  const { connection, isConnected } = useSignalR();
+  const [promotions, setPromotions] = useState<any[]>([]);
+  const [selectedPromotion, setSelectedPromotion] = useState<any>(null);
+  const [isPromotionsLoading, setIsPromotionsLoading] = useState(false);
+  const state = location.state as Partial<PaymentState> || {};
 
-  // Get basic booking info from location.state
-  const { selectedTime, selectedDate, tickets, seats } = location.state || {
-    selectedTime: "Not selected",
-    selectedDate: "Not selected",
-    tickets: [],
-    seats: [] as string[],
+  const {
+    selectedTime = "Not selected",
+    selectedDate = "Not selected",
+    tickets = [],
+    seats = [] as string[],
+    showTimeId = "",
+    selectedSeatsInfo = [],
+    movieData = {},
+    roomName = "",
+    lastSelectionTime,
+    resetCounter = 0,
+  } = state;
+
+  const movieTitle = movieData?.movieName || t("payment.movie.default");
+  const showDate = selectedDate;
+  const showTime = selectedTime;
+
+  // Determine effective showTimeId from state or session storage
+  const effectiveShowTimeId = showTimeId || sessionStorage.getItem("currentShowTimeId") || "";
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (connection && isConnected && effectiveShowTimeId && selectedSeatsInfo?.length) {
+        // Add warning
+        e.preventDefault();
+        e.returnValue = "";
+
+        const userId = userDetails?.userId;
+        const payload = JSON.stringify({
+          ticketRequests: selectedSeatsInfo.map((seat: { ticketId: any; version: any }) => ({
+            TicketId: seat.ticketId,
+            Version: seat.version,
+          })),
+          showtimeId: effectiveShowTimeId,
+          userId,
+        });
+
+        // Use beacon API to send the release request
+        navigator.sendBeacon("/api/seats/release-pending", payload);
+
+        return "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [connection, isConnected, effectiveShowTimeId, selectedSeatsInfo]);
+
+  useEffect(() => {
+    // Cleanup function runs when component unmounts
+    return () => {
+      if (connection && isConnected && selectedSeatsInfo?.length > 0) {
+        const userId = userDetails?.userId;
+        const ticketRequests = selectedSeatsInfo.map((seat: { ticketId: any; version: any }) => ({
+          TicketId: seat.ticketId,
+          Version: seat.version,
+        }));
+
+        connection.invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId).catch((err) => console.error("Failed to release seats on unmount:", err));
+      }
+    };
+  }, [connection, isConnected, selectedSeatsInfo, effectiveShowTimeId]);
+
+  const handleBack = async () => {
+    if (connection && selectedSeatsInfo?.length > 0) {
+      try {
+        const userId = userDetails?.userId;
+        const ticketRequests = selectedSeatsInfo.map((seat: { ticketId: any; version: any }) => ({
+          TicketId: seat.ticketId,
+          Version: seat.version,
+        }));
+
+        await connection.invoke("ReleasePendingSeats", ticketRequests, effectiveShowTimeId, userId);
+        toast.success(t("toast.success.seat.cancel_booking"));
+        navigate(-1);
+      } catch (error) {
+        console.error("Error releasing seats:", error);
+        toast.error(t("toast.error.seat.cancel_booking"));
+        // Navigate anyway as fallback
+        navigate(-1);
+      }
+    } else {
+      navigate(-1);
+    }
   };
 
-  // Calculate total ticket price from the tickets array
-  const totalPrice = (tickets || []).reduce(
-    (sum: number, t: any) => sum + t.price * (t.quantity || 0),
-    0,
+  useEffect(() => {
+    const fetchPromotions = async () => {
+      setIsPromotionsLoading(true);
+      try {
+        // Adjust the endpoint to match your actual API
+        const response = await api.get("promotions");
+
+        // Assuming the API returns the data directly or inside a data property
+        const promotionsData = response.data.data || response.data || [];
+        setPromotions(promotionsData);
+
+        console.log("Loaded promotions:", promotionsData);
+      } catch (error) {
+        console.error("Failed to load promotions", error);
+        toast.error(t("toast.error.promotion.loading"));
+      } finally {
+        setIsPromotionsLoading(false);
+      }
+    };
+
+    fetchPromotions();
+  }, []);
+
+  const calculateDiscountedTotal = useCallback(
+    (originalTotal: number) => {
+      if (!selectedPromotion) return originalTotal;
+
+      // Calculate discount based on percentage
+      const discount = originalTotal * (selectedPromotion.discount / 100);
+
+      // Return original price minus discount
+      return Math.max(0, originalTotal - discount);
+    },
+    [selectedPromotion],
   );
 
-  // Additional info with defaults
-  const {
-    movieTitle = "Phim Mặc Định",
-    screen = "Màn hình 1",
-    showDate = selectedDate,
-    showTime = selectedTime,
-    price = totalPrice,
-  } = location.state || {};
+  // Update the total calculation
+  const totalPrice = (tickets || []).reduce((sum: number, t: any) => sum + t.price * (t.quantity || 0), 0);
+  const discountedTotal = calculateDiscountedTotal(totalPrice);
+  const total = discountedTotal;
 
-  const total = totalPrice;
-
-  // Customer form fields and error states
+  // Customer form state and error flags
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [idNumber, setIdNumber] = useState("");
@@ -89,35 +195,45 @@ const Payment: React.FC = () => {
       const data = {
         totalTicket: tickets.length,
         amount: total,
-        promotionId: "",
+        promotionId: selectedPromotion?.promotionId || null,
+        tickets: selectedSeatsInfo.map((seat: { ticketId: any }) => seat.ticketId),
       };
-      const billResponse = await api.post(`bill?userId=${"16223053-AE9B-4A5F-AADE-437781C2A8A5"}`, data);
-      console.log(billResponse.data);
-      const response = await api.get(
-        `vnpay/createpaymenturl?money=${total}&description=${`Payment for movie tickets: ${movieTitle}`}`,
+
+      const response = await api.post(
+        `vnpay/createpaymenturl?money=${total}&description=${encodeURIComponent(`Payment for movie tickets: ${movieData?.movieName}`)}&userId=${userDetails?.userId}`,
+        data,
       );
+
+      // Save booking info to session storage for later retrieval.
+      sessionStorage.setItem(
+        "bookingInfo",
+        JSON.stringify({
+          selectedTime,
+          selectedDate,
+          tickets,
+          seats,
+          totalPrice,
+          total,
+          fullName,
+          email,
+          idNumber,
+          phone,
+          selectedSeatsInfo,
+          lastSelectionTime,
+          resetCounter,
+          movieData,
+          roomName,
+          promotion: selectedPromotion,
+        }),
+      );
+
+      // Redirect to VNPay payment URL.
       window.location.href = response.data;
     } catch (error) {
       console.error(error);
-      toast.error("Đặt vé thất bại!");
+      toast.error(t("toast.error.ticket.booking"));
       return;
     }
-
-    // toast.success("Đặt vé thành công!");
-    // navigate("/ticket/confirmation", {
-    //   state: {
-    //     movieTitle,
-    //     screen,
-    //     showDate,
-    //     showTime,
-    //     seats,
-    //     total,
-    //     fullName,
-    //     email,
-    //     idNumber,
-    //     phone,
-    //   },
-    // });
   };
 
   return (
@@ -163,7 +279,7 @@ const Payment: React.FC = () => {
             minHeight: "100vh",
           }}
         >
-          {/* Sticky StepTracker for desktop */}
+          {/* StepTracker Sidebar (Desktop) */}
           <Box
             sx={{
               display: { xs: "none", md: "block" },
@@ -175,6 +291,39 @@ const Payment: React.FC = () => {
               flexShrink: 0,
             }}
           >
+            {/* Countdown Timer Banner */}
+            {lastSelectionTime && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mb: 3,
+                }}
+              >
+                <Paper
+                  elevation={3}
+                  sx={{
+                    p: 2,
+                    backgroundColor: "rgba(27, 38, 53, 0.8)",
+                    borderRadius: 2,
+                  }}
+                >
+                  <Typography variant="subtitle1" align="center" sx={{ mb: 1, color: "#fbc02d" }}>
+                    {t("payment.timer")}
+                  </Typography>
+                  <SeatCountdown
+                    seatId="payment-timer"
+                    seatName="Timer"
+                    startTime={lastSelectionTime}
+                    resetTrigger={resetCounter}
+                    onTimeout={() => {
+                      toast.error(t("toast.error.seat.remainder"));
+                      navigate(`/ticket/${movieData.movieId}`, { replace: true });
+                    }}
+                  />
+                </Paper>
+              </Box>
+            )}
             <StepTracker currentStep={3} />
           </Box>
 
@@ -188,8 +337,41 @@ const Payment: React.FC = () => {
               pb: 4,
             }}
           >
-            {/* Show StepTracker on mobile */}
+            {/* StepTracker (Mobile) */}
             <Box sx={{ display: { xs: "block", md: "none" }, mb: 2 }}>
+              {/* Countdown Timer Banner */}
+              {lastSelectionTime && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    mb: 3,
+                  }}
+                >
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      p: 2,
+                      backgroundColor: "rgba(27, 38, 53, 0.8)",
+                      borderRadius: 2,
+                    }}
+                  >
+                    <Typography variant="subtitle1" align="center" sx={{ mb: 1, color: "#fbc02d" }}>
+                      {t("payment.timer")}
+                    </Typography>
+                    <SeatCountdown
+                      seatId="payment-timer"
+                      seatName="Timer"
+                      startTime={lastSelectionTime}
+                      resetTrigger={resetCounter}
+                      onTimeout={() => {
+                        toast.error(t("toast.error.seat.remainder"));
+                        navigate(`/ticket/${movieData.movieId}`, { replace: true });
+                      }}
+                    />
+                  </Paper>
+                </Box>
+              )}
               <StepTracker currentStep={3} />
             </Box>
 
@@ -199,12 +381,17 @@ const Payment: React.FC = () => {
               align="center"
               gutterBottom
               fontFamily={"JetBrains Mono"}
-              sx={{ textTransform: "uppercase", mb: 4 }}
+              sx={{
+                textTransform: "uppercase",
+                mb: 2,
+                letterSpacing: "1.2px",
+                lineHeight: "1.5",
+              }}
             >
-              Thanh Toán Vé
+              {t("payment.ticket.payment")}
             </Typography>
 
-            {/* Payment content */}
+            {/* Payment Info and Form */}
             <Grid container spacing={4}>
               {/* Left Column: Movie Poster */}
               <Grid item xs={12} md={4}>
@@ -217,8 +404,8 @@ const Payment: React.FC = () => {
                 >
                   <Box
                     component="img"
-                    src="https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2Fwysiwyg%2FPosters%2F01-2025%2Fden-am-hon-poster.png&w=2048&q=75"
-                    alt="Movie Poster"
+                    src={movieData?.image}
+                    alt={movieData?.movieName || t("payment.movie.poster")}
                     sx={{
                       width: "100%",
                       borderRadius: 2,
@@ -230,49 +417,48 @@ const Payment: React.FC = () => {
                 </Paper>
               </Grid>
 
-              {/* Right Column: Movie/Ticket Info & Customer Form */}
+              {/* Right Column: Ticket Info & Customer Form */}
               <Grid item xs={12} md={8}>
-                {/* Combined Movie & Ticket Info */}
+                {/* Movie & Ticket Information */}
                 <Paper
                   sx={{
-                    p: 3,
+                    p: { xs: 3, md: 4 },
                     backgroundColor: "rgba(28, 28, 28, 0.8)",
                     color: "white",
-                    mb: 3,
+                    mb: { xs: 3, md: 4 },
                   }}
                 >
                   <Grid container spacing={3}>
-                    {/* Thông Tin Phim */}
+                    {/* Movie Details */}
                     <Grid item xs={12} sm={6}>
-                      <Typography variant="h6" gutterBottom>
-                        Thông Tin Phim
+                      <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}>
+                        {t("payment.movie.description")}
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        <strong>Tên phim:</strong> {movieTitle}
+                      <Typography variant="body1" gutterBottom sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}>
+                        <strong>{t("payment.movie.name")}</strong> {movieTitle}
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        <strong>Màn hình:</strong> {screen}
+                      <Typography variant="body1" gutterBottom sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}>
+                        <strong>{t("payment.movie.room")}</strong> {roomName}
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        <strong>Ngày chiếu:</strong> {showDate}
+                      <Typography variant="body1" gutterBottom sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}>
+                        <strong>{t("payment.showtime.day")}</strong> {showDate}
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        <strong>Giờ chiếu:</strong> {showTime}
+                      <Typography variant="body1" gutterBottom sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}>
+                        <strong>{t("payment.showtime.hour")}</strong> {showTime}
                       </Typography>
                     </Grid>
 
-                    {/* Thông Tin Vé */}
+                    {/* Ticket Details */}
                     <Grid item xs={12} sm={6}>
-                      <Typography variant="h6" gutterBottom>
-                        Thông Tin Vé
+                      <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}>
+                        {t("payment.ticket.infor")}
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        <strong>Ghế:</strong>{" "}
-                        {seats.join(", ") || "Chưa chọn ghế"}
+                      <Typography variant="body1" gutterBottom sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}>
+                        <strong>{t("payment.ticket.seat")}</strong> {seats.join(", ") || "Chưa chọn ghế"}
                       </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        <strong>Giá:</strong>{" "}
-                        {price.toLocaleString("vi-VN", {
+                      <Typography variant="body1" gutterBottom sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}>
+                        <strong>{t("payment.ticket.price")}</strong>{" "}
+                        {totalPrice.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         })}
@@ -283,16 +469,169 @@ const Payment: React.FC = () => {
                         sx={{
                           color: "#fbc02d",
                           fontWeight: "bold",
-                          fontSize: "1.1rem",
+                          fontSize: { xs: "1.2rem", md: "1.4rem" },
                           mt: 1,
                         }}
                       >
-                        <strong>Tổng cộng:</strong>{" "}
+                        <strong>{t("payment.total_amount")}</strong>{" "}
                         {total.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         })}
+                        {selectedPromotion && (
+                          <Typography component="span" sx={{ color: "#4caf50", ml: 1, fontSize: { xs: "1rem", md: "1.1rem" } }}>
+                            ({t("payment.promotion.used")})
+                          </Typography>
+                        )}
                       </Typography>
+
+                      {/* Promotions Section */}
+                      <Paper
+                        sx={{
+                          p: { xs: 2, md: 3 },
+                          backgroundColor: "rgba(28, 28, 28, 0.8)",
+                          color: "white",
+                          mb: { xs: 3, md: 4 },
+                        }}
+                      >
+                        <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}>
+                          {t("payment.promotion.title")}
+                        </Typography>
+
+                        {isPromotionsLoading ? (
+                          <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
+                            <CircularProgress size={28} sx={{ color: "#fbc02d" }} />
+                          </Box>
+                        ) : promotions.length === 0 ? (
+                          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic", fontSize: { xs: "1rem", md: "1.1rem" } }}>
+                            {t("payment.promotion.notfound")}
+                          </Typography>
+                        ) : (
+                          <Box
+                            sx={{
+                              maxHeight: "250px",
+                              overflowY: "auto",
+                              pr: 1,
+                              "&::-webkit-scrollbar": { width: "8px" },
+                              "&::-webkit-scrollbar-track": {
+                                background: "rgba(0,0,0,0.1)",
+                                borderRadius: "4px",
+                              },
+                              "&::-webkit-scrollbar-thumb": {
+                                background: "rgba(255,255,255,0.2)",
+                                borderRadius: "4px",
+                                "&:hover": { background: "rgba(255,255,255,0.3)" },
+                              },
+                            }}
+                          >
+                            {promotions.map((promo) => {
+                              // Check if the promotion is outdated
+                              const isOutdated = new Date(promo.toDate) < new Date();
+                              // Determine if this promotion is currently selected
+                              const isSelected = selectedPromotion?.promotionId === promo.promotionId;
+
+                              return (
+                                <FormControlLabel
+                                  key={promo.promotionId}
+                                  disabled={isOutdated}
+                                  control={
+                                    <Checkbox
+                                      checked={isSelected}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          // Only allow selection if the promotion is not outdated
+                                          if (!isOutdated) {
+                                            setSelectedPromotion(promo);
+                                          }
+                                        } else {
+                                          // Deselect if unchecked
+                                          setSelectedPromotion(null);
+                                        }
+                                      }}
+                                      sx={{
+                                        color: isOutdated ? "grey" : "white",
+                                        "&.Mui-checked": { color: "#fbc02d" },
+                                      }}
+                                    />
+                                  }
+                                  label={
+                                    <Box
+                                      sx={{
+                                        backgroundColor: isOutdated ? "rgba(0,0,0,0.2)" : "transparent",
+                                        p: 1,
+                                        borderRadius: 1,
+                                      }}
+                                    >
+                                      <Typography variant="body1" fontWeight="bold" sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}>
+                                        {promo.promotionName}
+                                      </Typography>
+                                      <Box sx={{ display: "flex", gap: 2, mb: 1 }}>
+                                        {promo.image && (
+                                          <Box
+                                            component="img"
+                                            src={promo.image}
+                                            sx={{
+                                              width: 80,
+                                              height: 50,
+                                              objectFit: "cover",
+                                              borderRadius: 1,
+                                            }}
+                                          />
+                                        )}
+                                        <Typography
+                                          variant="body2"
+                                          sx={{
+                                            color: isOutdated ? "grey" : "#fbc02d",
+                                            fontSize: { xs: "1rem", md: "1.1rem" },
+                                          }}
+                                        >
+                                          {t("payment.promotion.discount")} {promo.discount}%
+                                        </Typography>
+                                      </Box>
+                                      <Typography
+                                        variant="caption"
+                                        sx={{
+                                          color: isOutdated ? "grey" : "#bdbdbd",
+                                          fontSize: { xs: "0.9rem", md: "1rem" },
+                                        }}
+                                      >
+                                        {t("payment.promotion.from")} {new Date(promo.fromDate).toLocaleDateString("vi-VN")} {t("payment.promotion.to")}{" "}
+                                        {new Date(promo.toDate).toLocaleDateString("vi-VN")}
+                                      </Typography>
+                                    </Box>
+                                  }
+                                  sx={{
+                                    mb: 2,
+                                    alignItems: "flex-start",
+                                    opacity: isOutdated ? 0.5 : 1,
+                                  }}
+                                />
+                              );
+                            })}
+                          </Box>
+                        )}
+                        {/* Display discount amount if promotion selected */}
+                        {selectedPromotion && (
+                          <Box sx={{ mt: 2, borderTop: "1px solid rgba(255,255,255,0.1)", pt: 2 }}>
+                            <Typography variant="body1" sx={{ fontSize: { xs: "1.1rem", md: "1.3rem" } }}>
+                              <strong>{t("payment.origin_price")}</strong>{" "}
+                              {totalPrice.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </Typography>
+                            <Typography variant="body1" sx={{ color: "#4caf50", fontSize: { xs: "1.1rem", md: "1.3rem" } }}>
+                              <strong>
+                                {t("payment.promotion.discount")} ({selectedPromotion.discount}%):
+                              </strong>{" "}
+                              {(totalPrice - discountedTotal).toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </Typography>
+                          </Box>
+                        )}
+                      </Paper>
                     </Grid>
                   </Grid>
                 </Paper>
@@ -300,84 +639,133 @@ const Payment: React.FC = () => {
                 {/* Customer Information Form */}
                 <Paper
                   sx={{
-                    p: 3,
+                    p: { xs: 3, md: 4 },
                     backgroundColor: "rgba(28, 28, 28, 0.8)",
                     color: "white",
                   }}
                 >
-                  <Typography variant="h6" gutterBottom>
-                    Thông Tin Khách Hàng
+                  <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: "1.3rem", md: "1.5rem" } }}>
+                    {t("payment.user_infor")}
                   </Typography>
                   <Grid container spacing={2} sx={{ mb: 2 }}>
                     <Grid item xs={12} sm={6}>
                       <TextField
-                        label="Họ tên"
+                        label={t("common.table_header.user.fullname")}
                         variant="outlined"
                         fullWidth
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         error={fullNameError}
-                        helperText={fullNameError ? "Vui lòng nhập họ tên" : ""}
-                        InputLabelProps={{ style: { color: "white" } }}
-                        sx={{ input: { color: "white" } }}
+                        helperText={fullNameError ? t("helperText.error.fullname") : ""}
+                        sx={{
+                          maxWidth: "400px",
+                          input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& label": { color: "rgba(255,255,255,0.7)", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+                            "&:hover fieldset": { borderColor: "white" },
+                          },
+                        }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
-                        label="Email"
+                        label={t("common.table_header.user.email")}
                         variant="outlined"
                         fullWidth
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         error={emailError}
-                        helperText={emailError ? "Vui lòng nhập email" : ""}
-                        InputLabelProps={{ style: { color: "white" } }}
-                        sx={{ input: { color: "white" } }}
+                        helperText={emailError ? t("helperText.error.email") : ""}
+                        sx={{
+                          maxWidth: "400px",
+                          input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& label": { color: "rgba(255,255,255,0.7)", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+                            "&:hover fieldset": { borderColor: "white" },
+                          },
+                        }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
-                        label="CMND"
+                        label={t("auth.signup.fields.id_card")}
                         variant="outlined"
                         fullWidth
                         value={idNumber}
                         onChange={(e) => setIdNumber(e.target.value)}
                         error={idNumberError}
-                        helperText={idNumberError ? "Vui lòng nhập CMND" : ""}
-                        InputLabelProps={{ style: { color: "white" } }}
-                        sx={{ input: { color: "white" } }}
+                        helperText={idNumberError ? t("helperText.error.id_number") : ""}
+                        sx={{
+                          maxWidth: "400px",
+                          input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& label": { color: "rgba(255,255,255,0.7)", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+                            "&:hover fieldset": { borderColor: "white" },
+                          },
+                        }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
-                        label="Số điện thoại"
+                        label={t("common.table_header.user.phone")}
                         variant="outlined"
                         fullWidth
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         error={phoneError}
-                        helperText={
-                          phoneError ? "Vui lòng nhập số điện thoại" : ""
-                        }
-                        InputLabelProps={{ style: { color: "white" } }}
-                        sx={{ input: { color: "white" } }}
+                        helperText={phoneError ? t("helperText.error.phone") : ""}
+                        sx={{
+                          maxWidth: "400px",
+                          input: { color: "white", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& label": { color: "rgba(255,255,255,0.7)", fontSize: { xs: "1.1rem", md: "1.2rem" } },
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+                            "&:hover fieldset": { borderColor: "white" },
+                          },
+                        }}
                       />
                     </Grid>
                   </Grid>
 
                   <Box sx={{ textAlign: "center", mt: 3 }}>
                     <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleConfirm}
+                      variant="outlined"
+                      onClick={handleBack}
                       sx={{
+                        color: "#fbc02d",
+                        borderColor: "#fbc02d",
+                        mr: 2,
                         px: 4,
-                        py: 1,
-                        fontSize: "1rem",
+                        py: 1.2,
+                        fontSize: { xs: "1rem", md: "1.2rem" },
                         borderRadius: 2,
+                        "&:hover": {
+                          borderColor: "#ff9800",
+                          backgroundColor: "rgba(251, 192, 45, 0.1)",
+                        },
                       }}
                     >
-                      Xác nhận đặt vé
+                      {t("payment.back")}
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={handleConfirm}
+                      sx={{
+                        background: "linear-gradient(135deg, #fbc02d 0%, #ff9800 100%)",
+                        color: "#121212",
+                        px: 4,
+                        py: 1.2,
+                        fontSize: { xs: "1rem", md: "1.2rem" },
+                        borderRadius: 2,
+                        "&:hover": {
+                          background: "linear-gradient(135deg, #ff9800 0%, #fbc02d 100%)",
+                        },
+                      }}
+                    >
+                      {t("payment.confirm")}
                     </Button>
                   </Box>
                 </Paper>

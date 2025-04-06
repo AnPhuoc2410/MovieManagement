@@ -18,25 +18,42 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [authData, setAuthData] = useState<AuthLoginData | null>(null); // Store token-related info
   const [userDetails, setUserDetails] = useState<UserResponse | null>(null); // Store user-related info
   const navigate = useNavigate();
 
+  // Check token expiration
+  const checkTokenExpiration = () => {
+    const expiresTimestamp = getCookie("expires");
+    if (expiresTimestamp) {
+      const expiresDate = new Date(expiresTimestamp);
+      const currentDate = new Date();
+
+      if (currentDate > expiresDate) {
+        console.log("Token expired, logging out");
+        authLogout();
+        return false;
+      }
+    }
+    return true;
+  };
+
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         const token = getCookie("accessToken");
         if (token) {
+          // Check if token is expired before proceeding
+          if (!checkTokenExpiration()) {
+            setIsInitialized(true);
+            return;
+          }
+
           // Extract user details from token
           const { data } = await doExtractUserFromToken(token);
-
-          console.log(`User details: ${JSON.stringify(data, null, 2)}`);
-
           if (data) {
             setIsAuthenticated(true);
             setUserDetails(data); // Set user details from token
@@ -50,11 +67,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     initializeAuth();
-  }, []);
 
-  const authLogin = async (
-    loginData: AuthLoginData,
-  ): Promise<UserResponse | null> => {
+    // Set up interval to check token expiration regularly
+    const expirationCheckInterval = setInterval(() => {
+      if (isAuthenticated) {
+        checkTokenExpiration();
+      }
+    }, 60000); // Check every minute
+
+    return () => {
+      clearInterval(expirationCheckInterval);
+    };
+  }, [isAuthenticated]);
+
+  const authLogin = async (loginData: AuthLoginData): Promise<UserResponse | null> => {
     if (!loginData) {
       console.error("Invalid login data");
       return null;
@@ -64,6 +90,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       // Set login state and store token
       setIsAuthenticated(true);
       setAuthData(loginData);
+
+      // Store token and expiration in cookies
       setCookie("accessToken", loginData.accessToken, 1);
       setCookie("expires", loginData.expires, 1);
 
@@ -83,18 +111,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const authLogout = async () => {
     const token = getCookie("accessToken");
     if (token) {
-      await doLogout(token);
+      try {
+        // await doLogout(token);
+      } catch (error) {
+        console.error("Error during logout:", error);
+      }
+
+      setIsAuthenticated(false);
+      setAuthData(null);
+      setUserDetails(null); // Clear the user details on logout
+      eraseCookie("accessToken");
+      eraseCookie("expires");
+
+      toast.success("Đăng xuất thành công", { removeDelay: 2500 });
+      navigate("/");
     }
-    setIsAuthenticated(false);
-    setAuthData(null);
-    setUserDetails(null); // Clear the user details on logout
-    eraseCookie("accessToken");
-    eraseCookie("expires");
-    toast.success("Đăng xuất thành công", { removeDelay: 2500 });
-    navigate("/");
   };
 
-  const getToken = () => getCookie("accessToken");
+  const getToken = () => {
+    // Check if token is valid before returning it
+    if (isAuthenticated && checkTokenExpiration()) {
+      return getCookie("accessToken");
+    }
+    return null;
+  };
 
   return (
     <AuthContext.Provider

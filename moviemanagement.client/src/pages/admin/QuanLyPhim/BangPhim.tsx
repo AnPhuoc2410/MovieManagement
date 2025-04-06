@@ -5,6 +5,7 @@ import ManagementTable, {
 } from "../../../components/shared/ManagementTable";
 import { QuanLyPhimColumn } from "../../../types/movie.types";
 import { useNavigate } from "react-router";
+import { t } from "i18next";
 
 const FilmTable: React.FC<{
   data: QuanLyPhimColumn[];
@@ -15,27 +16,27 @@ const FilmTable: React.FC<{
   const columns: ColumnDef<QuanLyPhimColumn>[] = [
     {
       field: "movieId",
-      headerName: "Mã Phim",
+      headerName: t("admin.movie_management.column.movie_id"),
     },
     {
       field: "name",
-      headerName: "Tên Phim",
+      headerName: t("admin.movie_management.column.movie_name"),
     },
     {
       field: "postDate",
-      headerName: "Ngày khởi chiếu",
+      headerName: t("admin.movie_management.column.showtime"),
     },
     {
       field: "director",
-      headerName: "Hãng phim",
+      headerName: t("admin.movie_management.column.director"),
     },
     {
       field: "duration",
-      headerName: "Thời lượng",
+      headerName: t("admin.movie_management.column.duration"),
     },
     {
       field: "version",
-      headerName: "Phiên bản",
+      headerName: t("admin.movie_management.column.version"),
     },
   ];
 
@@ -57,7 +58,7 @@ const FilmTable: React.FC<{
             textAlign: "left",
           }}
         >
-          Sửa thông tin phim
+          {t("admin.movie_management.update")}
         </Typography>
 
         <Button
@@ -70,7 +71,7 @@ const FilmTable: React.FC<{
             navigate("/admin/ql-phim/them-phim");
           }}
         >
-          Thêm phim
+          {t("admin.movie_management.add")}
         </Button>
       </Box>
 
@@ -80,7 +81,7 @@ const FilmTable: React.FC<{
         onEdit={onEdit}
         actionColumn={{
           align: "center",
-          headerName: "Hành động",
+          headerName: t("admin.movie_management.column.action"),
           width: "120px",
         }}
       />

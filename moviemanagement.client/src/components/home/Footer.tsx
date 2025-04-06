@@ -1,12 +1,4 @@
-import {
-  Box,
-  Typography,
-  Button,
-  Grid,
-  Link,
-  Container,
-  IconButton,
-} from "@mui/material";
+import { Box, Typography, Button, Grid, Link, Container, IconButton } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -27,8 +19,7 @@ const Footer: React.FC = () => {
       sx={{
         position: "relative",
         zIndex: 1,
-        background:
-          "linear-gradient(to right, rgba(74, 20, 140, 0.9), rgba(235, 195, 50, 0.9))",
+        background: "linear-gradient(to right, rgba(74, 20, 140, 0.9), rgba(235, 195, 50, 0.9))",
         backdropFilter: "blur(8px)",
         color: "white",
         padding: { xs: "20px 10px", sm: "30px 15px", md: "40px 20px" },
@@ -42,11 +33,7 @@ const Footer: React.FC = () => {
       }}
     >
       <Container maxWidth="lg">
-        <Grid
-          container
-          spacing={{ xs: 2, sm: 3, md: 4 }}
-          justifyContent="space-between"
-        >
+        <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} justifyContent="space-between">
           {/* Brand Section */}
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h5" fontWeight="bold" gutterBottom>
@@ -76,8 +63,7 @@ const Footer: React.FC = () => {
                   content: '""',
                   position: "absolute",
                   inset: 0,
-                  background:
-                    "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                  background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
                   transform: "translateX(-100%)",
                   transition: "transform 0.5s ease-in-out",
                   zIndex: 0,
@@ -119,8 +105,7 @@ const Footer: React.FC = () => {
                   content: '""',
                   position: "absolute",
                   inset: 0,
-                  background:
-                    "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
+                  background: "linear-gradient(to right, #e67e22,rgb(77, 91, 185))",
                   transform: "translateX(-100%)",
                   transition: "transform 0.5s ease-in-out",
                   zIndex: 0,
@@ -164,37 +149,22 @@ const Footer: React.FC = () => {
               </Typography>
               {["login", "register", "membership"].map((item) => (
                 <Typography key={item} variant="body2" gutterBottom>
-                  <Link
-                    href="#"
-                    color="inherit"
-                    sx={{ textDecoration: "none" }}
-                  >
+                  <Link href="#" color="inherit" sx={{ textDecoration: "none" }}>
                     {t(`footer.account.${item}`)}
                   </Link>
                 </Typography>
               ))}
 
-              <Typography
-                variant="h6"
-                fontWeight="bold"
-                gutterBottom
-                sx={{ mt: 3 }}
-              >
+              <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mt: 3 }}>
                 {t("footer.movies.title")}
               </Typography>
-              {["now_showing", "coming_soon", "special_screening"].map(
-                (item) => (
-                  <Typography key={item} variant="body2" gutterBottom>
-                    <Link
-                      href="#"
-                      color="inherit"
-                      sx={{ textDecoration: "none" }}
-                    >
-                      {t(`footer.movies.${item}`)}
-                    </Link>
-                  </Typography>
-                ),
-              )}
+              {["now_showing", "coming_soon", "special_screening"].map((item) => (
+                <Typography key={item} variant="body2" gutterBottom>
+                  <Link href="#" color="inherit" sx={{ textDecoration: "none" }}>
+                    {t(`footer.movies.${item}`)}
+                  </Link>
+                </Typography>
+              ))}
             </Grid>
           )}
           {/* Theaters Section */}
@@ -202,13 +172,7 @@ const Footer: React.FC = () => {
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               {t("footer.theaters.title")}
             </Typography>
-            {[
-              "all_theaters",
-              "quoc_thanh",
-              "hai_ba_trung",
-              "binh_duong",
-              "da_lat",
-            ].map((item) => (
+            {["all_theaters", "quoc_thanh", "hai_ba_trung", "binh_duong", "da_lat"].map((item) => (
               <Typography key={item} variant="body2" gutterBottom>
                 <Link href="#" color="inherit" sx={{ textDecoration: "none" }}>
                   {t(`footer.theaters.${item}`)}
@@ -223,16 +187,37 @@ const Footer: React.FC = () => {
             </Typography>
             {["terms", "privacy", "faq", "about_us", "contact"].map((item) => (
               <Typography key={item} variant="body2" gutterBottom>
-                <Link href="#" color="inherit" sx={{ textDecoration: "none" }}>
-                  {t(`footer.legal.${item}`)}
-                </Link>
+                {item === "about_us" ? (
+                  <Link
+                    component="span"
+                    onClick={() => navigate("/about-us")}
+                    color="inherit"
+                    sx={{
+                      textDecoration: "none",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {t(`footer.legal.${item}`)}
+                  </Link>
+                ) : (
+                  <Link
+                    href="#"
+                    color="inherit"
+                    sx={{
+                      textDecoration: "none",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {t(`footer.legal.${item}`)}
+                  </Link>
+                )}
               </Typography>
             ))}
           </Grid>
         </Grid>
 
         {/* Map */}
-        <Box
+        {/* <Box
           sx={{
             mt: { xs: 3, sm: 4, md: 5 },
             textAlign: "center",
@@ -256,7 +241,7 @@ const Footer: React.FC = () => {
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
-        </Box>
+        </Box> */}
 
         {/* Copyright */}
         <Box

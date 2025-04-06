@@ -1,141 +1,80 @@
-import React from "react";
-import MovieList from "../../components/Movie/MovieList";
-import { Box, Container } from "@mui/material";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
+import React, { useState, useEffect } from "react";
+import { Box, Container, Typography, Grid, Button, Chip, Modal, Pagination } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Header from "../../components/home/Header";
 import Footer from "../../components/home/Footer";
 import Aurora from "../../components/shared/Aurora";
 import ScrollToTop from "../../components/common/ScrollToTop";
-
-const slides = [
-  "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215x365.png",
-  "https://api-website.cinestar.com.vn/media/MageINIC/bannerslider/1215wx365h_4_.jpg",
-  "https://images.squarespace-cdn.com/content/v1/51b3dc8ee4b051b96ceb10de/a528ec50-cc70-46f0-a2e3-31b279594daa/spider-man-across-the-spider-verse-banner-features-an-epic-number-of-spider-people.jpg?format=1500w",
-  "https://www.shmoti.com/ImageFiles/Image_555x271/20250211_Banner_CaptainAmericaSE20250211.jpg",
-];
-
-const nowShowingMovies = [
-  {
-    title: "Kimi wo Aishita Hitori no Boku e (T16)",
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx139311-5iHY459iwQ46.jpg",
-  },
-  {
-    title: "Boku ga Aishita Subete no Kimi e (T16)",
-    image:
-      "https://screenbox.in/wp-content/uploads/2023/06/cropped-sgechfsdhgxcfghvcbgcdgsbu-jpeg.webp",
-  },
-  {
-    title: "Tenki No Ko (T16)",
-    image:
-      "https://www.wheninmanila.com/wp-content/uploads/2019/06/D7rQ8bGX4AYrtLJ.jpeg",
-  },
-  {
-    title: "Kimi no Na wa (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP._rW1f9vUm1sm5uVtobKvYQHaK3?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Suzume no Tojimari (T16)",
-    image: "https://www.posterhub.com.sg/images/detailed/134/80_1A_1B.jpg",
-  },
-  {
-    title: "Spirited Away (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP.uK0O7q8JA30sKMuwOrAsdQHaLN?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Pokemon Collection 22 (T16)",
-    image: "https://i.ebayimg.com/images/g/la0AAOSwGKJf8y5s/s-l1600.jpg",
-  },
-  {
-    title: "Pokemon Heros The Movie (T16)",
-    image:
-      "https://th.bing.com/th/id/R.3689c865e31936ceee7588a094638911?rik=fXjX%2ferUrFzFRA&pid=ImgRaw&r=0",
-  },
-  {
-    title: "Kimi wo Aishita Hitori no Boku e (T16)",
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx139311-5iHY459iwQ46.jpg",
-  },
-  {
-    title: "Boku ga Aishita Subete no Kimi e (T16)",
-    image:
-      "https://screenbox.in/wp-content/uploads/2023/06/cropped-sgechfsdhgxcfghvcbgcdgsbu-jpeg.webp",
-  },
-  {
-    title: "Tenki No Ko (T16)",
-    image:
-      "https://www.wheninmanila.com/wp-content/uploads/2019/06/D7rQ8bGX4AYrtLJ.jpeg",
-  },
-  {
-    title: "Kimi no Na wa (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP._rW1f9vUm1sm5uVtobKvYQHaK3?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Suzume no Tojimari (T16)",
-    image: "https://www.posterhub.com.sg/images/detailed/134/80_1A_1B.jpg",
-  },
-  {
-    title: "Spirited Away (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP.uK0O7q8JA30sKMuwOrAsdQHaLN?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Pokemon Collection 22 (T16)",
-    image: "https://i.ebayimg.com/images/g/la0AAOSwGKJf8y5s/s-l1600.jpg",
-  },
-  {
-    title: "Pokemon Heros The Movie (T16)",
-    image:
-      "https://th.bing.com/th/id/R.3689c865e31936ceee7588a094638911?rik=fXjX%2ferUrFzFRA&pid=ImgRaw&r=0",
-  },
-  {
-    title: "Kimi wo Aishita Hitori no Boku e (T16)",
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx139311-5iHY459iwQ46.jpg",
-  },
-  {
-    title: "Boku ga Aishita Subete no Kimi e (T16)",
-    image:
-      "https://screenbox.in/wp-content/uploads/2023/06/cropped-sgechfsdhgxcfghvcbgcdgsbu-jpeg.webp",
-  },
-  {
-    title: "Tenki No Ko (T16)",
-    image:
-      "https://www.wheninmanila.com/wp-content/uploads/2019/06/D7rQ8bGX4AYrtLJ.jpeg",
-  },
-  {
-    title: "Kimi no Na wa (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP._rW1f9vUm1sm5uVtobKvYQHaK3?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Suzume no Tojimari (T16)",
-    image: "https://www.posterhub.com.sg/images/detailed/134/80_1A_1B.jpg",
-  },
-  {
-    title: "Spirited Away (T16)",
-    image:
-      "https://th.bing.com/th/id/OIP.uK0O7q8JA30sKMuwOrAsdQHaLN?rs=1&pid=ImgDetMain",
-  },
-  {
-    title: "Pokemon Collection 22 (T16)",
-    image: "https://i.ebayimg.com/images/g/la0AAOSwGKJf8y5s/s-l1600.jpg",
-  },
-  {
-    title: "Pokemon Heros The Movie (T16)",
-    image:
-      "https://th.bing.com/th/id/R.3689c865e31936ceee7588a094638911?rik=fXjX%2ferUrFzFRA&pid=ImgRaw&r=0",
-  },
-];
+import Loader from "../../components/shared/Loading";
+import api from "../../apis/axios.config";
+import { format, parseISO } from "date-fns";
+import PlayCircleOutlineOutlinedIcon from "@mui/icons-material/PlayCircleOutlineOutlined";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import ScrollFloat from "../../components/shared/ScrollFloat";
+import NowShowingMovies from "../../components/Movie/NowShowingMovies";
 
 const NowShowingMoviesPage: React.FC = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [nowShowingMovies, setNowShowingMovies] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [openTrailer, setOpenTrailer] = useState(false);
+  const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const moviesPerPage = 8;
+
+  // For API pagination
+  const apiPage = 0;
+  const apiPageSize = 100; // Fetch more to handle client-side pagination
+
+  useEffect(() => {
+    const fetchNowShowingMovies = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get(
+          `/movie/showing/page/${apiPage}/size/${apiPageSize}`
+        );
+        console.log("Now showing movies:", response.data);
+        setNowShowingMovies(response.data);
+      } catch (error) {
+        console.error("Error fetching now showing movies:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNowShowingMovies();
+  }, []);
+
+  const handleOpenTrailer = (url: string) => {
+    let embedUrl = url.replace("youtu.be", "youtube.com/embed");
+    embedUrl = embedUrl.replace("watch?v=", "embed/");
+    embedUrl = embedUrl + "?autoplay=1";
+    setTrailerUrl(embedUrl);
+    setOpenTrailer(true);
+  };
+
+  const handleCloseTrailer = () => {
+    setOpenTrailer(false);
+    setTrailerUrl(null);
+  };
+
+  // Pagination logic
+  const pageCount = Math.ceil(nowShowingMovies.length / moviesPerPage);
+  const indexOfLastMovie = currentPage * moviesPerPage;
+  const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
+  const currentMovies = nowShowingMovies.slice(indexOfFirstMovie, indexOfLastMovie);
+
+  const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <Box
       sx={{
@@ -182,26 +121,7 @@ const NowShowingMoviesPage: React.FC = () => {
 
       <Header />
 
-      <Container
-        maxWidth="xl"
-        sx={{
-          pt: { xs: "64px", sm: "72px", md: "80px" },
-          pb: { xs: 4, sm: 6, md: 8 },
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        {/* Movie List */}
-        <Box sx={{ position: "relative", zIndex: 1 }}>
-          <MovieList
-            movies={nowShowingMovies}
-            title="PHIM ĐANG CHIẾU"
-            buttonText="ĐẶT VÉ"
-          />
-        </Box>
-      </Container>
-
-      <ScrollToTop />
+      <NowShowingMovies />
       <Footer />
     </Box>
   );

@@ -3,7 +3,19 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // or .bubble.css
 import { Box, Typography } from "@mui/material";
 
-function TextEdit({ value, onChange, error }) {
+interface TextEditProps {
+  value: string;
+  onChange: (val: string) => void;
+  error?: string;
+  readOnly?: boolean; // Add readOnly prop
+}
+
+export default function TextEdit({
+  value,
+  onChange,
+  error,
+  readOnly = false, // Default to false
+}: TextEditProps) {
   return (
     <Box>
       <ReactQuill
@@ -19,6 +31,7 @@ function TextEdit({ value, onChange, error }) {
             ["clean"],
           ],
         }}
+        readOnly={readOnly} // Apply the readOnly attribute
       />
       {error && (
         <Typography color="error" sx={{ mt: 1, fontSize: "0.875rem" }}>
@@ -28,5 +41,3 @@ function TextEdit({ value, onChange, error }) {
     </Box>
   );
 }
-
-export default TextEdit;
