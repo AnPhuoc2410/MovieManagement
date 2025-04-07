@@ -6,25 +6,24 @@ export type SeatType = {
   isActive: boolean;
 };
 
-export type SeatTypeCompact = Pick<SeatType, "seatTypeId" | "quantity" | "typeName" | "price" | "quantity">;
 
 export type MovieSeatState = {
   movieId?: string;
   showTimeId: string;
   selectedDate: string;
   selectedTime: string;
-  tickets: SeatTypeCompact[];
+  tickets: SeatType[];
   movieData: {
     movieId: string;
     movieName: string;
     image: string;
     postDate: string;
-    fromDate: string; // Same as above
-    toDate: string; // Same as above
+    fromDate: string;
+    toDate: string;
     actors: string;
     director: string;
     rating: string;
-    duration: number; // In minutes
+    duration: number;
     version: string;
     trailer: string;
     content: string;
@@ -32,6 +31,6 @@ export type MovieSeatState = {
     categories: {
       categoryId: string;
       name: string;
-    }[]; // Array of category objects
+    }[];
   };
 };

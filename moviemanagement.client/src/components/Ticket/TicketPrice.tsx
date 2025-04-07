@@ -1,20 +1,17 @@
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import api from "../../apis/axios.config";
-import { SeatType, SeatTypeCompact } from "../../types/seattype.types";
-import { Box, Button, IconButton, Typography, Card, CardContent } from "@mui/material";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/pagination";
-import { Pagination } from "swiper/modules";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { Box, Button, Card, CardContent, IconButton, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import "swiper/css";
+import "swiper/css/pagination";
+import api from "../../apis/axios.config";
+import { useAuth } from "../../contexts/AuthContext";
+import { SeatType } from "../../types/seattype.types";
 
 interface TicketPriceProps {
-  onNext?: (selectedSeats: SeatTypeCompact[]) => void;
+  onNext?: (selectedSeats: SeatType[]) => void;
 }
 
 const currencyFormatMap: Record<string, { locale: string; currency: string }> = {
@@ -97,17 +94,11 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
   const handleNext = () => {
     const selectedSeats = seatTypes.filter((seat) => seat.quantity > 0);
 
-    const seatDetails: SeatTypeCompact[] = selectedSeats.map(({ seatTypeId, typeName, quantity }: SeatType) => ({
-      seatTypeId,
-      typeName,
-      quantity,
-    }));
+    console.log(`Selected Seats: ${JSON.stringify(selectedSeats, null, 2)}`);
 
-    console.log(`Selected Seats: ${JSON.stringify(seatDetails, null, 2)}`);
+    if (!isAuthenticated) localStorage.setItem("seatDetails", JSON.stringify(selectedSeats));
 
-    if (!isAuthenticated) localStorage.setItem("seatDetails", JSON.stringify(seatDetails));
-
-    if (onNext) onNext(seatDetails);
+    if (onNext) onNext(selectedSeats);
   };
 
   // If user is not authenticated, show login prompt

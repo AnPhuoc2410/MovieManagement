@@ -9,14 +9,14 @@ import { useSignalR } from "../../contexts/SignalRContext";
 import Loader from "../shared/Loading";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTranslation } from "react-i18next";
-import { SeatTypeCompact } from "../../types/seattype.types";
+import { SeatType } from "../../types/seattype.types";
 
 interface SeatProps {
   showTimeId: string;
   selectedSeats: SelectedSeat[];
   setSelectedSeats: React.Dispatch<React.SetStateAction<SelectedSeat[]>>;
   groupConnected: boolean;
-  userTickets: SeatTypeCompact[];
+  userTickets: SeatType[];
 }
 
 const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelectedSeats, groupConnected, userTickets = [] }) => {

@@ -279,53 +279,6 @@ const Payment: React.FC = () => {
             minHeight: "100vh",
           }}
         >
-          {/* StepTracker Sidebar (Desktop) */}
-          <Box
-            sx={{
-              display: { xs: "none", md: "block" },
-              position: "sticky",
-              top: "100px",
-              alignSelf: "flex-start",
-              height: "fit-content",
-              width: "250px",
-              flexShrink: 0,
-            }}
-          >
-            {/* Countdown Timer Banner */}
-            {lastSelectionTime && (
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  mb: 3,
-                }}
-              >
-                <Paper
-                  elevation={3}
-                  sx={{
-                    p: 2,
-                    backgroundColor: "rgba(27, 38, 53, 0.8)",
-                    borderRadius: 2,
-                  }}
-                >
-                  <Typography variant="subtitle1" align="center" sx={{ mb: 1, color: "#fbc02d" }}>
-                    {t("payment.timer")}
-                  </Typography>
-                  <SeatCountdown
-                    seatId="payment-timer"
-                    seatName="Timer"
-                    startTime={lastSelectionTime}
-                    resetTrigger={resetCounter}
-                    onTimeout={() => {
-                      toast.error(t("toast.error.seat.remainder"));
-                      navigate(`/ticket/${movieData.movieId}`, { replace: true });
-                    }}
-                  />
-                </Paper>
-              </Box>
-            )}
-            <StepTracker currentStep={3} />
-          </Box>
 
           {/* Main Content */}
           <Box
@@ -337,9 +290,9 @@ const Payment: React.FC = () => {
               pb: 4,
             }}
           >
-            {/* StepTracker (Mobile) */}
+            {/* Mobile elements (Countdown and StepTracker) */}
             <Box sx={{ display: { xs: "block", md: "none" }, mb: 2 }}>
-              {/* Countdown Timer Banner */}
+              {/* Countdown Timer Banner (Mobile) */}
               {lastSelectionTime && (
                 <Box
                   sx={{
@@ -354,13 +307,14 @@ const Payment: React.FC = () => {
                       p: 2,
                       backgroundColor: "rgba(27, 38, 53, 0.8)",
                       borderRadius: 2,
+                      width: "100%",
                     }}
                   >
                     <Typography variant="subtitle1" align="center" sx={{ mb: 1, color: "#fbc02d" }}>
                       {t("payment.timer")}
                     </Typography>
                     <SeatCountdown
-                      seatId="payment-timer"
+                      seatId="payment-timer-mobile"
                       seatName="Timer"
                       startTime={lastSelectionTime}
                       resetTrigger={resetCounter}
@@ -405,13 +359,15 @@ const Payment: React.FC = () => {
                   <Box
                     component="img"
                     src={movieData?.image}
-                    alt={movieData?.movieName || t("payment.movie.poster")}
+                    alt={movieData?.movieName}
                     sx={{
                       width: "100%",
-                      borderRadius: 2,
+                      height: "auto",
+                      borderRadius: 0.5,
+                      border: "1px solid",
+                      borderColor: "#f1f1f1",
+                      boxShadow: "0 0 20px rgba(0,0,0,0.5)",
                       objectFit: "cover",
-                      maxHeight: 500,
-                      mb: 2,
                     }}
                   />
                 </Paper>
@@ -772,6 +728,67 @@ const Payment: React.FC = () => {
               </Grid>
             </Grid>
           </Box>
+          {/* Right Sidebar - Combined Countdown Timer and StepTracker */}
+          <Box
+          sx={{
+            display: { xs: "none", md: "block" },
+            position: "relative",
+            alignSelf: "flex-start",
+            width: "15%",
+            height: "100%",
+            flexShrink: 0,
+            mt: { xs: 2, sm: 3, md: 4 },
+          }}
+        >
+          {/* Countdown Timer - Positioned above StepTracker */}
+          {lastSelectionTime && (
+            <Paper
+              elevation={3}
+              sx={{
+                p: 2,
+                backgroundColor: "rgba(27, 38, 53, 0.8)",
+                borderRadius: 2,
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                mb: 3,
+                position: "relative",
+                zIndex: 2,
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                align="center"
+                sx={{ color: "#fbc02d" }}
+              >
+                {t("payment.timer")}
+              </Typography>
+              <SeatCountdown
+                seatId="payment-timer"
+                seatName="Timer"
+                startTime={lastSelectionTime}
+                resetTrigger={resetCounter}
+                onTimeout={() => {
+                  toast.error(t("toast.error.seat.remainder"));
+                  navigate(`/ticket/${movieData.movieId}`, { replace: true });
+                }}
+              />
+            </Paper>
+          )}
+
+          {/* Space reserved for StepTracker */}
+          <Box
+            sx={{
+              width: "100%",
+              height: "200px",
+              position: "relative",
+            }}
+          >
+            <StepTracker currentStep={3} />
+          </Box>
+        </Box>
+
         </Box>
       </Container>
       <Footer />

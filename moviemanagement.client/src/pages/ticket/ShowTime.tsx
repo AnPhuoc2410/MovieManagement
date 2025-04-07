@@ -8,7 +8,7 @@ import ShowTimeCinema from "../../components/Ticket/ShowTimeCinema";
 import StepTracker from "../../components/Ticket/StepTracker";
 import TicketPrice from "../../components/Ticket/TicketPrice";
 import ShowTimeLayout from "../../layouts/ShowTimeLayout/ShowTimeLayout";
-import { MovieSeatState, SeatType, SeatTypeCompact } from "../../types/seattype.types";
+import { MovieSeatState, SeatType } from "../../types/seattype.types";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Ticket: React.FC = () => {
@@ -44,7 +44,7 @@ const Ticket: React.FC = () => {
   }, []);
 
   const handleTicketSelection = useCallback(
-    (tickets: SeatTypeCompact[]) => {
+    (tickets: SeatType[]) => {
       if (!selectedTime) {
         toast.error(t("toast.error.showtime.selection"));
         return;
