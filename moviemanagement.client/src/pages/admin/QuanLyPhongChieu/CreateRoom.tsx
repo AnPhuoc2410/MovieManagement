@@ -1,28 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  TextField, 
-  Button, 
-  Box, 
-  Typography, 
-  Container, 
-  Paper, 
-  Grid, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem,
+import TheaterComedyIcon from '@mui/icons-material/TheaterComedy';
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
   Snackbar,
-  Alert
+  TextField,
+  Typography
 } from '@mui/material';
-import axios from 'axios';
-import AddIcon from '@mui/icons-material/Add';
-import TheaterComedyIcon from '@mui/icons-material/TheaterComedy';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { useQueryClient } from 'react-query';
+import { useNavigate } from 'react-router-dom';
 import api from '../../../apis/axios.config';
 
 interface MovieTheater {
@@ -34,7 +32,7 @@ interface MovieTheater {
 const convertToASCII = (text: string): string => {
   const vietnameseChars = 'àáâãäåạảấầẩẫậắằẳẵặẹẻẽềềểễệìíîïịỉĩòóôõöøọỏốồổỗộớờởỡợụủũưừửữựỳýỵỷỹđÀÁÂÃÄÅẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂỄỆÌÍÎÏỊỈĨÒÓÔÕÖØỌỎỐỒỔỖỘỚỜỞỠỢỤỦŨƯỪỬỮỰỲÝỴỶỸĐ';
   const asciiChars = 'aaaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiioooooooooooooooooouuuuuuuuyyyyydAAAAAAAAAAAAAAAAAAAAAEEEEEEEEEEEEIIIIIIOOOOOOOOOOOOOOOOOOUUUUUUUUYYYYYD';
-  
+
   let result = '';
   for (let i = 0; i < text.length; i++) {
     const charIndex = vietnameseChars.indexOf(text[i]);
@@ -128,11 +126,11 @@ const CreateRoom: React.FC = () => {
           severity: 'success'
         });
         setIsDialogOpen(false);
-        
+
         // Invalidate the rooms data cache so it will refresh on return
         queryClient.invalidateQueries('PhongChieuData');
         queryClient.invalidateQueries('rooms');
-        
+
         // Navigate back to the room list after successful creation
         setTimeout(() => {
           navigate('/admin/ql-phong-chieu', { state: { refresh: true } });
@@ -183,7 +181,7 @@ const CreateRoom: React.FC = () => {
           Return to Room List
         </Button>
       </Box>
-      
+
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
@@ -284,9 +282,9 @@ const CreateRoom: React.FC = () => {
       </Dialog>
 
       {/* Snackbar for notifications */}
-      <Snackbar 
-        open={snackbar.open} 
-        autoHideDuration={5000} 
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={5000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
@@ -298,4 +296,4 @@ const CreateRoom: React.FC = () => {
   );
 };
 
-export default CreateRoom; 
+export default CreateRoom;

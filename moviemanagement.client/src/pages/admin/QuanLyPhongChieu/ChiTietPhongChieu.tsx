@@ -51,15 +51,7 @@ import toast from "react-hot-toast";
 import AddIcon from "@mui/icons-material/Add";
 import api from "../../../apis/axios.config";
 import { t } from "i18next";
-
-// Define the SeatType interface if not already defined elsewhere
-interface SeatType {
-  seatTypeId: string;
-  typeName: string;
-  price: number;
-  quantity?: number;
-  isActive?: boolean;
-}
+import { SeatType } from "../../../types/seattype.types";
 
 // Define seat status enum
 enum SeatStatus {
@@ -332,7 +324,7 @@ const ChiTietPhongChieu = () => {
     try {
       // Call the API to add a new row
       const response = await api.post(
-        `seat/room/${roomId}/row?seatTypeId=${seatTypeId}`,
+        `seat/row?roomId=${roomId}&seatTypeId=${seatTypeId}`,
         {
           headers: {
             "accept": "text/plain"
@@ -371,7 +363,7 @@ const ChiTietPhongChieu = () => {
     try {
       // Call the API to add a new column
       const response = await api.post(
-        `seat/room/${roomId}/column?seatTypeId=${seatTypeId}`,
+        `seat/column?roomId=${roomId}&seatTypeId=${seatTypeId}`,
         {
           headers: {
             "accept": "text/plain"

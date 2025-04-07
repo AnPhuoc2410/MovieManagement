@@ -1,44 +1,37 @@
-import {
-  Typography,
-  Grid,
-  Card,
-  Box,
-  IconButton,
-  Divider,
-  Paper,
-  Container,
-  Button,
-  Tooltip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-  CircularProgress,
-  Alert,
-  TextField,
-  InputAdornment
-} from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Room as RoomType } from "../../../types/room.types";
-import EventSeatIcon from "@mui/icons-material/EventSeat";
-import EditIcon from "@mui/icons-material/Edit";
-import TheaterComedyIcon from "@mui/icons-material/TheaterComedy";
-import ChairIcon from '@mui/icons-material/Chair';
 import AddIcon from '@mui/icons-material/Add';
+import ChairIcon from '@mui/icons-material/Chair';
 import DeleteIcon from '@mui/icons-material/Delete';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import EventSeatIcon from "@mui/icons-material/EventSeat";
+import TheaterComedyIcon from "@mui/icons-material/TheaterComedy";
 import TheatersIcon from '@mui/icons-material/Theaters';
-import { useState, useEffect } from "react";
-import axios from "axios";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CircularProgress,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  Grid,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  SelectChangeEvent,
+  TextField,
+  Typography
+} from "@mui/material";
+import { t } from "i18next";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useQuery, useQueryClient } from "react-query";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../../apis/axios.config";
-import { t } from "i18next";
 
 export interface Room {
   roomId: string;
