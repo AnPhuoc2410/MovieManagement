@@ -75,6 +75,9 @@ const QuanLyPhongChieu: React.FC = () => {
       console.error("Query error:", error);
     },
     retry: 1,
+    // Enable auto-refresh with React Query's refetch interval
+    refetchInterval: 30000, // Refresh data every 30 seconds
+    refetchOnWindowFocus: true, // Also refresh when the window regains focus
   });
 
   // Handle refresh based on location state
@@ -95,6 +98,17 @@ const QuanLyPhongChieu: React.FC = () => {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, queryClient, refetch, navigate]);
+
+  // Initial data load
+  useEffect(() => {
+    // Initial data fetch when component mounts
+    refetch();
+
+    // Return cleanup function
+    return () => {
+      // Cancel any pending requests when component unmounts
+    };
+  }, [refetch]);
 
   const handleNavigateToAddShowtime = () => {
     navigate("/admin/ql-thoi-gian-chieu/them-thoi-gian-chieu");

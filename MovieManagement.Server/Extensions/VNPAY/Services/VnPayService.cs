@@ -4,6 +4,12 @@ using MovieManagement.Server.Extensions.VNPAY.Enums;
 using MovieManagement.Server.Extensions.VNPAY.Models;
 using MovieManagement.Server.Extensions.VNPAY.Utilities;
 using MovieManagement.Server.Services.BillService;
+using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Models.Enums;
+using MovieManagement.Server.Data;
+using MovieManagement.Server.Exceptions;
+using MovieManagement.Server.Services.TicketDetailServices;
+using MovieManagement.Server.Services.EmailService;
 
 namespace MovieManagement.Server.Extensions.VNPAY.Services
 {
@@ -16,6 +22,17 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
         private string _version;
         private string _orderType;
         private readonly IBillService _billService;
+        private readonly ITicketDetailService _ticketDetailService;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailService _emailService;
+
+        public VnPayService(IBillService billService, IUnitOfWork unitOfWork, ITicketDetailService ticketDetailService, IEmailService emailService)
+        {
+            _billService = billService;
+            _unitOfWork = unitOfWork;
+            _ticketDetailService = ticketDetailService;
+            _emailService = emailService;
+        }
 
         public void Initialize(string tmnCode,
             string hashSecret,
@@ -39,24 +56,51 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
         /// </summary>
         /// <param name="request">Thông tin cần có để tạo yêu cầu</param>
         /// <returns></returns>
-        public string GetPaymentUrl(PaymentRequest request)
+        public async Task<string> GetPaymentUrl(PaymentRequest request, Guid userId, BillRequest billRequest)
         {
             EnsureParametersBeforePayment();
 
             if (request.Money < 5000 || request.Money > 1000000000)
-            {
                 throw new ArgumentException("Số tiền thanh toán phải nằm trong khoảng 5.000 (VND) đến 1.000.000.000 (VND).");
-            }
 
             if (string.IsNullOrEmpty(request.Description))
-            {
                 throw new ArgumentException("Không được để trống mô tả giao dịch.");
-            }
 
             if (string.IsNullOrEmpty(request.IpAddress))
-            {
                 throw new ArgumentException("Không được để trống địa chỉ IP.");
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) ?? throw new NotFoundException("User not found.");
+            request.Description += $" - {user.UserId}";
+
+            decimal totalMoney = 0;
+
+            string ticketIds = string.Empty;
+
+            foreach (var id in billRequest.Tickets)
+            {
+                var ticket = await _unitOfWork.TicketDetailRepository.GetTicketInfo(id) 
+                    ?? throw new NotFoundException("Ticket not found.");
+                ticketIds += $" - {id}";
+                totalMoney += ticket.Seat.SeatType.Price;
             }
+
+            if (billRequest.PromotionId.HasValue)
+            {
+                var promotion = await _unitOfWork.PromotionRepository.GetByIdAsync(billRequest.PromotionId.Value)
+                    ?? throw new NotFoundException("Promotion not found.");
+                totalMoney -= promotion.Discount;
+            }
+
+            if (request.Money != totalMoney)
+                throw new ArgumentException("Số tiền thanh toán không chính xác.");
+
+            billRequest.Amount = totalMoney;
+            billRequest.TotalTicket = billRequest.Tickets.Count;
+
+            var bill = await _billService.CreateBillAsync(userId, billRequest, request.PaymentId);
+
+            request.Description += $" - {bill.BillId}";
+            request.Description += ticketIds;
 
             var helper = new PaymentHelper();
             helper.AddRequestData("vnp_Version", _version);
@@ -72,6 +116,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             helper.AddRequestData("vnp_OrderType", _orderType);
             helper.AddRequestData("vnp_ReturnUrl", _callbackUrl);
             helper.AddRequestData("vnp_TxnRef", request.PaymentId.ToString());
+
 
             return helper.GetPaymentUrl(_baseUrl, _hashSecret);
         }
@@ -121,7 +166,7 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
             var responseCode = (ResponseCode)sbyte.Parse(vnp_ResponseCode);
             var transactionStatusCode = (TransactionStatusCode)sbyte.Parse(vnp_TransactionStatus);
 
-            return new PaymentResult
+            var paymentResult = new PaymentResult
             {
                 PaymentId = long.Parse(vnp_TxnRef),
                 VnpayTransactionId = long.Parse(vnp_TransactionNo),
@@ -152,6 +197,17 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
                         : vnp_BankTranNo,
                 }
             };
+
+            if (paymentResult.IsSuccess)
+            {
+                HandleSuccessfulPayment(paymentResult);
+            }
+            else
+            {
+                HandleFailurePayment(paymentResult);
+            }
+
+            return paymentResult;
         }
 
         private void EnsureParametersBeforePayment()
@@ -164,7 +220,41 @@ namespace MovieManagement.Server.Extensions.VNPAY.Services
 
         public void HandleSuccessfulPayment(PaymentResult paymentResult)
         {
-            // Thực hiện hành động sau khi thanh toán thành công tại đây
+            _billService.UpdateBill(GetIndex(paymentResult.Description, 2), BillEnum.BillStatus.Completed);
+            //TODO: HERE CALL TICKETSERVICE TO UPDATE TICKET BillID
+            _ticketDetailService.PurchasedTicket
+                (GetTickets(paymentResult.Description, 3), GetIndex(paymentResult.Description, 2), GetIndex(paymentResult.Description, 1));
+
+            //_emailService.SendEmailReportBill(GetIndex(paymentResult.Description, 2));
+        }
+
+        private Guid GetIndex(string description, int atPos)
+        {
+            var index = description.Split(" - ").ToList();
+            if (Guid.TryParse(index[atPos], out Guid foundGuid))
+            {
+                return foundGuid;
+            }
+            return Guid.Empty;
+        }
+
+        private List<Guid> GetTickets(string description, int index)
+        {
+            var tickets = description.Split(" - ").Skip(index).ToList();
+            List<Guid> ticketIds = new List<Guid>();
+            foreach (var ticket in tickets)
+            {
+                if (Guid.TryParse(ticket, out Guid ticketId))
+                {
+                    ticketIds.Add(ticketId);
+                }
+            }
+            return ticketIds;
+        }
+
+        public async void HandleFailurePayment(PaymentResult paymentResult)
+        {
+            _billService.UpdateBillAsync(GetIndex(paymentResult.Description, 3), BillEnum.BillStatus.Cancelled);
         }
     }
 }

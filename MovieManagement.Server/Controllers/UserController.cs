@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MovieManagement.Server.Data.MetaDatas;
 using MovieManagement.Server.Exceptions;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
-using MovieManagement.Server.Services;
+using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Services.EmailService;
 using MovieManagement.Server.Services.UserService;
 using static MovieManagement.Server.Models.Enums.UserEnum;
 
@@ -14,38 +16,12 @@ namespace MovieManagement.Server.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IEmailService emailService)
         {
             _userService = userService;
-        }
-
-        /// <summary>
-        /// Get All Users
-        /// </summary>
-        /// <remarks>Awesomeness!</remarks>
-        /// <response code="200">Get all users successfully</response>
-        /// <response code="400">Bad request from client side</response>
-        /// <response code="401" >Unauthorized Access</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpGet("all")]
-        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserDto.UserResponse>>),
-            StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<UserDto.UserResponse>>> GetAllUSerAsync()
-        {
-            var users = await _userService.GetAllUsersAsync();
-            return Ok(new ApiResponse<IEnumerable<UserDto.UserResponse>>
-            {
-                Message = "Get all users successfully",
-                StatusCode = 200,
-                IsSuccess = true,
-                Data = users
-            });
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -55,13 +31,13 @@ namespace MovieManagement.Server.Controllers
         /// <response code="400">Bad request from client side</response>
         /// <response code="401" >Unauthorized Access</response>
         /// <response code="500">Internal Server Error</response>
+        [Authorize(Roles = "Member,Employee,Admin")]
         [HttpGet("detail/{userId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDto>> GetUserByIdAsync(Guid userId)
         {
             var user = await _userService.GetUserByIdAsync(userId);
@@ -74,28 +50,23 @@ namespace MovieManagement.Server.Controllers
             });
         }
 
+        /// <summary>
+        /// Get user by specific role     
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        /// <response code="200">Get user by role successfully</response>
+        [Authorize(Roles = "Admin")]
         [HttpGet("role/{role}")]
-        [ProducesResponseType(typeof(ApiResponse<List<UserDto.UserResponse>>),
-            StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserDto.UserResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUserByRoleAsync(Role role)
         {
             var users = await _userService.GetUserByRoleAsync(role);
-            if (users == null)
-            {
-                return NotFound(new ApiResponse<object>
-                {
-                    StatusCode = 404,
-                    Message = "No users found for the specified role.",
-                    IsSuccess = false
-                });
-            }
-
-            return Ok(new ApiResponse<List<UserDto.UserResponse>>
+            return Ok(new ApiResponse<IEnumerable<UserDto.UserResponse>>
             {
                 StatusCode = 200,
                 Message = "Get user by role successfully",
@@ -104,118 +75,120 @@ namespace MovieManagement.Server.Controllers
             });
         }
 
-
-        [HttpGet("page/{page:int}/pageSize/{pageSize:int}")]
-        [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status200OK)]
+        /// <summary>
+        /// Find user by IdCard Or Phone     
+        /// </summary>
+        /// <param name="idCard"></param>
+        /// <param name="phone"></param>
+        /// <response code="200">Find user by IdCard Or Phone successfully</response>
+        [Authorize(Roles = "Admin")]
+        [HttpGet("find")]
+        [ProducesResponseType(typeof(ApiResponse<UserDto.UserResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetPageAsync(int page, int pageSize)
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> FindUserByIdCardOrPhoneAsync([FromQuery] string? idCard,
+            [FromQuery] string? phone)
         {
-            try
+            var user = new List<UserDto.UserResponse>();
+            if (idCard == null)
             {
-                var users = await _userService.GetUserPageAsync(page, pageSize);
-                if (users == null)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "User not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
+                user = await _userService.FindUserByPhone(phone);
+            }
+            else
+            {
+                user = await _userService.FindUserByIdCard(idCard);
+            }
 
-                return Ok(users);
-            }
-            catch (BadRequestException ex)
+            return Ok(new ApiResponse<List<UserDto.UserResponse>>
             {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
+                StatusCode = 200,
+                Message = "Find user by IdCard Or Phone successfully",
+                IsSuccess = true,
+                Data = user
+            });
+        }
+
+        [Authorize(Roles = "Member,Employee,Admin")]
+        [HttpGet("page/{page:int}/limit/{limit:int}")]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetPageAsync(int page, int limit)
+        {
+            var users = await _userService.GetUserPageAsync(page, limit);
+            return Ok(new ApiResponse<IEnumerable<UserDto.UserResponse>>
             {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
+                StatusCode = 200,
+                Message = "Get user by role successfully",
+                IsSuccess = true,
+                Data = users
+            });
+        }
+        [HttpGet("idcard/page/{page:int}/limit/{limit:int}")]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
+            StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
+            StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
+            StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
+            StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<PagingResponse<UserDto.UserResponse>>),
+            StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUsersAsync([FromQuery] int? page,
+            [FromQuery] int? limit, [FromQuery] string idCard)
+        {
+            if (page.HasValue && limit.HasValue)
             {
-                var response = new ApiResponse<object>
+                // Nếu page và limit có giá trị, gọi đến dịch vụ để lấy trang dữ liệu
+                var users = await _userService.GetUserPageAsync(page.Value, limit.Value);
+                return Ok(new ApiResponse<IEnumerable<UserDto.UserResponse>>
                 {
-                    StatusCode = 500,
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
+                    StatusCode = 200,
+                    Message = "Get paged users successfully",
+                    IsSuccess = true,
+                    Data = users
+                });
+            }
+            else
+            {
+                // Nếu không có giá trị page và limit, lấy tất cả người dùng
+                var users = await _userService.GetAllUsersAsync();
+                return Ok(new ApiResponse<IEnumerable<UserDto.UserResponse>>
+                {
+                    StatusCode = 200,
+                    Message = "Get all users successfully",
+                    IsSuccess = true,
+                    Data = users
+                });
             }
         }
 
+        /// <summary>
+        /// Update user by id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <response code="200">User updated successfully</response>
+        [Authorize(Roles = "Member,Employee,Admin")]
         [HttpPatch("{userId:guid}")]
         [ProducesResponseType(typeof(ApiResponse<UserDto.UpdateRequest>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserDto>> UpdateUserAsync(Guid userId,
-            UserDto.UpdateRequest updateReq)
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserDto>> UpdateUserAsync(Guid userId, UserDto.UpdateRequest updateReq)
         {
-            try
+            await _userService.UpdateUserAsync(userId, updateReq);
+            return Ok(new ApiResponse<object>
             {
-                await _userService.UpdateUserAsync(userId, updateReq);
-                return Ok(new ApiResponse<object>
-                {
-                    StatusCode = 200,
-                    Message = "User updated successfully",
-                    IsSuccess = true,
-                });
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request from client side",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+                StatusCode = 200,
+                Message = "User updated successfully",
+                IsSuccess = true,
+            });
         }
 
         /// <summary>
@@ -231,65 +204,70 @@ namespace MovieManagement.Server.Controllers
         /// <response code="401" >Unauthorized Access</response>
         /// <response code="500">Internal Server Error</response>
         ///
-        // [Authorize(Policy = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{empId:guid}")]
         [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserDto.UserResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiResponse<object>),
-            StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteUserAsync(Guid empId)
         {
-            try
-            {
-                var isDeleted = await _userService.DeleteUserAsync(empId);
-                if (!isDeleted)
-                {
-                    var response = new ApiResponse<object>
-                    {
-                        StatusCode = 404,
-                        Message = "User not found",
-                        IsSuccess = false
-                    };
-                    return NotFound(response);
-                }
-
-                return NoContent();
-            }
-            catch (BadRequestException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 400,
-                    Message = "Bad request",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return BadRequest(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized Access",
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status401Unauthorized, response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse<object>
-                {
-                    StatusCode = 500,
-                    Message = ex.Message,
-                    IsSuccess = false,
-                    Reason = ex.Message
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+            await _userService.DeleteUserAsync(empId);
+            return NoContent();
         }
+
+        [HttpPost("tickets/member")]
+        [Authorize(Roles = "Admin, Employee")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> ExchangeTicket(Guid userId, BillRequest billRequest)
+        {
+            await _userService.MemberBuytickets(userId, billRequest);
+            return Ok(new ApiResponse<object>
+            {
+                StatusCode = 200,
+                Message = "Exchange ticket successfully",
+                IsSuccess = true
+            });
+        }
+
+        [HttpPost("tickets/guest")]
+        [Authorize(Roles = "Admin, Employee")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> ExchangeTicketGuest(BillRequest billRequest)
+        {
+            await _userService.GuestBuyTickets(billRequest);
+            return Ok(new ApiResponse<object>
+            {
+                StatusCode = 200,
+                Message = "Exchange ticket successfully",
+                IsSuccess = true
+            });
+        }
+
+        [HttpGet("transaction")]
+        [Authorize(Roles = "Admin,Employee,Member")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<BillTransaction>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> TransactionHistory(Guid userId)
+        {
+            var transactions = await _userService.GetTransactionByUserId(userId);
+            return Ok(new ApiResponse<IEnumerable<BillTransaction>>
+            {
+                StatusCode = 200,
+                Message = "Get transaction history successfully",
+                IsSuccess = true,
+                Data = transactions
+            });
+        }
+
+
     }
 }

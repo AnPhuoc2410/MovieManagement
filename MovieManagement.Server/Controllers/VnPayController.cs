@@ -3,6 +3,7 @@ using MovieManagement.Server.Extensions.VNPAY.Enums;
 using MovieManagement.Server.Extensions.VNPAY.Models;
 using MovieManagement.Server.Extensions.VNPAY.Services;
 using MovieManagement.Server.Extensions.VNPAY.Utilities;
+using MovieManagement.Server.Models.RequestModel;
 
 namespace MovieManagement.Server.Controllers
 {
@@ -27,8 +28,8 @@ namespace MovieManagement.Server.Controllers
         /// <param name="money">Số tiền phải thanh toán</param>
         /// <param name="description">Mô tả giao dịch</param>
         /// <returns></returns>
-        [HttpGet("CreatePaymentUrl")]
-        public ActionResult<string> CreatePaymentUrl(decimal money, string description)
+        [HttpPost("CreatePaymentUrl")]
+        public ActionResult<string> CreatePaymentUrl(decimal money, string description, Guid userId, BillRequest billRequest)
         {
             try
             {
@@ -38,7 +39,7 @@ namespace MovieManagement.Server.Controllers
                 {
                     PaymentId = DateTime.Now.Ticks,
                     Money = money,
-                    Description = description,
+                    Description = $"{description}",
                     IpAddress = ipAddress,
                     BankCode = BankCode.ANY, // Tùy chọn. Mặc định là tất cả phương thức giao dịch
                     CreatedDate = DateTime.Now, // Tùy chọn. Mặc định là thời điểm hiện tại
@@ -46,7 +47,7 @@ namespace MovieManagement.Server.Controllers
                     Language = DisplayLanguage.Vietnamese // Tùy chọn. Mặc định là tiếng Việt
                 };
 
-                var paymentUrl = _vnPayService.GetPaymentUrl(request);
+                string paymentUrl = _vnPayService.GetPaymentUrl(request, userId, billRequest).Result.ToString();
 
                 return Created(paymentUrl, paymentUrl);
             }
@@ -101,9 +102,13 @@ namespace MovieManagement.Server.Controllers
 
                     if (paymentResult.IsSuccess)
                     {
-                        return Ok(paymentResult);
+                        //return Ok(paymentResult);
+                        return Redirect("http://localhost:3000/ticket/confirmation?isSuccess=true&paymentId=" + paymentResult.PaymentId);
                     }
-
+                    else
+                    {
+                        return Redirect("http://localhost:3000/ticket/confirmation?isSuccess=false&paymentId=" + paymentResult.PaymentId);
+                    }
                     return BadRequest(paymentResult);
                 }
                 catch (Exception ex)

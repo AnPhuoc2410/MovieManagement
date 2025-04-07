@@ -65,7 +65,7 @@ export default function MenuContent() {
       path: "/admin/ql-phim",
     },
     {
-      text: "Quản lí thời gian chiếu",
+      text: t("menu.showtimeManagement"),
       translationKey: "menu.showTimeManagement",
       icon: <LocalActivityIcon />,
       path: "/admin/ql-thoi-gian-chieu",

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import { format } from "date-fns";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export interface ShowTime {
@@ -24,8 +25,24 @@ const ShowTimeTable: React.FC<{
   showTimes: ShowTime[];
   onEdit: (id: string) => void;
   onRefreshData?: () => void;
-}> = ({ showTimes, onRefreshData }) => {
+}> = ({ showTimes: initialShowTimes, onRefreshData }) => {
   const navigate = useNavigate();
+  const [showTimes, setShowTimes] = useState<ShowTime[]>(initialShowTimes);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // Update local state when prop changes
+  useEffect(() => {
+    setShowTimes(initialShowTimes);
+  }, [initialShowTimes]);
+
+  // Initial data load - only if parent doesn't handle it
+  useEffect(() => {
+    if (onRefreshData && initialShowTimes.length === 0) {
+      setLoading(true);
+      onRefreshData();
+      setLoading(false);
+    }
+  }, [onRefreshData, initialShowTimes.length]);
   const { t } = useTranslation();
 
   const handleEditClick = (showTimeId: string) => {
@@ -152,10 +169,10 @@ const ShowTimeTable: React.FC<{
           density="standard"
           disableRowSelectionOnClick
           autoHeight
+          loading={loading}
         />
       </Box>
     </>
   );
 };
-
 export default ShowTimeTable;

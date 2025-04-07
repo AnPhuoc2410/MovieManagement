@@ -13,6 +13,8 @@ namespace MovieManagement.Server.Models.Entities
 
         public bool IsActive { get; set; }
 
+        public int? SeatSize { get; set; } = 1;
+
         [JsonIgnore]
         public virtual ICollection<Seat> Seats { get; set; } = new List<Seat>();
 

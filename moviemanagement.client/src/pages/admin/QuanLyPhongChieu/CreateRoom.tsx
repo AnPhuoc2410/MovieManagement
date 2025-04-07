@@ -30,6 +30,23 @@ interface MovieTheater {
   name: string;
 }
 
+// Function to handle Vietnamese characters in room names
+const convertToASCII = (text: string): string => {
+  const vietnameseChars = 'àáâãäåạảấầẩẫậắằẳẵặẹẻẽềềểễệìíîïịỉĩòóôõöøọỏốồổỗộớờởỡợụủũưừửữựỳýỵỷỹđÀÁÂÃÄÅẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂỄỆÌÍÎÏỊỈĨÒÓÔÕÖØỌỎỐỒỔỖỘỚỜỞỠỢỤỦŨƯỪỬỮỰỲÝỴỶỸĐ';
+  const asciiChars = 'aaaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiioooooooooooooooooouuuuuuuuyyyyydAAAAAAAAAAAAAAAAAAAAAEEEEEEEEEEEEIIIIIIOOOOOOOOOOOOOOOOOOUUUUUUUUYYYYYD';
+  
+  let result = '';
+  for (let i = 0; i < text.length; i++) {
+    const charIndex = vietnameseChars.indexOf(text[i]);
+    if (charIndex >= 0) {
+      result += asciiChars[charIndex];
+    } else {
+      result += text[i];
+    }
+  }
+  return result;
+};
+
 const CreateRoom: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -83,8 +100,11 @@ const CreateRoom: React.FC = () => {
       return;
     }
 
+    // Convert Vietnamese characters in room name to ASCII for compatibility with varchar
+    const safeRoomName = convertToASCII(roomName);
+
     const roomData = {
-      roomName: roomName,
+      roomName: safeRoomName,
       row: rows,
       column: columns,
       total: calculateTotal()
@@ -173,6 +193,7 @@ const CreateRoom: React.FC = () => {
               value={roomName}
               onChange={(e) => setRoomName(e.target.value)}
               required
+              helperText="Note: Vietnamese characters will be converted to ASCII equivalents (e.g., 'ố' → 'o')"
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -244,6 +265,11 @@ const CreateRoom: React.FC = () => {
           </Typography>
           <Box sx={{ mt: 2 }}>
             <Typography><strong>Room Name:</strong> {roomName}</Typography>
+            {roomName !== convertToASCII(roomName) && (
+              <Typography color="warning.main" variant="body2" sx={{ mb: 1 }}>
+                Will be stored as: {convertToASCII(roomName)}
+              </Typography>
+            )}
             <Typography><strong>Rows:</strong> {rows}</Typography>
             <Typography><strong>Columns:</strong> {columns}</Typography>
             <Typography><strong>Total Seats:</strong> {calculateTotal()}</Typography>

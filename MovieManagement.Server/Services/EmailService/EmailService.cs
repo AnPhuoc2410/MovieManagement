@@ -1,104 +1,167 @@
-﻿using MailKit.Net.Smtp;
+﻿using AutoMapper;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity;
 using MimeKit;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
-using MovieManagement.Server.Models.DTOs;
+using MovieManagement.Server.Extensions.ConvertFile;
 using MovieManagement.Server.Models.Entities;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
+using MovieManagement.Server.Models.Enums;
+using MovieManagement.Server.Models.RequestModel;
+using MovieManagement.Server.Services.QRService;
 
 namespace MovieManagement.Server.Services.EmailService
 {
     public class EmailService : IEmailService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IConvertFileService _convertFile;
+        private readonly IQRCodeService _qRCodeGenerator;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public EmailService(IUnitOfWork unitOfWork, IConfiguration configuration)
+        public EmailService(IUnitOfWork unitOfWork, IConfiguration configuration, IConvertFileService convertFile, IQRCodeService qRCodeGenerator, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            _convertFile = convertFile;
+            _qRCodeGenerator = qRCodeGenerator;
+            _mapper = mapper;
         }
-        public async Task<bool> SendOtpEmail(string userEmail)
+        public bool SendEmailReportBill(Guid billId)
         {
-            try
+            //Get user bill
+            var userBill = _unitOfWork.BillRepository.GetById(billId);
+            if (userBill == null)
+                throw new NotFoundException("No bills found!");
+
+            if (userBill.Status != BillEnum.BillStatus.Completed)
+                throw new BadRequestException("Bill is not paid!");
+
+            if (!userBill.UserId.HasValue)
+                throw new NotFoundException("No user found!");
+
+            // Get user email
+            string userEmail = (_unitOfWork.UserRepository.GetById(userBill.UserId.Value)).Email;
+            if (userEmail == null)
+                throw new NotFoundException("No user found!");
+
+            // Create email
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Eiga Cinema", _configuration["Account:AppEmail"]));
+            message.To.Add(new MailboxAddress("", userEmail));
+            message.Subject = "INVOICE";
+
+            // Generate HTML body for the bill report
+            string body = _convertFile.GenerateHtmlFromBillReport(_mapper.Map<BillReportRequest>(userBill));
+
+            // Create QR code Stream
+            byte[] qrCode = _qRCodeGenerator.GenerateQRCode(userBill.BillId.ToString());
+            var qrBase64 = _qRCodeGenerator.QRCodeImageToBase64(qrCode);
+            string qrCodeHtml = $"<img src='cid:qrcode' alt='QR Code' style='width: 100px; height: 100px;' />";
+
+            body = body.Replace("{{QRCode}}", qrCodeHtml);
+
+            // Creat html body
+            var bodyBuilder = new BodyBuilder
             {
-                //Checking user existing
-                bool isExist = await _unitOfWork.UserRepository.IsExistingEmailAsync(userEmail);
-                if (!isExist)
-                    throw new NotFoundException("User cannot found!");
+                HtmlBody = body
+            };
 
-                //Create email
-                var message = new MimeMessage();
-                message.From.Add(new MailboxAddress("Eiga Cinema", _configuration["Account:AppEmail"]));
-                message.To.Add(new MailboxAddress("", userEmail));
-                message.Subject = "Gửi mã xác thực OTP";
-
-                var otpCode = await _unitOfWork.OtpCodeRepository.CreateOtpCode(userEmail);
-
-                message.Body = new TextPart("plain")
-                {
-                    Text = $"{otpCode.Code}"
-                };
-
-                //Login to email and send message
-                using var client = new SmtpClient();
-                await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                await client.AuthenticateAsync(_configuration["Account:AppEmail"], _configuration["Account:AppPassword"]);
-                await client.SendAsync(message);
-                await client.DisconnectAsync(true);
-                return true;
-            }
-            catch (Exception ex)
+            // Khai báo attachment và gán CID cho attachment
+            var qrStream = new MemoryStream(qrCode);
+            var qrAttachment = new MimePart("image", "png")
             {
-                throw new Exception("Cannot send email because this error: " + ex.Message);
-            }
+                Content = new MimeContent(qrStream),
+                ContentDisposition = new ContentDisposition(ContentDisposition.Inline),
+                ContentTransferEncoding = ContentEncoding.Base64,
+                ContentId = "qrcode",
+                FileName = "qrcode.png"
+            };
+
+            // Tạo multipart để gửi email, related sẽ khai báo cho email biết có attachment inline
+            var multipart = new Multipart("related")
+            {
+                bodyBuilder.ToMessageBody(),
+                qrAttachment
+            };
+
+            message.Body = multipart;
+
+            // Login to email and send message
+            using var client = new SmtpClient();
+            client.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+            client.Authenticate(_configuration["Account:AppEmail"], _configuration["Account:AppPassword"]);
+            client.Send(message);
+            client.Disconnect(true);
+            return true;
         }
 
-        public async Task<bool> ValidationOtp(string email, string password, string otp)
+        public async Task<String> SendOtpEmail(string userEmail)
         {
-            try
+            //Checking user existing
+            bool isExist = await _unitOfWork.UserRepository.IsExistingEmailAsync(userEmail);
+            if (!isExist)
+                throw new NotFoundException("User cannot found!");
+
+            //Create email
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Eiga Cinema", _configuration["Account:AppEmail"]));
+            message.To.Add(new MailboxAddress("", userEmail));
+            message.Subject = "Gửi mã xác thực OTP";
+
+            var otpCode = await _unitOfWork.OtpCodeRepository.CreateOtpCode(userEmail);
+
+            message.Body = new TextPart("plain")
             {
-                //Checking user is existing by email
-                var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
-                if(user == null)
-                    throw new NotFoundException("User cannot found!");
+                Text = $"{otpCode.Code}"
+            };
 
-                //Checking validation user
-                var otpRecord = await _unitOfWork.OtpCodeRepository.GetOtpCode(email, otp);
-                if (otpRecord == null)
-                    throw new NotFoundException("User's OTP code is invalid");
-                if (otpRecord.IsUsed == 1)
-                    throw new Exception("This OTP is used!");
-                if (otpRecord.ExpiredTime < DateTime.UtcNow)
-                    throw new Exception("This OTP is expired!");
+            //Login to email and send message
+            using var client = new SmtpClient();
+            await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(_configuration["Account:AppEmail"], _configuration["Account:AppPassword"]);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
+            return otpCode.Code;
+        }
 
-                //Xac nhan da su dung OTP
-                otpRecord.IsUsed = 1;
+        public async Task<bool> ValidationOtp(string email, string otp)
+        {
+            //Checking user is existing by email
+            var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
+            if (user == null)
+                throw new NotFoundException("User cannot found!");
 
-                //Create HashPassword
-                var passwordHasher = new PasswordHasher<User>();
+            //Checking validation user
+            var otpRecord = await _unitOfWork.OtpCodeRepository.GetOtpCode(email, otp);
+            if (otpRecord == null)
+                throw new NotFoundException("User's OTP code is invalid");
+            if (otpRecord.IsUsed == 1)
+                throw new Exception("This OTP is used!");
+            if (otpRecord.ExpiredTime < DateTime.UtcNow)
+                throw new Exception("This OTP is expired!");
 
-                //Verify password
-                //Xac thuc mat khau co trong database khong -> tranh viec Hashpassword 2 lan
-                var verificationResult = passwordHasher.VerifyHashedPassword(user, user.Password, password);
+            //Xac nhan da su dung OTP
+            otpRecord.IsUsed = 1;
 
-                //Hash new password
-                password = passwordHasher.HashPassword(user, password);
-
-                //Checking change password
-                if (!await _unitOfWork.UserRepository.ChangeUserPasswordByEmailAsync(email, password))
-                    throw new Exception("Password cannot change!");
-
-                await _unitOfWork.OtpCodeRepository.UpdateAsync(otpRecord);
-                await _unitOfWork.CompleteAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Cannot send email because this error: " + ex.Message);
-            }
+            // //Create HashPassword
+            // var passwordHasher = new PasswordHasher<User>();
+            //
+            // //Verify password
+            // //Xac thuc mat khau co trong database khong -> tranh viec Hashpassword 2 lan
+            // var verificationResult = passwordHasher.VerifyHashedPassword(user, user.Password, password);
+            //
+            // //Hash new password
+            // var hashedPassword = passwordHasher.HashPassword(user, password);
+            //
+            // //Checking change password
+            // if (!await _unitOfWork.UserRepository.ResetUserPasswordByEmailAsync(email, password, hashedPassword))
+            //     throw new Exception("Password cannot change!");
+            //
+            // await _unitOfWork.OtpCodeRepository.UpdateAsync(otpRecord);
+            // await _unitOfWork.CompleteAsync();
+            return true;
         }
     }
 }

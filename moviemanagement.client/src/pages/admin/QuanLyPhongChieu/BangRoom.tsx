@@ -441,7 +441,7 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit, onRefreshData }) =
             startIcon={<EventSeatIcon />}
             onClick={handleOpenSeatTypeDialog}
           >
-            Tạo loại ghế mới
+            {t("admin.room_management.create_seattype")}
           </Button>
           <Button
             variant="outlined"
@@ -449,7 +449,7 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit, onRefreshData }) =
             startIcon={<TheatersIcon />}
             onClick={handleCreateTheaterClick}
           >
-            {t("admin.room_management.create")}
+            {t("admin.room_management.create_theater")}
           </Button>
           <Button
             variant="contained"
@@ -457,7 +457,7 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit, onRefreshData }) =
             startIcon={<AddIcon />}
             onClick={handleCreateRoomClick}
           >
-            Tạo phòng chiếu mới
+            {t("admin.room_management.create_room")}
           </Button>
         </Box>
       </Box>

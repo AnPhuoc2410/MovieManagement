@@ -20,7 +20,7 @@ namespace MovieManagement.Server.Models.Configurations
             builder.Property(x => x.Image).HasMaxLength(500);
             builder.Property(x => x.Actors).HasColumnType("nvarchar(250)");
             builder.Property(x => x.Director).HasColumnType("nvarchar(50)");
-            builder.Property(x => x.Rating).HasColumnType("nvarchar(30)");
+            builder.Property(x => x.Rating).HasColumnType("nvarchar(50)");
             builder.Property(x => x.Trailer).HasColumnType("varchar(100)");
             builder.Property(x => x.Content).HasColumnType("nvarchar(1000)");
             builder.Property(x => x.IsDeleted).HasColumnType("bit");
