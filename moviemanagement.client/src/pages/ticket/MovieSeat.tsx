@@ -12,6 +12,7 @@ import { useSignalR } from "../../contexts/SignalRContext";
 import ShowTimeLayout from "../../layouts/ShowTimeLayout/ShowTimeLayout";
 import { MovieSeatState } from "../../types/seattype.types";
 import { SelectedSeat } from "../../types/selectedseat.types";
+import Loader from "../../components/shared/Loading";
 
 const MovieSeat: React.FC = () => {
   const location = useLocation();
@@ -19,7 +20,22 @@ const MovieSeat: React.FC = () => {
   const { t } = useTranslation();
   const { connection, isConnected } = useSignalR();
   const { userDetails } = useAuth();
-  const { selectedTime, selectedDate, tickets, movieData } = location.state as MovieSeatState;
+
+  const state = location.state as MovieSeatState | undefined;
+
+  useEffect(() => {
+    if (!state) {
+      if (window.history.length > 1) {
+        navigate(-1); // go back
+      } else {
+        navigate("/", { replace: true }); // fallback
+      }
+    }
+  }, [state, navigate]);
+
+  if (!state) return <Loader />;
+
+  const { selectedTime, selectedDate, tickets, movieData } = state;
 
   // Retrieve the current showTimeId from state or sessionStorage
   const currentShowTimeId = sessionStorage.getItem("currentShowTimeId") || "";
@@ -38,7 +54,6 @@ const MovieSeat: React.FC = () => {
     setSelectedSeats([]);
   }, []);
 
-
   // Updated handler to update the timestamp whenever a seat is selected.
   const handleSetSelectedSeats = useCallback((updater: React.SetStateAction<any[]>) => {
     setSelectedSeats((prevSeats) => {
@@ -54,17 +69,17 @@ const MovieSeat: React.FC = () => {
 
   const renderSelectedSeatsSummary = () => {
     // Create an object to track selected seats by ticket type
-    const selectedSeatsByType: Record<string, { count: number, names: string[] }> = {};
+    const selectedSeatsByType: Record<string, { count: number; names: string[] }> = {};
 
     // Initialize counters for each ticket type
-    tickets.forEach(ticket => {
+    tickets.forEach((ticket) => {
       selectedSeatsByType[ticket.seatTypeId] = { count: 0, names: [] };
     });
 
     // Count selected seats by type
-    selectedSeats.forEach(seat => {
+    selectedSeats.forEach((seat) => {
       const seatElement = document.querySelector(`[data-seat-id="${seat.id}"]`);
-      const seatType = seatElement?.getAttribute('data-seat-type') || 'Standard';
+      const seatType = seatElement?.getAttribute("data-seat-type") || "Standard";
 
       if (selectedSeatsByType[seatType]) {
         selectedSeatsByType[seatType].count++;
@@ -74,20 +89,26 @@ const MovieSeat: React.FC = () => {
 
     if (selectedSeats.length === 0) {
       return (
-        <Paper elevation={3} sx={{
-          p: 2,
-          mb: 3,
-          backgroundColor: "rgba(0,0,0,0.7)",
-          borderRadius: 2,
-          border: "1px solid rgba(255,255,255,0.1)"
-        }}>
-          <Typography variant="subtitle1" sx={{
-            color: "white",
-            fontWeight: "bold",
-            mb: 1,
-            borderBottom: "1px solid rgba(255,255,255,0.3)",
-            pb: 1
-          }}>
+        <Paper
+          elevation={3}
+          sx={{
+            p: 2,
+            mb: 3,
+            backgroundColor: "rgba(0,0,0,0.7)",
+            borderRadius: 2,
+            border: "1px solid rgba(255,255,255,0.1)",
+          }}
+        >
+          <Typography
+            variant="subtitle1"
+            sx={{
+              color: "white",
+              fontWeight: "bold",
+              mb: 1,
+              borderBottom: "1px solid rgba(255,255,255,0.3)",
+              pb: 1,
+            }}
+          >
             {t("seat.selection_status", "Trạng Thái Chọn Ghế")}
           </Typography>
           <Typography variant="body2" sx={{ color: "#f44336" }}>
@@ -99,7 +120,7 @@ const MovieSeat: React.FC = () => {
             <Typography variant="subtitle2" sx={{ color: "white", mb: 1 }}>
               {t("ticket.available", "Vé Có Sẵn")}:
             </Typography>
-            {tickets.map(ticket => (
+            {tickets.map((ticket) => (
               <Box key={ticket.seatTypeId} sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 0.5 }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <Typography variant="body2" sx={{ color: "white" }}>
@@ -117,25 +138,31 @@ const MovieSeat: React.FC = () => {
     }
 
     return (
-      <Paper elevation={3} sx={{
-        p: 2,
-        mb: 3,
-        backgroundColor: "rgba(0,0,0,0.7)",
-        borderRadius: 2,
-        border: "1px solid rgba(255,255,255,0.1)"
-      }}>
-        <Typography variant="subtitle1" sx={{
-          color: "white",
-          fontWeight: "bold",
-          mb: 1,
-          borderBottom: "1px solid rgba(255,255,255,0.3)",
-          pb: 1
-        }}>
+      <Paper
+        elevation={3}
+        sx={{
+          p: 2,
+          mb: 3,
+          backgroundColor: "rgba(0,0,0,0.7)",
+          borderRadius: 2,
+          border: "1px solid rgba(255,255,255,0.1)",
+        }}
+      >
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: "white",
+            fontWeight: "bold",
+            mb: 1,
+            borderBottom: "1px solid rgba(255,255,255,0.3)",
+            pb: 1,
+          }}
+        >
           {t("seat.selected_summary", "Ghế Đã Chọn")} ({selectedSeats.length}/{maxSeats})
         </Typography>
 
         {/* Display ticket types with selection progress */}
-        {tickets.map(ticket => {
+        {tickets.map((ticket) => {
           const selected = selectedSeatsByType[ticket.seatTypeId] || { count: 0, names: [] };
           const isComplete = selected.count === ticket.quantity;
 
@@ -151,7 +178,7 @@ const MovieSeat: React.FC = () => {
                   variant="body2"
                   sx={{
                     color: isComplete ? "lightgreen" : "white",
-                    fontWeight: isComplete ? "bold" : "normal"
+                    fontWeight: isComplete ? "bold" : "normal",
                   }}
                 >
                   {selected.count}/{ticket.quantity}
@@ -189,44 +216,61 @@ const MovieSeat: React.FC = () => {
           mb: 3,
           backgroundColor: "rgba(0,0,0,0.7)",
           borderRadius: 2,
-          border: "1px solid rgba(255,255,255,0.1)"
+          border: "1px solid rgba(255,255,255,0.1)",
         }}
       >
-        <Typography variant="subtitle1" sx={{
-          color: "white",
-          fontWeight: "bold",
-          mb: 1,
-          borderBottom: "1px solid rgba(255,255,255,0.3)",
-          pb: 1
-        }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: "white",
+            fontWeight: "bold",
+            mb: 1,
+            borderBottom: "1px solid rgba(255,255,255,0.3)",
+            pb: 1,
+          }}
+        >
           {t("seat.legend", "Chú Thích Ghế")}
         </Typography>
 
         <Box sx={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 1.5, alignItems: "center" }}>
           {/* Seat Status */}
           <EventSeatIcon sx={{ color: "white", fontSize: 22 }} />
-          <Typography variant="body2" sx={{ color: "white" }}>{t("seat.available", "Ghế Trống")}</Typography>
+          <Typography variant="body2" sx={{ color: "white" }}>
+            {t("seat.available", "Ghế Trống")}
+          </Typography>
 
           <EventSeatIcon sx={{ color: "green", fontSize: 22 }} />
-          <Typography variant="body2" sx={{ color: "white" }}>{t("seat.selected", "Đang Chọn")}</Typography>
+          <Typography variant="body2" sx={{ color: "white" }}>
+            {t("seat.selected", "Đang Chọn")}
+          </Typography>
 
           <EventSeatIcon sx={{ color: "yellow", fontSize: 22 }} />
-          <Typography variant="body2" sx={{ color: "white" }}>{t("seat.pending", "Đang Thanh Toán")}</Typography>
+          <Typography variant="body2" sx={{ color: "white" }}>
+            {t("seat.pending", "Đang Thanh Toán")}
+          </Typography>
 
           <EventSeatIcon sx={{ color: "red", fontSize: 22 }} />
-          <Typography variant="body2" sx={{ color: "white" }}>{t("seat.booked", "Đã Đặt")}</Typography>
+          <Typography variant="body2" sx={{ color: "white" }}>
+            {t("seat.booked", "Đã Đặt")}
+          </Typography>
 
           {/* Seat Types */}
           <Box sx={{ height: 1, backgroundColor: "rgba(255,255,255,0.3)", my: 1, gridColumn: "1 / span 2" }} />
 
           <EventSeatIcon sx={{ color: "blue", fontSize: 22 }} />
-          <Typography variant="body2" sx={{ color: "white" }}>{t("seat.vip", "Ghế VIP")}</Typography>
+          <Typography variant="body2" sx={{ color: "white" }}>
+            {t("seat.vip", "Ghế VIP")}
+          </Typography>
 
           <EventSeatIcon sx={{ color: "purple", fontSize: 22 }} />
-          <Typography variant="body2" sx={{ color: "white" }}>{t("seat.couple", "Ghế Couple")}</Typography>
+          <Typography variant="body2" sx={{ color: "white" }}>
+            {t("seat.couple", "Ghế Couple")}
+          </Typography>
 
           <EventSeatIcon sx={{ color: "gray", fontSize: 22 }} />
-          <Typography variant="body2" sx={{ color: "white" }}>{t("seat.unavailable", "Không Thể Chọn")}</Typography>
+          <Typography variant="body2" sx={{ color: "white" }}>
+            {t("seat.unavailable", "Không Thể Chọn")}
+          </Typography>
         </Box>
       </Paper>
     );
@@ -245,7 +289,6 @@ const MovieSeat: React.FC = () => {
     if (selectedSeats.length === 0) {
       setLastSelectionTime(null);
     }
-
   }, [selectedSeats]);
 
   const handleNext = async () => {
@@ -350,14 +393,7 @@ const MovieSeat: React.FC = () => {
                   gap: 3,
                 }}
               >
-                <SeatCountdown
-                  seatId="all-seats"
-                  seatName={`${selectedSeats.length} ghế`}
-                  startTime={lastSelectionTime!}
-                  resetTrigger={resetCounter}
-                  onTimeout={handleSeatsTimeout}
-                />
-
+                <SeatCountdown seatId="all-seats" seatName={`${selectedSeats.length} ghế`} startTime={lastSelectionTime!} resetTrigger={resetCounter} onTimeout={handleSeatsTimeout} />
               </Box>
             )}
             {/* Selection summary for desktop */}
@@ -436,7 +472,7 @@ const MovieSeat: React.FC = () => {
                   justifyContent: "space-between",
                   alignItems: "center",
                   zIndex: 10,
-                  borderTop: "1px solid rgba(255,255,255,0.1)"
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
                 }}
               >
                 <Typography variant="body2" sx={{ color: "white" }}>
@@ -449,7 +485,7 @@ const MovieSeat: React.FC = () => {
                   disabled={selectedSeats.length !== maxSeats}
                   sx={{
                     fontSize: "0.9rem",
-                    backgroundColor: selectedSeats.length === maxSeats ? "#4CAF50" : undefined
+                    backgroundColor: selectedSeats.length === maxSeats ? "#4CAF50" : undefined,
                   }}
                 >
                   {t("movie_seat.continue")}
@@ -465,7 +501,7 @@ const MovieSeat: React.FC = () => {
                   justifyContent: "space-between",
                   alignItems: "center",
                   zIndex: 10,
-                  borderTop: "1px solid rgba(255,255,255,0.1)"
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
                 }}
               >
                 <Typography variant="body2" sx={{ color: "white" }}>
@@ -506,7 +542,6 @@ const MovieSeat: React.FC = () => {
           >
             <StepTracker currentStep={2} />
           </Box>
-
         </Box>
       </Container>
     </ShowTimeLayout>

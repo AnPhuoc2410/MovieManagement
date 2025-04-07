@@ -6,12 +6,11 @@ export type SeatType = {
   isActive: boolean;
 };
 
-
 export type MovieSeatState = {
   movieId?: string;
   showTimeId: string;
-  selectedDate: string;
-  selectedTime: string;
+  selectedDate: string | null;
+  selectedTime: string | null;
   tickets: SeatType[];
   movieData: {
     movieId: string;

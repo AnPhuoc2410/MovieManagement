@@ -28,9 +28,7 @@ const NowShowingMovies: React.FC = () => {
     const fetchNowShowingMovies = async () => {
       try {
         setLoading(true);
-        const response = await api.get(
-          `/movie/showing/page/${apiPage}/size/${apiPageSize}`
-        );
+        const response = await api.get(`/movie/showing/page/${apiPage}/size/${apiPageSize}`);
         console.log("Now showing movies:", response.data);
         setNowShowingMovies(response.data);
       } catch (error) {
@@ -76,7 +74,6 @@ const NowShowingMovies: React.FC = () => {
       <Container
         maxWidth="xl"
         sx={{
-          pt: { xs: "64px", sm: "72px", md: "80px" },
           pb: { xs: 4, sm: 6, md: 8 },
           position: "relative",
           zIndex: 1,
@@ -84,13 +81,7 @@ const NowShowingMovies: React.FC = () => {
       >
         {/* Title with animation */}
         <Box sx={{ textAlign: "center", mb: { xs: 4, sm: 5, md: 6 } }}>
-          <ScrollFloat
-            animationDuration={1}
-            ease="back.inOut(2)"
-            scrollStart="center bottom+=50%"
-            scrollEnd="bottom bottom-=40%"
-            stagger={0.08}
-          >
+          <ScrollFloat animationDuration={1} ease="back.inOut(2)" scrollStart="center bottom+=50%" scrollEnd="bottom bottom-=40%" stagger={0.08}>
             <Typography
               variant="h3"
               fontWeight="bold"
@@ -163,9 +154,7 @@ const NowShowingMovies: React.FC = () => {
                         <Typography variant="caption" sx={{ fontWeight: "bold" }}>
                           {format(parseISO(movie.postDate), "MMM")}
                         </Typography>
-                        <Typography variant="caption">
-                          {format(parseISO(movie.postDate), "dd, yyyy")}
-                        </Typography>
+                        <Typography variant="caption">{format(parseISO(movie.postDate), "dd, yyyy")}</Typography>
                       </Box>
                     }
                     sx={{

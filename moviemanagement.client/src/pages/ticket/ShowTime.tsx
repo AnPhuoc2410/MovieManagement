@@ -57,15 +57,9 @@ const Ticket: React.FC = () => {
 
       if (!isAuthenticated) toast.success("You need to login to continue booking tickets");
 
-      const state: MovieSeatState = { showTimeId, selectedDate, selectedTime, tickets, movieData };
-
-      console.log(`State pass: ${JSON.stringify(state, null, 2)}`);
-
-      setTimeout(() => {
-        navigate("/ticket/movie-seat", {
-          state: state,
-        });
-      }, 3000);
+      navigate("/ticket/movie-seat", {
+        state: { showTimeId, selectedDate, selectedTime, tickets, movieData } as MovieSeatState,
+      });
     },
     [movieId, navigate, showTimeId, selectedDate, selectedTime, movieData],
   );

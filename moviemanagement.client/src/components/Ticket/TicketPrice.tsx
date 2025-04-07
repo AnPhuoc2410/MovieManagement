@@ -93,11 +93,6 @@ const TicketPrice: React.FC<TicketPriceProps> = ({ onNext }) => {
 
   const handleNext = () => {
     const selectedSeats = seatTypes.filter((seat) => seat.quantity > 0);
-
-    console.log(`Selected Seats: ${JSON.stringify(selectedSeats, null, 2)}`);
-
-    if (!isAuthenticated) localStorage.setItem("seatDetails", JSON.stringify(selectedSeats));
-
     if (onNext) onNext(selectedSeats);
   };
 
