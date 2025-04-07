@@ -13,13 +13,13 @@ import AppTheme from "../../../shared-theme/AppTheme";
 import AdminNowShowingMovies from "../../../components/admin/AdminNowShowingMovies";
 import { useTranslation } from "react-i18next";
 
-const { t } = useTranslation();
 
 export default function QuanLyBanVe({
   disableCustomTheme = false,
 }: {
   disableCustomTheme?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <AppTheme disableCustomTheme={disableCustomTheme}>
       <CssBaseline enableColorScheme />

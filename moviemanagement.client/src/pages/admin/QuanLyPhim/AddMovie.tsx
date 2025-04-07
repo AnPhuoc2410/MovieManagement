@@ -4,14 +4,18 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../../apis/axios.config";
 import { t } from "i18next";
+import { useAuth } from "../../../contexts/AuthContext";
+
 
 export default function AddMovie() {
   const navigate = useNavigate();
+  const { userDetails } = useAuth();
+
 
   const handleAddMovie = async (movieData: any) => {
     try {
       console.log(movieData);
-      const response = await api.post(`movie?employeeId=${movieData.userId}`, movieData);
+      const response = await api.post(`movie?userId=${userDetails?.userId}`, movieData);
       toast.success(t("toast.success.movie.add"));
       navigate(`/admin/ql-phim/${response.data.data.movieId}`);
     } catch (error: any) {
