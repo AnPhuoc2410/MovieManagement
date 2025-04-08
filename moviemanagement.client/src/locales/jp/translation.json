@@ -291,7 +291,20 @@
     "movie_seat": {
       "timer": "座席保持の残り時間",
       "selection": "座席を選択",
-      "continue": "続ける"
+      "continue": "続ける",
+      "selection_status": "座席選択の状態",
+      "select_required": "",
+      "seats": "席を選択してください",
+      "seat_notes": "座席の注釈",
+      "seat": {
+        "empty": "空席",
+        "selecting": "選択中",
+        "pending": "支払い保留中",
+        "booked": "予約済み",
+        "vip": "VIP席",
+        "couple": "カップル席",
+        "unavailable": "利用不可の席"
+      }
     },
     "movie_detail": {
       "description": "説明",
@@ -478,6 +491,9 @@
         "add": "新しいチケットを追加",
         "movie_name": "映画名",
         "customer": "購入者",
+        "no_seats_selected": "座席が選択されていません",
+        "selected_seats": "選択された座席",
+        "select_seats_for_showtime": "上映時間の座席を選択",
         "showtime": {
           "day": "上映日: ",
           "hour": "上映時間: "

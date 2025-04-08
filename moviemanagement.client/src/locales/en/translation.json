@@ -293,7 +293,20 @@
     "movie_seat": {
       "timer": "Remaining seat holding time",
       "selection": "Select seat",
-      "continue": "Continue"
+      "continue": "Continue",
+      "selection_status": "Seat Selection Status",
+      "select_required": "Please select",
+      "seats": "seat(s)",
+      "seat_notes": "Seat Notes",
+      "seat": {
+        "empty": "Empty seat",
+        "selecting": "Being selected",
+        "pending": "Pending payment",
+        "booked": "Booked",
+        "vip": "VIP Seat",
+        "couple": "Couple Seat",
+        "unavailable": "Unavailable seat"
+      }
     },
     "movie_detail": {
       "description": "DESCRIPTION",
@@ -480,6 +493,9 @@
         "add": "Add new ticket",
         "movie_name": "Movie name",
         "customer": "Customer",
+        "no_seats_selected": "No seats selected",
+        "selected_seats": "Selected seats",
+        "select_seats_for_showtime": "Select seats for showtime",
         "showtime": {
           "day": "Show date: ",
           "hour": "Show time: "

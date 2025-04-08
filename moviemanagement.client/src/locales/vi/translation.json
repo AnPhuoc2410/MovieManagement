@@ -290,7 +290,20 @@
     "movie_seat": {
       "timer": "Thời gian giữ ghế còn lại:",
       "selection": "Chọn ghế:",
-      "continue": "Tiếp tục"
+      "continue": "Tiếp tục thanh toán",
+      "selection_status": "Trạng Thái Chọn Ghế",
+      "select_required": "Vui lòng chọn",
+      "seats": "ghế",
+      "seat_notes": "Chú Thích Ghế",
+      "seat": {
+        "empty": "Ghế trống",
+        "selecting": "đang được chọn",
+        "pending": "đang thanh toán",
+        "booked": "Đã đặt",
+        "vip": "Ghế VIP",
+        "couple": "Ghế đôi",
+        "unavailable": "Ghế không khả dụng"
+      }
     },
     "movie_detail": {
       "description": "MÔ TẢ",
@@ -470,6 +483,9 @@
         "add": "Thêm vé mới",
         "movie_name": "Tên phim",
         "customer": "Người mua",
+        "no_seats_selected": "Chưa chọn ghế",
+        "selected_seats": "Ghế đã chọn",
+        "select_seats_for_showtime": "Chọn ghế cho suất chiếu",
         "showtime": {
           "day": "Ngày chiếu: ",
           "hour": "Giờ chiếu: "

@@ -6,5 +6,7 @@ export type SelectedSeat = {
   isMine?: boolean;
   selectedAt?: number;
   roomName?: string;
+  seatTypeName?: string;
+  price?:number;
 };
 

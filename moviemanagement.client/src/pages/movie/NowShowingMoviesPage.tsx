@@ -29,7 +29,7 @@ const NowShowingMoviesPage: React.FC = () => {
     };
 
     fetchNowShowingMovies();
-  }, []);
+  }, [t]);
 
   if (loading) {
     return <Loader />;

@@ -4,7 +4,8 @@ import {
   Stack,
   Typography,
   Paper,
-  Container
+  Container,
+  Button
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import React, { useCallback, useEffect, useState } from "react";
@@ -16,8 +17,6 @@ import SideMenu from "../../../components/mui/SideMenu";
 import AppTheme from "../../../shared-theme/AppTheme";
 import MovieAdminDetail from "../../../components/admin/AdminMovieDetail";
 import ShowTimeCinema from "../../../components/admin/ShowTimeCinema";
-import TicketPrice from "../../../components/admin/TicketPrice";
-import { SeatType } from "../../../types/seattype.types";
 import { useTranslation } from "react-i18next";
 
 const ShowTime: React.FC = () => {
@@ -28,7 +27,7 @@ const ShowTime: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [showTimeId, setShowTimeId] = useState<string>("");
-  const [showTicketPrice, setShowTicketPrice] = useState<boolean>(false);
+  const [showProceedButton, setShowProceedButton] = useState<boolean>(false);
   const [disableCustomTheme] = useState<boolean>(false);
 
   // Memoized callbacks
@@ -45,40 +44,29 @@ const ShowTime: React.FC = () => {
   }, []);
 
   const handleShowtimeAvailability = useCallback((available: boolean) => {
-    setShowTicketPrice(available);
+    setShowProceedButton(available);
   }, []);
 
   const handleMovieLoad = useCallback((movie: any) => {
     setMovieData(movie);
   }, []);
 
-  const handleTicketSelection = useCallback(
-    (tickets: SeatType[]) => {
-      if (!selectedTime) {
-        toast.error(t("toast.error.showtime.selection"));
-        return;
-      }
-      const totalTickets = tickets.reduce(
-        (sum, t) => sum + (t.quantity || 0),
-        0,
-      );
-      if (totalTickets === 0) {
-        toast.error(t("toast.error.ticket.selection"));
-        return;
-      }
-      navigate("/admin/ql-ban-ve/movie-seat", {
-        state: {
-          movieId,
-          showTimeId,
-          selectedDate,
-          selectedTime,
-          tickets,
-          movieData,
-        },
-      });
-    },
-    [movieId, navigate, showTimeId, selectedDate, selectedTime, movieData],
-  );
+  const handleProceedToSeatSelection = useCallback(() => {
+    if (!selectedTime) {
+      toast.error(t("toast.error.showtime.selection"));
+      return;
+    }
+
+    navigate("/admin/ql-ban-ve/movie-seat", {
+      state: {
+        movieId,
+        showTimeId,
+        selectedDate,
+        selectedTime,
+        movieData,
+      },
+    });
+  }, [movieId, navigate, showTimeId, selectedDate, selectedTime, movieData, t]);
 
   if (!movieId) {
     return (
@@ -202,17 +190,25 @@ const ShowTime: React.FC = () => {
                     />
                   </Paper>
 
-                  {/* Only render TicketPrice when needed */}
-                  {showTicketPrice && (
-                    <Paper
-                      elevation={1}
-                      sx={(theme) => ({
-                        backgroundColor: alpha(theme.palette.background.default, 0.6),
-                        p: 3,
-                      })}
-                    >
-                      <TicketPrice onNext={handleTicketSelection} />
-                    </Paper>
+                  {/* Proceed to seat selection button */}
+                  {showProceedButton && (
+                      <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        gap: 2
+                      }}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="large"
+                          onClick={handleProceedToSeatSelection}
+                          sx={{ minWidth: 200 }}
+                        >
+                          {t("admin.ticket_management.continue")}
+                        </Button>
+                      </Box>
                   )}
                 </Box>
               </Paper>

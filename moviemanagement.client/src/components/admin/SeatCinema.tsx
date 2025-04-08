@@ -16,9 +16,16 @@ interface SeatProps {
   selectedSeats: SelectedSeat[];
   setSelectedSeats: React.Dispatch<React.SetStateAction<SelectedSeat[]>>;
   groupConnected: boolean;
+  onSeatInfoStored?: (seatId: string, seatTypeId: string, seatTypeName: string, price: number) => void;
 }
 
-const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelectedSeats, groupConnected }) => {
+const SeatCinema: React.FC<SeatProps> = ({
+  showTimeId,
+  selectedSeats,
+  setSelectedSeats,
+  groupConnected,
+  onSeatInfoStored
+}) => {
   const theme = useTheme();
   const { connection } = useSignalR();
   const { userDetails } = useAuth();
@@ -115,6 +122,20 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
         const response = await api.get(`ticketdetail/showtime/${effectiveShowTimeId}`);
         if (response.data?.data) {
           setSeats(response.data.data);
+
+          // Store seat type info for each seat when data is loaded
+          if (onSeatInfoStored) {
+            response.data.data.forEach((ticket: TicketDetail) => {
+              if (ticket.seat && ticket.seat.seatType) {
+                onSeatInfoStored(
+                  ticket.seatId,
+                  ticket.seat.seatType.seatTypeId,
+                  ticket.seat.seatType.typeName,
+                  ticket.seat.seatType.price
+                );
+              }
+            });
+          }
         } else {
           toast.error(t("toast.error.seat.infor"));
         }
@@ -127,7 +148,7 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     if (effectiveShowTimeId) {
       fetchSeats();
     }
-  }, [effectiveShowTimeId]);
+  }, [effectiveShowTimeId, onSeatInfoStored]);
 
   const handleSeatClick = async (ticket: TicketDetail) => {
     if (!connection) {
@@ -143,12 +164,18 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
     }
 
     const seatName = `${ticket.seat.atRow}${ticket.seat.atColumn}`;
+    const seatTypeId = ticket.seat.seatType.seatTypeId;
+    const seatTypeName = ticket.seat.seatType.typeName;
+    const seatPrice = ticket.seat.seatType.price;
+
     const seatInfo: SelectedSeat = {
       id: ticket.seatId,
       name: seatName,
       version: ticket.version,
       ticketId: ticket.ticketId,
       roomName: ticket.seat.roomName,
+      seatTypeName: seatTypeName,
+      price: seatPrice,
       isMine: true,
       selectedAt: Date.now(),
     };

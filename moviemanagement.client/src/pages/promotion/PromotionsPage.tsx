@@ -247,7 +247,7 @@ const PromotionsPage: React.FC = () => {
                           fontWeight: "bold",
                         }}
                       >
-                        {promotion.discount}% Giảm Giá
+                        {promotion.discount}% {t("payment.promotion.discount")}
                       </Typography>
                       <Button
                         variant="contained"
@@ -268,7 +268,7 @@ const PromotionsPage: React.FC = () => {
                           },
                         }}
                       >
-                        Đặt Vé Ngay
+                        {t("promotion.detail.book_now")}
                       </Button>
                     </CardContent>
                   </Box>

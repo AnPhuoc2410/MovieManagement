@@ -34,17 +34,24 @@ const UpComingMoviesPage: React.FC = () => {
         const response = await api.get(
           `/movie/coming-soon/page/${apiPage}/size/${apiPageSize}`
         );
-        console.log("Now showing movies:", response.data);
-        setUpComingMovies(response.data);
+        console.log("Upcoming movies response:", response.data);
+
+        // Check if response.data is an array or if the array is nested
+        const moviesArray = Array.isArray(response.data)
+          ? response.data
+          : response.data.data || [];
+
+        setUpComingMovies(moviesArray);
       } catch (error) {
-        console.error("Error fetching now showing movies:", error);
+        console.error("Error fetching upcoming movies:", error);
+        setUpComingMovies([]); // Set to empty array on error
       } finally {
         setLoading(false);
       }
     };
 
     fetchUpComingMovies();
-  }, []);
+  }, [t]);
 
   const handleOpenTrailer = (url: string) => {
     let embedUrl = url.replace("youtu.be", "youtube.com/embed");
@@ -147,7 +154,7 @@ const UpComingMoviesPage: React.FC = () => {
                 fontSize: { xs: "1.75rem", sm: "2.25rem", md: "2.5rem" },
               }}
             >
-              {t("now_showing")}
+              {t("upcoming")}
             </Typography>
           </ScrollFloat>
         </Box>

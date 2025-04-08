@@ -109,16 +109,16 @@ const MovieSeat: React.FC = () => {
               pb: 1,
             }}
           >
-            {t("seat.selection_status", "Trạng Thái Chọn Ghế")}
+            {t("movie_seat.selection_status", "Trạng Thái Chọn Ghế")}
           </Typography>
           <Typography variant="body2" sx={{ color: "#f44336" }}>
-            {t("seat.select_required", "Vui lòng chọn")} {maxSeats} {t("seat.seats", "ghế")}
+            {t("movie_seat.select_required", "Vui lòng chọn")} {maxSeats} {t("movie_seat.seats", "ghế")}
           </Typography>
 
           {/* Display available ticket types */}
           <Box sx={{ mt: 2, pt: 1, borderTop: "1px solid rgba(255,255,255,0.2)" }}>
             <Typography variant="subtitle2" sx={{ color: "white", mb: 1 }}>
-              {t("ticket.available", "Vé Có Sẵn")}:
+              {t("admin.room_management.existed", "Vé Có Sẵn")}:
             </Typography>
             {tickets.map((ticket) => (
               <Box key={ticket.seatTypeId} sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 0.5 }}>
@@ -229,29 +229,29 @@ const MovieSeat: React.FC = () => {
             pb: 1,
           }}
         >
-          {t("seat.legend", "Chú Thích Ghế")}
+          {t("movie_seat.seat_notes", "Chú Thích Ghế")}
         </Typography>
 
         <Box sx={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 1.5, alignItems: "center" }}>
           {/* Seat Status */}
           <EventSeatIcon sx={{ color: "white", fontSize: 22 }} />
           <Typography variant="body2" sx={{ color: "white" }}>
-            {t("seat.available", "Ghế Trống")}
+            {t("movie_seat.seat.empty", "Ghế Trống")}
           </Typography>
 
           <EventSeatIcon sx={{ color: "green", fontSize: 22 }} />
           <Typography variant="body2" sx={{ color: "white" }}>
-            {t("seat.selected", "Đang Chọn")}
+            {t("movie_seat.seat.selecting", "Đang Chọn")}
           </Typography>
 
           <EventSeatIcon sx={{ color: "yellow", fontSize: 22 }} />
           <Typography variant="body2" sx={{ color: "white" }}>
-            {t("seat.pending", "Đang Thanh Toán")}
+            {t("movie_seat.seat.pending", "Đang Thanh Toán")}
           </Typography>
 
           <EventSeatIcon sx={{ color: "red", fontSize: 22 }} />
           <Typography variant="body2" sx={{ color: "white" }}>
-            {t("seat.booked", "Đã Đặt")}
+            {t("movie_seat.seat.booked", "Đã Đặt")}
           </Typography>
 
           {/* Seat Types */}
@@ -259,17 +259,17 @@ const MovieSeat: React.FC = () => {
 
           <EventSeatIcon sx={{ color: "blue", fontSize: 22 }} />
           <Typography variant="body2" sx={{ color: "white" }}>
-            {t("seat.vip", "Ghế VIP")}
+            {t("movie_seat.seat.vip", "Ghế VIP")}
           </Typography>
 
           <EventSeatIcon sx={{ color: "purple", fontSize: 22 }} />
           <Typography variant="body2" sx={{ color: "white" }}>
-            {t("seat.couple", "Ghế Couple")}
+            {t("movie_seat.seat.couple", "Ghế Couple")}
           </Typography>
 
           <EventSeatIcon sx={{ color: "gray", fontSize: 22 }} />
           <Typography variant="body2" sx={{ color: "white" }}>
-            {t("seat.unavailable", "Không Thể Chọn")}
+            {t("movie_seat.seat.unavailable", "Không Thể Chọn")}
           </Typography>
         </Box>
       </Paper>

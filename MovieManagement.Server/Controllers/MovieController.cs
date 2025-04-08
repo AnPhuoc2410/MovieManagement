@@ -154,6 +154,7 @@ namespace MovieManagement.Server.Controllers
                 StatusCode = 200,
                 Message = "Movie is created",
                 IsSuccess = true,
+                Data = createdMovie
             };
             return Ok(response);
         }
@@ -173,6 +174,7 @@ namespace MovieManagement.Server.Controllers
                 StatusCode = 200,
                 Message = "Get movie is success",
                 IsSuccess = true,
+                Data = updatedRoom
             };
             return Ok(response);
         }

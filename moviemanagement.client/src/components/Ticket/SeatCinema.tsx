@@ -308,17 +308,15 @@ const SeatCinema: React.FC<SeatProps> = ({ showTimeId, selectedSeats, setSelecte
                 } else if (isBought) {
                   iconColor = "red";
                   backgroundColor = "rgba(255, 0, 0, 0.2)";
+                } else if (isPending) {
+                  iconColor = "yellow";
+                  backgroundColor = "rgba(255, 255, 0, 0.2)";
                 } else if (isVip) {
                   iconColor = canSelect ? "blue" : "gray";
                   backgroundColor = canSelect ? "rgba(0, 0, 255, 0.2)" : "rgba(128, 128, 128, 0.2)";
-                }
-                else if (isCouple) {
-                  iconColor = "purple";
-                  backgroundColor = "rgba(128, 0, 128, 0.2)";
-                }
-                else if (isPending) {
-                  iconColor = "yellow";
-                  backgroundColor = "rgba(255, 255, 0, 0.2)";
+                } else if (isCouple) {
+                  iconColor = canSelect ? "purple" : "gray";
+                  backgroundColor = canSelect ? "rgba(128, 0, 128, 0.2)" : "rgba(128, 128, 128, 0.2)";
                 } else if (!canSelect) {
                   iconColor = "gray";
                   backgroundColor = "rgba(128, 128, 128, 0.2)";
