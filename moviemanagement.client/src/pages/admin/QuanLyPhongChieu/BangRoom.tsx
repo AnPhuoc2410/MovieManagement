@@ -766,9 +766,10 @@ const RoomTable: React.FC<RoomTableProps> = ({ rooms, onEdit, onRefreshData }) =
                 onChange={handleLocationChange}
                 label="Địa điểm"
               >
-                <MenuItem value="HCM">HCM</MenuItem>
-                <MenuItem value="BD">BD</MenuItem>
-                <MenuItem value="Củ Chi">Củ Chi</MenuItem>
+                <MenuItem value="HCM">{t("showtime_cinema.location.HCM")}</MenuItem>
+                <MenuItem value="BD">{t("showtime_cinema.location.BinhDuong")}</MenuItem>
+                <MenuItem value="BP">{t("showtime_cinema.location.BinhPhuoc")}</MenuItem>
+                <MenuItem value="DN">{t("showtime_cinema.location.HaNoi")}</MenuItem>
               </Select>
             </FormControl>
 

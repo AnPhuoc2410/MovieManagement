@@ -72,7 +72,7 @@ export default function UserDetail() {
     error,
   } = useQuery({
     queryKey: ["bill"],
-    queryFn: () => fetchBillByUserId("e0c6ccb9-83e3-4f51-9655-31223e09203b"),
+    queryFn: () => fetchBillByUserId(userId as string),
     // enabled: !!userId,
   });
 

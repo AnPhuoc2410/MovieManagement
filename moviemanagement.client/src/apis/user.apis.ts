@@ -34,6 +34,6 @@ export const fetchUserDetail = async (id: string) => {
 };
 
 export const fetchBillByUserId = async (id: string) => {
-  const response = await axios.get<ApiResponse<UserTransactionHistory[]>>(`/api/mock/bill?id=${id}`);
+  const response = await api.get<ApiResponse<UserTransactionHistory[]>>(`/users/transaction?userId=${id}`);
   return response.data.data;
 };

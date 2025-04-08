@@ -250,14 +250,14 @@ const ChinhSuaNhanVien: React.FC = () => {
               color="error"
               variant="contained"
             >
-              {t("admin.employee_managemet.detail.come_back")}
+              {t("admin.employee_managemet.come_back")}
             </Button>
             <Button
               onClick={handleSaveChanges}
               color="primary"
               variant="contained"
             >
-              {t("admin.employee_managemet.detail.save")}
+              {t("admin.employee_managemet.save")}
             </Button>
           </Box>
         </Box>
