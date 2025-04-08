@@ -51,7 +51,7 @@ export default function Movies({
   useEffect(() => {
     async function fetchMovies() {
       try {
-        const response = await api.get("/movie");
+        const response = await api.get("movie");
         setMovies(response.data.data);
         console.log("Movies:", response.data.data);
       } catch (error) {

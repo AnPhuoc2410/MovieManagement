@@ -14,8 +14,9 @@ export default function AddMovie() {
 
   const handleAddMovie = async (movieData: any) => {
     try {
-      console.log(movieData);
+      // console.log(movieData);
       const response = await api.post(`movie?userId=${userDetails?.userId}`, movieData);
+      console.log(response.data.data);
       toast.success(t("toast.success.movie.add"));
       navigate(`/admin/ql-phim/${response.data.data.movieId}`);
     } catch (error: any) {

@@ -165,7 +165,7 @@
     "user": {
       "profile": {
         "my_account": "Tài khoản của tôi",
-        "my_profile": "Hồ sơ",
+        "my_profile": "Hồ sơ của tôi",
         "settings": "Cài đặt",
         "my_bookings": "Vé của tôi",
         "logout": "Đăng xuất",
@@ -216,12 +216,10 @@
     },
     "showtime_cinema": {
       "title": {
-        "showtime_list": "Lịch chiếu",
+        "showtime_list": "Lịch chiếu và Rạp",
         "now_day": "Hôm nay",
         "theater_list": "Danh sách rạp",
-        "no_showtime": "Hiện chưa có lịch chiếu",
-        "login_required": "Đăng nhập để xem giá vé",
-        "please_login_to_continue": "Vui lòng đăng nhập để tiếp tục"
+        "no_showtime": "Không có lịch chiếu nào!"
       },
       "location": {
         "HaNoi": "Hà Nội",
@@ -292,7 +290,7 @@
     "movie_seat": {
       "timer": "Thời gian giữ ghế còn lại:",
       "selection": "Chọn ghế:",
-      "continue": "Tiếp tục thanh toán"
+      "continue": "Tiếp tục"
     },
     "movie_detail": {
       "description": "MÔ TẢ",
@@ -304,7 +302,8 @@
       "book_now": "ĐẶT VÉ NGAY",
       "more_detail": "Chi Tiết Phim",
       "add_new": "Thêm Phim Mới",
-      "update": "Cập Nhật",
+      "edit": "Chỉnh sửa",
+      "update": "Cập nhật",
       "back": "Quay lại",
       "label": {
         "name": "Tên phim",
@@ -437,7 +436,7 @@
           "selection": "Vui lòng chọn ít nhất 1 vé!"
         },
         "showtime": {
-          "selection": "Vui lòng chọn khung giờ chiếu!"
+          "selection": "Vui lòng chọn suất chiếu!"
         },
         "user": {
           "validate": "Vui lòng nhập CMND hoặc số điện thoại",
@@ -666,7 +665,8 @@
       },
       "room_management": {
         "room_list": "Danh sách phòng chiếu",
-        "create": "Tạo phòng chiếu mới",
+        "create_room": "Tạo phòng chiếu mới",
+        "create_theater": "Tạo rạp chiếu mới",
         "seat": "ghế",
         "detail": "Xem chi tiết",
         "create_seat": "Tạo ghế",
@@ -725,7 +725,8 @@
         "update_process": "Đang cập nhật...",
         "update": "Cập nhật",
         "warming_disable": "Việc vô hiệu hóa ghế sẽ không cho phép đặt vé cho các ghế này trong các lịch chiếu.",
-        "warming_active": "Việc kích hoạt ghế sẽ cho phép đặt vé cho các ghế này trong các lịch chiếu."
+        "warming_active": "Việc kích hoạt ghế sẽ cho phép đặt vé cho các ghế này trong các lịch chiếu.",
+        "create_seattype": "Tạo loại ghế mới"
       }
     },
     "menu": {
@@ -736,6 +737,7 @@
       "ticketBooking": "Quản lý Đặt vé",
       "screeningRooms": "Quản lý Phòng chiếu",
       "movieManagement": "Quản lý Phim",
+      "showtimeManagement": "Quản lý Lịch chiếu",
       "promotions": "Quản lý Khuyến mãi",
       "settings": "Cài đặt",
       "feedback": "Góp ý",

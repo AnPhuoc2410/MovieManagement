@@ -37,9 +37,9 @@ export default function UpdateMovie() {
   const handleUpdateMovie = async (updatedMovie: any) => {
     try {
       const response = await api.put(`/movie/${movieId}`, updatedMovie);
-      toast.success(("toast.success.movie.update"));
-      console.log("Updated Movie: ", response.data);
-      navigate(`/admin/ql-phim/${response.data.movieId}`); // Adjusted to access movieId directly from response.data
+      toast.success(t("toast.success.movie.update"));
+      console.log("Updated Movie: ", response.data.data);
+      navigate(`/admin/ql-phim/${response.data.data.movieId}`); // Adjusted to access movieId directly from response.data
     } catch (error: any) {
       toast.error(t("toast.error.movie.update") + error.message);
     }

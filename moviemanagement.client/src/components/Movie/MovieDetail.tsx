@@ -126,9 +126,15 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onMovieLoad }) => {
               <Typography variant="h6" fontWeight="bold" mb={2} mt={4} fontFamily={"JetBrains Mono"}>
                 {t("movie_detail.content")}
               </Typography>
-              <Typography paragraph variant="body1" sx={{ textAlign: "justify" }} fontFamily={"JetBrains Mono"}>
-                {movie?.content}
-              </Typography>
+              {movie?.content && (
+                <Typography
+                  paragraph
+                  variant="body1"
+                  sx={{ textAlign: "justify" }}
+                  fontFamily={"JetBrains Mono"}
+                  dangerouslySetInnerHTML={{ __html: movie.content }}
+                />
+              )}
               <Box sx={{ display: "flex", alignItems: "center", mt: 3 }}>
                 <PlayCircleOutline sx={{ color: "white", mr: 1 }} />
                 <Button

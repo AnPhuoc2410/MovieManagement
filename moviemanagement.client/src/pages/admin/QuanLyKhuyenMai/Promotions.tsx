@@ -33,6 +33,7 @@ import AppTheme from "../../../shared-theme/AppTheme";
 import toast from "react-hot-toast";
 import { Promotion } from "../../../types/promotion.types";
 import api from "../../../apis/axios.config";
+import { useTranslation } from "react-i18next";
 
 export default function Promotions({
   disableCustomTheme = false,
@@ -45,6 +46,7 @@ export default function Promotions({
     null,
   );
   const [uploadedImage, setUploadedImage] = useState<string>("");
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchPromotions() {
@@ -58,7 +60,7 @@ export default function Promotions({
       }
     }
     fetchPromotions();
-  }, []);
+  }, [t]);
 
   const { watch, control, handleSubmit, reset, setValue } = useForm<Promotion>({
     defaultValues: {
@@ -154,13 +156,7 @@ export default function Promotions({
   };
 
   const columns: GridColDef[] = [
-    {
-      field: "promotionId",
-      headerName: "ID",
-      width: 100,
-      sortable: false,
-      filterable: false,
-    },
+
     { field: "promotionName", headerName: "Tiêu Đề", flex: 1 },
     { field: "discount", headerName: "Giảm giá (%)", width: 130 },
     {
@@ -183,7 +179,6 @@ export default function Promotions({
         </span>
       ),
     },
-    { field: "content", headerName: "Chi Tiết", flex: 1 },
     {
       field: "image",
       headerName: "Ảnh",

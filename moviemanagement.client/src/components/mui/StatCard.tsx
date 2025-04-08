@@ -32,6 +32,25 @@ function getDaysInMonth(month: number, year: number) {
   return days;
 }
 
+function getLast30Days() {
+  const days = [];
+  for (let i = 29; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    days.push(
+      date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    );
+  }
+  return days;
+}
+
+function calculateTrendValue(data: number[]): string {
+  const first = data[0];
+  const last = data[data.length - 1];
+  const percentageChange = Math.round(((last - first) / first) * 100);
+  return `${percentageChange > 0 ? "+" : ""}${percentageChange}%`;
+}
+
 function AreaGradient({ color, id }: { color: string; id: string }) {
   return (
     <defs>
@@ -51,7 +70,7 @@ export default function StatCard({
   data,
 }: StatCardProps) {
   const theme = useTheme();
-  const daysInWeek = getDaysInMonth(4, 2024);
+  const daysInWeek = getLast30Days();
 
   const trendColors = {
     up:
@@ -76,7 +95,7 @@ export default function StatCard({
 
   const color = labelColors[trend];
   const chartColor = trendColors[trend];
-  const trendValues = { up: "+25%", down: "-25%", neutral: "+5%" };
+  const trendValues = calculateTrendValue(data);
 
   return (
     <Card variant="outlined" sx={{ height: "100%", flexGrow: 1 }}>
@@ -96,7 +115,7 @@ export default function StatCard({
               <Typography variant="h4" component="p">
                 {value}
               </Typography>
-              <Chip size="small" color={color} label={trendValues[trend]} />
+              <Chip size="small" color={color} label={trendValues} />
             </Stack>
             <Typography variant="caption" sx={{ color: "text.secondary" }}>
               {interval}
