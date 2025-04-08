@@ -219,10 +219,13 @@
         "showtime_list": "上映時間",
         "now_day": "今日",
         "theater_list": "劇場一覧",
+        "theater": "劇場",
         "no_showtime": "上映時間がありません",
         "login_required": "ログインが必要です",
-        "please_login_to_continue": "続行するにはログインしてください"
+        "please_login_to_continue": "続行するにはログインしてください",
+        "showtime": "上映時間"
       },
+      "address" : "住所",
       "location": {
         "HaNoi": "ハノイ",
         "HCM": "ホーチミン",
@@ -296,6 +299,9 @@
       "select_required": "",
       "seats": "席を選択してください",
       "seat_notes": "座席の注釈",
+      "seat_selected": "選択済み",
+      "seat_need_select": "選択が必要",
+      "still": "まだ",
       "seat": {
         "empty": "空席",
         "selecting": "選択中",
@@ -446,7 +452,10 @@
           "cannot_selected": "この席は選択できません。他の人がすでに選択している可能性があります。",
           "cancel_booking_bc_back": "戻ったため、座席がキャンセルされました。",
           "update_status": "席のステータスを更新できません：",
-          "booking": "予約のキャンセルに失敗しました"
+          "booking": "予約のキャンセルに失敗しました",
+          "no_single_isolated": "孤立した席は選択できません",
+          "adjacent_only": "隣接した席のみ選択できます",
+          "cannot_deselect_middle": "中間の席を選択解除できません"
         },
         "promotion": {
           "loading": "プロモーションを読み込めません",
@@ -777,6 +786,19 @@
       "ticketSales": "チケット販売",
       "employees": "従業員",
       "members": "メンバー"
+    },
+    "dashboard": {
+      "title": "概要",
+      "card_interval": "過去30日間",
+      "total_users": "メンバー",
+      "total_movies": "総映画数",
+      "total_showtimes": "総上映回数",
+      "total_bookings": "総予約数",
+      "total_sales": "総収益",
+      "ticket_today": "販売済みチケット",
+      "bookings_today": "今日の予約数",
+      "movies_today": "今日上映中の映画",
+      "showtimes_today": "今日の上映回数"
     }
   }
 }

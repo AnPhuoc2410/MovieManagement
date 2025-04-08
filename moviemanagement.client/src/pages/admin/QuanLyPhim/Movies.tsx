@@ -1,16 +1,10 @@
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import {
-  Box,
-  Button,
-  CssBaseline,
-  IconButton,
-  Stack
-} from "@mui/material";
+import { Box, Button, CssBaseline, IconButton, Stack } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Popconfirm } from 'antd';
+import { Popconfirm } from "antd";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -19,13 +13,13 @@ import AppNavbar from "../../../components/mui/AppNavbar";
 import Header from "../../../components/mui/Header";
 import SideMenu from "../../../components/mui/SideMenu";
 
-
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import api from "../../../apis/axios.config";
 import { ENV } from "../../../env/env.config";
 import AppTheme from "../../../shared-theme/AppTheme";
 import { useTranslation } from "react-i18next";
+import Loader from "../../../components/shared/Loading";
 
 interface Movie {
   movieId: string;
@@ -37,11 +31,7 @@ interface Movie {
   version: string;
 }
 
-export default function Movies({
-  disableCustomTheme = false,
-}: {
-  disableCustomTheme?: boolean;
-}) {
+export default function Movies({ disableCustomTheme = false }: { disableCustomTheme?: boolean }) {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [open, setOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
@@ -102,17 +92,11 @@ export default function Movies({
       const payload = {
         ...data,
         movieId: data.movieId || null,
-        image:
-          data.image?.trim() ||
-          "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1741245144/p9qsbq4xr82adzxsushl.png",
+        image: data.image?.trim() || "https://res.cloudinary.com/dwqyqsqmq/image/upload/v1741245144/p9qsbq4xr82adzxsushl.png",
       };
 
       // Create new movie
-      const response = await api.post(
-        "movies",
-        payload,
-        { headers: { "Content-Type": "application/json" } },
-      );
+      const response = await api.post("movies", payload, { headers: { "Content-Type": "application/json" } });
 
       setMovies([...movies, response.data]);
       handleClose();
@@ -143,16 +127,7 @@ export default function Movies({
       field: "image",
       renderHeader: () => <strong>{t("admin.movie_management.detail.image")}</strong>,
       width: 120,
-      renderCell: (params) =>
-        params.row.image ? (
-          <img
-            src={params.row.image}
-            alt="Movie"
-            style={{ width: "100%", height: "auto" }}
-          />
-        ) : (
-          "No image"
-        ),
+      renderCell: (params) => (params.row.image ? <img src={params.row.image} alt="Movie" style={{ width: "100%", height: "auto" }} /> : "No image"),
     },
     {
       field: "movieName",
@@ -163,31 +138,19 @@ export default function Movies({
       field: "postDate",
       renderHeader: () => <strong>{t("admin.movie_management.detail.postdate")}</strong>,
       width: 130,
-      renderCell: (params) => (
-        <span>
-          {params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}
-        </span>
-      ),
+      renderCell: (params) => <span>{params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}</span>,
     },
     {
       field: "fromDate",
       renderHeader: () => <strong>{t("admin.movie_management.detail.showtime")}</strong>,
       width: 130,
-      renderCell: (params) => (
-        <span>
-          {params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}
-        </span>
-      ),
+      renderCell: (params) => <span>{params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}</span>,
     },
     {
       field: "toDate",
       renderHeader: () => <strong>{t("admin.movie_management.detail.end_day")}</strong>,
       width: 130,
-      renderCell: (params) => (
-        <span>
-          {params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}
-        </span>
-      ),
+      renderCell: (params) => <span>{params.value ? dayjs(params.value).format("DD/MM/YYYY") : ""}</span>,
     },
     {
       field: "director",
@@ -222,7 +185,6 @@ export default function Movies({
               <DeleteIcon color="error" />
             </IconButton>
           </Popconfirm>
-
         </>
       ),
     },
@@ -253,30 +215,29 @@ export default function Movies({
           >
             <Stack spacing={2} alignItems="center">
               <Header />
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => handleAddMovie()}
-                sx={{ mb: 2 }}
-              >
+              <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleAddMovie()} sx={{ mb: 2 }}>
                 {t("admin.movie_management.add")}
               </Button>
 
-              <Box sx={{ height: "calc(100vh - 170px)", width: "100%" }}>
-                <DataGrid
-                  rows={movies}
-                  columns={columns}
-                  pagination
-                  pageSizeOptions={[3, 5, 10]} // Available page size options
-                  initialState={{
-                    pagination: {
-                      paginationModel: { pageSize: 3 }, // Set default page size to 3
-                    },
-                  }}
-                  getRowId={(row) => row.movieId}
-                  rowHeight={120} // Match the image height
-                />
-              </Box>
+              {movies.length == 0 ? (
+                <Loader />
+              ) : (
+                <Box sx={{ height: "calc(100vh - 170px)", width: "100%" }}>
+                  <DataGrid
+                    rows={movies}
+                    columns={columns}
+                    pagination
+                    pageSizeOptions={[3, 5, 10]} // Available page size options
+                    initialState={{
+                      pagination: {
+                        paginationModel: { pageSize: 3 }, // Set default page size to 3
+                      },
+                    }}
+                    getRowId={(row) => row.movieId}
+                    rowHeight={120} // Match the image height
+                  />
+                </Box>
+              )}
             </Stack>
           </Box>
         </Box>

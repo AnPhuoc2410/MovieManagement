@@ -321,20 +321,20 @@ const ShowTimeCinema: React.FC<ShowTimeCinemaProps> = ({ movieId, onRoomSelect, 
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <LocationCityOutlined sx={{ color: "yellow", fontSize: "1.8rem", mr: 1 }} />
                       <Typography variant="h5" fontWeight="bold" color="yellow">
-                        {"Rạp: " + cinema.name + " ( " + getCityLabel(selectedCity, t) + " )"}
+                        {t("showtime_cinema.title.theater")+ ": " + cinema.name}
                       </Typography>
                     </Box>
 
                     {/* Right side: địa chỉ */}
                     <Typography variant="h6" color="white">
-                      {"Địa chỉ: " + cinema.address}
+                      {t("showtime_cinema.address")+ ": " + cinema.address}
                     </Typography>
                   </Box>
 
                   <Divider sx={{ mb: 2 }} />
 
                   <Typography variant="h6" mb={1}>
-                    Khung giờ chiếu
+                    {t("showtime_cinema.title.showtime")}:
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                     {cinema.times.map((showtime, idx) => (

@@ -219,8 +219,11 @@
         "showtime_list": "Lịch chiếu và Rạp",
         "now_day": "Hôm nay",
         "theater_list": "Danh sách rạp",
-        "no_showtime": "Không có lịch chiếu nào!"
+        "theater": "Rạp",
+        "no_showtime": "Không có lịch chiếu nào!",
+        "showtime": "Khung giờ chiếu"
       },
+      "address" :"Địa chỉ",
       "location": {
         "HaNoi": "Hà Nội",
         "HCM": "Hồ Chí Minh",
@@ -295,6 +298,9 @@
       "select_required": "Vui lòng chọn",
       "seats": "ghế",
       "seat_notes": "Chú Thích Ghế",
+      "seat_selected": "Ghế đã chọn",
+      "seat_need_select": "Ghế cần chọn",
+      "still": "Còn",
       "seat": {
         "empty": "Ghế trống",
         "selecting": "đang được chọn",
@@ -438,7 +444,10 @@
           "cannot_selected": "Không thể chọn ghế này. Có thể ghế đã được người khác chọn.",
           "cancel_booking_bc_back": "Các ghế đã được hủy do bạn quay lại.",
           "update_status": "Không thể cập nhật trạng thái ghế: ",
-          "booking": "Lỗi khi hủy đặt chỗ"
+          "booking": "Lỗi khi hủy đặt chỗ",
+          "no_single_isolated": "Không thể chọn ghế đơn lẻ",
+          "adjacent_only": "Chỉ có thể chọn ghế liền kề",
+          "cannot_deselect_middle": "Không thể bỏ chọn ghế giữa"
         },
         "promotion": {
           "loading": "Không thể tải khuyến mãi",
@@ -769,6 +778,19 @@
       "ticketSales": "Bán vé",
       "employees": "Nhân viên",
       "members": "Thành viên"
+    },
+    "dashboard": {
+      "title": "Tổng quan",
+      "card_interval": "30 ngày gần nhất",
+      "total_users": "Thành Viên",
+      "total_movies": "Tổng Số Phim",
+      "total_showtimes": "Tổng số suất chiếu",
+      "total_bookings": "Tổng số đặt vé",
+      "total_sales": "Tổng doanh thu",
+      "ticket_today": "Vé Đã Bán",
+      "bookings_today": "Đặt vé hôm nay",
+      "movies_today": "Phim đang chiếu hôm nay",
+      "showtimes_today": "Suất chiếu hôm nay"
     }
   }
 }

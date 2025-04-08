@@ -4,11 +4,13 @@ import { Role } from "../types/roles.type";
 
 interface Props {
   allowedRoles?: Role[]; // Array of allowed roles
+  children?: React.ReactNode; // Child components to render
   redirectPath?: string; // Customizable redirect path
 }
 
 export const ProtectedRoute: React.FC<Props> = ({
   allowedRoles = [Role.Member, Role.Employee, Role.Admin], // Default to all roles
+  children,
   redirectPath = "/",
 }) => {
   const { isAuthenticated, userDetails } = useAuth();
@@ -27,7 +29,7 @@ export const ProtectedRoute: React.FC<Props> = ({
     return <Navigate to={redirectPath} replace />;
   }
 
-  return <Outlet />;
+  return <>{children ?? <Outlet />}</>;
 };
 
 export const RejectedRoute = () => {

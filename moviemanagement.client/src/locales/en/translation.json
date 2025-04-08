@@ -220,10 +220,13 @@
         "showtime_list": "Showtime",
         "now_day": "Now Day",
         "theater_list": "Theater list",
+        "theater": "Theater",
         "no_showtime": "No showtime",
         "login_required": "Login Required",
-        "please_login_to_continue": "Please login to continue"
+        "please_login_to_continue": "Please login to continue",
+        "showtime": "Showtime"
       },
+      "address": "Address",
       "location": {
         "HaNoi": "Ha Noi",
         "HCM": "Ho Chi Minh City",
@@ -298,6 +301,9 @@
       "select_required": "Please select",
       "seats": "seat(s)",
       "seat_notes": "Seat Notes",
+      "seat_selected": "Selected seat",
+      "seat_need_select": "Seat to be selected",
+      "still": "Still",
       "seat": {
         "empty": "Empty seat",
         "selecting": "Being selected",
@@ -448,7 +454,10 @@
           "cannot_selected": "This seat cannot be selected. It may have already been chosen by someone else.",
           "cancel_booking_bc_back": "Seats have been canceled because you went back.",
           "update_status": "Unable to update seat status: ",
-          "booking": "Error canceling booking"
+          "booking": "Error canceling booking",
+          "no_single_isolated": "Your selection cannot leave a single isolated seat in a row",
+          "adjacent_only": "You can only select adjacent seats",
+          "cannot_deselect_middle": "Cannot deselect a middle seat. Please deselect from the edges."
         },
         "promotion": {
           "loading": "Unable to load promotions",
@@ -779,6 +788,19 @@
       "ticketSales": "Ticket Sales",
       "employees": "Employees",
       "members": "Members"
+    },
+    "dashboard": {
+      "title": "Overview",
+      "card_interval": "Last 30 days",
+      "total_users": "Members",
+      "total_movies": "Total Movies",
+      "total_showtimes": "Total Showtimes",
+      "total_bookings": "Total Bookings",
+      "total_sales": "Total Revenue",
+      "ticket_today": "Tickets Sold",
+      "bookings_today": "Today's Bookings",
+      "movies_today": "Movies Showing Today",
+      "showtimes_today": "Today's Showtimes"
     }
   }
 }

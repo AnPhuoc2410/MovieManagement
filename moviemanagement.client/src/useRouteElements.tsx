@@ -146,80 +146,106 @@ export default function useRouteElements() {
     },
     // Protected Admin Routes
     {
-      element: <ProtectedRoute allowedRoles={[Role.Admin]} />,
+      path: "/admin",
       children: [
+        // Dashboard - cho cả Admin và Employee
         {
-          path: "/admin",
+          path: "",
+          element: (
+            <ProtectedRoute allowedRoles={[Role.Admin]}>
+              <Dashboard />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "thong-ke",
+          element: (
+            <ProtectedRoute allowedRoles={[Role.Admin]}>
+              <Dashboard />
+            </ProtectedRoute>
+          ),
+        },
+
+        // Khuyến mãi - cả 2 đều có thể truy cập
+        {
+          path: "khuyen-mai",
+          element: <ProtectedRoute allowedRoles={[Role.Admin, Role.Employee]} />,
           children: [
-            { path: "", element: <Dashboard /> },
-            { path: "thong-ke", element: <Dashboard /> },
-            {
-              path: "khuyen-mai",
-              children: [
-                { path: "", element: <PromotionManagement /> },
-                { path: ":id", element: <PromotionDetailManagement /> },
-              ],
-            },
-            {
-              path: "ql-phim",
-              children: [
-                { path: "", element: <AdminPages.Movie.Management /> },
-                { path: ":movieId", element: <AdminPages.Movie.Edit /> },
-                { path: "them-phim", element: <AdminPages.Movie.Add /> },
-              ],
-            },
-            {
-              path: "ql-ban-ve",
-              element: (
-                <SignalRProvider>
-                  <TicketWrapper />
-                </SignalRProvider>
-              ),
-              children: [
-                { path: "", element: <AdminPages.Ticket.BuyTicket /> },
-                {
-                  path: "ticket/:movieId",
-                  element: <AdminPages.Ticket.Booking />,
-                },
-                { path: "movie-seat", element: <AdminPages.Ticket.Seat /> },
-                { path: "payment", element: <AdminPages.Ticket.Payment /> },
-                {
-                  path: "confirmation",
-                  element: <AdminPages.Ticket.Confirmation />,
-                },
-              ],
-            },
-            {
-              path: "ql-nhan-vien",
-              children: [
-                { path: "", element: <AdminPages.Staff.Management /> },
-                { path: ":id", element: <AdminPages.Staff.Edit /> },
-                { path: "them-moi", element: <AdminPages.Staff.Add /> },
-              ],
-            },
-            {
-              path: "ql-thanh-vien",
-              children: [
-                { path: "", element: <AdminPages.Member.Management /> },
-                { path: ":id", element: <AdminPages.Member.Edit /> },
-              ],
-            },
-            {
-              path: "ql-phong-chieu",
-              children: [
-                { path: "", element: <AdminPages.Room.Management /> },
-                { path: ":roomId", element: <AdminPages.Room.Detail /> },
-                { path: "them-phong-chieu", element: <AdminPages.Room.CreateRoom /> },
-              ],
-            },
-            {
-              path: "ql-thoi-gian-chieu",
-              children: [
-                { path: "", element: <AdminPages.ShowTime.Management /> },
-                { path: ":id", element: <AdminPages.ShowTime.Detail /> },
-                { path: "them-thoi-gian-chieu", element: <AdminPages.ShowTime.Add /> },
-              ],
-            },
+            { path: "", element: <PromotionManagement /> },
+            { path: ":id", element: <PromotionDetailManagement /> },
+          ],
+        },
+
+        // Quản lý phim - cả 2
+        {
+          path: "ql-phim",
+          element: <ProtectedRoute allowedRoles={[Role.Admin]} />,
+          children: [
+            { path: "", element: <AdminPages.Movie.Management /> },
+            { path: ":movieId", element: <AdminPages.Movie.Edit /> },
+            { path: "them-phim", element: <AdminPages.Movie.Add /> },
+          ],
+        },
+
+        // Bán vé - chỉ nhân viên
+        {
+          path: "ql-ban-ve",
+          element: (
+            <ProtectedRoute allowedRoles={[Role.Employee]}>
+              <SignalRProvider>
+                <TicketWrapper />
+              </SignalRProvider>
+            </ProtectedRoute>
+          ),
+          children: [
+            { path: "", element: <AdminPages.Ticket.BuyTicket /> },
+            { path: "ticket/:movieId", element: <AdminPages.Ticket.Booking /> },
+            { path: "movie-seat", element: <AdminPages.Ticket.Seat /> },
+            { path: "payment", element: <AdminPages.Ticket.Payment /> },
+            { path: "confirmation", element: <AdminPages.Ticket.Confirmation /> },
+          ],
+        },
+
+        // Quản lý nhân viên - chỉ admin
+        {
+          path: "ql-nhan-vien",
+          element: <ProtectedRoute allowedRoles={[Role.Admin]} />,
+          children: [
+            { path: "", element: <AdminPages.Staff.Management /> },
+            { path: ":id", element: <AdminPages.Staff.Edit /> },
+            { path: "them-moi", element: <AdminPages.Staff.Add /> },
+          ],
+        },
+
+        // Quản lý thành viên - cả 2
+        {
+          path: "ql-thanh-vien",
+          element: <ProtectedRoute allowedRoles={[Role.Admin]} />,
+          children: [
+            { path: "", element: <AdminPages.Member.Management /> },
+            { path: ":id", element: <AdminPages.Member.Edit /> },
+          ],
+        },
+
+        // Quản lý phòng chiếu - cả 2
+        {
+          path: "ql-phong-chieu",
+          element: <ProtectedRoute allowedRoles={[Role.Admin]} />,
+          children: [
+            { path: "", element: <AdminPages.Room.Management /> },
+            { path: ":roomId", element: <AdminPages.Room.Detail /> },
+            { path: "them-phong-chieu", element: <AdminPages.Room.CreateRoom /> },
+          ],
+        },
+
+        // Quản lý thời gian chiếu - cả 2
+        {
+          path: "ql-thoi-gian-chieu",
+          element: <ProtectedRoute allowedRoles={[Role.Admin, Role.Employee]} />,
+          children: [
+            { path: "", element: <AdminPages.ShowTime.Management /> },
+            { path: ":id", element: <AdminPages.ShowTime.Detail /> },
+            { path: "them-thoi-gian-chieu", element: <AdminPages.ShowTime.Add /> },
           ],
         },
       ],

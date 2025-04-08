@@ -396,8 +396,15 @@ const Header: React.FC<HeaderProps> = ({ isTransparent = true }) => {
                     <PersonIcon fontSize="small" sx={{ mr: 2 }} />
                     {t("user.profile.my_profile")}
                   </MenuItem>
-                  {userDetails?.role === 2 && (
-                    <MenuItem onClick={() => navigate("/admin/thong-ke")}>
+                  {userDetails?.role !== 0 && (
+                    <MenuItem onClick={() => {
+                      if (userDetails?.role === 2) {
+                        navigate("/admin/thong-ke");
+                      }
+                      else {
+                        navigate("/admin/ql-ban-ve");
+                      }
+                    }}>
                       <AdminPanelSettings fontSize="small" sx={{ mr: 2 }} />
                       {t("user.profile.admin_panel")}
                     </MenuItem>

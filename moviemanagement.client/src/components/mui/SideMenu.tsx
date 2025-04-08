@@ -11,8 +11,35 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { UserResponse } from "../../types/users.type";
+import { Chip } from "@mui/material";
 
 const drawerWidth = 240;
+
+const getRoleLabel = (role: number) => {
+  switch (role) {
+    case 0:
+      return "Member";
+    case 1:
+      return "Employee";
+    case 2:
+      return "Admin";
+    default:
+      return "Unknown";
+  }
+};
+
+const getRoleColor = (role: number) => {
+  switch (role) {
+    case 0:
+      return "default";
+    case 1:
+      return "info";
+    case 2:
+      return "success";
+    default:
+      return "default";
+  }
+};
 
 const Drawer = styled(MuiDrawer)({
   width: drawerWidth,
@@ -28,12 +55,11 @@ const Drawer = styled(MuiDrawer)({
 export default function SideMenu() {
   const navigate = useNavigate();
   const { userDetails } = useAuth();
-  const [user, setUser] = useState<
-    Pick<UserResponse, "email" | "fullName" | "avatar">
-  >({
+  const [user, setUser] = useState<Pick<UserResponse, "email" | "fullName" | "avatar" | "role">>({
     email: "",
     fullName: "",
     avatar: "",
+    role: 0,
   });
 
   useEffect(() => {
@@ -100,21 +126,62 @@ export default function SideMenu() {
           sizes="small"
           alt="Avatar Img"
           src={
-            userDetails?.avatar ||
-            "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474081dJf/mat-troll-pho-bien-tren-facebook_040119322.png"
+            userDetails?.avatar || "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474081dJf/mat-troll-pho-bien-tren-facebook_040119322.png"
           }
           sx={{ width: 36, height: 36 }}
         />
-        <Box sx={{ mr: "auto" }}>
+        <Box
+          sx={{
+            mr: "auto",
+            display: "flex",
+            flexDirection: "column",
+            gap: 0.3,
+            minWidth: 0, // Ngăn text overflow
+          }}
+        >
           <Typography
             variant="body2"
-            sx={{ fontWeight: 500, lineHeight: "16px" }}
+            noWrap
+            sx={{
+              fontWeight: 600,
+              lineHeight: 1.4,
+              color: "text.primary",
+              fontSize: {
+                xs: "0.85rem",
+                sm: "0.9rem",
+              },
+            }}
           >
             {user.fullName}
           </Typography>
-          <Typography variant="caption" sx={{ color: "text.secondary" }}>
+
+          <Typography
+            variant="caption"
+            noWrap
+            sx={{
+              color: "text.secondary",
+              fontSize: {
+                xs: "0.75rem",
+                sm: "0.8rem",
+              },
+            }}
+          >
             {user.email}
           </Typography>
+
+          <Chip
+            label={getRoleLabel(user.role)}
+            size="small"
+            color={getRoleColor(user.role)}
+            sx={{
+              mt: 0.5,
+              width: "fit-content",
+              fontSize: {
+                xs: "0.65rem",
+                sm: "0.75rem",
+              },
+            }}
+          />
         </Box>
         <OptionsMenu userId={userDetails?.userId} />
       </Stack>

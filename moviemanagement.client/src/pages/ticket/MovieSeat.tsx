@@ -158,7 +158,7 @@ const MovieSeat: React.FC = () => {
             pb: 1,
           }}
         >
-          {t("seat.selected_summary", "Ghế Đã Chọn")} ({selectedSeats.length}/{maxSeats})
+          {t("movie_seat.seat_selected", "Ghế Đã Chọn")} ({selectedSeats.length}/{maxSeats})
         </Typography>
 
         {/* Display ticket types with selection progress */}
@@ -196,7 +196,7 @@ const MovieSeat: React.FC = () => {
               {selected.count < ticket.quantity && (
                 <Box sx={{ pl: 4 }}>
                   <Typography variant="caption" sx={{ color: "#f44336" }}>
-                    {t("seat.remaining_type", "Còn")} {ticket.quantity - selected.count} {t("seat.to_select_type", "ghế cần chọn")}
+                    {t("movie_seat.still", "Còn")} {ticket.quantity - selected.count} {t("movie_seat.seat_need_select", "ghế cần chọn")}
                   </Typography>
                 </Box>
               )}
@@ -393,7 +393,7 @@ const MovieSeat: React.FC = () => {
                   gap: 3,
                 }}
               >
-                <SeatCountdown seatId="all-seats" seatName={`${selectedSeats.length} ghế`} startTime={lastSelectionTime!} resetTrigger={resetCounter} onTimeout={handleSeatsTimeout} />
+                <SeatCountdown seatId="all-seats" seatName={`${selectedSeats.length} ${t("seat")}`} startTime={lastSelectionTime!} resetTrigger={resetCounter} onTimeout={handleSeatsTimeout} />
               </Box>
             )}
             {/* Selection summary for desktop */}
@@ -476,7 +476,7 @@ const MovieSeat: React.FC = () => {
                 }}
               >
                 <Typography variant="body2" sx={{ color: "white" }}>
-                  {selectedSeats.length}/{maxSeats} {t("seat.selected", "đã chọn")}
+                  {selectedSeats.length}/{maxSeats} {t("movie_seat.seat_selected", "đã chọn")}
                 </Typography>
                 <Button
                   variant="contained"
@@ -505,7 +505,7 @@ const MovieSeat: React.FC = () => {
                 }}
               >
                 <Typography variant="body2" sx={{ color: "white" }}>
-                  {selectedSeats.length}/{maxSeats} {t("seat.selected", "đã chọn")}
+                  {selectedSeats.length}/{maxSeats} {t("movie_seat.seat_selected", "đã chọn")}
                 </Typography>
                 <Button
                   variant="contained"

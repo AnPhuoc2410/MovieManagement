@@ -3,9 +3,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EditIcon from "@mui/icons-material/Edit";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import { Avatar, Box, Chip, Paper, Typography } from "@mui/material";
+import { Avatar, Box, Chip, Paper, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
@@ -21,6 +21,13 @@ const QuanLiThanhVien: React.FC = () => {
   const location = useLocation();
   const swapyRef = useRef<Swapy | null>(null);
   const statsContainerRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
+
+  // Media queries for responsive design
+  const isXsScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isMdScreen = useMediaQuery(theme.breakpoints.down("lg"));
+
   const [statsOrder, setStatsOrder] = useState<string[]>([
     "members",
     "active",
@@ -61,8 +68,7 @@ const QuanLiThanhVien: React.FC = () => {
   const femaleMembers = users?.filter((user) => user.gender === 2).length || 0;
 
   const inactiveMembers = totalMembers ? totalMembers - activeMembers : 0;
-  const totalPoints =
-    users?.reduce((sum, user) => sum + (user.point || 0), 0) || 0;
+  const totalPoints = users?.reduce((sum, user) => sum + (user.point || 0), 0) || 0;
 
   // Define stats cards data
   const statsCards: Record<string, StatCardData> = {
@@ -87,7 +93,6 @@ const QuanLiThanhVien: React.FC = () => {
       icon: <AddCircle sx={{ fontSize: 40 }} />,
       color: "#4DA1A9",
     },
-
     maleMembers: {
       id: "maleMembers",
       title: t("common.stats.male_members") || "Male Members",
@@ -95,7 +100,6 @@ const QuanLiThanhVien: React.FC = () => {
       icon: <CheckCircleIcon sx={{ fontSize: 40 }} />,
       color: "#4CAF50",
     },
-
     femaleMembers: {
       id: "femaleMembers",
       title: t("common.stats.female_members") || "Female Members",
@@ -103,7 +107,6 @@ const QuanLiThanhVien: React.FC = () => {
       icon: <CheckCircleIcon sx={{ fontSize: 40 }} />,
       color: "#4CAF50",
     },
-
     inactive: {
       id: "inactive",
       title: t("common.stats.inactive_members") || "Inactive Members",
@@ -122,9 +125,7 @@ const QuanLiThanhVien: React.FC = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to load members",
-      );
+      toast.error(error instanceof Error ? error.message : "Failed to load members");
     }
   }, [error, location]);
 
@@ -155,10 +156,7 @@ const QuanLiThanhVien: React.FC = () => {
               const toIndex = prevOrder.findIndex((id) => id === toSlot);
 
               if (fromIndex !== -1 && toIndex !== -1) {
-                [newOrder[fromIndex], newOrder[toIndex]] = [
-                  newOrder[toIndex],
-                  newOrder[fromIndex],
-                ];
+                [newOrder[fromIndex], newOrder[toIndex]] = [newOrder[toIndex], newOrder[fromIndex]];
               }
 
               return newOrder;
@@ -185,49 +183,57 @@ const QuanLiThanhVien: React.FC = () => {
 
   const handleEdit = (id: string) => navigate(`/admin/ql-thanh-vien/${id}`);
 
+  // Responsive columns configuration based on screen size
   const columns: GridColDef[] = useMemo(
     () => [
       {
         field: "userName",
         headerName: t("common.table_header.user.username") || "Username",
-        width: 200,
+        flex: 0.5,
+        minWidth: 90,
+        maxWidth: isXsScreen ? 80 : 120,
         renderCell: (params) => (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Avatar
-              src={params.row.avatar || "/default-avatar.png"}
-              alt={params.row.fullName}
-            />
-            <span>{params.row.userName}</span>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Avatar src={params.row.avatar || "/default-avatar.png"} alt={params.row.fullName} sx={{ width: isXsScreen ? 24 : 32, height: isXsScreen ? 24 : 32 }} />
           </Box>
         ),
       },
       {
         field: "fullName",
         headerName: t("common.table_header.user.fullname") || "Full Name",
-        width: 180,
+        flex: 1,
+        minWidth: 120,
       },
       {
         field: "email",
         headerName: t("common.table_header.user.email") || "Email",
-        width: 220,
+        flex: 1,
+        minWidth: 150,
+        hide: isXsScreen,
       },
       {
         field: "phoneNumber",
         headerName: t("common.table_header.user.phone") || "Phone",
-        width: 150,
+        flex: 0.8,
+        minWidth: 110,
+        hide: isSmScreen,
       },
       {
         field: "idCard",
         headerName: t("common.table_header.user.id_card") || "Id Card",
-        width: 200,
+        flex: 0.8,
+        minWidth: 120,
+        hide: isMdScreen,
         align: "left",
-        renderCell: (params) =>
-          params.row.idCard === "" ? "N/A" : params.row.idCard,
+        renderCell: (params) => (params.row.idCard === "" ? "N/A" : params.row.idCard),
       },
       {
         field: "gender",
         headerName: t("common.table_header.user.gender") || "Gender",
-        width: 130,
+        flex: 0.5,
+        minWidth: 80,
+        maxWidth: 100,
+        hide: isXsScreen,
         renderCell: (params) => (
           <Chip
             label={params.row.gender === 0 ? "Male" : "Female"}
@@ -235,8 +241,9 @@ const QuanLiThanhVien: React.FC = () => {
             sx={{
               fontWeight: "bold",
               borderRadius: "16px",
-              minWidth: "80px",
-              minHeight: "30px",
+              minWidth: isSmScreen ? "60px" : "80px",
+              minHeight: isSmScreen ? "24px" : "30px",
+              fontSize: isSmScreen ? "0.7rem" : "0.8rem",
             }}
           />
         ),
@@ -245,7 +252,9 @@ const QuanLiThanhVien: React.FC = () => {
         field: "status",
         headerName: t("common.table_header.user.status") || "Status",
         align: "center",
-        width: 120,
+        flex: 0.5,
+        minWidth: 80,
+        maxWidth: 100,
         renderCell: (params) => (
           <Chip
             label={params.row.status === 1 ? "Active" : "Inactive"}
@@ -253,8 +262,9 @@ const QuanLiThanhVien: React.FC = () => {
             sx={{
               fontWeight: "bold",
               borderRadius: "16px",
-              minWidth: "80px",
-              minHeight: "30px",
+              minWidth: isSmScreen ? "60px" : "80px",
+              minHeight: isSmScreen ? "24px" : "30px",
+              fontSize: isSmScreen ? "0.7rem" : "0.8rem",
             }}
           />
         ),
@@ -262,25 +272,22 @@ const QuanLiThanhVien: React.FC = () => {
       {
         field: "point",
         headerName: t("common.table_header.user.points") || "Points",
-        width: 130,
+        flex: 0.4,
+        minWidth: 70,
         type: "number",
         align: "center",
+        hide: isXsScreen,
       },
       {
         field: "actions",
         headerName: t("common.table_header.actions") || "Actions",
         type: "actions",
-        width: 100,
-        getActions: (params) => [
-          <GridActionsCellItem
-            icon={<EditIcon />}
-            label="Edit"
-            onClick={() => handleEdit(params.row.userId)}
-          />,
-        ],
+        flex: 0.4,
+        minWidth: 60,
+        getActions: (params) => [<GridActionsCellItem icon={<EditIcon />} label="Edit" onClick={() => handleEdit(params.row.userId)} />],
       },
     ],
-    [t],
+    [t, isXsScreen, isSmScreen, isMdScreen],
   );
 
   return (
@@ -288,7 +295,8 @@ const QuanLiThanhVien: React.FC = () => {
       <Box
         sx={{
           width: "100%",
-          // p: 1,
+          overflow: "hidden", // Prevent horizontal scrolling
+          px: { xs: 1, sm: 2 }, // Add some padding on small screens
           "& .MuiDataGrid-root": {
             border: "none",
             backgroundColor: "white",
@@ -301,18 +309,38 @@ const QuanLiThanhVien: React.FC = () => {
             },
             "& .MuiDataGrid-cell": {
               borderBottom: "1px solid #f0f0f0",
+              whiteSpace: "normal", // Allow text wrapping
+              padding: isXsScreen ? "8px 4px" : "8px 16px",
             },
             "& .MuiDataGrid-row:hover": {
               backgroundColor: "#f5f5f5",
             },
+            "& .MuiDataGrid-columnHeaderTitle": {
+              fontWeight: "bold",
+              fontSize: isXsScreen ? "0.75rem" : "0.875rem",
+              whiteSpace: "normal",
+              lineHeight: 1.2,
+              overflow: "visible",
+            },
+            "& .MuiDataGrid-cellContent": {
+              fontSize: isXsScreen ? "0.75rem" : "0.875rem",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            },
           },
         }}
       >
-        {/* Stats Cards - Swapy compatible structure */}
+        {/* Stats Cards - Responsive Swapy container */}
         <div
           ref={statsContainerRef}
           className="swapy-container"
-          style={{ marginBottom: "1.5rem" }}
+          style={{
+            marginBottom: "1.5rem",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "8px",
+            justifyContent: "center",
+          }}
         >
           {statsOrder.map((cardId) => (
             <div
@@ -320,21 +348,18 @@ const QuanLiThanhVien: React.FC = () => {
               className="swapy-slot"
               data-swapy-slot={cardId}
               style={{
-                margin: "8px",
-                flex: "1 1 250px",
-                minWidth: "250px",
+                margin: "4px",
+                flex: isXsScreen ? "1 1 100%" : isSmScreen ? "1 1 45%" : "1 1 230px",
+                minWidth: isXsScreen ? "100%" : "230px",
+                maxWidth: isXsScreen ? "100%" : "350px",
                 display: "inline-block",
               }}
             >
-              <div
-                className="swapy-item"
-                data-swapy-item={cardId}
-                style={{ cursor: "grab" }}
-              >
+              <div className="swapy-item" data-swapy-item={cardId} style={{ cursor: "grab" }}>
                 <Paper
                   elevation={3}
                   sx={{
-                    p: 3,
+                    p: isXsScreen ? 2 : 3,
                     borderRadius: 2,
                     height: "100%",
                     borderLeft: `5px solid ${statsCards[cardId].color}`,
@@ -350,17 +375,17 @@ const QuanLiThanhVien: React.FC = () => {
                   }}
                 >
                   <Box>
-                    <Typography variant="h6" fontWeight="bold">
+                    <Typography variant={isXsScreen ? "subtitle1" : "h6"} fontWeight="bold">
                       {statsCards[cardId].title}
                     </Typography>
-                    <Typography variant="h4" fontWeight="bold" mt={1}>
+                    <Typography variant={isXsScreen ? "h5" : "h4"} fontWeight="bold" mt={1}>
                       {statsCards[cardId].value}
                     </Typography>
                   </Box>
                   <Box
                     sx={{
                       backgroundColor: `${statsCards[cardId].color}20`,
-                      p: 2,
+                      p: isXsScreen ? 1.5 : 2,
                       ml: 2,
                       borderRadius: "50%",
                       color: statsCards[cardId].color,
@@ -369,7 +394,9 @@ const QuanLiThanhVien: React.FC = () => {
                       justifyContent: "center",
                     }}
                   >
-                    {statsCards[cardId].icon}
+                    {React.cloneElement(statsCards[cardId].icon as React.ReactElement, {
+                      sx: { fontSize: isXsScreen ? 30 : 40 },
+                    })}
                   </Box>
                 </Paper>
               </div>
@@ -377,13 +404,16 @@ const QuanLiThanhVien: React.FC = () => {
           ))}
         </div>
 
+        {/* Responsive DataGrid Container */}
         <Box
           sx={{
             backgroundColor: "white",
             borderRadius: 2,
             boxShadow: 1,
-            p: 2,
+            p: { xs: 1, sm: 2 },
             mb: 4,
+            width: "100%",
+            overflow: "hidden", // Prevent any overflow
           }}
         >
           <DataGrid
@@ -392,11 +422,37 @@ const QuanLiThanhVien: React.FC = () => {
             loading={isLoading}
             getRowId={(row) => row.userId}
             initialState={{
-              pagination: { paginationModel: { pageSize: 10 } },
+              pagination: { paginationModel: { pageSize: isXsScreen ? 5 : 10 } },
+              columns: {
+                columnVisibilityModel: {
+                  email: !isXsScreen,
+                  phoneNumber: !isSmScreen,
+                  idCard: !isMdScreen,
+                  gender: !isXsScreen,
+                  point: !isXsScreen,
+                },
+              },
             }}
-            pageSizeOptions={[5, 10, 25]}
+            pageSizeOptions={isXsScreen ? [5, 10] : [5, 10, 25]}
             disableRowSelectionOnClick
             autoHeight
+            density={isSmScreen ? "compact" : "standard"}
+            sx={{
+              width: "100%",
+              "& .MuiDataGrid-virtualScroller": {
+                overflow: "auto",
+              },
+              "& .MuiDataGrid-main": {
+                width: "100%",
+                overflow: "hidden",
+              },
+              "& .MuiDataGrid-columnHeaders, & .MuiDataGrid-footerContainer": {
+                width: "100% !important", // Force header and footer to match grid width
+              },
+              "& .MuiDataGrid-virtualScrollerContent": {
+                width: "100% !important", // Ensure scroll content matches width
+              },
+            }}
           />
         </Box>
       </Box>

@@ -95,7 +95,8 @@ export default function StatCard({
 
   const color = labelColors[trend];
   const chartColor = trendColors[trend];
-  const trendValues = calculateTrendValue(data);
+  // const trendValues = calculateTrendValue(data);
+  const trendValues = "+" + data.reduce((a, b) => a + b, 0); // Example calculation
 
   return (
     <Card variant="outlined" sx={{ height: "100%", flexGrow: 1 }}>
