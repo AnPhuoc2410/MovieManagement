@@ -379,6 +379,20 @@
           "points": "Điểm thưởng"
         },
         "actions": "Hành động"
+      },
+      "stats": {
+        "total_members": "Tổng số thành viên",
+        "total_employees": "Tổng số nhân viên",
+        "active_members": "Thành viên đang hoạt động",
+        "inactive_members": "Thành viên không hoạt động",
+        "total_points": "Tổng điểm",
+        "new_members_in30days": "Thành viên mới trong 30 ngày",
+        "male_members": "Thành viên nam",
+        "female_members": "Thành viên nữ",
+        "active_employees": "Nhân viên đang hoạt động",
+        "inactive_employees": "Nhân viên không hoạt động",
+        "male_employees": "Nhân viên nam",
+        "female_employees": "Nhân viên nữ"
       }
     },
     "toast": {

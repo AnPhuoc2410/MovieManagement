@@ -385,12 +385,16 @@
       "stats": {
         "total_members": "総メンバー数",
         "total_employees": "総従業員数",
-        "active_members": "アクティブメンバー",
-        "inactive_members": "非アクティブメンバー",
+        "active_members": "アクティブ",
+        "inactive_members": "非アクティブ",
         "total_points": "合計ポイント",
-        "new_members_in30days": "過去30日間の新規メンバー",
-        "male_members": "男性メンバー",
-        "female_members": "女性メンバー"
+        "new_members_in30days": "過去30日間の新規",
+        "male_members": "男性",
+        "female_members": "女性",
+        "active_employees": "アクティブ",
+        "inactive_employees": "非アクティブ",
+        "male_employees": "男性",
+        "female_employees": "女性"
       }
     },
     "toast": {

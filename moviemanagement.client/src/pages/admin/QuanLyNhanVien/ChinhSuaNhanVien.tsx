@@ -1,15 +1,5 @@
 import { FileUploadOutlined } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Container,
-  FormControlLabel,
-  IconButton,
-  Radio,
-  RadioGroup,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, FormControlLabel, IconButton, Radio, RadioGroup, TextField, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router";
@@ -114,15 +104,7 @@ const ChinhSuaNhanVien: React.FC = () => {
                 endAdornment: (
                   <IconButton component="label">
                     <FileUploadOutlined />
-                    <input
-                      ref={fileInputRef}
-                      style={{ display: "none" }}
-                      type="file"
-                      accept="image/*"
-                      hidden
-                      onChange={handleUpload}
-                      name="[licenseFile]"
-                    />
+                    <input ref={fileInputRef} style={{ display: "none" }} type="file" accept="image/*" hidden onChange={handleUpload} name="[licenseFile]" />
                   </IconButton>
                 ),
               }}
@@ -151,32 +133,15 @@ const ChinhSuaNhanVien: React.FC = () => {
                     mt: 1,
                   }}
                 />
-                <Button
-                  size="small"
-                  color="error"
-                  onClick={handleRemoveImage}
-                  sx={{ mt: 1 }}
-                >
+                <Button size="small" color="error" onClick={handleRemoveImage} sx={{ mt: 1 }}>
                   {t("admin.employee_management.remove_image")}
                 </Button>
               </Box>
             )}
           </Box>
 
-          <TextField
-            label={t("admin.employee_managemet.detail.account")}
-            variant="standard"
-            fullWidth
-            margin="normal"
-            defaultValue={employeeData.userName}
-          />
-          <TextField
-            label={t("admin.employee_managemet.detail.fullname")}
-            variant="standard"
-            fullWidth
-            margin="normal"
-            defaultValue={employeeData.fullName}
-          />
+          <TextField label={t("admin.employee_managemet.detail.account")} variant="standard" fullWidth margin="normal" defaultValue={employeeData.userName} />
+          <TextField label={t("admin.employee_managemet.detail.fullname")} variant="standard" fullWidth margin="normal" defaultValue={employeeData.fullName} />
           <TextField
             label={t("admin.employee_managemet.detail.birthday")}
             variant="standard"
@@ -198,42 +163,15 @@ const ChinhSuaNhanVien: React.FC = () => {
             }}
           >
             <Typography>{t("admin.employee_managemet.detail.gender")}</Typography>
-            <RadioGroup
-              defaultValue={employeeData.gender || "Male"}
-              sx={{ display: "flex", gap: 10, flexDirection: "row" }}
-            >
+            <RadioGroup defaultValue={employeeData.gender || "Male"} sx={{ display: "flex", gap: 10, flexDirection: "row" }}>
               <FormControlLabel value="Male" control={<Radio />} label="Nam" />
               <FormControlLabel value="Female" control={<Radio />} label="Nữ" />
             </RadioGroup>
           </Box>
-          <TextField
-            label={t("admin.employee_managemet.detail.email")}
-            variant="standard"
-            fullWidth
-            margin="normal"
-            defaultValue={employeeData.email}
-          />
-          <TextField
-            label={t("admin.employee_managemet.detail.id_card")}
-            variant="standard"
-            fullWidth
-            margin="normal"
-            defaultValue={employeeData.idCard}
-          />
-          <TextField
-            label={t("admin.employee_managemet.detail.phone")}
-            variant="standard"
-            fullWidth
-            margin="normal"
-            defaultValue={employeeData.phoneNumber}
-          />
-          <TextField
-            label={t("admin.employee_managemet.detail.address")}
-            variant="standard"
-            fullWidth
-            margin="normal"
-            defaultValue={employeeData.address}
-          />
+          <TextField label={t("admin.employee_managemet.detail.email")} variant="standard" fullWidth margin="normal" defaultValue={employeeData.email} />
+          <TextField label={t("admin.employee_managemet.detail.id_card")} variant="standard" fullWidth margin="normal" defaultValue={employeeData.idCard} />
+          <TextField label={t("admin.employee_managemet.detail.phone")} variant="standard" fullWidth margin="normal" defaultValue={employeeData.phoneNumber} />
+          <TextField label={t("admin.employee_managemet.detail.address")} variant="standard" fullWidth margin="normal" defaultValue={employeeData.address} />
 
           <Box
             sx={{
@@ -252,11 +190,7 @@ const ChinhSuaNhanVien: React.FC = () => {
             >
               {t("admin.employee_managemet.come_back")}
             </Button>
-            <Button
-              onClick={handleSaveChanges}
-              color="primary"
-              variant="contained"
-            >
+            <Button onClick={handleSaveChanges} color="primary" variant="contained">
               {t("admin.employee_managemet.save")}
             </Button>
           </Box>

@@ -385,14 +385,18 @@
         "actions": "Actions"
       },
       "stats": {
-        "total_members": "Total Members",
-        "total_employees": "Total Employees",
-        "active_members": "Active Members",
-        "inactive_members": "Inactive Members",
+        "total_members": "Total",
+        "total_employees": "Total",
+        "active_members": "Active",
+        "inactive_members": "Inactive",
         "total_points": "Total Points",
         "new_members_in30days": "New Members In 30 Days",
-        "male_members": "Male Members",
-        "female_members": "Female Members"
+        "male_members": "Male",
+        "female_members": "Female",
+        "active_employees": "Active",
+        "inactive_employees": "Inactive",
+        "male_employees": "Male",
+        "female_employees": "Female"
       }
     },
     "toast": {

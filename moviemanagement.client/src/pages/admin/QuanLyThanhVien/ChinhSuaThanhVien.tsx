@@ -1,15 +1,5 @@
 import { FileUploadOutlined } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Container,
-  FormControlLabel,
-  IconButton,
-  Radio,
-  RadioGroup,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, FormControlLabel, IconButton, Radio, RadioGroup, TextField, Typography } from "@mui/material";
 
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
@@ -58,6 +48,35 @@ const ChinhSuaThanhVien: React.FC = () => {
   }, [imageUrl]);
 
   if (!memberData) return null;
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    birthDate: "",
+    avatar: "",
+    gender: 0,
+    email: "",
+    phoneNumber: "",
+    address: "",
+    idCard: "",
+  });
+
+  useEffect(() => {
+    if (memberData) {
+      setFormData({
+        fullName: memberData.fullName,
+        birthDate: memberData.birthDate || "",
+        avatar: memberData.avatar,
+        gender: memberData.gender,
+        email: memberData.email,
+        phoneNumber: memberData.phoneNumber,
+        address: memberData.address,
+        idCard: memberData.idCard,
+      });
+      if (memberData.avatar) {
+        setImageUrl(memberData.avatar);
+      }
+    }
+  }, [memberData]);
 
   if (isLoading) return <Loader />;
   if (error) return <div>Failed to fetch data</div>;
@@ -133,15 +152,7 @@ const ChinhSuaThanhVien: React.FC = () => {
                 endAdornment: (
                   <IconButton component="label">
                     <FileUploadOutlined />
-                    <input
-                      ref={fileInputRef}
-                      style={{ display: "none" }}
-                      type="file"
-                      accept="image/*"
-                      hidden
-                      onChange={handleUpload}
-                      name="[licenseFile]"
-                    />
+                    <input ref={fileInputRef} style={{ display: "none" }} type="file" accept="image/*" hidden onChange={handleUpload} name="[licenseFile]" />
                   </IconButton>
                 ),
               }}
@@ -170,32 +181,15 @@ const ChinhSuaThanhVien: React.FC = () => {
                     mt: 1,
                   }}
                 />
-                <Button
-                  size="small"
-                  color="error"
-                  onClick={handleRemoveImage}
-                  sx={{ mt: 1 }}
-                >
+                <Button size="small" color="error" onClick={handleRemoveImage} sx={{ mt: 1 }}>
                   {t("admin.member_management.remove_image")}
                 </Button>
               </Box>
             )}
           </Box>
 
-          <TextField
-            label={t("admin.employee_management.detail.account")}
-            variant="standard"
-            fullWidth
-            margin="normal"
-            defaultValue={memberData.userName}
-          />
-          <TextField
-            label={t("admin.employee_management.detail.fullname")}
-            variant="standard"
-            fullWidth
-            margin="normal"
-            defaultValue={memberData.fullName}
-          />
+          <TextField label={t("admin.employee_management.detail.account")} variant="standard" fullWidth margin="normal" defaultValue={memberData.userName} />
+          <TextField label={t("admin.employee_management.detail.fullname")} variant="standard" fullWidth margin="normal" defaultValue={memberData.fullName} />
           <TextField
             label={t("admin.employee_management.detail.birthday")}
             variant="standard"
@@ -217,42 +211,15 @@ const ChinhSuaThanhVien: React.FC = () => {
             }}
           >
             <Typography>{t("admin.employee_management.detail.gender")}</Typography>
-            <RadioGroup
-              defaultValue={memberData.gender || "Male"}
-              sx={{ display: "flex", gap: 10, flexDirection: "row" }}
-            >
-              <FormControlLabel value="Male" control={<Radio />} label="Nam" />
-              <FormControlLabel value="Female" control={<Radio />} label="Nữ" />
+            <RadioGroup value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: Number(e.target.value) })} sx={{ display: "flex", gap: 10, flexDirection: "row" }}>
+              <FormControlLabel value={0} control={<Radio />} label="Nam" />
+              <FormControlLabel value={1} control={<Radio />} label="Nữ" />
             </RadioGroup>
           </Box>
-          <TextField
-            label={t("admin.employee_management.detail.email")}
-            variant="standard"
-            fullWidth
-            margin="normal"
-            defaultValue={memberData.email}
-          />
-          <TextField
-            label={t("admin.employee_management.detail.id_card")}
-            variant="standard"
-            fullWidth
-            margin="normal"
-            defaultValue={memberData.idCard}
-          />
-          <TextField
-            label={t("admin.employee_management.detail.phone")}
-            variant="standard"
-            fullWidth
-            margin="normal"
-            defaultValue={memberData.phoneNumber}
-          />
-          <TextField
-            label={t("admin.employee_management.detail.address")}
-            variant="standard"
-            fullWidth
-            margin="normal"
-            defaultValue={memberData.address}
-          />
+          <TextField label={t("admin.employee_management.detail.email")} variant="standard" fullWidth margin="normal" defaultValue={memberData.email} />
+          <TextField label={t("admin.employee_management.detail.id_card")} variant="standard" fullWidth margin="normal" defaultValue={memberData.idCard} />
+          <TextField label={t("admin.employee_management.detail.phone")} variant="standard" fullWidth margin="normal" defaultValue={memberData.phoneNumber} />
+          <TextField label={t("admin.employee_management.detail.address")} variant="standard" fullWidth margin="normal" defaultValue={memberData.address} />
 
           <Box
             sx={{
@@ -271,11 +238,7 @@ const ChinhSuaThanhVien: React.FC = () => {
             >
               {t("admin.employee_management.come_back")}
             </Button>
-            <Button
-              onClick={handleSaveChanges}
-              color="primary"
-              variant="contained"
-            >
+            <Button onClick={handleSaveChanges} color="primary" variant="contained">
               {t("admin.employee_management.save")}
             </Button>
           </Box>
