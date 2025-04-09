@@ -238,8 +238,27 @@ const QuanLiNhanVien: React.FC = () => {
         type: "actions",
         width: 100,
         getActions: (params) => [
-          <GridActionsCellItem icon={<EditIcon />} label="Edit" onClick={() => handleEdit(params.row.userId)} />,
-          params.row.status === 1 && <GridActionsCellItem icon={<DeleteIcon />} label="Delete" onClick={() => handleDelete(params.row.userName)} showInMenu />,
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            onClick={() => handleEdit(params.row.userId)}
+            disabled={params.row.status !== 1}
+            sx={{
+              color: params.row.status !== 1 ? "gray" : "inherit",
+              opacity: params.row.status !== 1 ? 0.5 : 1,
+            }}
+          />,
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={() => handleDelete(params.row.userName)}
+            showInMenu
+            disabled={params.row.status !== 1}
+            sx={{
+              color: params.row.status !== 1 ? "gray" : "inherit",
+              opacity: params.row.status !== 1 ? 0.5 : 1,
+            }}
+          />,
         ],
       },
     ],
