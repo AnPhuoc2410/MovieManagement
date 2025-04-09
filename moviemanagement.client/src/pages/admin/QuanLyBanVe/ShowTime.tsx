@@ -155,7 +155,7 @@ const ShowTime: React.FC = () => {
               >
                 <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider', textAlign: 'center' }}>
                   <Typography variant="h5" fontWeight="bold" gutterBottom>
-                    {t("menu.breadcrumbs.ticketBooking")}
+                    {t("menu.ticketBooking")}
                   </Typography>
                 </Box>
 
