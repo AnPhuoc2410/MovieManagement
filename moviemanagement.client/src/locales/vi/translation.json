@@ -223,7 +223,7 @@
         "no_showtime": "Không có lịch chiếu nào!",
         "showtime": "Khung giờ chiếu"
       },
-      "address" :"Địa chỉ",
+      "address": "Địa chỉ",
       "location": {
         "HaNoi": "Hà Nội",
         "HCM": "Hồ Chí Minh",
@@ -780,17 +780,29 @@
       "members": "Thành viên"
     },
     "dashboard": {
-      "title": "Tổng quan",
+      "title": "Tổng Quan",
       "card_interval": "30 ngày gần nhất",
       "total_users": "Thành Viên",
       "total_movies": "Tổng Số Phim",
-      "total_showtimes": "Tổng số suất chiếu",
-      "total_bookings": "Tổng số đặt vé",
-      "total_sales": "Tổng doanh thu",
       "ticket_today": "Vé Đã Bán",
-      "bookings_today": "Đặt vé hôm nay",
-      "movies_today": "Phim đang chiếu hôm nay",
-      "showtimes_today": "Suất chiếu hôm nay"
+      "title_revenue": "Doanh Thu",
+      "select_year": "Năm",
+      "select_month": "Tháng",
+      "month_revenue": "Doanh thu tháng",
+      "year_revenue": "Doanh thu năm",
+      "month": "Tháng",
+      "title_leaderboard": "Bảng Xếp Hạng",
+      "top_movies": "Top 5 Phim Doanh Thu Cao Nhất",
+      "movie_unit": "Doanh số",
+      "top_showtime": "Top 5 Suất Chiếu Bán Chạy",
+      "showtime_unit": "Số vé đã bán",
+      "export": "Xuất báo cáo",
+      "top_members": "Top 50 Thành Viên Nổi Bật",
+      "top_categories": "Top 5 Thể Loại Phim Bán Chạy",
+      "member_name": "Tên Thành Viên",
+      "tickets_purchased": "Vé Đã Mua",
+      "current_points": "Điểm Hiện Tại",
+      "total_points": "Tổng Điểm"
     }
   }
 }

@@ -15,5 +15,12 @@ namespace MovieManagement.Server.Services.DashboardService
 
         Task<IEnumerable<TopShowtimeResponse.ShowtimeRevenue>> GetTopShowtimeRevenues();
         Task<IEnumerable<TopShowtimeResponse.ShowtimeDaily>> GetTopShowtimeDailyRevenues(DateTime from, DateTime to);
+        Task<long> GetTotalMembers();
+        Task<List<long>> MemberDailyLast30Days();
+        Task<List<long>> TotalMovieDailyLast30Days();
+        Task<long> TotalTicketSold();
+        Task<List<long>> TicketSoldLast30Days();
+        Task<Dictionary<string, object>> DashboardOverview();
+        Task<Dictionary<DateOnly, decimal>> GetRevenueByDate();
     }
 }

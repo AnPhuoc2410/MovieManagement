@@ -33,7 +33,7 @@ namespace MovieManagement.Server.Repositories
         public Task<List<User>> GetUserByRoleAsync(Role role)
         {
             return _context.Users
-                .Where(user => user.Role == role && user.Status == UserStatus.Active)
+                .Where(user => user.Role == role)
                 .ToListAsync();
         }
 
@@ -66,7 +66,7 @@ namespace MovieManagement.Server.Repositories
             await _context.SaveChangesAsync();
             return user != null;
         }
-        
+
         public async Task<bool> ResetUserPasswordByEmailAsync(String email, string currentPassword,
             string newPassword)
         {
@@ -139,7 +139,7 @@ namespace MovieManagement.Server.Repositories
         public async Task<List<TopMemberResponse.MemberRevenue>> GetTopMemberRevenue()
         {
             var user = await _context.Users
-                .Where(u => u.Role == Role.Member)
+                .Where(u => u.Role == Role.Member && u.Status == UserStatus.Active)
                 .Select(u => new TopMemberResponse.MemberRevenue
                 {
                     MemberName = u.UserName,
@@ -162,7 +162,7 @@ namespace MovieManagement.Server.Repositories
             DateTime date)
         {
             var user = await _context.Users
-                .Where(u => u.Role == Role.Member)
+                .Where(u => u.Role == Role.Member && u.Status == UserStatus.Active)
                 .Select(u => new TopMemberResponse.MemberDaily
                 {
                     Day = date,
@@ -179,7 +179,7 @@ namespace MovieManagement.Server.Repositories
                                 .Select(b => b.TotalTicket)
                                 .Sum(),
                             CurrentPoint = u.Point,
-                            TotalPoint = u.Bills
+                            TotalPoint = u.Bills.Where(b => b.Point > 0)
                                 .Sum(b => b.Point)
                         })
                         .ToList()
@@ -188,6 +188,32 @@ namespace MovieManagement.Server.Repositories
                 .Take(50)
                 .ToListAsync();
             return user;
+        }
+
+        public async Task<long> GetTotalMembers()
+        {
+            var totalMembers = await _context.Users
+                .Where(u => u.Role == Role.Member)
+                .CountAsync();
+            return totalMembers;
+        }
+        public async Task<List<long>> MemberDailyLast30Days()
+        {
+            var currentDate = DateTime.Now;
+            var last30Days = Enumerable.Range(0, 30)
+                .Select(offset => currentDate.AddDays(-offset))
+                .ToList();
+            var memberCounts = new List<long>();
+            foreach (var date in last30Days)
+            {
+                var count = await _context.Users
+                    .Where(u => u.Role == Role.Member &&
+                                u.JoinDate.Date == date.Date)
+                    .CountAsync();
+                memberCounts.Add(count);
+            }
+            memberCounts.Reverse();
+            return memberCounts;
         }
     }
 }

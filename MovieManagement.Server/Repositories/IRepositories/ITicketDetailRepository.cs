@@ -13,5 +13,7 @@ namespace MovieManagement.Server.Repositories.IRepositories
 
         List<TicketDetail> GetTicketByShowTimeIdV2(Guid showTimeId);
         Task<TicketDetail> GetTicketInfo(Guid Id);
+        Task<long> TotalTicketSold();
+        Task<List<long>> TicketDailyLast30Days();
     }
 }

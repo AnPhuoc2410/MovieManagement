@@ -225,7 +225,7 @@
         "please_login_to_continue": "続行するにはログインしてください",
         "showtime": "上映時間"
       },
-      "address" : "住所",
+      "address": "住所",
       "location": {
         "HaNoi": "ハノイ",
         "HCM": "ホーチミン",
@@ -792,13 +792,25 @@
       "card_interval": "過去30日間",
       "total_users": "メンバー",
       "total_movies": "総映画数",
-      "total_showtimes": "総上映回数",
-      "total_bookings": "総予約数",
-      "total_sales": "総収益",
       "ticket_today": "販売済みチケット",
-      "bookings_today": "今日の予約数",
-      "movies_today": "今日上映中の映画",
-      "showtimes_today": "今日の上映回数"
+      "title_revenue": "売上",
+      "select_year": "年",
+      "select_month": "月",
+      "month_revenue": "月間売上",
+      "year_revenue": "年間売上",
+      "month": "月",
+      "title_leaderboard": "ランキングボード",
+      "top_movies": "興行収入トップ10映画",
+      "movie_unit": "売上",
+      "top_showtime": "販売数トップ5上映回",
+      "showtime_unit": "販売済みチケット数",
+      "export": "エクスポート",
+      "top_members": "注目のメンバー50人",
+      "top_categories": "映画ジャンル販売数トップ5",
+      "member_name": "会員名",
+      "tickets_purchased": "購入済みチケット",
+      "current_points": "現在のポイント",
+      "total_points": "合計ポイント"
     }
   }
 }

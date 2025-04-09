@@ -15,6 +15,7 @@ namespace MovieManagement.Server.Models.Configurations
             builder.Property(x => x.MovieName).IsRequired();
             builder.Property(x => x.MovieName).HasMaxLength(100);
             builder.Property(x => x.MovieName).IsUnicode(true);
+            builder.Property(x => x.SearchString).HasColumnType("varchar(100)");
             builder.Property(x => x.Image).HasColumnType("varchar(250)");
             builder.Property(x => x.Image).IsRequired();
             builder.Property(x => x.Image).HasMaxLength(500);

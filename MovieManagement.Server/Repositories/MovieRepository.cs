@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
+using MovieManagement.Server.Extensions.RemoveVietnamese;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Models.ResponseModel;
@@ -40,8 +41,9 @@ namespace MovieManagement.Server.Repositories
 
         public async Task<List<Movie>> GetMoviesByNameRelativePage(string name, int page, int pageSize)
         {
+            var searchValue = VietnameseConverter.RemoveVietnameseDiacritics(name);
             return await _context.Movies
-                .Where(m => m.MovieName.ToLower().Contains(name.ToLower()) && m.IsDeleted == false)
+                .Where(m => m.SearchString.ToLower().Contains(searchValue.ToLower()) && m.IsDeleted == false)
                 .Skip(page * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -85,8 +87,9 @@ namespace MovieManagement.Server.Repositories
 
         public async Task<List<Movie>> GetMoviesByNameRelative(string searchValue)
         {
+            searchValue = VietnameseConverter.RemoveVietnameseDiacritics(searchValue);
             return await _context.Movies
-                .Where(m => m.MovieName.ToLower().Contains(searchValue.ToLower()) && m.IsDeleted == false).ToListAsync();
+                .Where(m => m.SearchString.ToLower().Contains(searchValue.ToLower()) && m.IsDeleted == false).ToListAsync();
         }
 
         public async Task<List<Movie>> GetAllAsyncDeletedFalse()
@@ -109,6 +112,7 @@ namespace MovieManagement.Server.Repositories
                         .Sum()
                 })
                 .OrderByDescending(m => m.Revenue)
+                .Take(5)
                 .ToListAsync();
 
             return movieRevenue.Select(mr => new TopMovieResponse.MovieRevenue
@@ -121,7 +125,7 @@ namespace MovieManagement.Server.Repositories
         public async Task<TopMovieResponse.MovieDaily> GetTopMovieDailyRevenue(DateTime time)
         {
             var movieRevenue = await _context.Movies
-                .Where(m => m.Showtimes.Any(st => st.TicketDetails.Any(td => td.Bill.CreatedDate.Day == time.Day)))
+                .Where(m => m.Showtimes.Any(st => st.TicketDetails.Any(td => td.Bill.CreatedDate.Day == time.Day && td.Bill.Amount > 0)))
                 .Select(m => new
                 {
                     m.MovieName,
@@ -147,5 +151,22 @@ namespace MovieManagement.Server.Repositories
             };
         }
 
+        public async Task<List<long>> TotalMovieDailyLast30Days()
+        {
+            var currentDate = DateTime.Now;
+            var last30Days = Enumerable.Range(0, 30)
+                .Select(offset => currentDate.AddDays(-offset))
+                .ToList();
+            var movieCounts = new List<long>();
+            foreach (var date in last30Days)
+            {
+                var count = await _context.Movies
+                    .Where(m => m.PostDate.Date == date.Date)
+                    .CountAsync();
+                movieCounts.Add(count);
+            }
+            movieCounts.Reverse();
+            return movieCounts;
+        }
     }
 }

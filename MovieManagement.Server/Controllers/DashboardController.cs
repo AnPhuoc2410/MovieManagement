@@ -20,6 +20,109 @@ namespace MovieManagement.Server.Controllers
         {
             _dashboardService = dashboardService;
         }
+        [HttpGet("overview")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopMemberResponse.MemberRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DashboardOverview()
+        {
+            var response = new ApiResponse<Dictionary<string, object>>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "Overview",
+                Data = await _dashboardService.DashboardOverview()
+            };
+            return Ok(response);
+        }
+        [HttpGet("revenue")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopMemberResponse.MemberRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DashboardRevenue()
+        {
+            var response = new ApiResponse<Dictionary<DateOnly, decimal>>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "Revenue",
+                Data = await _dashboardService.GetRevenueByDate()
+            };
+            return Ok(response);
+        }
+        [HttpGet("total-ticket-sold")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopMemberResponse.MemberRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetTotalTicketSold()
+        {
+            var response = new ApiResponse<long>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "Total ticket sold",
+                Data = await _dashboardService.TotalTicketSold()
+            };
+            return Ok(response);
+        }
+        [HttpGet("ticket-sold-daily-last-30-days")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopMemberResponse.MemberRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> TicketSoldDailyLast30Days()
+        {
+            var response = new ApiResponse<List<long>>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "List number of ticket sold each day in last 30 days",
+                Data = await _dashboardService.TicketSoldLast30Days()
+            };
+            return Ok(response);
+        }
+        [HttpGet("total-member")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopMemberResponse.MemberRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetTotalMembersAsync()
+        {
+            var totalMember = await _dashboardService.GetTotalMembers();
+            var response = new ApiResponse<long>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "Total member",
+                Data = totalMember
+            };
+            return Ok(response);
+        }
+        [HttpGet("member-daily-last-30-days")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopMemberResponse.MemberRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> MemberDailyLast30Days()
+        {
+            var response = new ApiResponse<List<long>>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "List number of member join each day in last 30 days",
+                Data = await _dashboardService.MemberDailyLast30Days()
+            };
+            return Ok(response);
+        }
         [HttpGet("member")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopMemberResponse.MemberRevenue>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -95,7 +198,23 @@ namespace MovieManagement.Server.Controllers
             };
             return Ok(response);
         }
-
+        [HttpGet("movies-daily-last-30-days")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopMemberResponse.MemberRevenue>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> TotalMovieDailyLast30Days()
+        {
+            var response = new ApiResponse<List<long>>
+            {
+                StatusCode = 200,
+                IsSuccess = true,
+                Message = "List number of movies added each day in last 30 days",
+                Data = await _dashboardService.TotalMovieDailyLast30Days()
+            };
+            return Ok(response);
+        }
         [HttpGet("category")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<TopCategoryResponse.CategoryRevenue>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]

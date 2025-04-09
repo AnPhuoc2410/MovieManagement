@@ -65,5 +65,18 @@ namespace MovieManagement.Server.Repositories
                 .Where(u => u.UserId == userId).ToListAsync();
         }
 
+        public async Task<Dictionary<DateOnly, decimal>> GetRevenueByDate()
+        {
+            var revenueByDate = await _context.Bills
+                .Where(b => b.Status == BillStatus.Completed)
+                .GroupBy(b => DateOnly.FromDateTime(b.CreatedDate))
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    TotalAmount = g.Sum(b => b.Amount)
+                })
+                .ToListAsync();
+            return revenueByDate.ToDictionary(x => x.Date, x => x.TotalAmount);
+        }
     }
 }

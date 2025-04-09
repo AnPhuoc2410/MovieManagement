@@ -105,5 +105,30 @@ namespace MovieManagement.Server.Repositories
                 .ThenBy(td => td.Seat.AtColumn)
                 .ToList();
         }
+
+        public async Task<long> TotalTicketSold()
+        {
+            return await _context.TicketDetails
+                .Where(td => td.Status == TicketStatus.Paid)
+                .CountAsync();
+        }
+
+        public async Task<List<long>> TicketDailyLast30Days()
+        {
+            var currentDate = DateTime.Now;
+            var last30Days = Enumerable.Range(0, 30)
+                .Select(offset => currentDate.AddDays(-offset))
+                .ToList();
+            var ticketCount = new List<long>();
+            foreach (var date in last30Days)
+            {
+                var count = await _context.TicketDetails
+                    .Where(td => td.Bill.CreatedDate.Date == date.Date && td.Status == TicketStatus.Paid)
+                    .CountAsync();
+                ticketCount.Add(count);
+            }
+            ticketCount.Reverse();
+            return ticketCount;
+        }
     }
 }

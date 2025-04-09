@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Localization;
 using MovieManagement.Server.Data;
 using MovieManagement.Server.Exceptions;
+using MovieManagement.Server.Extensions.RemoveVietnamese;
 using MovieManagement.Server.Models.DTOs;
 using MovieManagement.Server.Models.Entities;
 using MovieManagement.Server.Resources;
@@ -102,6 +103,7 @@ namespace MovieManagement.Server.Services.MovieService
 
             //movieRequest.UserId = userId;
             var movie = _mapper.Map<Movie>(movieRequest);
+            movie.SearchString = VietnameseConverter.RemoveVietnameseDiacritics(movie.MovieName);
             movie.PostDate = DateTime.Now;
             //Checking user is existing
             var user = await _unitOfWork.UserRepository.GetByIdAsync(userId) ?? throw new NotFoundException("User not found.");

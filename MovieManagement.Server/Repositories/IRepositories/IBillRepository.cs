@@ -13,6 +13,6 @@ namespace MovieManagement.Server.Repositories.IRepositories
         Task<List<RevenueResponse.DailyStatistics>> GetDailyStatisticsAsync();
 
         Task<List<Bill>> GetTransactionHistoryByUserId(Guid userId);
-
+        Task<Dictionary<DateOnly, decimal>> GetRevenueByDate();
     }
 }

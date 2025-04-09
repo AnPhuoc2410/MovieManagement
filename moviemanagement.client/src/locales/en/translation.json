@@ -794,13 +794,25 @@
       "card_interval": "Last 30 days",
       "total_users": "Members",
       "total_movies": "Total Movies",
-      "total_showtimes": "Total Showtimes",
-      "total_bookings": "Total Bookings",
-      "total_sales": "Total Revenue",
       "ticket_today": "Tickets Sold",
-      "bookings_today": "Today's Bookings",
-      "movies_today": "Movies Showing Today",
-      "showtimes_today": "Today's Showtimes"
+      "title_revenue": "Revenue",
+      "select_year": "Year",
+      "select_month": "Month",
+      "month_revenue": "Revenue of the month",
+      "year_revenue": "Revenue of the year",
+      "month": "Month",
+      "title_leaderboard": "Leaderboard",
+      "top_movies": "Top 5 Movies by Revenue",
+      "movie_unit": "Revenue",
+      "top_showtime": "Top 5 Most Attended Showtimes",
+      "showtime_unit": "Tickets sold",
+      "export": "Export",
+      "top_members": "Top 50 Outstanding Members",
+      "top_categories": "Top 5 Best-Selling Movie Genres",
+      "member_name": "Member Name",
+      "tickets_purchased": "Tickets Purchased",
+      "current_points": "Current Points",
+      "total_points": "Total Points"
     }
   }
 }

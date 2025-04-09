@@ -49,15 +49,15 @@ namespace MovieManagement.Server.Extensions.SignalR
         {
             foreach (var ticket in ticketRequests)
             {
-                string ticketKey = $"{ticket.TicketId}-{userId}";
+                string trackerKey = $"{showtimeId}-{userId}";
 
-                if (_seatJobTracker.TryGetValue(ticketKey, out var existingJobId))
+                if (_seatJobTracker.TryGetValue(trackerKey, out var existingJobId))
                 {
                     BackgroundJob.Delete(existingJobId);
                 }
 
-                var newJobId = BackgroundJob.Schedule(() => AutoReleaseSeat(ticketRequests, showtimeId), TimeSpan.FromMinutes(5));
-                _seatJobTracker[ticketKey] = newJobId;
+                var newJobId = BackgroundJob.Schedule(() => AutoReleaseSeat(ticketRequests, showtimeId, userId), TimeSpan.FromMinutes(5));
+                _seatJobTracker[trackerKey] = newJobId;
             }
         }
 
@@ -71,14 +71,13 @@ namespace MovieManagement.Server.Extensions.SignalR
                     await _hubContext.Clients.Group(showtimeId).SendAsync("SeatBought", ticketResponse.SeatId);
                 }
 
-                // Remove auto-release jobs if seats are confirmed
                 foreach (var ticket in ticketRequests)
                 {
-                    string ticketKey = $"{ticket.TicketId}-{userId}";
-                    if (_seatJobTracker.TryGetValue(ticketKey, out var jobId))
+                    string trackerKey = $"{showtimeId}-{userId}";
+                    if (_seatJobTracker.TryGetValue(trackerKey, out var jobId))
                     {
                         BackgroundJob.Delete(jobId);
-                        _seatJobTracker.Remove(ticketKey);
+                        _seatJobTracker.Remove(trackerKey);
                     }
                 }
             }
@@ -100,11 +99,11 @@ namespace MovieManagement.Server.Extensions.SignalR
                     await _hubContext.Clients.Group(showtimeId).SendAsync("SeatAvailable", ticketResponse.SeatId);
 
                     // Clean up job tracker
-                    string ticketKey = $"{ticketResponse.TicketId}-{userId}";
-                    if (_seatJobTracker.TryGetValue(ticketKey, out var jobId))
+                    string trackerKey = $"{showtimeId}-{userId}";
+                    if (_seatJobTracker.TryGetValue(trackerKey, out var jobId))
                     {
                         BackgroundJob.Delete(jobId);
-                        _seatJobTracker.Remove(ticketKey);
+                        _seatJobTracker.Remove(trackerKey);
                     }
                 }
             }
@@ -114,7 +113,7 @@ namespace MovieManagement.Server.Extensions.SignalR
             }
         }
 
-        public async Task AutoReleaseSeat(List<TicketDetailRequest> ticketRequests, string showtimeId)
+        public async Task AutoReleaseSeat(List<TicketDetailRequest> ticketRequests, string showtimeId, string userId)
         {
             try
             {

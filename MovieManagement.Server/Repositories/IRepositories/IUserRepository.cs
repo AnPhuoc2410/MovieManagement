@@ -19,6 +19,8 @@ namespace MovieManagement.Server.Repositories.IRepositories
         
         Task<List<TopMemberResponse.MemberRevenue>> GetTopMemberRevenue();
         Task<List<TopMemberResponse.MemberDaily>> GetTopMemberDailyRevenue(DateTime date);
+        Task<long> GetTotalMembers();
+        Task<List<long>> MemberDailyLast30Days();
     }
 
 }

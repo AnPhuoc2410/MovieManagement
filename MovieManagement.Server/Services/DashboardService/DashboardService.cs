@@ -16,18 +16,18 @@ namespace MovieManagement.Server.Services.DashboardService
             _unitOfWork = unitOfWork;
         }
 
-        public  async Task<IEnumerable<TopMemberResponse.MemberRevenue>> GetTopMemberRevenues()
+        public async Task<IEnumerable<TopMemberResponse.MemberRevenue>> GetTopMemberRevenues()
         {
             var topMembers = await _unitOfWork.UserRepository.GetTopMemberRevenue();
             return topMembers;
         }
         public async Task<IEnumerable<TopMemberResponse.MemberDaily>> GetTopMemberDailyRevenues(DateTime from, DateTime to)
         {
-            if(from > to)
+            if (from > to)
             {
                 throw new BadRequestException("From date must be less than to date");
             }
-            if(from == null || to == null)
+            if (from == null || to == null)
             {
                 throw new BadRequestException("From date and to date must not be null");
             }
@@ -36,7 +36,8 @@ namespace MovieManagement.Server.Services.DashboardService
             foreach (var day in timeDaily)
             {
                 var memberDayRevenue = await _unitOfWork.UserRepository.GetTopMemberDailyRevenue(day);
-                topMemberDaily.AddRange(memberDayRevenue);
+                var filtered = memberDayRevenue.Where(m => m.MemberRevenues != null && m.MemberRevenues.Count > 0);
+                topMemberDaily.AddRange(filtered);
             }
             return topMemberDaily;
         }
@@ -117,13 +118,22 @@ namespace MovieManagement.Server.Services.DashboardService
                     .SelectMany(st => st.TicketDetails)
                     .Where(td => td.Bill != null)
                     .GroupBy(td => td.Bill.BillId)
-                    .Select(g => g.First().Bill.Amount)
-                    .Sum();
+                    .Select(g => g.First().BillId)
+                    .Count();
 
                 topShowtimeRevenues.TopRevenue.Add(key, revenue);
             }
 
-            return new List<TopShowtimeResponse.ShowtimeRevenue> { topShowtimeRevenues };
+            // Order by descending revenue and take the top 5
+            var orderedTopRevenues = topShowtimeRevenues.TopRevenue
+                .OrderByDescending(kvp => kvp.Value)
+                .Take(5)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+            return new List<TopShowtimeResponse.ShowtimeRevenue>
+            {
+                new TopShowtimeResponse.ShowtimeRevenue { TopRevenue = orderedTopRevenues }
+            };
         }
 
         public async Task<IEnumerable<TopShowtimeResponse.ShowtimeDaily>> GetTopShowtimeDailyRevenues(DateTime from, DateTime to)
@@ -187,6 +197,48 @@ namespace MovieManagement.Server.Services.DashboardService
             }
 
             return hours;
+        }
+        public async Task<long> GetTotalMembers()
+        {
+            return await _unitOfWork.UserRepository.GetTotalMembers();
+        }
+
+        public async Task<List<long>> MemberDailyLast30Days()
+        {
+            return await _unitOfWork.UserRepository.MemberDailyLast30Days();
+        }
+
+        public async Task<List<long>> TotalMovieDailyLast30Days()
+        {
+            return await _unitOfWork.MovieRepository.TotalMovieDailyLast30Days();
+        }
+
+        public async Task<long> TotalTicketSold()
+        {
+            return await _unitOfWork.TicketDetailRepository.TotalTicketSold();
+        }
+
+        public async Task<Dictionary<string, object>> DashboardOverview()
+        {
+            var overview = new Dictionary<string, object>();
+            overview["totalMembers"] = await _unitOfWork.UserRepository.GetTotalMembers();
+            overview["totalMovies"] = (await _unitOfWork.MovieRepository.GetAllAsync()).Count();
+            overview["ticketsSold"] = await _unitOfWork.TicketDetailRepository.TotalTicketSold();
+            overview["memberDailyLast30Days"] = await _unitOfWork.UserRepository.MemberDailyLast30Days();
+            overview["movieDailyLast30Days"] = await _unitOfWork.MovieRepository.TotalMovieDailyLast30Days();
+            overview["ticketSoldDailyLast30Days"] = await _unitOfWork.TicketDetailRepository.TicketDailyLast30Days();
+
+            return overview;
+        }
+
+        public async Task<List<long>> TicketSoldLast30Days()
+        {
+            return await _unitOfWork.TicketDetailRepository.TicketDailyLast30Days();
+        }
+
+        public async Task<Dictionary<DateOnly, decimal>> GetRevenueByDate()
+        {
+            return await _unitOfWork.BillRepository.GetRevenueByDate();
         }
     }
 }
