@@ -6,14 +6,14 @@ export type Movie = {
   movieId: string; // Guid in C#
   movieName: string;
   image: string;
-  postDate: Date; // DateTime in C#
-  fromDate: Date; // DateTime in C#
-  toDate: Date; // DateTime in C#
+  postDate: string; // DateTime in C# as ISO string
+  fromDate: string; // DateTime in C# as ISO string
+  toDate: string; // DateTime in C# as ISO string
   actors: string;
   director: string;
   rating: string;
   duration: number; // int in C#
-  version: number; // int in C#
+  version: string;
   trailer: string;
   content: string;
   userId?: string; // Guid in C#
@@ -29,7 +29,7 @@ export type QuanLyPhimType = Pick<
 export interface QuanLyPhimColumn extends TableData {
   movieId: string;
   movieName: string;
-  postDate: Date;
+  postDate: string;
   director: string;
   duration: number;
   version: number;

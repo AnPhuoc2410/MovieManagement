@@ -62,11 +62,10 @@ const MovieSlider = ({
         }}
         navigation
         pagination={{ clickable: true }}
-        autoplay={{ delay: 3000 }}
-        loop={movies.length > 4}
+        autoplay={{ delay: 3000 }}        loop={movies && movies.length > 4}
         style={{ width: "100%", paddingBottom: "20px" }}
       >
-        {movies.map((movie, index) => (
+        {movies && movies.map((movie, index) => (
           <SwiperSlide key={index}>
             <Box className="movie-card">
               <Box className="movie-image-container">
@@ -246,7 +245,6 @@ const ListMovies: React.FC = () => {
   const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
   const page = 0;
   const pageSize = 6;
-
   const fetchNowShowingMovies = async () => {
     try {
       setLoading(true);
@@ -254,14 +252,16 @@ const ListMovies: React.FC = () => {
         `movie/showing/page/${page}/size/${pageSize}`,
       );
       console.log("Now showing movies:", response.data);
-      setNowShowingMovies(response.data);
+      // Ensure we always set an array, handle different response structures
+      const moviesData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+      setNowShowingMovies(moviesData);
     } catch (error) {
       console.error("Error fetching now showing movies:", error);
+      setNowShowingMovies([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
   };
-
   const fetchUpcomingMovies = async () => {
     try {
       setLoading(true);
@@ -269,9 +269,12 @@ const ListMovies: React.FC = () => {
         `movie/coming-soon/page/${page}/size/${pageSize}`,
       );
       console.log("Upcoming movies:", response.data);
-      setUpcomingMovies(response.data.data);
+      // Ensure we always set an array, handle different response structures
+      const moviesData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+      setUpcomingMovies(moviesData);
     } catch (error) {
       console.error("Error fetching upcoming movies:", error);
+      setUpcomingMovies([]); // Set empty array on error
     } finally {
       setLoading(false);
     }

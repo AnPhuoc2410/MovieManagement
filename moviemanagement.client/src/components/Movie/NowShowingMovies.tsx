@@ -9,17 +9,18 @@ import { format, parseISO } from "date-fns";
 import PlayCircleOutlineOutlinedIcon from "@mui/icons-material/PlayCircleOutlineOutlined";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ScrollFloat from "../../components/shared/ScrollFloat";
+import moviesData from "../../data/movies.data";
 
 const NowShowingMovies: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
   const [nowShowingMovies, setNowShowingMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [openTrailer, setOpenTrailer] = useState(false);
   const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const moviesPerPage = 8;
-
   // For API pagination
   const apiPage = 0;
   const apiPageSize = 100; // Fetch more to handle client-side pagination
@@ -30,9 +31,13 @@ const NowShowingMovies: React.FC = () => {
         setLoading(true);
         const response = await api.get(`/movie/showing/page/${apiPage}/size/${apiPageSize}`);
         console.log("Now showing movies:", response.data);
-        setNowShowingMovies(response.data);
+        // Ensure we always set an array, handle different response structures
+        const apiMoviesData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+        setNowShowingMovies(apiMoviesData);
       } catch (error) {
         console.error("Error fetching now showing movies:", error);
+        // Fallback to local data when API fails
+        setNowShowingMovies(moviesData.nowShowingMovies);
       } finally {
         setLoading(false);
       }
@@ -53,12 +58,12 @@ const NowShowingMovies: React.FC = () => {
     setOpenTrailer(false);
     setTrailerUrl(null);
   };
-
-  // Pagination logic
-  const pageCount = Math.ceil(nowShowingMovies.length / moviesPerPage);
+  // Pagination logic with safety checks
+  const safeMoviesArray = Array.isArray(nowShowingMovies) ? nowShowingMovies : [];
+  const pageCount = Math.ceil(safeMoviesArray.length / moviesPerPage);
   const indexOfLastMovie = currentPage * moviesPerPage;
   const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
-  const currentMovies = nowShowingMovies.slice(indexOfFirstMovie, indexOfLastMovie);
+  const currentMovies = safeMoviesArray.slice(indexOfFirstMovie, indexOfLastMovie);
 
   const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value);

@@ -13,16 +13,18 @@ const NowShowingMoviesPage: React.FC = () => {
   // For API pagination
   const apiPage = 0;
   const apiPageSize = 100; // Fetch more to handle client-side pagination
-
   useEffect(() => {
     const fetchNowShowingMovies = async () => {
       try {
         setLoading(true);
         const response = await api.get(`/movie/showing/page/${apiPage}/size/${apiPageSize}`);
         console.log("Now showing movies:", response.data);
-        setNowShowingMovies(response.data);
+        // Ensure we always set an array, handle different response structures
+        const moviesData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+        setNowShowingMovies(moviesData);
       } catch (error) {
         console.error("Error fetching now showing movies:", error);
+        setNowShowingMovies([]); // Set empty array on error
       } finally {
         setLoading(false);
       }

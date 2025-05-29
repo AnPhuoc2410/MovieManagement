@@ -17,17 +17,19 @@ const AdminNowShowingMovies: React.FC<AdminNowShowingMoviesProps> = ({ onMovieSe
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const fetchNowShowingMovies = async () => {
+  useEffect(() => {    const fetchNowShowingMovies = async () => {
       try {
         setLoading(true);
         const response = await api.get(
           `/movie/showing/page/0/size/100`
         );
-        setMovies(response.data);
+        // Ensure we always set an array, handle different response structures
+        const moviesData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+        setMovies(moviesData);
       } catch (error) {
         console.error("Error fetching now showing movies:", error);
         toast.error(t("toast.error.movie.loading"));
+        setMovies([]); // Set empty array on error
       } finally {
         setLoading(false);
       }

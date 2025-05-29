@@ -34,7 +34,6 @@ const SearchPage: React.FC = () => {
   const moviesPerPage = 8;
 
   const keyword = new URLSearchParams(location.search).get("keyword") || "";
-
   useEffect(() => {
     const fetchSearchResults = async () => {
       try {
@@ -42,10 +41,13 @@ const SearchPage: React.FC = () => {
         const response = await api.get(
           `movie/name-relative/${encodeURIComponent(keyword)}`,
         );
-        console.log("Search results:", response.data.data);
-        setSearchResults(response.data.data);
+        console.log("Search results:", response.data);
+        // Ensure we always set an array, handle different response structures
+        const resultsData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+        setSearchResults(resultsData);
       } catch (error) {
         console.error("Error fetching search results:", error);
+        setSearchResults([]); // Set empty array on error
       } finally {
         setLoading(false);
       }
